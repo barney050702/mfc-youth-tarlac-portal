@@ -962,9 +962,10 @@ function renderActivitiesTable() {
                             <h3 style="color: #F8FAFC; font-size: 1.22rem; font-weight: 800; margin: 0 0 6px 0; line-height: 1.35;">
                                 ${displayTitle}
                             </h3>
-                            <div style="color: #94A3B8; font-size: 0.88rem; font-style: italic; margin-bottom: 16px;">
-                                AREA Chapter / Area
+                            <div style="color: #38BDF8; font-size: 0.88rem; font-weight: 600; margin-bottom: ${act.description ? '6px' : '16px'};">
+                                ${act.category || act.type || 'Chapter Assembly'}
                             </div>
+                            ${act.description ? `<div style="color: #94A3B8; font-size: 0.82rem; margin-bottom: 16px; line-height: 1.4;">${act.description}</div>` : ''}
                             <hr style="border: 0; border-top: 1px solid rgba(255, 255, 255, 0.08); margin: 16px 0;">
                             <div style="font-size: 0.88rem; margin-bottom: 8px;">
                                 <span style="font-weight: 700; color: #E2E8F0;">Held In:</span> <span style="color: #94A3B8;">${act.heldIn || 'Face to Face'}</span>
