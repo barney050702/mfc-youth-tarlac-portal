@@ -182,6 +182,36 @@ function saveToStorage() {
 // 2. EVENT LISTENERS & NAVIGATION LOGIC
 // ============================================================================
 
+function toggleMainNavigation(event) {
+    if (event && event.preventDefault) {
+        event.preventDefault();
+        event.stopPropagation();
+    }
+    const sidebar = document.getElementById('sidebar');
+    const backdrop = document.getElementById('sidebar-backdrop');
+    const appShell = document.querySelector('.app-shell');
+    const iconSvg = document.getElementById('menu-toggle-icon');
+
+    if (window.innerWidth <= 1024) {
+        if (sidebar && sidebar.classList.contains('open')) {
+            closeMobileSidebar();
+        } else {
+            if (sidebar) sidebar.classList.add('open');
+            if (backdrop) backdrop.classList.add('active');
+            if (typeof triggerHapticFeedback === 'function') triggerHapticFeedback(15);
+        }
+    } else {
+        if (appShell) {
+            const isCollapsed = appShell.classList.toggle('sidebar-collapsed');
+            if (iconSvg) {
+                iconSvg.innerHTML = isCollapsed
+                    ? '<path d="M10 6h11M10 12h11M10 18h11M7 8l4 4-4 4"/>'
+                    : '<path d="M3 6h11M3 12h11M3 18h11M17 8l-4 4 4 4"/>';
+            }
+        }
+    }
+}
+
 function setupEventListeners() {
     // Navigation Links
     document.querySelectorAll('.nav-item').forEach(link => {
@@ -198,23 +228,7 @@ function setupEventListeners() {
     const sidebar = document.getElementById('sidebar');
 
     if (menuToggle) {
-        menuToggle.addEventListener('click', () => {
-            if (window.innerWidth <= 1024) {
-                sidebar.classList.add('open');
-                backdrop.classList.add('active');
-            } else {
-                const appShell = document.querySelector('.app-shell');
-                if (appShell) {
-                    const isCollapsed = appShell.classList.toggle('sidebar-collapsed');
-                    const iconSvg = document.getElementById('menu-toggle-icon');
-                    if (iconSvg) {
-                        iconSvg.innerHTML = isCollapsed
-                            ? '<path d="M10 6h11M10 12h11M10 18h11M7 8l4 4-4 4"/>'
-                            : '<path d="M3 6h11M3 12h11M3 18h11M17 8l-4 4 4 4"/>';
-                    }
-                }
-            }
-        });
+        menuToggle.addEventListener('click', toggleMainNavigation);
     }
 
     if (sidebarClose) {
