@@ -2330,6 +2330,46 @@ function formatRoleBadge(role = 'Member') {
     return `<span style="color: #E2E8F0; font-size: 0.88rem;">${role}</span>`;
 }
 
+function syncChapterBullets(val) {
+    const btns = document.querySelectorAll('#members-chapter-bullets .chapter-bullet-btn');
+    btns.forEach(btn => {
+        const c = btn.getAttribute('data-chapter');
+        if (c === val) {
+            btn.classList.add('active');
+            btn.style.background = 'linear-gradient(135deg, #0284C7, #3B82F6)';
+            btn.style.color = '#FFF';
+            btn.style.borderColor = 'rgba(56, 189, 248, 0.5)';
+            btn.style.boxShadow = '0 4px 12px rgba(14, 165, 233, 0.3)';
+        } else {
+            btn.classList.remove('active');
+            btn.style.background = 'rgba(15, 23, 42, 0.65)';
+            btn.style.color = '#CBD5E1';
+            btn.style.borderColor = 'rgba(255, 255, 255, 0.15)';
+            btn.style.boxShadow = 'none';
+        }
+    });
+}
+
+function filterByChapterBullet(chapterValue, clickedBtn) {
+    syncChapterBullets(chapterValue);
+
+    // Sync with the Chapter select dropdown
+    const chapterSelect = document.getElementById('members-filter-chapter');
+    if (chapterSelect) {
+        chapterSelect.value = chapterValue;
+    }
+
+    // Immediately filter and re-render the Members table
+    renderMembersTable();
+
+    // Notify user with feedback toast
+    if (chapterValue === 'ALL') {
+        showToast('Showing members from All Chapters', 'info');
+    } else {
+        showToast(`Showing members for ${chapterValue}`, 'info');
+    }
+}
+
 function renderMembersTable() {
     const tbody = document.getElementById('members-table-body');
     const badge = document.getElementById('badge-members-count');

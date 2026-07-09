@@ -745,6 +745,51 @@
                      ========================================== -->
                 <div id="view-members" class="view-panel">
                     <div class="glass-panel">
+                        <!-- Interactive Chapter Bullet / Pill Bar -->
+                        <div class="chapter-bullet-bar" id="members-chapter-bullets"
+                            style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-bottom: 18px; padding-bottom: 16px; border-bottom: 1px solid rgba(255,255,255,0.08);">
+                            <span
+                                style="color: #38BDF8; font-weight: 800; font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.08em; margin-right: 6px; display: flex; align-items: center; gap: 6px;">
+                                🎯 CHAPTER BULLETS:
+                            </span>
+
+                            <button type="button" class="chapter-bullet-btn active" data-chapter="ALL"
+                                onclick="filterByChapterBullet('ALL', this)"
+                                style="background: linear-gradient(135deg, #0284C7, #3B82F6); color: #FFF; border: 1px solid rgba(56,189,248,0.5); border-radius: 20px; padding: 7px 16px; font-size: 0.82rem; font-weight: 700; cursor: pointer; transition: all 0.2s; box-shadow: 0 4px 12px rgba(14,165,233,0.3);">
+                                🌐 All Chapters
+                            </button>
+
+                            <button type="button" class="chapter-bullet-btn" data-chapter="Central Chapter"
+                                onclick="filterByChapterBullet('Central Chapter', this)"
+                                style="background: rgba(15, 23, 42, 0.65); color: #CBD5E1; border: 1px solid rgba(255,255,255,0.15); border-radius: 20px; padding: 7px 16px; font-size: 0.82rem; font-weight: 700; cursor: pointer; transition: all 0.2s;">
+                                📍 Central Chapter
+                            </button>
+
+                            <button type="button" class="chapter-bullet-btn" data-chapter="East Chapter"
+                                onclick="filterByChapterBullet('East Chapter', this)"
+                                style="background: rgba(15, 23, 42, 0.65); color: #CBD5E1; border: 1px solid rgba(255,255,255,0.15); border-radius: 20px; padding: 7px 16px; font-size: 0.82rem; font-weight: 700; cursor: pointer; transition: all 0.2s;">
+                                🌅 East Chapter
+                            </button>
+
+                            <button type="button" class="chapter-bullet-btn" data-chapter="North Chapter"
+                                onclick="filterByChapterBullet('North Chapter', this)"
+                                style="background: rgba(15, 23, 42, 0.65); color: #CBD5E1; border: 1px solid rgba(255,255,255,0.15); border-radius: 20px; padding: 7px 16px; font-size: 0.82rem; font-weight: 700; cursor: pointer; transition: all 0.2s;">
+                                🧭 North Chapter
+                            </button>
+
+                            <button type="button" class="chapter-bullet-btn" data-chapter="South Chapter"
+                                onclick="filterByChapterBullet('South Chapter', this)"
+                                style="background: rgba(15, 23, 42, 0.65); color: #CBD5E1; border: 1px solid rgba(255,255,255,0.15); border-radius: 20px; padding: 7px 16px; font-size: 0.82rem; font-weight: 700; cursor: pointer; transition: all 0.2s;">
+                                🌴 South Chapter
+                            </button>
+
+                            <button type="button" class="chapter-bullet-btn" data-chapter="West Chapter"
+                                onclick="filterByChapterBullet('West Chapter', this)"
+                                style="background: rgba(15, 23, 42, 0.65); color: #CBD5E1; border: 1px solid rgba(255,255,255,0.15); border-radius: 20px; padding: 7px 16px; font-size: 0.82rem; font-weight: 700; cursor: pointer; transition: all 0.2s;">
+                                🌄 West Chapter
+                            </button>
+                        </div>
+
                         <div class="toolbar">
                             <div class="toolbar-left">
                                 <div class="search-box" style="width: 280px;">
