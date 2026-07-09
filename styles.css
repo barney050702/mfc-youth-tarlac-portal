@@ -2914,3 +2914,72 @@ body.light-mode .theme-switch-thumb {
         gap: 12px !important;
     }
 }
+
+/* ==========================================================================
+   STATE-OF-THE-ART MOBILE NATIVE UX (PULL-TO-REFRESH & FAB)
+   ========================================================================== */
+.mobile-pull-indicator {
+    position: fixed;
+    top: 58px;
+    left: 0;
+    right: 0;
+    z-index: 150;
+    background: rgba(15, 23, 42, 0.96);
+    border-bottom: 1px solid rgba(56, 189, 248, 0.4);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.6);
+    padding: 10px 16px;
+    animation: fadeInDown var(--trans-normal);
+}
+
+.pull-indicator-content {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    color: #38BDF8;
+    font-size: 0.82rem;
+    font-weight: 700;
+}
+
+.pull-indicator-spinner {
+    width: 18px;
+    height: 18px;
+    animation: spin 1s linear infinite;
+}
+
+/* Floating Action Button (FAB) only visible on mobile screens */
+.mobile-fab-btn {
+    display: none;
+}
+
+@media (max-width: 768px) {
+    .mobile-fab-btn {
+        display: flex !important;
+        position: fixed;
+        bottom: calc(76px + env(safe-area-inset-bottom));
+        right: 18px;
+        z-index: 180;
+        background: linear-gradient(135deg, #0284C7, #8B5CF6);
+        color: #FFF;
+        border: 2px solid rgba(255, 255, 255, 0.35);
+        border-radius: 28px;
+        padding: 10px 16px;
+        box-shadow: 0 8px 24px rgba(2, 132, 199, 0.6);
+        align-items: center;
+        gap: 6px;
+        font-size: 0.78rem;
+        font-weight: 800;
+        cursor: pointer;
+        transition: transform 0.2s, box-shadow 0.2s;
+        -webkit-tap-highlight-color: transparent;
+    }
+
+    .mobile-fab-btn svg {
+        width: 18px;
+        height: 18px;
+    }
+
+    .mobile-fab-btn:active {
+        transform: scale(0.92);
+    }
+}

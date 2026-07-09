@@ -61,6 +61,10 @@ Within **30 seconds** of pushing, GitHub Pages automatically updates the live po
 1. **Digital Member QR ID Badges:** Click the **QR icon button** on any row in the Member Directory to generate a scannable digital ID badge with QR verification code ready for printing or saving to phones.
 2. **Executive Chapter Summary PDF Export:** In **Reports & Analytics**, click **`Executive Summary PDF`** to generate a formatted printable report sheet of your entire chapter roster and activity counts.
 3. **Live Cloud Pulse Feed:** A real-time cloud ticker at the top of the workspace shows recent synchronized check-in activities across connected chapter leaders.
+4. **Native Mobile App UX Engine:**
+   - **Pull-to-Refresh Cloud Sync:** Swipe down from the top of your phone screen to trigger an instant Firebase cloud synchronization with tactile haptic feedback.
+   - **Quick-Scan Floating Action Button (FAB):** A floating circular `⚡ QR SCAN` button pinned at the bottom-right on smartphones allows leaders to launch the QR Check-In Scanner modal with one tap from any screen.
+   - **Tactile Haptic Pulses:** Vibrates compatible smartphones on check-ins, scans, and sync gestures.
 
 ---
 

@@ -4754,6 +4754,62 @@ function updateLiveCloudTicker() {
 // Update cloud ticker periodically
 setInterval(updateLiveCloudTicker, 25000);
 
+// ============================================================================
+// STATE-OF-THE-ART NATIVE MOBILE UX ENGINE (PULL-TO-REFRESH, FAB & HAPTICS)
+// ============================================================================
+
+function triggerHapticFeedback(pattern = 15) {
+    if (typeof navigator !== 'undefined' && navigator.vibrate) {
+        try {
+            navigator.vibrate(pattern);
+        } catch (e) {}
+    }
+}
+
+function triggerMobileQuickScan() {
+    triggerHapticFeedback([15, 30, 15]);
+    switchView('attendance');
+    openQRCheckInModal();
+}
+
+function initMobileNativeGestures() {
+    let startY = 0;
+    let isPulling = false;
+
+    window.addEventListener('touchstart', (e) => {
+        if (window.scrollY === 0 && e.touches.length === 1) {
+            startY = e.touches[0].clientY;
+            isPulling = true;
+        }
+    }, { passive: true });
+
+    window.addEventListener('touchmove', (e) => {
+        if (!isPulling || window.scrollY > 0) return;
+        const currentY = e.touches[0].clientY;
+        const diffY = currentY - startY;
+
+        if (diffY > 90) {
+            isPulling = false;
+            triggerHapticFeedback([20, 40, 20]);
+            const indicator = document.getElementById('mobile-pull-refresh-indicator');
+            if (indicator) {
+                indicator.style.display = 'block';
+                triggerFirebaseForceSync();
+                setTimeout(() => {
+                    indicator.style.display = 'none';
+                }, 1600);
+            }
+        }
+    }, { passive: true });
+
+    window.addEventListener('touchend', () => {
+        isPulling = false;
+    }, { passive: true });
+}
+
 // Initialize on DOM ready
-document.addEventListener('DOMContentLoaded', initApp);
+document.addEventListener('DOMContentLoaded', () => {
+    initApp();
+    initMobileNativeGestures();
+});
 
