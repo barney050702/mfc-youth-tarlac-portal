@@ -972,14 +972,6 @@ function renderActivitiesTable() {
                             <div style="font-size: 0.88rem; margin-bottom: 16px;">
                                 <span style="font-weight: 700; color: #E2E8F0;">Venue:</span> <span style="color: #94A3B8;">${act.location || 'TBA'}</span>
                             </div>
-                            <div style="display: flex; justify-content: space-between; align-items: center; font-size: 0.88rem;">
-                                <div>
-                                    <span style="font-weight: 700; color: #E2E8F0;">Participants:</span> <span style="color: #94A3B8;">${pCount} present</span>
-                                </div>
-                                <div>
-                                    <span style="font-weight: 700; color: #E2E8F0;">Attendance Rate:</span> <span style="color: #94A3B8;">${rate}%</span>
-                                </div>
-                            </div>
                             <hr style="border: 0; border-top: 1px solid rgba(255, 255, 255, 0.08); margin: 16px 0;">
                         </div>
                         <div>
@@ -1006,22 +998,13 @@ function renderActivitiesTable() {
         if (filtered.length === 0) {
             tableBody.innerHTML = `
                 <tr>
-                    <td colspan="8" style="text-align: center; padding: 40px; color: var(--text-muted);">
+                    <td colspan="5" style="text-align: center; padding: 40px; color: var(--text-muted);">
                         No activities found matching your filters or search criteria.
                     </td>
                 </tr>
             `;
         } else {
             tableBody.innerHTML = filtered.map(act => {
-                const attObj = state.attendance[act.id] || {};
-                let pCount = 0;
-                let aCount = 0;
-                state.members.forEach(m => {
-                    const st = attObj[m.id]?.status;
-                    if (st === 'present' || st === 'late') pCount++;
-                    else if (st === 'absent') aCount++;
-                });
-                const rate = totalMems > 0 ? Math.round((pCount / totalMems) * 100) : 0;
                 const dateStr = new Date(act.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
                 const timeStr = new Date(act.date).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
 
@@ -1049,11 +1032,6 @@ function renderActivitiesTable() {
                             <div style="font-size:0.75rem; color:var(--text-muted); margin-top:4px;">Held in: ${act.heldIn || 'Face to Face'}</div>
                         </td>
                         <td><span class="status-pill pill-${act.status.toLowerCase()}">● ${act.status}</span></td>
-                        <td><strong style="color:var(--accent-emerald); font-size:1rem;">${pCount}</strong></td>
-                        <td><strong style="color:var(--accent-rose); font-size:1rem;">${aCount}</strong></td>
-                        <td>
-                            <span class="rate-badge" style="margin-left:0;">${rate}%</span>
-                        </td>
                         <td class="text-right">
                             <div class="action-buttons-cell">
                                 <button class="btn-icon-action" title="Edit Activity" onclick="openAddModal('${act.id}')">
