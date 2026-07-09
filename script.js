@@ -2944,6 +2944,8 @@ function handleAddMemberSubmit(event) {
 // 8. FUNDS & EXPENSES MANAGEMENT MODULE
 // ============================================================================
 
+const formatPHP = (num) => '₱' + (parseFloat(num) || 0).toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
 function renderFundsTable() {
     const tbody = document.getElementById('funds-table-body');
     if (!tbody) return;
@@ -2981,8 +2983,6 @@ function renderFundsTable() {
     const elExp = document.getElementById('stat-total-expenses');
     const elBal = document.getElementById('stat-current-balance');
     const elRec = document.getElementById('stat-total-records');
-
-    const formatPHP = (num) => '₱' + num.toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
     if (elInc) elInc.textContent = formatPHP(totalIncome);
     if (elExp) elExp.textContent = formatPHP(totalExpenses);

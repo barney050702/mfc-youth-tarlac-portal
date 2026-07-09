@@ -1145,7 +1145,7 @@
                 <div id="view-funds" class="view-panel">
                     <!-- Top 4 Summary Metric Cards Grid -->
                     <div class="metrics-grid"
-                        style="grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px;">
+                        style="grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 20px;">
                         <div class="metric-card glass-card"
                             style="padding: 20px; display: flex; align-items: center; justify-content: space-between; background: rgba(15, 23, 42, 0.7); border: 1px solid rgba(255,255,255,0.08); border-radius: 16px;">
                             <div>
@@ -1181,23 +1181,6 @@
                                     <polyline points="23 18 13.5 8.5 8.5 13.5 1 6" />
                                     <polyline points="17 18 23 18 23 12" />
                                 </svg>
-                            </div>
-                        </div>
-                        <!-- Budget Target Progress Card -->
-                        <div class="glass-panel"
-                            style="padding: 18px 20px; margin-bottom: 20px; border-left: 4px solid #8B5CF6;">
-                            <div
-                                style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; flex-wrap: wrap; gap: 8px;">
-                                <div style="font-weight: 700; color: #F8FAFC; font-size: 0.95rem;">🎯 Annual Budget &
-                                    Target Progress</div>
-                                <div style="font-size: 0.85rem; color: #A5B4FC;">Target: ₱50,000.00 | Achieved: <strong
-                                        id="budget-achieved-text">0%</strong></div>
-                            </div>
-                            <div class="mini-progress-bar"
-                                style="height: 10px; background: rgba(255,255,255,0.08); border-radius: 6px; overflow: hidden;">
-                                <div class="mini-fill" id="budget-progress-fill"
-                                    style="width: 0%; background: linear-gradient(90deg, #6366F1, #10B981); height: 100%; transition: width 0.5s ease;">
-                                </div>
                             </div>
                         </div>
 
@@ -1244,6 +1227,24 @@
                         </div>
                     </div>
 
+                    <!-- Budget Target Progress Banner -->
+                    <div class="glass-panel"
+                        style="padding: 18px 20px; margin-bottom: 24px; border-left: 4px solid #8B5CF6;">
+                        <div
+                            style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; flex-wrap: wrap; gap: 8px;">
+                            <div style="font-weight: 700; color: #F8FAFC; font-size: 0.95rem;">🎯 Annual Budget &
+                                Target Progress</div>
+                            <div style="font-size: 0.85rem; color: #A5B4FC;">Target: ₱50,000.00 | Achieved: <strong
+                                    id="budget-achieved-text">0%</strong></div>
+                        </div>
+                        <div class="mini-progress-bar"
+                            style="height: 10px; background: rgba(255,255,255,0.08); border-radius: 6px; overflow: hidden;">
+                            <div class="mini-fill" id="budget-progress-fill"
+                                style="width: 0%; background: linear-gradient(90deg, #6366F1, #10B981); height: 100%; transition: width 0.5s ease;">
+                            </div>
+                        </div>
+                    </div>
+
                     <!-- Action Bar / Search & Filter -->
                     <div class="glass-panel"
                         style="padding: 16px 20px; margin-bottom: 20px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px;">
@@ -1268,12 +1269,21 @@
                             <select id="funds-category-filter" onchange="filterFunds()"
                                 style="background: rgba(15, 23, 42, 0.8); border: 1px solid rgba(255,255,255,0.1); color: #E2E8F0; padding: 9px 16px; border-radius: 10px; outline: none; font-size: 0.88rem; cursor: pointer;">
                                 <option value="ALL">All Categories</option>
-                                <option value="Tithes & Offerings">Tithes & Offerings</option>
-                                <option value="Camp Fees">Camp Fees</option>
-                                <option value="Event Expenses">Event Expenses</option>
-                                <option value="Equipment & Tech">Equipment & Tech</option>
-                                <option value="Chapter Subsidy">Chapter Subsidy</option>
-                                <option value="Miscellaneous">Miscellaneous</option>
+                                <optgroup label="Income Categories">
+                                    <option value="Tithe & Offering">Tithe & Offering</option>
+                                    <option value="Donation / Sponsorship">Donation / Sponsorship</option>
+                                    <option value="Fundraising Event">Fundraising Event</option>
+                                    <option value="Registration Fees">Registration Fees</option>
+                                    <option value="Other Income">Other Income</option>
+                                </optgroup>
+                                <optgroup label="Expense Categories">
+                                    <option value="Assembly & Event Supplies">Assembly & Event Supplies</option>
+                                    <option value="Youth Camp Food & Venue">Youth Camp Food & Venue</option>
+                                    <option value="Transportation & Logistics">Transportation & Logistics</option>
+                                    <option value="Honorarium & Speakers">Honorarium & Speakers</option>
+                                    <option value="Administrative / Office">Administrative / Office</option>
+                                    <option value="Other Expense">Other Expense</option>
+                                </optgroup>
                             </select>
                             <button onclick="resetFundsFilter()"
                                 style="background: rgba(15, 23, 42, 0.8); border: 1px solid rgba(255,255,255,0.1); color: #94A3B8; width: 38px; height: 38px; border-radius: 10px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s;"
