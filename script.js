@@ -183,7 +183,15 @@ function setupEventListeners() {
                 backdrop.classList.add('active');
             } else {
                 const appShell = document.querySelector('.app-shell');
-                if (appShell) appShell.classList.toggle('sidebar-collapsed');
+                if (appShell) {
+                    const isCollapsed = appShell.classList.toggle('sidebar-collapsed');
+                    const iconSvg = document.getElementById('menu-toggle-icon');
+                    if (iconSvg) {
+                        iconSvg.innerHTML = isCollapsed
+                            ? '<path d="M10 6h11M10 12h11M10 18h11M7 8l4 4-4 4"/>'
+                            : '<path d="M3 6h11M3 12h11M3 18h11M17 8l-4 4 4 4"/>';
+                    }
+                }
             }
         });
     }
