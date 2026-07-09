@@ -221,15 +221,10 @@ function setupEventListeners() {
         });
     });
 
-    // Mobile Menu Toggle
-    const menuToggle = document.getElementById('menu-toggle-btn');
+    // Mobile Menu Toggle (Handled cleanly via inline onclick toggleMainNavigation)
     const sidebarClose = document.getElementById('sidebar-close-btn');
     const backdrop = document.getElementById('sidebar-backdrop');
     const sidebar = document.getElementById('sidebar');
-
-    if (menuToggle) {
-        menuToggle.addEventListener('click', toggleMainNavigation);
-    }
 
     if (sidebarClose) {
         sidebarClose.addEventListener('click', closeMobileSidebar);
