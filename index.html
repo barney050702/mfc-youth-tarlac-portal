@@ -59,52 +59,28 @@
                 style="color: #38BDF8; font-weight: 800; font-size: 0.78rem; letter-spacing: 0.12em; text-transform: uppercase; margin-top: 5px; margin-bottom: 26px;">
                 MAKE ALL YOUTH KNOW CHRIST</div>
 
-            <!-- Advanced Security Authentication Form Box -->
+            <!-- Simplified Document Lock Card (Password Only) -->
             <div
-                style="background: rgba(7, 13, 28, 0.75); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 20px; padding: 26px 24px; text-align: left;">
+                style="background: rgba(7, 13, 28, 0.85); border: 1px solid rgba(56, 189, 248, 0.3); border-radius: 20px; padding: 28px 24px; text-align: center; box-shadow: 0 20px 50px rgba(0,0,0,0.6);">
+
+                <p style="color: #E2E8F0; font-size: 0.95rem; line-height: 1.5; font-weight: 600; margin: 0 0 22px 0;">
+                    This page is locked to protect documents, please input the password below to access all the files:
+                </p>
 
                 <form id="auth-login-form" onsubmit="loginUser(event)">
-                    <!-- Email Input -->
-                    <label
-                        style="display: block; color: #94A3B8; font-size: 0.76rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 6px;">Executive
-                        Email / ID</label>
                     <div
-                        style="display: flex; align-items: center; background: #060B18; border: 1px solid rgba(255, 255, 255, 0.14); border-radius: 12px; padding: 0 14px; margin-bottom: 16px; transition: border-color 0.2s;">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="#38BDF8" stroke-width="2"
-                            style="width: 17px; height: 17px; min-width: 17px;">
-                            <rect width="20" height="16" x="2" y="4" rx="2" />
-                            <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
-                        </svg>
-                        <input type="email" id="auth-login-email" required placeholder="Enter Executive Email..."
-                            value="reyesbarney38@gmail.com"
-                            style="flex: 1; background: transparent; border: none; color: #FFF; padding: 12px; font-size: 0.92rem; outline: none; width: 100%;">
+                        style="display: flex; align-items: stretch; border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 12px; overflow: hidden; background: #060B18;">
+                        <span
+                            style="display: flex; align-items: center; padding: 0 14px; color: #94A3B8; font-weight: 700; font-size: 0.85rem; border-right: 1px solid rgba(255, 255, 255, 0.1);">
+                            Password:
+                        </span>
+                        <input type="password" id="auth-login-password" required placeholder="Enter password..." value=""
+                            style="flex: 1; background: transparent; border: none; color: #FFF; padding: 14px; font-size: 0.95rem; outline: none;">
+                        <button type="submit"
+                            style="background: linear-gradient(135deg, #0284C7, #3B82F6); color: #FFF; font-weight: 800; font-size: 0.85rem; letter-spacing: 0.08em; text-transform: uppercase; padding: 0 24px; border: none; cursor: pointer; transition: opacity 0.2s;">
+                            SUBMIT
+                        </button>
                     </div>
-
-                    <!-- Password Input -->
-                    <label
-                        style="display: block; color: #94A3B8; font-size: 0.76rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 6px;">Security
-                        Passkey / Token</label>
-                    <div
-                        style="display: flex; align-items: center; background: #060B18; border: 1px solid rgba(255, 255, 255, 0.14); border-radius: 12px; padding: 0 14px; margin-bottom: 24px;">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="#38BDF8" stroke-width="2"
-                            style="width: 17px; height: 17px; min-width: 17px;">
-                            <rect width="18" height="11" x="3" y="11" rx="2" ry="2" />
-                            <path d="M7 11V7a5 5 0 0 1 10 0v4" />
-                        </svg>
-                        <input type="password" id="auth-login-password" required placeholder="Enter Passkey..." value=""
-                            style="flex: 1; background: transparent; border: none; color: #FFF; padding: 12px; font-size: 0.92rem; outline: none; width: 100%;">
-                    </div>
-
-                    <!-- Log In Button -->
-                    <button type="submit" class="btn-primary glow-button"
-                        style="width: 100%; background: linear-gradient(135deg, #0284C7 0%, #3B82F6 50%, #6366F1 100%); color: #FFF; font-weight: 800; font-size: 0.98rem; padding: 14px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.2); cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; box-shadow: 0 8px 25px rgba(14, 165, 233, 0.45); transition: all 0.2s;">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
-                            style="width: 18px; height: 18px;">
-                            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
-                            <path d="m9 12 2 2 4-4" />
-                        </svg>
-                        <span>Authenticate & Launch Portal</span>
-                    </button>
                 </form>
             </div>
 

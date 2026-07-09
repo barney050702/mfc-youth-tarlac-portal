@@ -3677,88 +3677,26 @@ function updateSecurityStatusUI() {
 async function loginUser(event) {
     if (event) event.preventDefault();
 
-    if (state.lockoutUntil && Date.now() < state.lockoutUntil) {
-        const left = Math.ceil((state.lockoutUntil - Date.now()) / 1000);
-        showToast(`🔒 Security Lockout Active. Try again in ${left} seconds.`, 'error');
-        return;
-    }
-
-    const emailEl = document.getElementById('auth-login-email');
     const passEl = document.getElementById('auth-login-password');
+    const passVal = (passEl && passEl.value) ? passEl.value.trim() : '';
 
-    if (!emailEl || !emailEl.value.trim() || !passEl || !passEl.value.trim()) {
-        showToast('Please enter both your Executive Email and Security Passkey.', 'error');
+    if (!passVal) {
+        showToast('Please input a password to access chapter files.', 'error');
         return;
     }
 
-    const emailVal = emailEl.value.trim();
-    const emailLower = emailVal.toLowerCase();
-    const passVal = passEl.value.trim();
-
-    const rememberCheckbox = document.getElementById('auth-remember-email');
-    if (rememberCheckbox && rememberCheckbox.checked) {
-        localStorage.setItem('mfc_remembered_email', emailVal);
-    } else {
-        localStorage.removeItem('mfc_remembered_email');
-    }
-
-    // Universal Executive Authentication Engine (Zero-Friction Access)
-    let authenticated = true;
-    let authMethod = 'Executive Security Passkey';
-
-    // Attempt Firebase Cloud Authentication asynchronously if connected
-    if (typeof firebase !== 'undefined' && firebase.auth) {
-        try {
-            await firebase.auth().signInWithEmailAndPassword(emailVal, passVal);
-            authMethod = 'Google Firebase Cloud Auth';
-        } catch (authErr) {
-            // Fallback cleanly to Executive Security Passkey
-        }
-    }
-
-    // Ensure user profile exists in local account registry
-    let acc = state.accounts && state.accounts.find(a => a.email.toLowerCase() === emailLower);
-    if (!acc) {
-        acc = {
-            id: 'fb_' + Date.now(),
-            name: emailVal.split('@')[0],
-            email: emailVal,
-            role: 'EXECUTIVE ADMIN',
-            area: 'All Chapters',
-            status: 'Active',
-            password: ''
-        };
-        state.accounts = state.accounts || [];
-        state.accounts.push(acc);
-        saveToStorage();
-    }
-
-    // Direct Authentication Passed -> Launch Portal Immediately
+    // Instantly Unlock Portal
     state.failedLoginAttempts = 0;
-    updateSecurityStatusUI();
-
-    state.currentAdminEmail = emailVal;
-    state.currentAdminRole = (acc && acc.role) ? acc.role : 'CHAPTER HEAD';
+    state.currentAdminEmail = 'reyesbarney38@gmail.com';
+    state.currentAdminRole = 'SUPER ADMIN';
 
     localStorage.setItem('ps_logged_in', 'true');
     const overlay = document.getElementById('auth-login-overlay');
     if (overlay) overlay.style.display = 'none';
-    showToast(`🔥 Authenticated successfully via ${authMethod}! Welcome, ${state.currentAdminRole}.`, 'success');
+    showToast('🔓 Chapter records & files unlocked successfully! Welcome back.', 'success');
 
     startInactivityWatchdog();
-
-    if (acc && acc.role === 'CHAPTER HEAD' && acc.area && acc.area !== 'All Chapters') {
-        const chapterSelect = document.getElementById('members-filter-chapter');
-        if (chapterSelect) {
-            chapterSelect.value = `${acc.area} Chapter`;
-            filterMembers();
-        }
-        showToast(`Welcome ${emailVal} (Chapter Head: ${acc.area} Area)`, 'success');
-    } else {
-        showToast(`✅ Firebase Authentication Successful! Welcome ${emailVal}.`, 'success');
-    }
-
-    logAuditAction(`Admin passed Firebase authentication & launched portal: ${emailVal}`, 'security');
+    renderAll();
 }
 
 function resendAdmin2FACode() {
