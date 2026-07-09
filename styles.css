@@ -2834,6 +2834,13 @@ body.light-mode .theme-switch-thumb {
         box-sizing: border-box !important;
     }
 
+    #auth-login-form button[type="submit"] {
+        flex-shrink: 0 !important;
+        white-space: nowrap !important;
+        padding: 0 16px !important;
+        min-width: max-content !important;
+    }
+
     /* Stack toolbar controls neatly on mobile */
     .members-toolbar, .attendance-toolbar, .filters-bar,
     .attendance-quick-actions, .export-actions {
