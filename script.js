@@ -3680,8 +3680,12 @@ async function loginUser(event) {
     const passEl = document.getElementById('auth-login-password');
     const passVal = (passEl && passEl.value) ? passEl.value.trim() : '';
 
-    if (!passVal) {
-        showToast('Please input a password to access chapter files.', 'error');
+    if (passVal.toLowerCase() !== 'mfcyouthtarlac') {
+        showToast('🚫 Incorrect password. Please enter "mfcyouthtarlac" to unlock files.', 'error');
+        if (passEl) {
+            passEl.value = '';
+            passEl.focus();
+        }
         return;
     }
 
