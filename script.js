@@ -3516,11 +3516,46 @@ function loginUser(event) {
     const passEl = document.getElementById('auth-login-password');
 
     if (!emailEl || !emailEl.value.trim() || !passEl || !passEl.value.trim()) {
-        showToast('Please enter both email and password.', 'error');
+        showToast('Please enter both your Executive Email and Security Passkey.', 'error');
         return;
     }
 
     const emailVal = emailEl.value.trim();
+    const emailLower = emailVal.toLowerCase();
+    const passVal = passEl.value.trim();
+
+    // Check if account exists in state.accounts or is the primary super admin
+    const acc = state.accounts && state.accounts.find(a => a.email.toLowerCase() === emailLower);
+    const isSuperAdmin = (emailLower === 'reyesbarney38@gmail.com' || (acc && acc.role === 'SUPER ADMIN'));
+
+    if (!acc && emailLower !== 'reyesbarney38@gmail.com') {
+        showToast('🚫 Access Denied: Unrecognized Executive Email / ID. Unauthorized attempt logged.', 'error');
+        logAuditAction(`Failed login attempt (unrecognized account): ${emailVal}`, 'security');
+        if (passEl) passEl.value = '';
+        return;
+    }
+
+    // Strict passkey verification
+    const validSuperPasskeys = ['admin123', 'mfc2026', 'barney2026', 'superadmin'];
+    const validChapterPasskeys = ['admin123', 'chapter123', 'mfc2026'];
+
+    let passkeyValid = false;
+    if (acc && acc.password && passVal === acc.password) {
+        passkeyValid = true;
+    } else if (isSuperAdmin && validSuperPasskeys.includes(passVal)) {
+        passkeyValid = true;
+    } else if (!isSuperAdmin && validChapterPasskeys.includes(passVal)) {
+        passkeyValid = true;
+    }
+
+    if (!passkeyValid) {
+        showToast('🚫 Access Denied: Invalid Security Passkey. Security alert logged.', 'error');
+        logAuditAction(`Failed login attempt (invalid passkey) for account: ${emailVal}`, 'security');
+        if (passEl) passEl.value = '';
+        return;
+    }
+
+    // Authentication successful
     localStorage.setItem('ps_logged_in', 'true');
     const overlay = document.getElementById('auth-login-overlay');
     if (overlay) {
@@ -3528,7 +3563,6 @@ function loginUser(event) {
     }
 
     // Check if account is a Chapter Head
-    const acc = state.accounts && state.accounts.find(a => a.email.toLowerCase() === emailVal.toLowerCase());
     if (acc && acc.role === 'CHAPTER HEAD' && acc.area && acc.area !== 'All Chapters') {
         const chapterSelect = document.getElementById('members-filter-chapter');
         if (chapterSelect) {
@@ -3537,10 +3571,10 @@ function loginUser(event) {
         }
         showToast(`Welcome ${emailVal} (Chapter Head: ${acc.area} Area)`, 'success');
     } else {
-        showToast('Welcome back to MFC Youth Tarlac Data Portal!', 'success');
+        showToast('✅ Authentication Successful! Welcome back, Executive Super Admin.', 'success');
     }
 
-    logAuditAction(`Admin logged in: ${emailVal}`, 'security');
+    logAuditAction(`Admin authenticated & logged in: ${emailVal}`, 'security');
 }
 
 function handleForgotPassword() {

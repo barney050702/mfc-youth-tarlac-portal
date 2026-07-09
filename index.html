@@ -97,15 +97,18 @@
                     <!-- Password Input -->
                     <label style="display: block; color: #94A3B8; font-size: 0.76rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 6px;">Security Passkey / Token</label>
                     <div
-                        style="display: flex; align-items: center; background: #060B18; border: 1px solid rgba(255, 255, 255, 0.14); border-radius: 12px; padding: 0 14px; margin-bottom: 14px;">
+                        style="display: flex; align-items: center; background: #060B18; border: 1px solid rgba(255, 255, 255, 0.14); border-radius: 12px; padding: 0 14px; margin-bottom: 8px;">
                         <svg viewBox="0 0 24 24" fill="none" stroke="#38BDF8" stroke-width="2"
                             style="width: 17px; height: 17px; min-width: 17px;">
                             <rect width="18" height="11" x="3" y="11" rx="2" ry="2" />
                             <path d="M7 11V7a5 5 0 0 1 10 0v4" />
                         </svg>
-                        <input type="password" id="auth-login-password" required placeholder="Enter Passkey..."
-                            value="••••••••"
+                        <input type="password" id="auth-login-password" required placeholder="Enter Passkey (admin123)..."
+                            value=""
                             style="flex: 1; background: transparent; border: none; color: #FFF; padding: 12px; font-size: 0.92rem; outline: none; width: 100%;">
+                    </div>
+                    <div style="font-size: 0.73rem; color: #38BDF8; font-weight: 700; margin-bottom: 14px; display: flex; align-items: center; gap: 5px;">
+                        <span>🔑 Authorized Executive Passkey: <strong>admin123</strong></span>
                     </div>
 
                     <!-- Security Verification Checkbox & Forgot Option -->
