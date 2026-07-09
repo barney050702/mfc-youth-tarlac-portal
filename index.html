@@ -244,15 +244,15 @@
 
                     <!-- Global Quick Search Bar -->
                     <div class="header-global-search"
-                        style="position: relative; flex: 1; max-width: 300px; min-width: 160px; margin: 0 16px;">
+                        style="position: relative; flex: 1; max-width: 360px; min-width: 140px; margin: 0 12px;">
                         <svg viewBox="0 0 24 24" fill="none" stroke="#64748B" stroke-width="2"
                             style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); width: 16px; height: 16px;">
                             <circle cx="11" cy="11" r="8" />
                             <path d="m21 21-4.35-4.35" />
                         </svg>
-                        <input type="text" id="global-top-search" placeholder="Quick search member or event..."
+                        <input type="text" id="global-top-search" placeholder="Search members..."
                             oninput="handleGlobalSearch(this.value)"
-                            style="background: rgba(15, 23, 42, 0.7); border: 1px solid rgba(255, 255, 255, 0.15); border-radius: 20px; color: #FFF; padding: 6px 14px 6px 36px; font-size: 0.82rem; width: 100%; outline: none; transition: border-color 0.2s;">
+                            style="background: rgba(15, 23, 42, 0.7); border: 1px solid rgba(255, 255, 255, 0.15); border-radius: 20px; color: #FFF; padding: 7px 14px 7px 36px; font-size: 0.85rem; width: 100%; outline: none; transition: border-color 0.2s; text-overflow: ellipsis;">
                         <div id="global-search-results"
                             style="display: none; position: absolute; top: calc(100% + 8px); left: 0; width: 320px; background: rgba(15, 23, 42, 0.96); border: 1px solid rgba(56, 189, 248, 0.3); border-radius: 12px; padding: 8px; box-shadow: 0 12px 30px rgba(0,0,0,0.5); z-index: 9999; max-height: 340px; overflow-y: auto;">
                         </div>
