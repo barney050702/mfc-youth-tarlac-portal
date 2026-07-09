@@ -41,56 +41,65 @@
          AUTHENTICATION / LOGIN OVERLAY (ADMIN AUTHENTICATION)
          ========================================================================== -->
     <div id="auth-login-overlay"
-        style="display: flex; position: fixed; inset: 0; z-index: 99999; background: radial-gradient(circle at 50% 30%, #0c1836 0%, #060b18 75%, #02050c 100%); align-items: center; justify-content: center; padding: 20px; animation: fadeIn 0.3s ease;">
-        <div class="auth-login-card"
-            style="background: rgba(13, 22, 45, 0.96); border: 1px solid rgba(56, 189, 248, 0.25); border-radius: 28px; padding: 38px 34px; width: 100%; max-width: 430px; box-shadow: 0 35px 90px rgba(0,0,0,0.9), 0 0 40px rgba(14, 165, 233, 0.15); backdrop-filter: blur(25px); text-align: center;">
+        style="display: flex; flex-direction: column; justify-content: space-between; position: fixed; inset: 0; z-index: 99999; background: radial-gradient(circle at 50% 30%, #0c1836 0%, #060b18 75%, #02050c 100%); align-items: center; padding: 40px 0 0 0; animation: fadeIn 0.3s ease; overflow-y: auto;">
+        <div style="flex: 1; display: flex; align-items: center; justify-content: center; width: 100%; padding: 20px;">
+            <div class="auth-login-card"
+                style="background: rgba(13, 22, 45, 0.96); border: 1px solid rgba(56, 189, 248, 0.25); border-radius: 28px; padding: 38px 34px; width: 100%; max-width: 430px; box-shadow: 0 35px 90px rgba(0,0,0,0.9), 0 0 40px rgba(14, 165, 233, 0.15); backdrop-filter: blur(25px); text-align: center;">
 
-            <!-- MFC Youth Logo -->
-            <div style="display: flex; align-items: center; justify-content: center; margin: 0 auto 18px;">
-                <img src="mfc-logo.png" alt="MFC Youth Logo" class="bouncy-logo"
-                    style="width: 86px; height: 86px; object-fit: contain;">
+                <!-- MFC Youth Logo -->
+                <div style="display: flex; align-items: center; justify-content: center; margin: 0 auto 18px;">
+                    <img src="mfc-logo.png" alt="MFC Youth Logo" class="bouncy-logo"
+                        style="width: 86px; height: 86px; object-fit: contain;">
+                </div>
+
+                <!-- Title & Tagline -->
+                <h1
+                    style="color: #FFF; font-size: 1.5rem; font-weight: 900; letter-spacing: 0.04em; margin: 0; text-transform: uppercase;">
+                    MFC YOUTH TARLAC</h1>
+                <div
+                    style="color: #38BDF8; font-weight: 800; font-size: 0.78rem; letter-spacing: 0.12em; text-transform: uppercase; margin-top: 5px; margin-bottom: 26px;">
+                    MAKE ALL YOUTH KNOW CHRIST</div>
+
+                <!-- Simplified Document Lock Card (Password Only) -->
+                <div
+                    style="background: rgba(7, 13, 28, 0.85); border: 1px solid rgba(56, 189, 248, 0.3); border-radius: 20px; padding: 28px 24px; text-align: center; box-shadow: 0 20px 50px rgba(0,0,0,0.6);">
+
+                    <p style="color: #E2E8F0; font-size: 0.95rem; line-height: 1.5; font-weight: 600; margin: 0 0 22px 0;">
+                        This page is locked to protect documents, please input the password below to access all the files:
+                    </p>
+
+                    <form id="auth-login-form" onsubmit="loginUser(event)">
+                        <div
+                            style="display: flex; align-items: stretch; border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 12px; overflow: hidden; background: #060B18;">
+                            <span
+                                style="display: flex; align-items: center; padding: 0 12px; color: #94A3B8; font-weight: 700; font-size: 0.82rem; border-right: 1px solid rgba(255, 255, 255, 0.1); flex-shrink: 0; white-space: nowrap;">
+                                Password:
+                            </span>
+                            <input type="password" id="auth-login-password" required placeholder="Enter password..." value=""
+                                style="flex: 1; min-width: 0; background: transparent; border: none; color: #FFF; padding: 13px 10px; font-size: 0.9rem; outline: none;">
+                            <button type="submit"
+                                style="flex-shrink: 0; white-space: nowrap; background: linear-gradient(135deg, #0284C7, #3B82F6); color: #FFF; font-weight: 800; font-size: 0.82rem; letter-spacing: 0.06em; text-transform: uppercase; padding: 0 18px; border: none; cursor: pointer; transition: opacity 0.2s;">
+                                SUBMIT
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Footer Security Note -->
+                <div
+                    style="margin-top: 18px; color: #64748B; font-size: 0.74rem; font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 6px;">
+                    <span>🔒 Protected by MFC Youth Cryptographic Zero-Trust Guard</span>
+                </div>
+
             </div>
-
-            <!-- Title & Tagline -->
-            <h1
-                style="color: #FFF; font-size: 1.5rem; font-weight: 900; letter-spacing: 0.04em; margin: 0; text-transform: uppercase;">
-                MFC YOUTH TARLAC</h1>
-            <div
-                style="color: #38BDF8; font-weight: 800; font-size: 0.78rem; letter-spacing: 0.12em; text-transform: uppercase; margin-top: 5px; margin-bottom: 26px;">
-                MAKE ALL YOUTH KNOW CHRIST</div>
-
-            <!-- Simplified Document Lock Card (Password Only) -->
-            <div
-                style="background: rgba(7, 13, 28, 0.85); border: 1px solid rgba(56, 189, 248, 0.3); border-radius: 20px; padding: 28px 24px; text-align: center; box-shadow: 0 20px 50px rgba(0,0,0,0.6);">
-
-                <p style="color: #E2E8F0; font-size: 0.95rem; line-height: 1.5; font-weight: 600; margin: 0 0 22px 0;">
-                    This page is locked to protect documents, please input the password below to access all the files:
-                </p>
-
-                <form id="auth-login-form" onsubmit="loginUser(event)">
-                    <div
-                        style="display: flex; align-items: stretch; border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 12px; overflow: hidden; background: #060B18;">
-                        <span
-                            style="display: flex; align-items: center; padding: 0 12px; color: #94A3B8; font-weight: 700; font-size: 0.82rem; border-right: 1px solid rgba(255, 255, 255, 0.1); flex-shrink: 0; white-space: nowrap;">
-                            Password:
-                        </span>
-                        <input type="password" id="auth-login-password" required placeholder="Enter password..." value=""
-                            style="flex: 1; min-width: 0; background: transparent; border: none; color: #FFF; padding: 13px 10px; font-size: 0.9rem; outline: none;">
-                        <button type="submit"
-                            style="flex-shrink: 0; white-space: nowrap; background: linear-gradient(135deg, #0284C7, #3B82F6); color: #FFF; font-weight: 800; font-size: 0.82rem; letter-spacing: 0.06em; text-transform: uppercase; padding: 0 18px; border: none; cursor: pointer; transition: opacity 0.2s;">
-                            SUBMIT
-                        </button>
-                    </div>
-                </form>
-            </div>
-
-            <!-- Footer Security Note -->
-            <div
-                style="margin-top: 18px; color: #64748B; font-size: 0.74rem; font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 6px;">
-                <span>🔒 Protected by MFC Youth Cryptographic Zero-Trust Guard</span>
-            </div>
-
         </div>
+
+        <!-- Global Copyright Footer Bar (Matching User Screenshot) -->
+        <footer
+            style="background: #18181B; border-top: 1px solid rgba(255, 255, 255, 0.08); padding: 18px 24px; text-align: center; font-size: 0.88rem; color: #E2E8F0; font-weight: 500; letter-spacing: 0.02em; width: 100%;">
+            <span>Copyright All Rights Reserved &copy; 2025. Designed and developed by: <strong
+                    style="color: #38BDF8; font-weight: 700;">GodesQ Digital.</strong></span>
+        </footer>
     </div>
 
     <!-- Mobile Sidebar Backdrop -->
@@ -1606,6 +1615,13 @@
                 </div>
 
             </div> <!-- /views-container -->
+
+            <!-- Global Copyright Footer Bar (Matching User Screenshot) -->
+            <footer class="portal-footer"
+                style="background: #18181B; border-top: 1px solid rgba(255, 255, 255, 0.08); padding: 18px 24px; text-align: center; font-size: 0.88rem; color: #E2E8F0; font-weight: 500; letter-spacing: 0.02em; margin-top: auto; width: 100%;">
+                <span>Copyright All Rights Reserved &copy; 2025. Designed and developed by: <strong
+                        style="color: #38BDF8; font-weight: 700;">GodesQ Digital.</strong></span>
+            </footer>
         </main>
     </div> <!-- /app-shell -->
 
