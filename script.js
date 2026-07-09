@@ -53,6 +53,9 @@ function initApp() {
     loadFromStorage();
     setupEventListeners();
     renderAll();
+    if (window.innerWidth <= 1024) {
+        closeMobileSidebar();
+    }
     if (typeof MFCFirebaseCloud !== 'undefined') {
         MFCFirebaseCloud.init();
     }
@@ -346,6 +349,7 @@ function closeMobileSidebar() {
 }
 
 function switchView(viewId) {
+    closeMobileSidebar();
     state.currentView = viewId;
 
     // Update nav links active state
