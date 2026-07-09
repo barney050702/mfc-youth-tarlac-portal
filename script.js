@@ -444,7 +444,7 @@ function updatePastoralMilestonesWidget() {
 
     const subEl = document.getElementById('milestones-subtitle');
     if (subEl) {
-        subEl.innerHTML = `🎉 Found <strong style="color: #FFF;">${bdayMems.length} birthday celebrant(s)</strong> & <strong style="color: #FFF;">${campMems.length} CLC anniversary celebrant(s)</strong> this month!`;
+        subEl.innerHTML = `🎉 Found <strong style="color: #FFF;">${bdayMems.length} birthday celebrant(s)</strong> this month!`;
     }
 }
 
