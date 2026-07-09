@@ -60,12 +60,12 @@ function initApp() {
         MFCFirebaseCloud.init();
     }
 
-    if (localStorage.getItem('ps_logged_in') === 'false') {
-        const overlay = document.getElementById('auth-login-overlay');
-        if (overlay) overlay.style.display = 'flex';
-    } else {
-        showToast('Welcome to MFC Youth Tarlac Portal!', 'info');
-    }
+    // Automatically log out and require password on every page refresh
+    localStorage.setItem('ps_logged_in', 'false');
+    const overlay = document.getElementById('auth-login-overlay');
+    if (overlay) overlay.style.display = 'flex';
+    const passInput = document.getElementById('auth-login-password');
+    if (passInput) passInput.value = '';
 }
 
 function loadFromStorage() {
