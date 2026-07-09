@@ -62,10 +62,12 @@
             <!-- Advanced Security Authentication Form Box -->
             <div
                 style="background: rgba(7, 13, 28, 0.75); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 20px; padding: 26px 24px; text-align: left;">
-                
+
                 <form id="auth-login-form" onsubmit="loginUser(event)">
                     <!-- Email Input -->
-                    <label style="display: block; color: #94A3B8; font-size: 0.76rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 6px;">Executive Email / ID</label>
+                    <label
+                        style="display: block; color: #94A3B8; font-size: 0.76rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 6px;">Executive
+                        Email / ID</label>
                     <div
                         style="display: flex; align-items: center; background: #060B18; border: 1px solid rgba(255, 255, 255, 0.14); border-radius: 12px; padding: 0 14px; margin-bottom: 16px; transition: border-color 0.2s;">
                         <svg viewBox="0 0 24 24" fill="none" stroke="#38BDF8" stroke-width="2"
@@ -79,7 +81,9 @@
                     </div>
 
                     <!-- Password Input -->
-                    <label style="display: block; color: #94A3B8; font-size: 0.76rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 6px;">Security Passkey / Token</label>
+                    <label
+                        style="display: block; color: #94A3B8; font-size: 0.76rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 6px;">Security
+                        Passkey / Token</label>
                     <div
                         style="display: flex; align-items: center; background: #060B18; border: 1px solid rgba(255, 255, 255, 0.14); border-radius: 12px; padding: 0 14px; margin-bottom: 24px;">
                         <svg viewBox="0 0 24 24" fill="none" stroke="#38BDF8" stroke-width="2"
@@ -87,8 +91,7 @@
                             <rect width="18" height="11" x="3" y="11" rx="2" ry="2" />
                             <path d="M7 11V7a5 5 0 0 1 10 0v4" />
                         </svg>
-                        <input type="password" id="auth-login-password" required placeholder="Enter Passkey..."
-                            value=""
+                        <input type="password" id="auth-login-password" required placeholder="Enter Passkey..." value=""
                             style="flex: 1; background: transparent; border: none; color: #FFF; padding: 12px; font-size: 0.92rem; outline: none; width: 100%;">
                     </div>
 
@@ -97,8 +100,8 @@
                         style="width: 100%; background: linear-gradient(135deg, #0284C7 0%, #3B82F6 50%, #6366F1 100%); color: #FFF; font-weight: 800; font-size: 0.98rem; padding: 14px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.2); cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; box-shadow: 0 8px 25px rgba(14, 165, 233, 0.45); transition: all 0.2s;">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
                             style="width: 18px; height: 18px;">
-                            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-                            <path d="m9 12 2 2 4-4"/>
+                            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                            <path d="m9 12 2 2 4-4" />
                         </svg>
                         <span>Authenticate & Launch Portal</span>
                     </button>
@@ -106,7 +109,8 @@
             </div>
 
             <!-- Footer Security Note -->
-            <div style="margin-top: 18px; color: #64748B; font-size: 0.74rem; font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 6px;">
+            <div
+                style="margin-top: 18px; color: #64748B; font-size: 0.74rem; font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 6px;">
                 <span>🔒 Protected by MFC Youth Cryptographic Zero-Trust Guard</span>
             </div>
 
@@ -255,22 +259,38 @@
                     <span class="nav-label">Reports & Analytics</span>
                 </a>
                 <div class="nav-accordion-group" id="nav-group-resources">
-                    <a href="javascript:void(0)" class="nav-item nav-accordion-toggle" onclick="toggleResourcesMenu(event)" data-view="resources">
+                    <a href="javascript:void(0)" class="nav-item nav-accordion-toggle"
+                        onclick="toggleResourcesMenu(event)" data-view="resources">
                         <span class="nav-icon">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                stroke-linecap="round" stroke-linejoin="round">
                                 <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z" />
                             </svg>
                         </span>
                         <span class="nav-label" style="flex: 1;">Resources</span>
-                        <span class="nav-accordion-chevron" id="chevron-resources" style="display: flex; align-items: center;">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 14px; height: 14px; transition: transform 0.2s;"><path d="m18 15-6-6-6 6"/></svg>
+                        <span class="nav-accordion-chevron" id="chevron-resources"
+                            style="display: flex; align-items: center;">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                style="width: 14px; height: 14px; transition: transform 0.2s;">
+                                <path d="m18 15-6-6-6 6" />
+                            </svg>
                         </span>
                     </a>
-                    <div class="nav-accordion-menu" id="subnav-resources" style="display: flex; flex-direction: column; padding-left: 42px; gap: 6px; margin-top: 4px; margin-bottom: 6px;">
-                        <a href="javascript:void(0)" class="nav-sub-item active" onclick="switchResourceCategory('youthcamp')" id="sub-youthcamp" style="color: #60A5FA; font-weight: 700; font-size: 0.82rem; padding: 6px 10px; border-radius: 8px; text-decoration: none; transition: all 0.15s; display: block;">Youthcamp</a>
-                        <a href="javascript:void(0)" class="nav-sub-item" onclick="switchResourceCategory('trainings')" id="sub-trainings" style="color: #94A3B8; font-size: 0.82rem; padding: 6px 10px; border-radius: 8px; text-decoration: none; transition: all 0.15s; display: block;">Trainings</a>
-                        <a href="javascript:void(0)" class="nav-sub-item" onclick="switchResourceCategory('songboard')" id="sub-songboard" style="color: #94A3B8; font-size: 0.82rem; padding: 6px 10px; border-radius: 8px; text-decoration: none; transition: all 0.15s; display: block;">Songboard</a>
-                        <a href="javascript:void(0)" class="nav-sub-item" onclick="switchResourceCategory('holyrosary')" id="sub-holyrosary" style="color: #94A3B8; font-size: 0.82rem; padding: 6px 10px; border-radius: 8px; text-decoration: none; transition: all 0.15s; display: block;">Holy Rosary</a>
+                    <div class="nav-accordion-menu" id="subnav-resources"
+                        style="display: flex; flex-direction: column; padding-left: 42px; gap: 6px; margin-top: 4px; margin-bottom: 6px;">
+                        <a href="javascript:void(0)" class="nav-sub-item active"
+                            onclick="switchResourceCategory('youthcamp')" id="sub-youthcamp"
+                            style="color: #60A5FA; font-weight: 700; font-size: 0.82rem; padding: 6px 10px; border-radius: 8px; text-decoration: none; transition: all 0.15s; display: block;">Youthcamp</a>
+                        <a href="javascript:void(0)" class="nav-sub-item" onclick="switchResourceCategory('trainings')"
+                            id="sub-trainings"
+                            style="color: #94A3B8; font-size: 0.82rem; padding: 6px 10px; border-radius: 8px; text-decoration: none; transition: all 0.15s; display: block;">Trainings</a>
+                        <a href="javascript:void(0)" class="nav-sub-item" onclick="switchResourceCategory('songboard')"
+                            id="sub-songboard"
+                            style="color: #94A3B8; font-size: 0.82rem; padding: 6px 10px; border-radius: 8px; text-decoration: none; transition: all 0.15s; display: block;">Songboard</a>
+                        <a href="javascript:void(0)" class="nav-sub-item" onclick="switchResourceCategory('holyrosary')"
+                            id="sub-holyrosary"
+                            style="color: #94A3B8; font-size: 0.82rem; padding: 6px 10px; border-radius: 8px; text-decoration: none; transition: all 0.15s; display: block;">Holy
+                            Rosary</a>
                     </div>
                 </div>
                 <a href="javascript:void(0)" class="nav-item" data-view="account">
@@ -291,8 +311,11 @@
             <!-- Top App Bar (MFC Youth Tarlac Custom Executive Header) -->
             <header class="top-bar mfc-top-bar">
                 <div class="top-bar-left">
-                    <button class="menu-toggle-btn visible-toggle" id="menu-toggle-btn" aria-label="Toggle Navigation" title="Toggle menu">
-                        <svg id="menu-toggle-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="width: 20px; height: 20px;">
+                    <button class="menu-toggle-btn visible-toggle" id="menu-toggle-btn" aria-label="Toggle Navigation"
+                        title="Toggle menu">
+                        <svg id="menu-toggle-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"
+                            style="width: 20px; height: 20px;">
                             <path d="M3 6h11M3 12h11M3 18h11M17 8l-4 4 4 4" />
                         </svg>
                     </button>
@@ -305,31 +328,24 @@
                     </div>
 
                     <!-- Global Quick Search Bar -->
-                    <div class="header-global-search" style="position: relative; flex: 1; max-width: 300px; min-width: 160px; margin: 0 16px;">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="#64748B" stroke-width="2" style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); width: 16px; height: 16px;"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-                        <input type="text" id="global-top-search" placeholder="Quick search member or event..." oninput="handleGlobalSearch(this.value)" style="background: rgba(15, 23, 42, 0.7); border: 1px solid rgba(255, 255, 255, 0.15); border-radius: 20px; color: #FFF; padding: 6px 14px 6px 36px; font-size: 0.82rem; width: 100%; outline: none; transition: border-color 0.2s;">
-                        <div id="global-search-results" style="display: none; position: absolute; top: calc(100% + 8px); left: 0; width: 320px; background: rgba(15, 23, 42, 0.96); border: 1px solid rgba(56, 189, 248, 0.3); border-radius: 12px; padding: 8px; box-shadow: 0 12px 30px rgba(0,0,0,0.5); z-index: 9999; max-height: 340px; overflow-y: auto;"></div>
+                    <div class="header-global-search"
+                        style="position: relative; flex: 1; max-width: 300px; min-width: 160px; margin: 0 16px;">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="#64748B" stroke-width="2"
+                            style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); width: 16px; height: 16px;">
+                            <circle cx="11" cy="11" r="8" />
+                            <path d="m21 21-4.35-4.35" />
+                        </svg>
+                        <input type="text" id="global-top-search" placeholder="Quick search member or event..."
+                            oninput="handleGlobalSearch(this.value)"
+                            style="background: rgba(15, 23, 42, 0.7); border: 1px solid rgba(255, 255, 255, 0.15); border-radius: 20px; color: #FFF; padding: 6px 14px 6px 36px; font-size: 0.82rem; width: 100%; outline: none; transition: border-color 0.2s;">
+                        <div id="global-search-results"
+                            style="display: none; position: absolute; top: calc(100% + 8px); left: 0; width: 320px; background: rgba(15, 23, 42, 0.96); border: 1px solid rgba(56, 189, 248, 0.3); border-radius: 12px; padding: 8px; box-shadow: 0 12px 30px rgba(0,0,0,0.5); z-index: 9999; max-height: 340px; overflow-y: auto;">
+                        </div>
                     </div>
                 </div>
 
-                <div class="top-bar-right" style="display: flex; align-items: center; gap: 10px; flex-shrink: 0; white-space: nowrap;">
-                    <!-- Pastoral Year Term Pill -->
-                    <div class="top-term-pill" title="Current Pastoral Year & Semester Term" style="background: rgba(59, 130, 246, 0.15); color: #60A5FA; border: 1px solid rgba(59, 130, 246, 0.35); padding: 5px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 700; display: flex; align-items: center; gap: 6px;">
-                        <span>🗓️ 2026 Pastoral Year • Sem 1</span>
-                    </div>
-
-                    <!-- Pastoral Notification Bell Button -->
-                    <button class="top-bar-icon-btn notification-bell" id="btn-top-notifications" onclick="showTopNotificationsModal()" title="Pastoral Alerts & Follow-ups" style="position: relative; background: rgba(236, 72, 153, 0.12); border: 1px solid rgba(236, 72, 153, 0.3); color: #F472B6;">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 18px; height: 18px;"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
-                        <span class="notification-badge" id="top-notification-count" style="position: absolute; top: 4px; right: 4px; background: #EC4899; color: #FFF; font-size: 0.65rem; font-weight: 800; width: 16px; height: 16px; border-radius: 50%; display: flex; align-items: center; justify-content: center;">!</span>
-                    </button>
-
-                    <!-- Live Data Integrity Indicator -->
-                    <div class="sync-status-pill" id="live-sync-indicator" onclick="exportBackupJSON()"
-                        title="All portal records automatically protected in local storage. Click to download JSON Backup.">
-                        <span class="sync-dot"></span>
-                        <span id="sync-status-text">Synced & Protected</span>
-                    </div>
+                <div class="top-bar-right"
+                    style="display: flex; align-items: center; gap: 10px; flex-shrink: 0; white-space: nowrap;">
 
                     <!-- Social / Web Links -->
                     <a href="https://www.facebook.com/MFCYouthTarlac" target="_blank" rel="noopener noreferrer"
@@ -472,7 +488,8 @@
                                 <h4 style="margin: 0; font-size: 1.08rem; font-weight: 800; color: #F8FAFC;">Pastoral
                                     Milestones This Month</h4>
                                 <p id="milestones-subtitle"
-                                    style="margin: 3px 0 0; font-size: 0.83rem; color: #F472B6;">Celebrate MFC Youth Tarlac birthdays this month</p>
+                                    style="margin: 3px 0 0; font-size: 0.83rem; color: #F472B6;">Celebrate MFC Youth
+                                    Tarlac birthdays this month</p>
                             </div>
                         </div>
                         <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;"
@@ -528,10 +545,10 @@
                         style="background: #FFFFFF; color: #0F172A; padding: 28px 36px; border-radius: 16px; margin-bottom: 24px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25); display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px;">
                         <div>
                             <h2 id="semester-banner-title"
-                                style="color: #1E3A8A; font-size: 1.7rem; font-weight: 800; margin: 0 0 6px 0;">First
-                                Semester (Jan - Jun)</h2>
+                                style="color: #1E3A8A; font-size: 1.7rem; font-weight: 800; margin: 0 0 6px 0;">All
+                                Activities History</h2>
                             <p id="semester-banner-desc" style="color: #475569; font-size: 0.95rem; margin: 0;">
-                                Activities accomplished during the first semester.</p>
+                                Comprehensive record of all organizational events and gatherings.</p>
                         </div>
                         <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
                             <div class="semester-tabs"
@@ -1354,15 +1371,20 @@
 
                 <!-- RESOURCES & DOCUMENT VAULT VIEW PANEL -->
                 <div id="view-resources" class="view-panel">
-                    <div class="glass-card" style="padding: 24px; margin-bottom: 24px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;">
+                    <div class="glass-card"
+                        style="padding: 24px; margin-bottom: 24px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;">
                         <div>
-                            <h2 style="color: #FFF; font-size: 1.45rem; font-weight: 800; margin: 0 0 6px 0; display: flex; align-items: center; gap: 10px;">
+                            <h2
+                                style="color: #FFF; font-size: 1.45rem; font-weight: 800; margin: 0 0 6px 0; display: flex; align-items: center; gap: 10px;">
                                 <span>📁 MFC Youth Tarlac Resource Vault</span>
                             </h2>
-                            <p style="color: #94A3B8; font-size: 0.88rem; margin: 0;">Official manuals, training decks, songboards, and chapter prayer guides</p>
+                            <p style="color: #94A3B8; font-size: 0.88rem; margin: 0;">Official manuals, training decks,
+                                songboards, and chapter prayer guides</p>
                         </div>
                         <div style="display: flex; gap: 8px; flex-wrap: wrap;">
-                            <button class="btn-primary" onclick="showToast('📥 Downloading selected resource packet...', 'success')" style="font-size: 0.82rem;">
+                            <button class="btn-primary"
+                                onclick="showToast('📥 Downloading selected resource packet...', 'success')"
+                                style="font-size: 0.82rem;">
                                 <span>📥 Download All Manuals</span>
                             </button>
                         </div>
@@ -1370,85 +1392,149 @@
 
                     <!-- Category Navigation Tabs inside Resources View -->
                     <div style="display: flex; gap: 10px; margin-bottom: 24px; flex-wrap: wrap;" id="resources-tab-bar">
-                        <button class="resource-tab-btn active" id="btn-res-youthcamp" onclick="switchResourceCategory('youthcamp')" style="padding: 10px 18px; border-radius: 12px; font-weight: 700; font-size: 0.85rem; border: 1px solid rgba(56, 189, 248, 0.4); background: rgba(56, 189, 248, 0.15); color: #38BDF8; cursor: pointer; transition: all 0.2s;">⛺ Youthcamp</button>
-                        <button class="resource-tab-btn" id="btn-res-trainings" onclick="switchResourceCategory('trainings')" style="padding: 10px 18px; border-radius: 12px; font-weight: 700; font-size: 0.85rem; border: 1px solid rgba(255, 255, 255, 0.1); background: rgba(15, 23, 42, 0.4); color: #94A3B8; cursor: pointer; transition: all 0.2s;">🎓 Trainings</button>
-                        <button class="resource-tab-btn" id="btn-res-songboard" onclick="switchResourceCategory('songboard')" style="padding: 10px 18px; border-radius: 12px; font-weight: 700; font-size: 0.85rem; border: 1px solid rgba(255, 255, 255, 0.1); background: rgba(15, 23, 42, 0.4); color: #94A3B8; cursor: pointer; transition: all 0.2s;">🎸 Songboard</button>
-                        <button class="resource-tab-btn" id="btn-res-holyrosary" onclick="switchResourceCategory('holyrosary')" style="padding: 10px 18px; border-radius: 12px; font-weight: 700; font-size: 0.85rem; border: 1px solid rgba(255, 255, 255, 0.1); background: rgba(15, 23, 42, 0.4); color: #94A3B8; cursor: pointer; transition: all 0.2s;">📿 Holy Rosary</button>
+                        <button class="resource-tab-btn active" id="btn-res-youthcamp"
+                            onclick="switchResourceCategory('youthcamp')"
+                            style="padding: 10px 18px; border-radius: 12px; font-weight: 700; font-size: 0.85rem; border: 1px solid rgba(56, 189, 248, 0.4); background: rgba(56, 189, 248, 0.15); color: #38BDF8; cursor: pointer; transition: all 0.2s;">⛺
+                            Youthcamp</button>
+                        <button class="resource-tab-btn" id="btn-res-trainings"
+                            onclick="switchResourceCategory('trainings')"
+                            style="padding: 10px 18px; border-radius: 12px; font-weight: 700; font-size: 0.85rem; border: 1px solid rgba(255, 255, 255, 0.1); background: rgba(15, 23, 42, 0.4); color: #94A3B8; cursor: pointer; transition: all 0.2s;">🎓
+                            Trainings</button>
+                        <button class="resource-tab-btn" id="btn-res-songboard"
+                            onclick="switchResourceCategory('songboard')"
+                            style="padding: 10px 18px; border-radius: 12px; font-weight: 700; font-size: 0.85rem; border: 1px solid rgba(255, 255, 255, 0.1); background: rgba(15, 23, 42, 0.4); color: #94A3B8; cursor: pointer; transition: all 0.2s;">🎸
+                            Songboard</button>
+                        <button class="resource-tab-btn" id="btn-res-holyrosary"
+                            onclick="switchResourceCategory('holyrosary')"
+                            style="padding: 10px 18px; border-radius: 12px; font-weight: 700; font-size: 0.85rem; border: 1px solid rgba(255, 255, 255, 0.1); background: rgba(15, 23, 42, 0.4); color: #94A3B8; cursor: pointer; transition: all 0.2s;">📿
+                            Holy Rosary</button>
                     </div>
 
                     <!-- TAB 1: YOUTHCAMP -->
-                    <div class="resource-section" id="res-section-youthcamp" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px;">
+                    <div class="resource-section" id="res-section-youthcamp"
+                        style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px;">
                         <div class="glass-card" style="padding: 22px; border-radius: 16px;">
                             <div style="font-size: 1.8rem; margin-bottom: 12px;">📖</div>
-                            <h3 style="color: #F8FAFC; font-size: 1.1rem; font-weight: 800; margin: 0 0 8px 0;">Christian Life Camp (CLC) Manual</h3>
-                            <p style="color: #94A3B8; font-size: 0.82rem; line-height: 1.5; margin: 0 0 16px 0;">Official 3-day youthcamp schedule, service team roles, and talk outlines from Talk 1 to Talk 5.</p>
-                            <button class="btn-secondary btn-sm" onclick="showToast('📄 Opened CLC Manual PDF Preview', 'info')" style="width: 100%;">View PDF Manual →</button>
+                            <h3 style="color: #F8FAFC; font-size: 1.1rem; font-weight: 800; margin: 0 0 8px 0;">
+                                Christian Life Camp (CLC) Manual</h3>
+                            <p style="color: #94A3B8; font-size: 0.82rem; line-height: 1.5; margin: 0 0 16px 0;">
+                                Official 3-day youthcamp schedule, service team roles, and talk outlines from Talk 1 to
+                                Talk 5.</p>
+                            <button class="btn-secondary btn-sm"
+                                onclick="showToast('📄 Opened CLC Manual PDF Preview', 'info')"
+                                style="width: 100%;">View PDF Manual →</button>
                         </div>
                         <div class="glass-card" style="padding: 22px; border-radius: 16px;">
                             <div style="font-size: 1.8rem; margin-bottom: 12px;">📋</div>
-                            <h3 style="color: #F8FAFC; font-size: 1.1rem; font-weight: 800; margin: 0 0 8px 0;">Service Team Checklist</h3>
-                            <p style="color: #94A3B8; font-size: 0.82rem; line-height: 1.5; margin: 0 0 16px 0;">Pre-camp setup checklist for camp servants, music ministry, registration heads, and dorm marshals.</p>
-                            <button class="btn-secondary btn-sm" onclick="showToast('📄 Opened Service Team Checklist Sheet', 'info')" style="width: 100%;">Open Checklist →</button>
+                            <h3 style="color: #F8FAFC; font-size: 1.1rem; font-weight: 800; margin: 0 0 8px 0;">Service
+                                Team Checklist</h3>
+                            <p style="color: #94A3B8; font-size: 0.82rem; line-height: 1.5; margin: 0 0 16px 0;">
+                                Pre-camp setup checklist for camp servants, music ministry, registration heads, and dorm
+                                marshals.</p>
+                            <button class="btn-secondary btn-sm"
+                                onclick="showToast('📄 Opened Service Team Checklist Sheet', 'info')"
+                                style="width: 100%;">Open Checklist →</button>
                         </div>
                         <div class="glass-card" style="padding: 22px; border-radius: 16px;">
                             <div style="font-size: 1.8rem; margin-bottom: 12px;">🎤</div>
-                            <h3 style="color: #F8FAFC; font-size: 1.1rem; font-weight: 800; margin: 0 0 8px 0;">Speaker Slide Deck Template</h3>
-                            <p style="color: #94A3B8; font-size: 0.82rem; line-height: 1.5; margin: 0 0 16px 0;">PowerPoint & Keynote templates formatted with official MFC Youth branding for camp speakers.</p>
-                            <button class="btn-secondary btn-sm" onclick="showToast('📥 Downloaded Speaker Slide Deck (.pptx)', 'success')" style="width: 100%;">Download Deck →</button>
+                            <h3 style="color: #F8FAFC; font-size: 1.1rem; font-weight: 800; margin: 0 0 8px 0;">Speaker
+                                Slide Deck Template</h3>
+                            <p style="color: #94A3B8; font-size: 0.82rem; line-height: 1.5; margin: 0 0 16px 0;">
+                                PowerPoint & Keynote templates formatted with official MFC Youth branding for camp
+                                speakers.</p>
+                            <button class="btn-secondary btn-sm"
+                                onclick="showToast('📥 Downloaded Speaker Slide Deck (.pptx)', 'success')"
+                                style="width: 100%;">Download Deck →</button>
                         </div>
                     </div>
 
                     <!-- TAB 2: TRAININGS -->
-                    <div class="resource-section" id="res-section-trainings" style="display: none; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px;">
+                    <div class="resource-section" id="res-section-trainings"
+                        style="display: none; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px;">
                         <div class="glass-card" style="padding: 22px; border-radius: 16px;">
                             <div style="font-size: 1.8rem; margin-bottom: 12px;">🏆</div>
-                            <h3 style="color: #F8FAFC; font-size: 1.1rem; font-weight: 800; margin: 0 0 8px 0;">Chapter Leadership Training (CLT)</h3>
-                            <p style="color: #94A3B8; font-size: 0.82rem; line-height: 1.5; margin: 0 0 16px 0;">Comprehensive module for chapter officers, ministry coordinators, and aspiring servant leaders.</p>
-                            <button class="btn-secondary btn-sm" onclick="showToast('📄 Opened CLT Training Module', 'info')" style="width: 100%;">Open CLT Guide →</button>
+                            <h3 style="color: #F8FAFC; font-size: 1.1rem; font-weight: 800; margin: 0 0 8px 0;">Chapter
+                                Leadership Training (CLT)</h3>
+                            <p style="color: #94A3B8; font-size: 0.82rem; line-height: 1.5; margin: 0 0 16px 0;">
+                                Comprehensive module for chapter officers, ministry coordinators, and aspiring servant
+                                leaders.</p>
+                            <button class="btn-secondary btn-sm"
+                                onclick="showToast('📄 Opened CLT Training Module', 'info')" style="width: 100%;">Open
+                                CLT Guide →</button>
                         </div>
                         <div class="glass-card" style="padding: 22px; border-radius: 16px;">
                             <div style="font-size: 1.8rem; margin-bottom: 12px;">🤝</div>
-                            <h3 style="color: #F8FAFC; font-size: 1.1rem; font-weight: 800; margin: 0 0 8px 0;">Household Heads Training (HHT)</h3>
-                            <p style="color: #94A3B8; font-size: 0.82rem; line-height: 1.5; margin: 0 0 16px 0;">Step-by-step guide on facilitating household meetings, one-on-ones, and pastoral care.</p>
-                            <button class="btn-secondary btn-sm" onclick="showToast('📄 Opened Household Heads Guide', 'info')" style="width: 100%;">Open HHT Guide →</button>
+                            <h3 style="color: #F8FAFC; font-size: 1.1rem; font-weight: 800; margin: 0 0 8px 0;">
+                                Household Heads Training (HHT)</h3>
+                            <p style="color: #94A3B8; font-size: 0.82rem; line-height: 1.5; margin: 0 0 16px 0;">
+                                Step-by-step guide on facilitating household meetings, one-on-ones, and pastoral care.
+                            </p>
+                            <button class="btn-secondary btn-sm"
+                                onclick="showToast('📄 Opened Household Heads Guide', 'info')" style="width: 100%;">Open
+                                HHT Guide →</button>
                         </div>
                         <div class="glass-card" style="padding: 22px; border-radius: 16px;">
                             <div style="font-size: 1.8rem; margin-bottom: 12px;">🗣️</div>
-                            <h3 style="color: #F8FAFC; font-size: 1.1rem; font-weight: 800; margin: 0 0 8px 0;">Speaker's Workshop Guide</h3>
-                            <p style="color: #94A3B8; font-size: 0.82rem; line-height: 1.5; margin: 0 0 16px 0;">Effective public speaking, testimony preparation, and spiritual grounding for speakers.</p>
-                            <button class="btn-secondary btn-sm" onclick="showToast('📄 Opened Speaker Workshop Manual', 'info')" style="width: 100%;">Open Workshop PDF →</button>
+                            <h3 style="color: #F8FAFC; font-size: 1.1rem; font-weight: 800; margin: 0 0 8px 0;">
+                                Speaker's Workshop Guide</h3>
+                            <p style="color: #94A3B8; font-size: 0.82rem; line-height: 1.5; margin: 0 0 16px 0;">
+                                Effective public speaking, testimony preparation, and spiritual grounding for speakers.
+                            </p>
+                            <button class="btn-secondary btn-sm"
+                                onclick="showToast('📄 Opened Speaker Workshop Manual', 'info')"
+                                style="width: 100%;">Open Workshop PDF →</button>
                         </div>
                     </div>
 
                     <!-- TAB 3: SONGBOARD -->
-                    <div class="resource-section" id="res-section-songboard" style="display: none; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px;">
+                    <div class="resource-section" id="res-section-songboard"
+                        style="display: none; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px;">
                         <div class="glass-card" style="padding: 22px; border-radius: 16px;">
                             <div style="font-size: 1.8rem; margin-bottom: 12px;">🎸</div>
-                            <h3 style="color: #F8FAFC; font-size: 1.1rem; font-weight: 800; margin: 0 0 8px 0;">MFC Youth Official Songbook</h3>
-                            <p style="color: #94A3B8; font-size: 0.82rem; line-height: 1.5; margin: 0 0 16px 0;">Complete lyrics & guitar chords for fast praise anthems and worship slow songs.</p>
-                            <button class="btn-secondary btn-sm" onclick="showToast('🎸 Opened Interactive Chords & Songbook', 'info')" style="width: 100%;">Open Songbook →</button>
+                            <h3 style="color: #F8FAFC; font-size: 1.1rem; font-weight: 800; margin: 0 0 8px 0;">MFC
+                                Youth Official Songbook</h3>
+                            <p style="color: #94A3B8; font-size: 0.82rem; line-height: 1.5; margin: 0 0 16px 0;">
+                                Complete lyrics & guitar chords for fast praise anthems and worship slow songs.</p>
+                            <button class="btn-secondary btn-sm"
+                                onclick="showToast('🎸 Opened Interactive Chords & Songbook', 'info')"
+                                style="width: 100%;">Open Songbook →</button>
                         </div>
                         <div class="glass-card" style="padding: 22px; border-radius: 16px;">
                             <div style="font-size: 1.8rem; margin-bottom: 12px;">🎹</div>
-                            <h3 style="color: #F8FAFC; font-size: 1.1rem; font-weight: 800; margin: 0 0 8px 0;">Worship Setlist Planner</h3>
-                            <p style="color: #94A3B8; font-size: 0.82rem; line-height: 1.5; margin: 0 0 16px 0;">Template for structuring gathering praise, opening worship, and reflection songs for assemblies.</p>
-                            <button class="btn-secondary btn-sm" onclick="showToast('📋 Opened Setlist Planner Sheet', 'info')" style="width: 100%;">Plan Setlist →</button>
+                            <h3 style="color: #F8FAFC; font-size: 1.1rem; font-weight: 800; margin: 0 0 8px 0;">Worship
+                                Setlist Planner</h3>
+                            <p style="color: #94A3B8; font-size: 0.82rem; line-height: 1.5; margin: 0 0 16px 0;">
+                                Template for structuring gathering praise, opening worship, and reflection songs for
+                                assemblies.</p>
+                            <button class="btn-secondary btn-sm"
+                                onclick="showToast('📋 Opened Setlist Planner Sheet', 'info')" style="width: 100%;">Plan
+                                Setlist →</button>
                         </div>
                     </div>
 
                     <!-- TAB 4: HOLY ROSARY -->
-                    <div class="resource-section" id="res-section-holyrosary" style="display: none; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px;">
+                    <div class="resource-section" id="res-section-holyrosary"
+                        style="display: none; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px;">
                         <div class="glass-card" style="padding: 22px; border-radius: 16px;">
                             <div style="font-size: 1.8rem; margin-bottom: 12px;">📿</div>
-                            <h3 style="color: #F8FAFC; font-size: 1.1rem; font-weight: 800; margin: 0 0 8px 0;">The Holy Rosary Interactive Guide</h3>
-                            <p style="color: #94A3B8; font-size: 0.82rem; line-height: 1.5; margin: 0 0 16px 0;">Complete prayers and meditations for Joyful, Luminous, Sorrowful, and Glorious mysteries.</p>
-                            <button class="btn-secondary btn-sm" onclick="showToast('📿 Opened Complete Holy Rosary Prayer Guide', 'info')" style="width: 100%;">Pray Holy Rosary →</button>
+                            <h3 style="color: #F8FAFC; font-size: 1.1rem; font-weight: 800; margin: 0 0 8px 0;">The Holy
+                                Rosary Interactive Guide</h3>
+                            <p style="color: #94A3B8; font-size: 0.82rem; line-height: 1.5; margin: 0 0 16px 0;">
+                                Complete prayers and meditations for Joyful, Luminous, Sorrowful, and Glorious
+                                mysteries.</p>
+                            <button class="btn-secondary btn-sm"
+                                onclick="showToast('📿 Opened Complete Holy Rosary Prayer Guide', 'info')"
+                                style="width: 100%;">Pray Holy Rosary →</button>
                         </div>
                         <div class="glass-card" style="padding: 22px; border-radius: 16px;">
                             <div style="font-size: 1.8rem; margin-bottom: 12px;">🕊️</div>
-                            <h3 style="color: #F8FAFC; font-size: 1.1rem; font-weight: 800; margin: 0 0 8px 0;">Chapter Prayer & Litany Sheet</h3>
-                            <p style="color: #94A3B8; font-size: 0.82rem; line-height: 1.5; margin: 0 0 16px 0;">Printable opening and closing prayers for household meetings and chapter assemblies.</p>
-                            <button class="btn-secondary btn-sm" onclick="showToast('📄 Opened Chapter Prayer Sheet PDF', 'info')" style="width: 100%;">Open Prayer Sheet →</button>
+                            <h3 style="color: #F8FAFC; font-size: 1.1rem; font-weight: 800; margin: 0 0 8px 0;">Chapter
+                                Prayer & Litany Sheet</h3>
+                            <p style="color: #94A3B8; font-size: 0.82rem; line-height: 1.5; margin: 0 0 16px 0;">
+                                Printable opening and closing prayers for household meetings and chapter assemblies.</p>
+                            <button class="btn-secondary btn-sm"
+                                onclick="showToast('📄 Opened Chapter Prayer Sheet PDF', 'info')"
+                                style="width: 100%;">Open Prayer Sheet →</button>
                         </div>
                     </div>
                 </div>
@@ -1650,6 +1736,17 @@
                             <option value="Cancelled">Cancelled</option>
                         </select>
                     </div>
+                </div>
+                <div class="form-grid-2">
+                    <div class="form-group">
+                        <label for="form-semester">Attached Semester Term</label>
+                        <select id="form-semester" class="custom-select">
+                            <option value="auto">Auto-detect from Date</option>
+                            <option value="s1">1st Sem (Jan - Jun)</option>
+                            <option value="s2">2nd Sem (Jul - Dec)</option>
+                        </select>
+                    </div>
+                    <div class="form-group"></div>
                 </div>
                 <div class="form-group">
                     <label for="form-description">Description & Notes</label>
@@ -2343,70 +2440,65 @@
         </div>
     </div>
 
-    <!-- Pastoral Notifications & Alerts Modal -->
-    <div class="modal-backdrop" id="modal-top-notifications" style="display: none; z-index: 11500;">
-        <div class="modal-card glass-card" style="max-width: 480px; width: 92%; padding: 24px;">
-            <div class="modal-header" style="margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center;">
-                <div style="display: flex; align-items: center; gap: 10px;">
-                    <span style="font-size: 1.4rem;">🔔</span>
-                    <div>
-                        <h3 style="color: #F8FAFC; font-size: 1.2rem; font-weight: 800; margin: 0;">Pastoral Alerts & Notifications</h3>
-                        <p style="margin: 0; font-size: 0.78rem; color: #94A3B8;">Real-time chapter follow-ups and celebration milestones</p>
-                    </div>
-                </div>
-                <button class="btn-close" onclick="closeTopNotificationsModal()">×</button>
-            </div>
-            <div id="top-notifications-content" style="display: flex; flex-direction: column; gap: 14px; max-height: 400px; overflow-y: auto;">
-                <!-- Populated dynamically -->
-            </div>
-            <div style="margin-top: 18px; display: flex; justify-content: flex-end;">
-                <button type="button" class="btn-secondary btn-sm" onclick="closeTopNotificationsModal()">Dismiss Alerts</button>
-            </div>
-        </div>
-    </div>
 
     <!-- Publish Online Guide Modal -->
     <div class="modal-backdrop" id="modal-publish-online" style="display: none; z-index: 11600;">
         <div class="modal-card glass-card" style="max-width: 560px; width: 94%; padding: 26px;">
-            <div class="modal-header" style="margin-bottom: 18px; display: flex; justify-content: space-between; align-items: center;">
+            <div class="modal-header"
+                style="margin-bottom: 18px; display: flex; justify-content: space-between; align-items: center;">
                 <div style="display: flex; align-items: center; gap: 10px;">
                     <span style="font-size: 1.6rem;">🌐</span>
                     <div>
-                        <h3 style="color: #F8FAFC; font-size: 1.28rem; font-weight: 800; margin: 0;">Publish Portal Online (100% Free)</h3>
-                        <p style="margin: 0; font-size: 0.8rem; color: #94A3B8;">Self-contained PWA ready for high-speed static hosting</p>
+                        <h3 style="color: #F8FAFC; font-size: 1.28rem; font-weight: 800; margin: 0;">Publish Portal
+                            Online (100% Free)</h3>
+                        <p style="margin: 0; font-size: 0.8rem; color: #94A3B8;">Self-contained PWA ready for high-speed
+                            static hosting</p>
                     </div>
                 </div>
                 <button class="btn-close" onclick="closePublishModal()">×</button>
             </div>
             <div style="display: flex; flex-direction: column; gap: 16px; max-height: 420px; overflow-y: auto;">
-                <div style="background: rgba(56, 189, 248, 0.1); border: 1px solid rgba(56, 189, 248, 0.35); border-radius: 14px; padding: 16px;">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
-                        <span style="color: #38BDF8; font-weight: 800; font-size: 0.95rem;">⚡ Option 1: Netlify Drop (Takes 30 Seconds!)</span>
-                        <a href="https://app.netlify.com/drop" target="_blank" rel="noopener noreferrer" style="background: #38BDF8; color: #0F172A; padding: 6px 12px; border-radius: 8px; font-size: 0.78rem; font-weight: 800; text-decoration: none;">Open Netlify Drop ↗</a>
+                <div
+                    style="background: rgba(56, 189, 248, 0.1); border: 1px solid rgba(56, 189, 248, 0.35); border-radius: 14px; padding: 16px;">
+                    <div
+                        style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                        <span style="color: #38BDF8; font-weight: 800; font-size: 0.95rem;">⚡ Option 1: Netlify Drop
+                            (Takes 30 Seconds!)</span>
+                        <a href="https://app.netlify.com/drop" target="_blank" rel="noopener noreferrer"
+                            style="background: #38BDF8; color: #0F172A; padding: 6px 12px; border-radius: 8px; font-size: 0.78rem; font-weight: 800; text-decoration: none;">Open
+                            Netlify Drop ↗</a>
                     </div>
                     <p style="color: #E2E8F0; font-size: 0.82rem; margin: 0; line-height: 1.45;">
                         1. Click <strong>Open Netlify Drop</strong> above.<br>
-                        2. Open Windows File Explorer to your portal folder: <code>C:\Users\barne\.gemini\antigravity-ide\scratch\attendance-activity-portal</code><br>
+                        2. Open Windows File Explorer to your portal folder:
+                        <code>C:\Users\barne\.gemini\antigravity-ide\scratch\attendance-activity-portal</code><br>
                         3. <strong>Drag & drop</strong> the entire folder into the browser.<br>
                         4. Your site will immediately go live with an instant public HTTPS link!
                     </p>
                 </div>
 
-                <div style="background: rgba(139, 92, 246, 0.1); border: 1px solid rgba(139, 92, 246, 0.35); border-radius: 14px; padding: 16px;">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
-                        <span style="color: #C084FC; font-weight: 800; font-size: 0.95rem;">🐙 Option 2: GitHub Pages (Permanent & Custom Domain)</span>
-                        <a href="https://github.com/new" target="_blank" rel="noopener noreferrer" style="background: #C084FC; color: #0F172A; padding: 6px 12px; border-radius: 8px; font-size: 0.78rem; font-weight: 800; text-decoration: none;">Create GitHub Repo ↗</a>
+                <div
+                    style="background: rgba(139, 92, 246, 0.1); border: 1px solid rgba(139, 92, 246, 0.35); border-radius: 14px; padding: 16px;">
+                    <div
+                        style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                        <span style="color: #C084FC; font-weight: 800; font-size: 0.95rem;">🐙 Option 2: GitHub Pages
+                            (Permanent & Custom Domain)</span>
+                        <a href="https://github.com/new" target="_blank" rel="noopener noreferrer"
+                            style="background: #C084FC; color: #0F172A; padding: 6px 12px; border-radius: 8px; font-size: 0.78rem; font-weight: 800; text-decoration: none;">Create
+                            GitHub Repo ↗</a>
                     </div>
                     <p style="color: #E2E8F0; font-size: 0.82rem; margin: 0; line-height: 1.45;">
                         1. Create a public repository named <code>mfc-youth-tarlac-portal</code>.<br>
-                        2. Upload your 5 portal files (<code>index.html</code>, <code>styles.css</code>, <code>script.js</code>, <code>manifest.json</code>, <code>mfc-logo.png</code>).<br>
+                        2. Upload your 5 portal files (<code>index.html</code>, <code>styles.css</code>,
+                        <code>script.js</code>, <code>manifest.json</code>, <code>mfc-logo.png</code>).<br>
                         3. Go to <strong>Settings → Pages</strong> and select branch <code>main</code>.<br>
                         4. Your portal is live at <code>yourusername.github.io/mfc-youth-tarlac-portal</code>!
                     </p>
                 </div>
             </div>
             <div style="margin-top: 20px; display: flex; justify-content: flex-end;">
-                <button type="button" class="btn-secondary btn-sm" onclick="closePublishModal()">Got It, Let's Publish!</button>
+                <button type="button" class="btn-secondary btn-sm" onclick="closePublishModal()">Got It, Let's
+                    Publish!</button>
             </div>
         </div>
     </div>
