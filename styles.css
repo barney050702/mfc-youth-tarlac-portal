@@ -2753,10 +2753,10 @@ body.light-mode .theme-switch-thumb {
     }
 
     .views-container {
-        padding: 14px 10px !important;
+        padding: 14px 10px 95px 10px !important;
     }
 
-    /* Top bar responsive containment */
+    /* Top bar responsive containment & button fitment */
     .top-bar.mfc-top-bar {
         width: 100% !important;
         max-width: 100vw !important;
@@ -2764,6 +2764,17 @@ body.light-mode .theme-switch-thumb {
         height: 58px !important;
         overflow: hidden !important;
         box-sizing: border-box !important;
+    }
+
+    .top-bar-right {
+        gap: 6px !important;
+    }
+
+    .btn-logout {
+        padding: 6px 10px !important;
+        font-size: 0.75rem !important;
+        gap: 4px !important;
+        white-space: nowrap !important;
     }
 
     .header-global-search,
@@ -2775,15 +2786,52 @@ body.light-mode .theme-switch-thumb {
     }
 
     .mfc-brand {
-        max-width: 180px !important;
+        max-width: 165px !important;
         overflow: hidden !important;
     }
 
     .mfc-title {
-        font-size: 0.82rem !important;
+        font-size: 0.78rem !important;
         white-space: nowrap !important;
         overflow: hidden !important;
         text-overflow: ellipsis !important;
+    }
+
+    /* Metric Cards text & value fitment */
+    .metric-card {
+        padding: 16px 14px !important;
+    }
+
+    .metric-label {
+        font-size: 0.82rem !important;
+        line-height: 1.3 !important;
+        word-break: break-word !important;
+    }
+
+    .metric-value {
+        font-size: 1.85rem !important;
+        line-height: 1.2 !important;
+        word-break: break-word !important;
+    }
+
+    /* Toast notifications positioned neatly at top center on mobile */
+    .toast-container {
+        top: 68px !important;
+        bottom: auto !important;
+        left: 14px !important;
+        right: 14px !important;
+        width: auto !important;
+        max-width: calc(100vw - 28px) !important;
+        align-items: center !important;
+    }
+
+    .toast {
+        min-width: 0 !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        font-size: 0.82rem !important;
+        padding: 12px 14px !important;
+        box-sizing: border-box !important;
     }
 
     /* Stack toolbar controls neatly on mobile */
@@ -2839,6 +2887,19 @@ body.light-mode .theme-switch-thumb {
     .mobile-bottom-nav {
         padding-bottom: env(safe-area-inset-bottom) !important;
         height: calc(64px + env(safe-area-inset-bottom)) !important;
+    }
+}
+
+@media (max-width: 430px) {
+    .btn-logout span {
+        display: none !important;
+    }
+    .btn-logout {
+        padding: 8px !important;
+        border-radius: 50% !important;
+        width: 36px !important;
+        height: 36px !important;
+        justify-content: center !important;
     }
 }
 
