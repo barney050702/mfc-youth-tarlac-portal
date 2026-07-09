@@ -1576,6 +1576,28 @@ function markAllPresent() {
     }
 }
 
+function markAllAbsent() {
+    const actId = state.selectedActivityId;
+    if (!actId) return;
+
+    if (confirm('Are you sure you want to mark all members as Absent for this activity?')) {
+        if (!state.attendance[actId]) state.attendance[actId] = {};
+
+        state.members.forEach(mem => {
+            state.attendance[actId][mem.id] = {
+                status: 'absent',
+                time: '',
+                notes: 'Marked absent (bulk)'
+            };
+        });
+
+        saveToStorage();
+        renderAttendanceRoster();
+        logAuditAction('Marked ALL members absent in bulk check-in', 'attendance');
+        showToast('All members marked Absent.', 'success');
+    }
+}
+
 function resetAttendanceSheet() {
     const actId = state.selectedActivityId;
     if (!actId) return;
@@ -2428,7 +2450,10 @@ function renderMembersTable() {
         rowsHtml.push(`
             <tr class="activity-row" style="border-bottom: 1px solid rgba(255, 255, 255, 0.05); transition: background 0.2s ease;">
                 <td style="font-weight: 700; color: #F8FAFC; font-size: 0.92rem; white-space: nowrap; padding: 16px 20px;">
-                    ${mem.name}
+                    <a href="javascript:void(0)" onclick="openMemberProfile('${mem.id}')" style="color: #F8FAFC; text-decoration: none; display: inline-flex; align-items: center; gap: 6px; transition: color 0.2s;" onmouseover="this.style.color='#38BDF8'" onmouseout="this.style.color='#F8FAFC'">
+                        <span>${mem.name}</span>
+                        <span style="font-size: 0.72rem; color: #38BDF8; opacity: 0.8;">↗ Dossier</span>
+                    </a>
                 </td>
                 <td style="padding: 16px 20px;">
                     <span style="background: var(--grad-emerald); color: white; padding: 4px 14px; border-radius: 20px; font-weight: 700; font-size: 0.75rem; display: inline-block; box-shadow: 0 2px 10px rgba(16, 185, 129, 0.25); text-transform: uppercase;">
@@ -2584,9 +2609,14 @@ function openMemberProfile(memberId) {
                     </div>
                 </div>
             </div>
-            <button type="button" class="btn-primary glow-button" onclick="openMemberQRModal('${member.id}')" style="padding: 8px 16px; font-size: 0.85rem; display: inline-flex; align-items: center; gap: 6px;">
-                <span>📱 Official QR ID</span>
-            </button>
+            <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                <button type="button" class="btn-secondary" onclick="exportMemberDossierPDF('${member.id}')" style="padding: 8px 14px; font-size: 0.82rem; display: inline-flex; align-items: center; gap: 6px; border-color: rgba(56, 189, 248, 0.4); color: #38BDF8;">
+                    <span>📄 Export Report PDF</span>
+                </button>
+                <button type="button" class="btn-primary glow-button" onclick="openMemberQRModal('${member.id}')" style="padding: 8px 16px; font-size: 0.82rem; display: inline-flex; align-items: center; gap: 6px;">
+                    <span>📱 Official QR ID</span>
+                </button>
+            </div>
         </div>
 
         <!-- Recognition Badges Row -->
@@ -2654,6 +2684,93 @@ function openMemberProfile(memberId) {
 function closeMemberModal() {
     const backdrop = document.getElementById('member-modal-backdrop');
     if (backdrop) backdrop.style.display = 'none';
+}
+
+function exportMemberDossierPDF(memberId) {
+    const member = state.members.find(m => m.id === memberId);
+    if (!member) return;
+
+    if (!window.jspdf || !window.jspdf.jsPDF) {
+        showToast('PDF generator library not loaded.', 'error');
+        return;
+    }
+
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+
+    doc.setFillColor(12, 24, 54);
+    doc.rect(0, 0, 210, 42, 'F');
+
+    doc.setTextColor(255, 255, 255);
+    doc.setFontSize(15);
+    doc.setFont('helvetica', 'bold');
+    doc.text('MFC YOUTH TARLAC - MEMBER ATTENDANCE DOSSIER', 14, 18);
+
+    doc.setFontSize(10);
+    doc.setFont('helvetica', 'normal');
+    doc.setTextColor(56, 189, 248);
+    doc.text('OFFICIAL RECORD & EVALUATION SHEET', 14, 26);
+    doc.setTextColor(226, 232, 240);
+    doc.text(`Generated: ${new Date().toLocaleDateString()}`, 14, 33);
+
+    doc.setTextColor(30, 41, 59);
+    doc.setFontSize(12);
+    doc.setFont('helvetica', 'bold');
+    doc.text(`Member Name: ${member.name}`, 14, 54);
+
+    doc.setFontSize(10);
+    doc.setFont('helvetica', 'normal');
+    doc.text(`Chapter: ${member.chapter || 'East'} | Role: ${member.role} | Dept: ${member.dept}`, 14, 61);
+    doc.text(`Contact: ${member.contactNum || 'N/A'} | Birthday: ${member.birthday ? new Date(member.birthday).toLocaleDateString() : 'N/A'}`, 14, 67);
+
+    let presentCount = 0;
+    let lateCount = 0;
+    let absentCount = 0;
+    const totalActivities = state.activities.length;
+
+    const rows = state.activities.map(act => {
+        const record = state.attendance[act.id]?.[memberId];
+        let statusText = 'Absent';
+        if (record) {
+            if (record.status === 'present') {
+                presentCount++;
+                statusText = 'Present';
+            } else if (record.status === 'late') {
+                lateCount++;
+                statusText = 'Late';
+            } else if (record.status === 'absent') {
+                absentCount++;
+                statusText = 'Absent';
+            }
+        } else {
+            absentCount++;
+        }
+        const dateStr = new Date(act.date).toLocaleDateString();
+        return [act.name || act.title || 'Activity', dateStr, act.category || 'Event', statusText];
+    });
+
+    const rate = totalActivities > 0 ? Math.round(((presentCount + lateCount) / totalActivities) * 100) : 0;
+
+    doc.setFont('helvetica', 'bold');
+    doc.text(`Overall Attendance Rate: ${rate}% (${presentCount + lateCount} of ${totalActivities} activities attended)`, 14, 76);
+
+    doc.autoTable({
+        startY: 82,
+        head: [['Activity Title', 'Date', 'Category', 'Check-in Status']],
+        body: rows,
+        styles: { fontSize: 9 },
+        headStyles: { fillColor: [14, 165, 233] },
+        alternateRowStyles: { fillColor: [241, 245, 249] }
+    });
+
+    const finalY = (doc.lastAutoTable && doc.lastAutoTable.finalY) ? doc.lastAutoTable.finalY : 120;
+    doc.setFontSize(9);
+    doc.setFont('helvetica', 'italic');
+    doc.setTextColor(100, 116, 139);
+    doc.text('Certified Official Document - Designed & Developed by Area LIT Tarlac', 14, finalY + 18);
+
+    doc.save(`${member.name.replace(/[^a-zA-Z0-9]/g, '_')}_Attendance_Dossier.pdf`);
+    showToast('Member Dossier PDF exported successfully!', 'success');
 }
 
 // Add / Edit Member Modal Handlers
@@ -4761,6 +4878,151 @@ function initMobileNativeGestures() {
     window.addEventListener('touchend', () => {
         isPulling = false;
     }, { passive: true });
+}
+
+// Executive Summary PDF Export
+function exportExecutiveSummaryPDF() {
+    if (!window.jspdf || !window.jspdf.jsPDF) {
+        showToast('PDF generator library not loaded.', 'error');
+        return;
+    }
+
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+
+    doc.setFillColor(12, 24, 54);
+    doc.rect(0, 0, 210, 42, 'F');
+
+    doc.setTextColor(255, 255, 255);
+    doc.setFontSize(16);
+    doc.setFont('helvetica', 'bold');
+    doc.text('MFC YOUTH TARLAC - EXECUTIVE SEMESTER REPORT', 14, 18);
+
+    doc.setFontSize(10);
+    doc.setFont('helvetica', 'normal');
+    doc.setTextColor(56, 189, 248);
+    doc.text('OFFICIAL LEADERSHIP ANALYTICS & CHAPTER SUMMARY', 14, 26);
+    doc.setTextColor(226, 232, 240);
+    doc.text(`Generated: ${new Date().toLocaleDateString()}`, 14, 33);
+
+    doc.setTextColor(30, 41, 59);
+    doc.setFontSize(13);
+    doc.setFont('helvetica', 'bold');
+    doc.text('1. Key Performance Indicators (KPIs)', 14, 52);
+
+    doc.setFontSize(10);
+    doc.setFont('helvetica', 'normal');
+    const totalMembers = state.members.length;
+    const totalActivities = state.activities.length;
+
+    let totalCheckins = 0;
+    let totalPossible = totalMembers * totalActivities;
+    state.activities.forEach(act => {
+        const attObj = state.attendance[act.id] || {};
+        state.members.forEach(m => {
+            const st = attObj[m.id]?.status;
+            if (st === 'present' || st === 'late') totalCheckins++;
+        });
+    });
+
+    const overallRate = totalPossible > 0 ? Math.round((totalCheckins / totalPossible) * 100) : 0;
+
+    doc.text(`• Total Registered Youth Members: ${totalMembers}`, 18, 60);
+    doc.text(`• Total Chapter & Area Activities Held: ${totalActivities}`, 18, 66);
+    doc.text(`• Overall Chapter Attendance Performance: ${overallRate}%`, 18, 72);
+
+    doc.setFontSize(13);
+    doc.setFont('helvetica', 'bold');
+    doc.text('2. Chapter Breakdown & Attendance Rate', 14, 86);
+
+    const chapters = ['East Chapter', 'Central Chapter', 'North Chapter', 'South Chapter', 'West Chapter'];
+    const chapterRows = chapters.map(chap => {
+        const chapMembers = state.members.filter(m => (m.chapter || '').toLowerCase().includes(chap.toLowerCase().replace(' chapter', '')));
+        let chapPresent = 0;
+        let chapPossible = chapMembers.length * totalActivities;
+        state.activities.forEach(act => {
+            const attObj = state.attendance[act.id] || {};
+            chapMembers.forEach(m => {
+                const st = attObj[m.id]?.status;
+                if (st === 'present' || st === 'late') chapPresent++;
+            });
+        });
+        const cRate = chapPossible > 0 ? Math.round((chapPresent / chapPossible) * 100) : 0;
+        return [chap, `${chapMembers.length} Members`, `${chapPresent} Check-ins`, `${cRate}%`];
+    });
+
+    doc.autoTable({
+        startY: 92,
+        head: [['Chapter Name', 'Active Members', 'Total Check-ins', 'Attendance Rate']],
+        body: chapterRows,
+        styles: { fontSize: 10 },
+        headStyles: { fillColor: [14, 165, 233] },
+        alternateRowStyles: { fillColor: [241, 245, 249] }
+    });
+
+    const finalY = (doc.lastAutoTable && doc.lastAutoTable.finalY) ? doc.lastAutoTable.finalY : 150;
+    doc.setFontSize(9);
+    doc.setFont('helvetica', 'italic');
+    doc.setTextColor(100, 116, 139);
+    doc.text('Attested by: MFC YOUTH TARLAC CHAPTER LEADERSHIP | Designed by Area LIT Tarlac', 14, finalY + 20);
+
+    doc.save('MFC_Youth_Tarlac_Executive_Semester_Report.pdf');
+    showToast('Executive Semester Report PDF exported!', 'success');
+}
+
+// Full Portal JSON Backup & Restore
+function exportFullBackupJSON() {
+    const backupData = {
+        meta: {
+            app: "MFC Youth Tarlac Portal",
+            version: "2026.1",
+            exportedAt: new Date().toISOString()
+        },
+        members: state.members,
+        activities: state.activities,
+        attendance: state.attendance,
+        funds: state.funds
+    };
+
+    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(backupData, null, 2));
+    const downloadAnchor = document.createElement('a');
+    downloadAnchor.setAttribute("href", dataStr);
+    downloadAnchor.setAttribute("download", `MFC_Youth_Tarlac_Backup_${new Date().toISOString().slice(0, 10)}.json`);
+    document.body.appendChild(downloadAnchor);
+    downloadAnchor.click();
+    downloadAnchor.remove();
+    showToast('Full system backup downloaded successfully!', 'success');
+}
+
+function importFullBackupJSON(inputEl) {
+    const file = inputEl.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        try {
+            const data = JSON.parse(e.target.result);
+            if (data.members && Array.isArray(data.members)) {
+                state.members = data.members;
+                if (data.activities && Array.isArray(data.activities)) state.activities = data.activities;
+                if (data.attendance && typeof data.attendance === 'object') state.attendance = data.attendance;
+                if (data.funds && Array.isArray(data.funds)) state.funds = data.funds;
+
+                saveToStorage();
+                updateBadgeCount();
+                renderMembersTable();
+                renderActivities();
+                renderDashboard();
+                showToast('All portal data restored from backup successfully!', 'success');
+            } else {
+                showToast('Invalid backup file format.', 'error');
+            }
+        } catch (err) {
+            showToast('Error restoring backup file.', 'error');
+        }
+        inputEl.value = '';
+    };
+    reader.readAsText(file);
 }
 
 // Initialize on DOM ready

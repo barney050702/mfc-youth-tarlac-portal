@@ -330,6 +330,29 @@
                      VIEW 1: DASHBOARD OVERVIEW
                      ========================================== -->
                 <div id="view-dashboard" class="view-panel active">
+                    <!-- Executive Dashboard Actions Bar -->
+                    <div class="glass-panel" style="padding: 14px 20px; margin-bottom: 24px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <span style="font-size: 1.3rem;">📊</span>
+                            <div>
+                                <h4 style="color: #F8FAFC; font-size: 1rem; font-weight: 800; margin: 0;">Leadership Executive Dashboard</h4>
+                                <span style="color: #94A3B8; font-size: 0.78rem;">Chapter Reports, Cloud Backups & Summary Analytics</span>
+                            </div>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+                            <button class="btn-primary glow-button" onclick="exportExecutiveSummaryPDF()" style="padding: 8px 16px; font-size: 0.82rem; display: inline-flex; align-items: center; gap: 6px;">
+                                <span>📄 Export Executive Report PDF</span>
+                            </button>
+                            <button class="btn-secondary" onclick="exportFullBackupJSON()" style="padding: 8px 14px; font-size: 0.82rem; display: inline-flex; align-items: center; gap: 6px; border-color: rgba(16, 185, 129, 0.4); color: #34D399;">
+                                <span>💾 Backup All Portal Data</span>
+                            </button>
+                            <label class="btn-secondary" style="padding: 8px 14px; font-size: 0.82rem; display: inline-flex; align-items: center; gap: 6px; cursor: pointer; border-color: rgba(56, 189, 248, 0.4); color: #38BDF8; margin: 0;">
+                                <span>📂 Restore Backup</span>
+                                <input type="file" accept=".json" onchange="importFullBackupJSON(this)" style="display: none;">
+                            </label>
+                        </div>
+                    </div>
+
                     <!-- Stat Metric Cards Grid -->
                     <div class="metrics-grid">
                         <div class="metric-card glass-card">
@@ -637,6 +660,14 @@
                                         <polyline points="20 6 9 17 4 12" />
                                     </svg>
                                     Mark All Present
+                                </button>
+                                <button class="btn-secondary btn-sm" onclick="markAllAbsent()" style="color: #F87171; border-color: rgba(248, 113, 113, 0.4);">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                        style="width: 14px; height: 14px;">
+                                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                                    </svg>
+                                    Mark All Absent
                                 </button>
                                 <button class="btn-secondary btn-sm" onclick="sendGmailToCurrentAbsentees()"
                                     style="color: #F87171; border-color: rgba(248, 113, 113, 0.4);">
