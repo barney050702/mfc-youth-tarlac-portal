@@ -2883,6 +2883,11 @@ body.light-mode .theme-switch-thumb {
         border-radius: 18px !important;
     }
 
+    /* Prevent iOS Safari auto-zoom on input tap */
+    input, select, textarea {
+        font-size: 16px !important;
+    }
+
     /* Mobile navigation safe area */
     .mobile-bottom-nav {
         padding-bottom: env(safe-area-inset-bottom) !important;
