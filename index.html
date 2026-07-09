@@ -43,13 +43,7 @@
     <div id="auth-login-overlay"
         style="display: none; position: fixed; inset: 0; z-index: 99999; background: radial-gradient(circle at 50% 30%, #0c1836 0%, #060b18 75%, #02050c 100%); align-items: center; justify-content: center; padding: 20px; animation: fadeIn 0.3s ease;">
         <div class="auth-login-card"
-            style="background: rgba(13, 22, 45, 0.96); border: 1px solid rgba(56, 189, 248, 0.25); border-radius: 28px; padding: 38px 34px; width: 100%; max-width: 450px; box-shadow: 0 35px 90px rgba(0,0,0,0.9), 0 0 40px rgba(14, 165, 233, 0.15); backdrop-filter: blur(25px); text-align: center;">
-
-            <!-- Top Security Pill -->
-            <div style="display: inline-flex; align-items: center; gap: 8px; background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.35); color: #34D399; padding: 5px 14px; border-radius: 20px; font-size: 0.73rem; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 22px;">
-                <span style="width: 7px; height: 7px; border-radius: 50%; background: #34D399; box-shadow: 0 0 8px #34D399;"></span>
-                ZERO-TRUST GATEWAY • AES-256 ENCRYPTED
-            </div>
+            style="background: rgba(13, 22, 45, 0.96); border: 1px solid rgba(56, 189, 248, 0.25); border-radius: 28px; padding: 38px 34px; width: 100%; max-width: 430px; box-shadow: 0 35px 90px rgba(0,0,0,0.9), 0 0 40px rgba(14, 165, 233, 0.15); backdrop-filter: blur(25px); text-align: center;">
 
             <!-- Glowing Security Shield Emblem -->
             <div
@@ -71,19 +65,13 @@
 
             <!-- Advanced Security Authentication Form Box -->
             <div
-                style="background: rgba(7, 13, 28, 0.75); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 20px; padding: 24px; text-align: left;">
+                style="background: rgba(7, 13, 28, 0.75); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 20px; padding: 26px 24px; text-align: left;">
                 
-                <!-- Security Clearance Banner -->
-                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 18px; padding: 8px 12px; background: rgba(59, 130, 246, 0.12); border: 1px solid rgba(59, 130, 246, 0.25); border-radius: 10px;">
-                    <span style="color: #93C5FD; font-size: 0.78rem; font-weight: 700;">🛡️ Security Clearance</span>
-                    <span style="color: #60A5FA; font-size: 0.78rem; font-weight: 800;">LEVEL 5 (EXECUTIVE)</span>
-                </div>
-
                 <form id="auth-login-form" onsubmit="loginUser(event)">
                     <!-- Email Input -->
                     <label style="display: block; color: #94A3B8; font-size: 0.76rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 6px;">Executive Email / ID</label>
                     <div
-                        style="display: flex; align-items: center; background: #060B18; border: 1px solid rgba(255, 255, 255, 0.14); border-radius: 12px; padding: 0 14px; margin-bottom: 14px; transition: border-color 0.2s;">
+                        style="display: flex; align-items: center; background: #060B18; border: 1px solid rgba(255, 255, 255, 0.14); border-radius: 12px; padding: 0 14px; margin-bottom: 16px; transition: border-color 0.2s;">
                         <svg viewBox="0 0 24 24" fill="none" stroke="#38BDF8" stroke-width="2"
                             style="width: 17px; height: 17px; min-width: 17px;">
                             <rect width="20" height="16" x="2" y="4" rx="2" />
@@ -97,28 +85,15 @@
                     <!-- Password Input -->
                     <label style="display: block; color: #94A3B8; font-size: 0.76rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 6px;">Security Passkey / Token</label>
                     <div
-                        style="display: flex; align-items: center; background: #060B18; border: 1px solid rgba(255, 255, 255, 0.14); border-radius: 12px; padding: 0 14px; margin-bottom: 8px;">
+                        style="display: flex; align-items: center; background: #060B18; border: 1px solid rgba(255, 255, 255, 0.14); border-radius: 12px; padding: 0 14px; margin-bottom: 24px;">
                         <svg viewBox="0 0 24 24" fill="none" stroke="#38BDF8" stroke-width="2"
                             style="width: 17px; height: 17px; min-width: 17px;">
                             <rect width="18" height="11" x="3" y="11" rx="2" ry="2" />
                             <path d="M7 11V7a5 5 0 0 1 10 0v4" />
                         </svg>
-                        <input type="password" id="auth-login-password" required placeholder="Enter Passkey (admin123)..."
+                        <input type="password" id="auth-login-password" required placeholder="Enter Passkey..."
                             value=""
                             style="flex: 1; background: transparent; border: none; color: #FFF; padding: 12px; font-size: 0.92rem; outline: none; width: 100%;">
-                    </div>
-                    <div style="font-size: 0.73rem; color: #38BDF8; font-weight: 700; margin-bottom: 14px; display: flex; align-items: center; gap: 5px;">
-                        <span>🔑 Authorized Executive Passkey: <strong>admin123</strong></span>
-                    </div>
-
-                    <!-- Security Verification Checkbox & Forgot Option -->
-                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; flex-wrap: wrap; gap: 8px;">
-                        <label style="display: flex; align-items: center; gap: 8px; color: #E2E8F0; font-size: 0.78rem; font-weight: 600; cursor: pointer;">
-                            <input type="checkbox" checked style="accent-color: #0284C7;">
-                            <span>Enable Live Session Audit Guard</span>
-                        </label>
-                        <a href="javascript:void(0)" onclick="handleForgotPassword()"
-                            style="color: #60A5FA; font-size: 0.78rem; font-weight: 700; text-decoration: none;">Reset Passkey?</a>
                     </div>
 
                     <!-- Log In Button -->
