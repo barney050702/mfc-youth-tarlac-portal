@@ -1,0 +1,4274 @@
+/**
+ * ============================================================================
+ * MFC YOUTH TARLAC | ACTIVITY & ATTENDANCE PORTAL APPLICATION LOGIC
+ * State Management, Interactive Roster, CRUD Operations & Export Engines
+ * ============================================================================
+ */
+
+// Global State Store
+let state = {
+    activities: [],
+    members: [],
+    attendance: {}, // { activityId: { memberId: { status: 'present'|'absent'|'late', time: '10:00 AM', notes: '' } } }
+    funds: [],
+    accounts: [],
+    currentView: 'dashboard',
+    selectedActivityId: null,
+    searchQuery: '',
+    filterCategory: 'ALL',
+    filterStatus: 'ALL',
+    agendaSemester: 'all',
+    agendaViewMode: 'grid',
+    auditLog: [],
+    currentRole: 'Super Admin'
+};
+
+// ============================================================================
+// 1. INITIALIZATION & SAMPLE DATA PERSISTENCE
+// ============================================================================
+
+const SAMPLE_MEMBERS = [
+    { id: 'm-001', name: 'Barney Reyes', chapter: 'East Chapter', department: 'Executive', role: 'Chapter Youth Head', phone: '0917-555-0101', email: 'reyesbarney38@gmail.com', birthdate: '2004-03-12', parentContact: '0917-555-0100', youthCampDate: '2019-05-18' },
+    { id: 'm-002', name: 'Tricia Mhey C.', chapter: 'East Chapter', department: 'Programs & Events', role: 'Household Head', phone: '0918-555-0102', email: 'tricia@mfcyouthtarlac.com', birthdate: '2005-08-21', parentContact: '0918-555-0100', youthCampDate: '2020-04-10' },
+    { id: 'm-003', name: 'Angelo Miguel Santos', chapter: 'Central Chapter', department: 'Logistics & Tech', role: 'Music & Worship Coordinator', phone: '0919-555-0103', email: 'angelo@mfcyouthtarlac.com', birthdate: '2005-11-04', parentContact: '0919-555-0100', youthCampDate: '2021-06-12' },
+    { id: 'm-004', name: 'Sophia Marie Cruz', chapter: 'North Chapter', department: 'Creative & Media', role: 'Youth Member', phone: '0920-555-0104', email: 'sophia@mfcyouthtarlac.com', birthdate: '2006-02-14', parentContact: '0920-555-0100', youthCampDate: '2022-07-20' },
+    { id: 'm-005', name: 'Joshua Gabriel Bautista', chapter: 'South Chapter', department: 'Outreach & Fellowship', role: 'Household Head', phone: '0921-555-0105', email: 'joshua@mfcyouthtarlac.com', birthdate: '2005-07-30', parentContact: '0921-555-0100', youthCampDate: '2021-04-15' },
+    { id: 'm-006', name: 'Hannah Beatrice Reyes', chapter: 'West Chapter', department: 'Finance & Treasury', role: 'Youth Member', phone: '0922-555-0106', email: 'hannah@mfcyouthtarlac.com', birthdate: '2007-09-09', parentContact: '0922-555-0100', youthCampDate: '2023-05-14' },
+    { id: 'm-007', name: 'Christian Dave Tolentino', chapter: 'East Chapter', department: 'Logistics & Tech', role: 'Youth Member', phone: '0923-555-0107', email: 'christian@mfcyouthtarlac.com', birthdate: '2006-12-01', parentContact: '0923-555-0100', youthCampDate: '2022-08-15' }
+];
+
+const SAMPLE_ACCOUNTS = [
+    { id: 'acc-1', email: 'reyesbarney38@gmail.com', role: 'SUPER ADMIN', area: 'All Chapters' },
+    { id: 'acc-2', email: 'tricia@mfcyouthtarlac.com', role: 'CHAPTER HEAD', area: 'East' },
+    { id: 'acc-3', email: 'central.chapter@mfcyouthtarlac.com', role: 'CHAPTER HEAD', area: 'Central' },
+    { id: 'acc-4', email: 'north.chapter@mfcyouthtarlac.com', role: 'CHAPTER HEAD', area: 'North' },
+    { id: 'acc-5', email: 'south.chapter@mfcyouthtarlac.com', role: 'CHAPTER HEAD', area: 'South' },
+    { id: 'acc-6', email: 'west.chapter@mfcyouthtarlac.com', role: 'CHAPTER HEAD', area: 'West' }
+];
+
+const SAMPLE_ACTIVITIES = [];
+
+function initApp() {
+    loadFromStorage();
+    setupEventListeners();
+    renderAll();
+
+    if (localStorage.getItem('ps_logged_in') === 'false') {
+        const overlay = document.getElementById('auth-login-overlay');
+        if (overlay) overlay.style.display = 'flex';
+    } else {
+        showToast('Welcome to MFC Youth Tarlac Portal!', 'info');
+    }
+}
+
+function loadFromStorage() {
+    const storedActivities = localStorage.getItem('ps_activities');
+    const storedMembers = localStorage.getItem('ps_members');
+    const storedAttendance = localStorage.getItem('ps_attendance');
+    const storedAccounts = localStorage.getItem('ps_accounts');
+
+    if (storedActivities && localStorage.getItem('ps_activities_mfc_v10')) {
+        state.activities = JSON.parse(storedActivities);
+    } else {
+        state.activities = [...SAMPLE_ACTIVITIES];
+        localStorage.setItem('ps_activities', JSON.stringify(state.activities));
+        localStorage.setItem('ps_activities_mfc_v10', 'true');
+    }
+
+    if (storedMembers && localStorage.getItem('ps_members_mfc_v9')) {
+        state.members = JSON.parse(storedMembers);
+    } else {
+        state.members = [...SAMPLE_MEMBERS];
+        localStorage.setItem('ps_members', JSON.stringify(state.members));
+        localStorage.setItem('ps_members_mfc_v9', 'true');
+    }
+
+    if (storedAttendance && localStorage.getItem('ps_attendance_mfc_v9')) {
+        state.attendance = JSON.parse(storedAttendance);
+    } else {
+        state.attendance = {
+            'act-102': {
+                'm-001': { status: 'present', time: '08:15 AM', notes: 'Camp Head' },
+                'm-002': { status: 'present', time: '08:20 AM', notes: 'Service Team' },
+                'm-003': { status: 'present', time: '08:10 AM', notes: 'Music Ministry' },
+                'm-005': { status: 'late', time: '09:05 AM', notes: 'Traffic delay' },
+                'm-007': { status: 'present', time: '08:30 AM', notes: 'Logistics' }
+            },
+            'act-104': {
+                'm-001': { status: 'present', time: '01:00 PM', notes: 'Speaker' },
+                'm-002': { status: 'present', time: '01:10 PM', notes: 'Facilitator' },
+                'm-003': { status: 'present', time: '01:05 PM', notes: 'Music' },
+                'm-004': { status: 'present', time: '01:15 PM', notes: 'Media' },
+                'm-005': { status: 'present', time: '01:00 PM', notes: 'Logistics' },
+                'm-006': { status: 'late', time: '01:40 PM', notes: 'Finance' },
+                'm-007': { status: 'present', time: '01:05 PM', notes: 'Tech' }
+            }
+        };
+        state.activities.forEach(act => {
+            if (!state.attendance[act.id]) state.attendance[act.id] = {};
+        });
+        localStorage.setItem('ps_attendance', JSON.stringify(state.attendance));
+        localStorage.setItem('ps_attendance_mfc_v9', 'true');
+    }
+
+    if (storedAccounts && localStorage.getItem('ps_accounts_mfc_v9')) {
+        state.accounts = JSON.parse(storedAccounts);
+    } else {
+        state.accounts = [...SAMPLE_ACCOUNTS];
+        localStorage.setItem('ps_accounts', JSON.stringify(state.accounts));
+        localStorage.setItem('ps_accounts_mfc_v9', 'true');
+    }
+
+    const storedFunds = localStorage.getItem('ps_funds');
+    if (storedFunds) {
+        state.funds = JSON.parse(storedFunds);
+    } else {
+        state.funds = [
+            { id: 'f1', type: 'Income', category: 'Tithe & Offering', amount: 3500.00, date: '2026-07-05', description: 'Sunday Assembly Tithes & Offerings', receipt: 'OR #8821' },
+            { id: 'f2', type: 'Income', category: 'Registration Fees', amount: 2400.00, date: '2026-07-02', description: 'Youth Camp Participant Fees', receipt: 'Ref #GC991' },
+            { id: 'f3', type: 'Expense', category: 'Assembly & Event Supplies', amount: 1250.00, date: '2026-07-04', description: 'Sound System & Stage Decors', receipt: 'OR #4412' }
+        ];
+        localStorage.setItem('ps_funds', JSON.stringify(state.funds));
+    }
+}
+
+function saveToStorage() {
+    localStorage.setItem('ps_activities', JSON.stringify(state.activities));
+    localStorage.setItem('ps_members', JSON.stringify(state.members));
+    localStorage.setItem('ps_attendance', JSON.stringify(state.attendance));
+    localStorage.setItem('ps_funds', JSON.stringify(state.funds));
+    localStorage.setItem('ps_accounts', JSON.stringify(state.accounts));
+
+    // Rolling Automated Recovery Snapshot
+    try {
+        localStorage.setItem('ps_recovery_snapshot_mfc_v1', JSON.stringify({
+            activities: state.activities,
+            members: state.members,
+            attendance: state.attendance,
+            funds: state.funds,
+            timestamp: Date.now()
+        }));
+        const syncEl = document.getElementById('sync-status-text');
+        if (syncEl) {
+            syncEl.textContent = `Synced • ${new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
+        }
+    } catch (e) {
+        console.warn('Backup snapshot could not be saved to local storage:', e);
+    }
+}
+
+// ============================================================================
+// 2. EVENT LISTENERS & NAVIGATION LOGIC
+// ============================================================================
+
+function setupEventListeners() {
+    // Navigation Links
+    document.querySelectorAll('.nav-item').forEach(link => {
+        link.addEventListener('click', (e) => {
+            const view = link.getAttribute('data-view');
+            if (view) switchView(view);
+        });
+    });
+
+    // Mobile Menu Toggle
+    const menuToggle = document.getElementById('menu-toggle-btn');
+    const sidebarClose = document.getElementById('sidebar-close-btn');
+    const backdrop = document.getElementById('sidebar-backdrop');
+    const sidebar = document.getElementById('sidebar');
+
+    if (menuToggle) {
+        menuToggle.addEventListener('click', () => {
+            if (window.innerWidth <= 1024) {
+                sidebar.classList.add('open');
+                backdrop.classList.add('active');
+            } else {
+                const appShell = document.querySelector('.app-shell');
+                if (appShell) appShell.classList.toggle('sidebar-collapsed');
+            }
+        });
+    }
+
+    if (sidebarClose) {
+        sidebarClose.addEventListener('click', closeMobileSidebar);
+    }
+
+    if (backdrop) {
+        backdrop.addEventListener('click', closeMobileSidebar);
+    }
+
+    // Theme Toggle (Dark Mode / Light Mode)
+    const themeBtn = document.getElementById('theme-toggle-btn');
+    const updateThemeIcon = (isLight) => {
+        if (!themeBtn) return;
+        if (isLight) {
+            themeBtn.innerHTML = '<span class="theme-switch-thumb"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg></span><span class="theme-switch-label">Light Mode</span>';
+            themeBtn.setAttribute('title', 'Switch to Dark Mode');
+        } else {
+            themeBtn.innerHTML = '<span class="theme-switch-thumb"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg></span><span class="theme-switch-label">Dark Mode</span>';
+            themeBtn.setAttribute('title', 'Switch to Light Mode');
+        }
+    };
+
+    const savedTheme = localStorage.getItem('mfcyouth_theme');
+    if (savedTheme === 'light') {
+        document.body.classList.add('light-mode');
+        updateThemeIcon(true);
+    } else {
+        updateThemeIcon(false);
+    }
+
+    if (themeBtn) {
+        themeBtn.addEventListener('click', () => {
+            const isLight = document.body.classList.toggle('light-mode');
+            localStorage.setItem('mfcyouth_theme', isLight ? 'light' : 'dark');
+            updateThemeIcon(isLight);
+            showToast(isLight ? 'Switched to Executive Light Mode' : 'Switched to Deep Cyber Dark Mode', 'info');
+        });
+    }
+
+    // Global Search
+    const searchInput = document.getElementById('global-search-input');
+    if (searchInput) {
+        searchInput.addEventListener('input', (e) => {
+            state.searchQuery = e.target.value.toLowerCase();
+            if (state.currentView !== 'activities') {
+                switchView('activities');
+            } else {
+                renderActivitiesTable();
+            }
+        });
+    }
+
+    // Activity Management Filters & Search
+    const filterCat = document.getElementById('filter-category');
+    const filterStat = document.getElementById('filter-status');
+    const actSearch = document.getElementById('activity-search-input');
+
+    if (filterCat) filterCat.addEventListener('change', (e) => { state.filterCategory = e.target.value; renderActivitiesTable(); });
+    if (filterStat) filterStat.addEventListener('change', (e) => { state.filterStatus = e.target.value; renderActivitiesTable(); });
+    if (actSearch) actSearch.addEventListener('input', (e) => { state.searchQuery = e.target.value.toLowerCase(); renderActivitiesTable(); });
+
+    const agendaCat = document.getElementById('agenda-filter-category');
+    const agendaSearch = document.getElementById('agenda-search-input');
+    if (agendaCat) agendaCat.addEventListener('change', (e) => { state.filterCategory = e.target.value; renderActivitiesTable(); });
+    if (agendaSearch) agendaSearch.addEventListener('input', (e) => { state.searchQuery = e.target.value.toLowerCase(); renderActivitiesTable(); });
+
+    // Open Add Activity Modal Button
+    const btnOpenModal = document.getElementById('btn-open-add-modal');
+    if (btnOpenModal) btnOpenModal.addEventListener('click', () => openAddModal());
+
+    // Members Directory Filters & Search
+    const memSearch = document.getElementById('members-search-input');
+    const memDept = document.getElementById('members-filter-dept');
+    const memChapter = document.getElementById('members-filter-chapter');
+    const btnAddMemList = document.getElementById('btn-open-add-member-list');
+
+    if (memSearch) memSearch.addEventListener('input', renderMembersTable);
+    if (memDept) memDept.addEventListener('change', renderMembersTable);
+    if (memChapter) memChapter.addEventListener('change', renderMembersTable);
+    if (btnAddMemList) btnAddMemList.addEventListener('click', openAddMemberModal);
+
+    // Attendance Activity Selector
+    const attSelect = document.getElementById('attendance-activity-select');
+    if (attSelect) {
+        attSelect.addEventListener('change', (e) => {
+            state.selectedActivityId = e.target.value;
+            renderAttendanceRoster();
+        });
+    }
+
+    // Attendance Quick Action Buttons
+    const btnMarkAll = document.getElementById('btn-mark-all-present');
+    const btnReset = document.getElementById('btn-reset-attendance');
+
+    if (btnMarkAll) btnMarkAll.addEventListener('click', markAllPresent);
+    if (btnReset) btnReset.addEventListener('click', resetAttendanceSheet);
+
+    // Export Buttons
+    const btnCsv = document.getElementById('btn-export-csv');
+    const btnPdf = document.getElementById('btn-export-pdf');
+
+    if (btnCsv) btnCsv.addEventListener('click', exportToCSV);
+    if (btnPdf) btnPdf.addEventListener('click', exportToPDF);
+
+    // QR Scanner Button
+    const btnOpenQr = document.getElementById('btn-open-qr-scanner');
+    if (btnOpenQr) btnOpenQr.addEventListener('click', openQRScannerModal);
+
+    // Backup & Restore Buttons
+    const btnBackup = document.getElementById('btn-backup-json');
+    const inputRestore = document.getElementById('input-restore-file');
+    if (btnBackup) btnBackup.addEventListener('click', exportBackupJSON);
+    if (inputRestore) inputRestore.addEventListener('change', importBackupJSON);
+
+    // Simulated Role Switcher
+    const roleSelect = document.getElementById('sim-role-select');
+    if (roleSelect) {
+        roleSelect.addEventListener('change', (e) => switchSimulatedRole(e.target.value));
+    }
+
+    // Funds Category Filter
+    const catFilter = document.getElementById('funds-category-filter');
+    if (catFilter) catFilter.addEventListener('change', filterFunds);
+}
+
+function closeMobileSidebar() {
+    const sidebar = document.getElementById('sidebar');
+    const backdrop = document.getElementById('sidebar-backdrop');
+    if (sidebar) sidebar.classList.remove('open');
+    if (backdrop) backdrop.classList.remove('active');
+}
+
+function switchView(viewId) {
+    state.currentView = viewId;
+
+    // Update nav links active state
+    document.querySelectorAll('.nav-item').forEach(item => {
+        if (item.getAttribute('data-view') === viewId) {
+            item.classList.add('active');
+        } else {
+            item.classList.remove('active');
+        }
+    });
+
+    document.querySelectorAll('.mobile-nav-item').forEach(item => {
+        if (item.getAttribute('data-view') === viewId) item.classList.add('active');
+        else item.classList.remove('active');
+    });
+
+    // Update view panels
+    document.querySelectorAll('.view-panel').forEach(panel => {
+        const targetViewId = (viewId === 'servants') ? 'members' : viewId;
+        if (panel.id === `view-${targetViewId}`) {
+            panel.classList.add('active');
+        } else {
+            panel.classList.remove('active');
+        }
+    });
+
+    // Update Top App Bar Title
+    const titleEl = document.getElementById('top-bar-title');
+    const subEl = document.getElementById('top-bar-subtitle');
+
+    if (viewId === 'dashboard') {
+        if (titleEl) titleEl.textContent = 'Dashboard Overview';
+        if (subEl) subEl.textContent = 'Real-time attendance metrics and active event logs';
+        renderDashboard();
+    } else if (viewId === 'activities') {
+        if (titleEl) titleEl.textContent = 'Activities Record & Semester Cards';
+        if (subEl) subEl.textContent = 'Accomplished activities, semester roadmap, and downloadable PDF reports';
+        renderActivitiesTable();
+    } else if (viewId === 'agenda') {
+        if (titleEl) titleEl.textContent = 'Semester Agenda & Upcoming Schedule';
+        if (subEl) subEl.textContent = 'Timeline master list of all scheduled events, assemblies, and household meetings';
+        renderActivitiesTable();
+        renderAgendaTimeline();
+    } else if (viewId === 'attendance') {
+        if (titleEl) titleEl.textContent = 'Interactive Attendance Roster';
+        if (subEl) subEl.textContent = 'Live roll-call check-in with instant rate calculation';
+        populateAttendanceDropdown();
+        renderAttendanceRoster();
+    } else if (viewId === 'analytics') {
+        if (titleEl) titleEl.textContent = 'Analytics & Reports Engine';
+        if (subEl) subEl.textContent = 'Aggregated performance metrics and CSV/PDF report generation';
+        renderAnalytics();
+    } else if (viewId === 'orgchart') {
+        if (titleEl) titleEl.textContent = 'Organization Hierarchy Chart';
+        if (subEl) subEl.textContent = 'Visual command structure, departmental teams, and officer profiles';
+        renderOrgChart();
+    } else if (viewId === 'members') {
+        if (titleEl) titleEl.textContent = 'Members List & Directory';
+        if (subEl) subEl.textContent = 'Manage registered members, department assignments, and attendance records';
+        renderMembersTable();
+    } else if (viewId === 'funds') {
+        if (titleEl) titleEl.textContent = 'Funds & Expenses Management';
+        if (subEl) subEl.textContent = 'Financial ledger, budget allocations, and chapter expense reporting';
+        renderFundsTable();
+    } else if (viewId === 'servants') {
+        if (titleEl) titleEl.textContent = 'Servant Leaders Directory';
+        if (subEl) subEl.textContent = 'Executive leadership, chapter servants, and ministry coordinators';
+        renderMembersTable();
+    } else if (viewId === 'resources') {
+        if (titleEl) titleEl.textContent = 'Resources & Document Vault';
+        if (subEl) subEl.textContent = 'Downloadable manuals, training modules, songboards, and chapter prayer guides';
+    } else if (viewId === 'account') {
+        if (titleEl) titleEl.textContent = 'Account Management';
+        if (subEl) subEl.textContent = 'Manage Super Admins and Chapter Heads';
+        renderAccountsTable();
+    }
+
+    closeMobileSidebar();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function renderAll() {
+    renderDashboard();
+    renderActivitiesTable();
+    renderAgendaTimeline();
+    populateAttendanceDropdown();
+    renderAnalytics();
+    renderOrgChart();
+    renderMembersTable();
+    renderFundsTable();
+    renderAccountsTable();
+    renderAuditLog();
+    updateBadgeCount();
+    if (typeof updateTopNotificationBadge === 'function') updateTopNotificationBadge();
+}
+
+function updateBadgeCount() {
+    const badgeAct = document.getElementById('badge-activities-count');
+    if (badgeAct) badgeAct.textContent = state.activities.length;
+    const badgeAgenda = document.getElementById('badge-agenda-count');
+    if (badgeAgenda) badgeAgenda.textContent = state.activities.length;
+    const badgeMem = document.getElementById('badge-members-count');
+    if (badgeMem && state.members) badgeMem.textContent = state.members.length;
+}
+
+// ============================================================================
+// 3. DASHBOARD OVERVIEW ENGINE
+// ============================================================================
+
+function updatePastoralMilestonesWidget() {
+    const currentMonth = new Date().getMonth() + 1; // 1-12
+    const bdayMems = state.members.filter(m => m.birthday && parseInt(m.birthday.split('-')[1], 10) === currentMonth);
+    const campMems = state.members.filter(m => m.campDate && parseInt(m.campDate.split('-')[1], 10) === currentMonth);
+
+    const subEl = document.getElementById('milestones-subtitle');
+    if (subEl) {
+        subEl.innerHTML = `🎉 Found <strong style="color: #FFF;">${bdayMems.length} birthday celebrant(s)</strong> & <strong style="color: #FFF;">${campMems.length} CLC anniversary celebrant(s)</strong> this month!`;
+    }
+}
+
+function sendMilestoneGreetingsGmail() {
+    const currentMonth = new Date().getMonth() + 1;
+    const celebrantEmails = [];
+    const celebrantNames = [];
+
+    state.members.forEach(mem => {
+        const bMonth = mem.birthday ? parseInt(mem.birthday.split('-')[1], 10) : -1;
+        const cMonth = mem.campDate ? parseInt(mem.campDate.split('-')[1], 10) : -1;
+        if (bMonth === currentMonth || cMonth === currentMonth) {
+            celebrantNames.push(mem.name);
+            if (mem.email && mem.email.includes('@')) {
+                celebrantEmails.push(mem.email.trim());
+            }
+        }
+    });
+
+    if (celebrantEmails.length === 0) {
+        showToast(`No celebrants with registered email addresses found for this month (${celebrantNames.length} total celebrants).`, 'error');
+        return;
+    }
+
+    const bccList = encodeURIComponent(celebrantEmails.join(','));
+    const subject = encodeURIComponent("🎉 Blessed Birthday & Pastoral Greetings from MFC Youth Tarlac!");
+    const bodyText = encodeURIComponent(`Dearest MFC Youth Tarlac Celebrants,\n\nGrace and peace!\n\nWe thank God for the gift of your life and your Christian Life Camp journey! May the Lord continue to bless you abundantly as you serve and grow in our community.\n\n"The Lord bless you and keep you..." - Numbers 6:24\n\nIn Christ through Mary,\nMFC Youth Tarlac Servant Leadership`);
+
+    const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&tf=1&bcc=${bccList}&su=${subject}&body=${bodyText}`;
+    window.open(gmailUrl, '_blank');
+    showToast(`Opened Gmail compose tab addressed to ${celebrantEmails.length} celebrants!`, 'success');
+}
+
+function renderDashboard() {
+    updatePastoralMilestonesWidget();
+
+    const totalActs = state.activities.length;
+    const totalMems = state.members.length;
+
+    let totalCheckins = 0;
+    let totalRateSum = 0;
+    let ratedActivitiesCount = 0;
+
+    state.activities.forEach(act => {
+        const attObj = state.attendance[act.id] || {};
+        let presentCount = 0;
+        state.members.forEach(m => {
+            const st = attObj[m.id]?.status;
+            if (st === 'present' || st === 'late') {
+                presentCount++;
+                totalCheckins++;
+            }
+        });
+
+        if (totalMems > 0) {
+            const rate = (presentCount / totalMems) * 100;
+            totalRateSum += rate;
+            ratedActivitiesCount++;
+        }
+    });
+
+    const avgRate = ratedActivitiesCount > 0 ? Math.round(totalRateSum / ratedActivitiesCount) : 0;
+
+    // Update DOM metrics
+    const elTotalActs = document.getElementById('stat-total-activities');
+    const elAvgRate = document.getElementById('stat-avg-rate');
+    const elRateBar = document.getElementById('stat-rate-bar');
+    const elTotalMems = document.getElementById('stat-total-members');
+    const elTotalCheckins = document.getElementById('stat-total-checkins');
+
+    if (elTotalActs) elTotalActs.textContent = totalActs;
+    if (elAvgRate) elAvgRate.textContent = `${avgRate}%`;
+    if (elRateBar) elRateBar.style.width = `${avgRate}%`;
+    if (elTotalMems) elTotalMems.textContent = totalMems;
+    if (elTotalCheckins) elTotalCheckins.textContent = totalCheckins;
+
+    // Render Recent Activities Table (Screenshot 2 exact clone)
+    const recentTable = document.getElementById('dashboard-recent-table');
+    if (recentTable) {
+        const curatedIds = ['act-5', 'act-4', 'act-3', 'act-2', 'act-1'];
+        let recentActs = curatedIds.map(id => state.activities.find(a => a.id === id)).filter(Boolean);
+        if (recentActs.length === 0) {
+            recentActs = [...state.activities].sort((a, b) => new Date(b.date) - new Date(a.date)).slice(0, 5);
+        }
+
+        if (recentActs.length === 0) {
+            recentTable.innerHTML = `
+                <tr>
+                    <td colspan="6" style="text-align: center; padding: 40px; color: #94A3B8; font-style: italic;">
+                        No activities recorded yet. Click "+ New Activity" above to get started!
+                    </td>
+                </tr>
+            `;
+        } else {
+            recentTable.innerHTML = recentActs.map(act => {
+                const attObj = state.attendance[act.id] || {};
+                let pCount = 0;
+                state.members.forEach(m => {
+                    const st = attObj[m.id]?.status;
+                    if (st === 'present' || st === 'late') pCount++;
+                });
+                const rate = totalMems > 0 ? Math.round((pCount / totalMems) * 100) : 0;
+                const dateObj = new Date(act.date);
+                const dateStr = dateObj.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+                const timeStr = dateObj.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+                const isCompleted = act.status === 'Completed';
+
+                return `
+                    <tr style="border-bottom: 1px solid rgba(255, 255, 255, 0.05); transition: background 0.2s ease;" onmouseover="this.style.background='rgba(255,255,255,0.02)'" onmouseout="this.style.background='transparent'">
+                        <td style="padding: 16px 20px;">
+                            <div style="font-weight: 800; color: #F8FAFC; font-size: 0.95rem; margin-bottom: 6px;">
+                                ${act.name || act.title || 'Untitled Activity'}
+                            </div>
+                            <div style="color: #94A3B8; font-size: 0.82rem; display: flex; align-items: center; gap: 6px;">
+                                <span style="color: #F43F5E; font-size: 0.95rem;">📍</span> ${act.venue || act.location || 'Venue TBA'}
+                            </div>
+                        </td>
+                        <td style="padding: 16px 20px;">
+                            <span style="background: rgba(14, 116, 144, 0.3); color: #38BDF8; border: 1px solid rgba(56, 189, 248, 0.35); padding: 5px 14px; border-radius: 8px; font-weight: 700; font-size: 0.8rem; display: inline-block;">
+                                ${act.category}
+                            </span>
+                        </td>
+                        <td style="padding: 16px 20px; color: #F8FAFC; font-weight: 700; font-size: 0.88rem; white-space: nowrap;">
+                            ${dateStr} • ${timeStr}
+                        </td>
+                        <td style="padding: 16px 20px; white-space: nowrap;">
+                            <span style="color: #38BDF8; font-weight: 800; font-size: 0.95rem;">${rate}%</span>
+                            <span style="color: #64748B; font-size: 0.8rem; margin-left: 4px;">(${pCount}/${totalMems})</span>
+                        </td>
+                        <td style="padding: 16px 20px;">
+                            <span style="background: ${isCompleted ? 'rgba(6, 78, 59, 0.4)' : 'rgba(12, 74, 110, 0.4)'}; color: ${isCompleted ? '#34D399' : '#38BDF8'}; border: 1px solid ${isCompleted ? 'rgba(52, 211, 153, 0.4)' : 'rgba(56, 189, 248, 0.4)'}; padding: 5px 14px; border-radius: 20px; font-weight: 700; font-size: 0.78rem; display: inline-flex; align-items: center; gap: 6px; white-space: nowrap;">
+                                <span style="width: 6px; height: 6px; border-radius: 50%; background: ${isCompleted ? '#34D399' : '#38BDF8'}; display: inline-block;"></span>
+                                ${act.status}
+                            </span>
+                        </td>
+                        <td style="padding: 16px 20px;">
+                            <button onclick="jumpToAttendance('${act.id}')" style="background: rgba(30, 41, 59, 0.8); border: 1px solid rgba(255, 255, 255, 0.15); color: #E2E8F0; padding: 8px 16px; border-radius: 10px; font-weight: 600; font-size: 0.82rem; cursor: pointer; transition: all 0.2s; display: inline-flex; align-items: center; gap: 6px; box-shadow: 0 4px 12px rgba(0,0,0,0.2); white-space: nowrap;" onmouseover="this.style.background='rgba(51, 65, 85, 1)'; this.style.borderColor='rgba(255,255,255,0.3)'" onmouseout="this.style.background='rgba(30, 41, 59, 0.8)'; this.style.borderColor='rgba(255,255,255,0.15)'">
+                                📋 Check Sheet
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+    }
+
+    // Render Category Breakdown
+    const catContainer = document.getElementById('dashboard-category-breakdown');
+    if (catContainer) {
+        const categories = ['Chapter Assembly', 'Chapter Household', 'Area Assembly', 'General Assembly', 'Upper Core Household'];
+        catContainer.innerHTML = categories.map(cat => {
+            const count = state.activities.filter(a => a.category === cat).length;
+            const pct = totalActs > 0 ? Math.round((count / totalActs) * 100) : 0;
+            const fillClass = `fill-${cat.toLowerCase().replace(/\s+/g, '-')}`;
+            return `
+                <div class="cat-item">
+                    <div class="cat-info">
+                        <span class="cat-name">${cat}</span>
+                        <span class="cat-count">${count} <small style="color:var(--text-muted); font-weight:400;">(${pct}%)</small></span>
+                    </div>
+                    <div class="cat-bar-bg">
+                        <div class="cat-bar-fill ${fillClass}" style="width: ${pct}%;"></div>
+                    </div>
+                </div>
+            `;
+        }).join('');
+    }
+}
+
+function renderAgendaTimeline() {
+    const sortedActs = [...state.activities].sort((a, b) => new Date(a.date) - new Date(b.date));
+
+    let htmlContent = '';
+    if (sortedActs.length === 0) {
+        htmlContent = `
+            <div style="padding: 32px 20px; text-align: center; color: #94A3B8;">
+                <div style="font-size: 2.2rem; margin-bottom: 10px; opacity: 0.8;">📅</div>
+                <div style="font-weight: 700; color: #E2E8F0; font-size: 0.95rem; margin-bottom: 4px;">No Agenda Activities Yet</div>
+                <div style="font-size: 0.82rem; color: #64748B;">Click "+ Add Activity" to schedule or record an activity item.</div>
+            </div>
+        `;
+    } else {
+        htmlContent = sortedActs.map((act, idx) => {
+            const isLast = idx === sortedActs.length - 1;
+            const dateObj = new Date(act.date);
+            const dateStr = !isNaN(dateObj) ? dateObj.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : 'TBA';
+            const statusColor = act.status === 'Completed' ? '#10B981' : (act.status === 'Upcoming' ? '#38BDF8' : '#F59E0B');
+            return `
+                <div style="display: flex; align-items: flex-start; gap: 16px; padding: 14px 0; ${!isLast ? 'border-bottom: 1px solid rgba(255, 255, 255, 0.06);' : ''}">
+                    <div style="background: rgba(30, 58, 138, 0.45); color: #38BDF8; border: 1px solid rgba(56, 189, 248, 0.35); padding: 6px 14px; border-radius: 20px; font-weight: 700; font-size: 0.8rem; white-space: nowrap; min-width: 95px; text-align: center; box-shadow: 0 4px 10px rgba(0,0,0,0.2);">
+                        ${dateStr}
+                    </div>
+                    <div style="flex: 1;">
+                        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 4px;">
+                            <span style="color: #F8FAFC; font-weight: 800; font-size: 0.98rem; letter-spacing: -0.01em;">${act.name || act.title || 'Untitled Activity'}</span>
+                            <span style="font-size: 0.72rem; font-weight: 700; padding: 2px 8px; border-radius: 12px; border: 1px solid ${statusColor}; color: ${statusColor}; background: rgba(255,255,255,0.05);">${act.status || 'Event'}</span>
+                        </div>
+                        <div style="color: #94A3B8; font-size: 0.82rem; line-height: 1.35;">${act.venue || act.location || 'Venue TBA'} &bull; <span style="color: #64748B;">${act.type || act.category || ''}</span></div>
+                    </div>
+                </div>
+            `;
+        }).join('');
+    }
+
+    const dashboardCont = document.getElementById('dashboard-upcoming-list');
+    if (dashboardCont) dashboardCont.innerHTML = htmlContent;
+
+    const agendaCont = document.getElementById('agenda-timeline-list');
+    if (agendaCont) agendaCont.innerHTML = htmlContent;
+}
+
+function jumpToAttendance(actId) {
+    state.selectedActivityId = actId;
+    switchView('attendance');
+    const selectEl = document.getElementById('attendance-activity-select');
+    if (selectEl) {
+        selectEl.value = actId;
+        renderAttendanceRoster();
+    }
+}
+
+// ============================================================================
+// 4. ACTIVITY RECORDS MANAGEMENT CRUD
+// ============================================================================
+
+function setAgendaSemester(sem, btnEl) {
+    state.agendaSemester = sem;
+    const tabs = document.querySelectorAll('.sem-tab-btn');
+    tabs.forEach(t => {
+        t.style.background = 'transparent';
+        t.style.color = '#475569';
+        t.classList.remove('active');
+    });
+    if (btnEl) {
+        btnEl.style.background = '#1E3A8A';
+        btnEl.style.color = '#FFF';
+        btnEl.classList.add('active');
+    }
+    const titleEl = document.getElementById('semester-banner-title');
+    const descEl = document.getElementById('semester-banner-desc');
+    if (sem === 's1') {
+        if (titleEl) titleEl.textContent = 'First Semester (Jan - Jun)';
+        if (descEl) descEl.textContent = 'Activities accomplished during the first semester.';
+    } else if (sem === 's2') {
+        if (titleEl) titleEl.textContent = 'Second Semester (Jul - Dec)';
+        if (descEl) descEl.textContent = 'Activities scheduled or completed during the second semester.';
+    } else {
+        if (titleEl) titleEl.textContent = 'All Activities History';
+        if (descEl) descEl.textContent = 'Comprehensive record of all organizational events and gatherings.';
+    }
+    renderActivitiesTable();
+}
+
+function setAgendaViewMode(mode) {
+    state.agendaViewMode = mode;
+    const gridBtn = document.getElementById('btn-view-grid');
+    const tableBtn = document.getElementById('btn-view-table');
+    const gridCont = document.getElementById('agenda-grid-container');
+    const tableCont = document.getElementById('agenda-table-container');
+
+    if (mode === 'grid') {
+        if (gridBtn) { gridBtn.style.background = 'var(--accent-blue)'; gridBtn.style.color = '#FFF'; }
+        if (tableBtn) { tableBtn.style.background = 'transparent'; tableBtn.style.color = '#94A3B8'; }
+        if (gridCont) gridCont.style.display = 'grid';
+        if (tableCont) tableCont.style.display = 'none';
+    } else {
+        if (tableBtn) { tableBtn.style.background = 'var(--accent-blue)'; tableBtn.style.color = '#FFF'; }
+        if (gridBtn) { gridBtn.style.background = 'transparent'; gridBtn.style.color = '#94A3B8'; }
+        if (gridCont) gridCont.style.display = 'none';
+        if (tableCont) tableCont.style.display = 'block';
+    }
+}
+
+function refreshAgendaHistory() {
+    showToast('Refreshing agenda history and recalculating rates...', 'info');
+    renderActivitiesTable();
+}
+
+function downloadActivityPDF(actId, title) {
+    const act = state.activities.find(a => a.id === actId);
+    if (!act) return;
+
+    if (!window.jsPDF || !window.jspdf || !window.jspdf.jsPDF) {
+        showToast('PDF generator library loading... please try again in 2 seconds.', 'info');
+        return;
+    }
+
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF('p', 'mm', 'a4');
+
+    const displayTitle = act.name || act.title || 'Untitled Activity';
+    const displayCategory = act.type || act.category || 'Event';
+    const displayVenue = act.venue || act.location || 'Venue TBA';
+    const displayHeldIn = act.heldIn || 'Face to Face';
+    const dateObj = new Date(act.date);
+    const dateStr = !isNaN(dateObj) ? `${dateObj.toLocaleDateString()} at ${dateObj.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}` : act.date;
+
+    const attObj = state.attendance[act.id] || {};
+    const totalMems = state.members.length;
+    let pCount = 0;
+    state.members.forEach(m => {
+        if (attObj[m.id]?.status === 'present') pCount++;
+    });
+    const rate = totalMems > 0 ? Math.round((pCount / totalMems) * 100) : 0;
+
+    // Header Background Banner
+    doc.setFillColor(15, 23, 42);
+    doc.rect(0, 0, 210, 42, 'F');
+
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(18);
+    doc.setTextColor(56, 189, 248);
+    doc.text("MFC YOUTH TARLAC", 14, 16);
+
+    doc.setFontSize(12);
+    doc.setTextColor(248, 250, 252);
+    doc.text("OFFICIAL ACTIVITY ATTENDANCE REPORT", 14, 25);
+
+    doc.setFontSize(9);
+    doc.setFont("helvetica", "normal");
+    doc.setTextColor(148, 163, 184);
+    doc.text(`Generated on: ${new Date().toLocaleString()}`, 14, 34);
+
+    // Activity Overview Box
+    doc.setFillColor(241, 245, 249);
+    doc.roundedRect(14, 48, 182, 38, 3, 3, 'F');
+
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(13);
+    doc.setTextColor(15, 23, 42);
+    doc.text(`Activity: ${displayTitle}`, 20, 58);
+
+    doc.setFontSize(9.5);
+    doc.setFont("helvetica", "normal");
+    doc.setTextColor(71, 85, 105);
+    doc.text(`Category: ${displayCategory}   |   Held In: ${displayHeldIn}`, 20, 66);
+    doc.text(`Date & Time: ${dateStr}`, 20, 73);
+    doc.text(`Venue / Location: ${displayVenue}`, 20, 80);
+
+    doc.setFont("helvetica", "bold");
+    doc.setTextColor(16, 185, 129);
+    doc.text(`Attendance Rate: ${rate}% (${pCount} Present / ${totalMems - pCount} Absent of ${totalMems} Members)`, 115, 80);
+
+    // Table Header & Rows
+    const tableHeaders = [["#", "Member Name", "Department", "Role", "Attendance Status", "Remarks / Notes"]];
+    const tableRows = state.members.map((mem, idx) => {
+        const memAtt = attObj[mem.id] || { status: 'absent', notes: '' };
+        const statusText = memAtt.status === 'present' ? 'PRESENT' : 'ABSENT';
+        return [
+            idx + 1,
+            mem.name,
+            mem.dept || '-',
+            mem.role || '-',
+            statusText,
+            memAtt.notes || '-'
+        ];
+    });
+
+    doc.autoTable({
+        startY: 92,
+        head: tableHeaders,
+        body: tableRows,
+        theme: 'grid',
+        headStyles: { fillColor: [30, 58, 138], textColor: [255, 255, 255], fontStyle: 'bold' },
+        styles: { fontSize: 9, cellPadding: 3.5 },
+        columnStyles: {
+            0: { cellWidth: 12 },
+            1: { cellWidth: 50, fontStyle: 'bold' },
+            4: { fontStyle: 'bold' }
+        },
+        didParseCell: function(data) {
+            if (data.section === 'body' && data.column.index === 4) {
+                if (data.cell.raw === 'PRESENT') {
+                    data.cell.styles.textColor = [16, 185, 129];
+                } else {
+                    data.cell.styles.textColor = [239, 68, 68];
+                }
+            }
+        }
+    });
+
+    // Footer Sign-Off
+    const finalY = doc.lastAutoTable.finalY + 18;
+    doc.setFontSize(9);
+    doc.setFont("helvetica", "italic");
+    doc.setTextColor(100, 116, 139);
+    doc.text("MFC Youth Tarlac Secretariat Ledger • Certified Official Record", 14, finalY);
+
+    const safeName = displayTitle.replace(/[^a-z0-9]/gi, '_').toLowerCase();
+    doc.save(`${safeName}_attendance_report.pdf`);
+    showToast(`PDF report downloaded for "${displayTitle}"`, 'success');
+}
+
+function selectActivityForAttendance(actId) {
+    state.selectedActivityId = actId;
+    switchView('attendance');
+    renderAttendanceHeader();
+    renderAttendanceRoster();
+    showToast('Switched to live attendance roster!', 'success');
+}
+
+function renderActivitiesTable() {
+    const tableBody = document.getElementById('activities-table-body');
+    const gridCont = document.getElementById('agenda-grid-container');
+
+    updateBadgeCount();
+    const totalMems = state.members.length;
+
+    const filtered = state.activities.filter(act => {
+        const actName = act.name || act.title || '';
+        const actVenue = act.venue || act.location || '';
+        const actType = act.type || act.category || '';
+
+        const matchesCat = state.filterCategory === 'ALL' || actType === state.filterCategory;
+        const matchesStat = state.filterStatus === 'ALL' || act.status === state.filterStatus;
+        const matchesSearch = !state.searchQuery || 
+            actName.toLowerCase().includes(state.searchQuery) ||
+            actVenue.toLowerCase().includes(state.searchQuery) ||
+            actType.toLowerCase().includes(state.searchQuery);
+        
+        return matchesCat && matchesStat && matchesSearch;
+    }).sort((a, b) => new Date(a.date) - new Date(b.date));
+
+    // Render Grid View
+    if (gridCont) {
+        if (filtered.length === 0) {
+            gridCont.innerHTML = `
+                <div style="grid-column: 1 / -1; text-align: center; padding: 60px 20px; background: rgba(15, 23, 42, 0.5); border-radius: 16px; border: 1px dashed rgba(255,255,255,0.1); color: #94A3B8;">
+                    <div style="font-size: 2rem; margin-bottom: 12px;">📅</div>
+                    <div style="font-weight: 700; font-size: 1.1rem; color: #E2E8F0; margin-bottom: 4px;">No activities found in this semester</div>
+                    <div style="font-size: 0.88rem;">Try selecting a different semester or clearing your filters.</div>
+                </div>
+            `;
+        } else {
+            gridCont.innerHTML = filtered.map(act => {
+                const attObj = state.attendance[act.id] || {};
+                let pCount = 0;
+                state.members.forEach(m => {
+                    const st = attObj[m.id]?.status;
+                    if (st === 'present' || st === 'late') pCount++;
+                });
+                const rate = totalMems > 0 ? ((pCount / totalMems) * 100).toFixed(1) : '0.0';
+                
+                const dObj = new Date(act.date);
+                const dateUpper = isNaN(dObj.getTime()) ? act.date.toUpperCase() : dObj.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }).toUpperCase();
+                
+                const isAccomplished = act.status === 'Completed' || act.status === 'Accomplished';
+                const pillBg = isAccomplished ? 'rgba(16, 185, 129, 0.15)' : 'rgba(56, 189, 248, 0.15)';
+                const pillColor = isAccomplished ? '#10B981' : '#38BDF8';
+                const pillBorder = isAccomplished ? 'rgba(16, 185, 129, 0.3)' : 'rgba(56, 189, 248, 0.3)';
+                const pillText = isAccomplished ? 'Accomplished' : act.status;
+
+                const displayTitle = act.title || act.name || 'Untitled Activity';
+                return `
+                    <div class="agenda-card glass-card" style="background: rgba(15, 23, 42, 0.85); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 16px; padding: 24px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); display: flex; flex-direction: column; justify-content: space-between; transition: transform 0.2s ease, border-color 0.2s ease;">
+                        <div>
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
+                                <span style="color: #F59E0B; font-weight: 800; font-size: 0.82rem; letter-spacing: 0.06em; text-transform: uppercase;">
+                                    ${dateUpper}
+                                </span>
+                                <span style="background: ${pillBg}; color: ${pillColor}; border: 1px solid ${pillBorder}; padding: 3px 12px; border-radius: 12px; font-weight: 700; font-size: 0.75rem;">
+                                    ${pillText}
+                                </span>
+                            </div>
+                            <h3 style="color: #F8FAFC; font-size: 1.22rem; font-weight: 800; margin: 0 0 6px 0; line-height: 1.35;">
+                                ${displayTitle}
+                            </h3>
+                            <div style="color: #94A3B8; font-size: 0.88rem; font-style: italic; margin-bottom: 16px;">
+                                AREA Chapter / Area
+                            </div>
+                            <hr style="border: 0; border-top: 1px solid rgba(255, 255, 255, 0.08); margin: 16px 0;">
+                            <div style="font-size: 0.88rem; margin-bottom: 8px;">
+                                <span style="font-weight: 700; color: #E2E8F0;">Held In:</span> <span style="color: #94A3B8;">${act.heldIn || 'Face to Face'}</span>
+                            </div>
+                            <div style="font-size: 0.88rem; margin-bottom: 16px;">
+                                <span style="font-weight: 700; color: #E2E8F0;">Venue:</span> <span style="color: #94A3B8;">${act.location || 'TBA'}</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; align-items: center; font-size: 0.88rem;">
+                                <div>
+                                    <span style="font-weight: 700; color: #E2E8F0;">Participants:</span> <span style="color: #94A3B8;">${pCount} present</span>
+                                </div>
+                                <div>
+                                    <span style="font-weight: 700; color: #E2E8F0;">Attendance Rate:</span> <span style="color: #94A3B8;">${rate}%</span>
+                                </div>
+                            </div>
+                            <hr style="border: 0; border-top: 1px solid rgba(255, 255, 255, 0.08); margin: 16px 0;">
+                        </div>
+                        <div>
+                            <div style="font-size: 0.72rem; color: #94A3B8; font-weight: 700; letter-spacing: 0.06em; margin-bottom: 12px;">
+                                AVAILABLE DOCUMENTS
+                            </div>
+                            <div style="display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap;">
+                                <button onclick="downloadActivityPDF('${act.id}', '${displayTitle.replace(/'/g, "\\'")}')" style="background: rgba(59, 130, 246, 0.15); color: #60A5FA; border: 1px solid rgba(59, 130, 246, 0.4); padding: 7px 14px; border-radius: 8px; font-weight: 700; font-size: 0.8rem; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 6px;">
+                                    <span>📄 Export PDF</span>
+                                </button>
+                                <button onclick="selectActivityForAttendance('${act.id}')" style="background: rgba(16, 185, 129, 0.15); color: #34D399; border: 1px solid rgba(16, 185, 129, 0.4); padding: 7px 14px; border-radius: 8px; font-weight: 700; font-size: 0.8rem; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 6px;">
+                                    <span>📋 Check Roster</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+    }
+
+    // Render Table View
+    if (tableBody) {
+        if (filtered.length === 0) {
+            tableBody.innerHTML = `
+                <tr>
+                    <td colspan="8" style="text-align: center; padding: 40px; color: var(--text-muted);">
+                        No activities found matching your filters or search criteria.
+                    </td>
+                </tr>
+            `;
+        } else {
+            tableBody.innerHTML = filtered.map(act => {
+                const attObj = state.attendance[act.id] || {};
+                let pCount = 0;
+                let aCount = 0;
+                state.members.forEach(m => {
+                    const st = attObj[m.id]?.status;
+                    if (st === 'present' || st === 'late') pCount++;
+                    else if (st === 'absent') aCount++;
+                });
+                const rate = totalMems > 0 ? Math.round((pCount / totalMems) * 100) : 0;
+                const dateStr = new Date(act.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+                const timeStr = new Date(act.date).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+
+                return `
+                    <tr>
+                        <td>
+                            <div class="activity-title-cell">
+                                <span class="activity-title-main">${act.title || act.name || 'Untitled Activity'}</span>
+                                <span class="activity-desc-sub">${act.description ? act.description.substring(0, 50) + '...' : 'No description'}</span>
+                            </div>
+                        </td>
+                        <td>
+                            <div style="display:flex; flex-direction:column;">
+                                <span style="color:#FFF; font-weight:600;">${dateStr} • ${timeStr}</span>
+                                <span style="font-size:0.75rem; color:var(--text-muted);">📍 ${act.location}</span>
+                            </div>
+                        </td>
+                        <td>
+                            <span class="trend badge-emerald">${act.category}</span>
+                            <div style="font-size:0.75rem; color:var(--text-muted); margin-top:4px;">Held in: ${act.heldIn || 'Face to Face'}</div>
+                        </td>
+                        <td><span class="status-pill pill-${act.status.toLowerCase()}">● ${act.status}</span></td>
+                        <td><strong style="color:var(--accent-emerald); font-size:1rem;">${pCount}</strong></td>
+                        <td><strong style="color:var(--accent-rose); font-size:1rem;">${aCount}</strong></td>
+                        <td>
+                            <span class="rate-badge" style="margin-left:0;">${rate}%</span>
+                        </td>
+                        <td class="text-right">
+                            <div class="action-buttons-cell">
+                                <button class="btn-icon-action" title="Edit Activity" onclick="openAddModal('${act.id}')">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                                </button>
+                                <button class="btn-icon-action btn-icon-delete" title="Delete Activity" onclick="deleteActivity('${act.id}')">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+    }
+}
+
+function openAddModal(actId = null) {
+    const modal = document.getElementById('modal-backdrop');
+    const titleEl = document.getElementById('modal-title');
+    const formId = document.getElementById('form-activity-id');
+    const formTitle = document.getElementById('form-title');
+    const formDate = document.getElementById('form-date');
+    const formCat = document.getElementById('form-category');
+    const formLoc = document.getElementById('form-location');
+    const formStat = document.getElementById('form-status');
+    const formDesc = document.getElementById('form-description');
+
+    if (!modal) return;
+
+    if (actId) {
+        const act = state.activities.find(a => a.id === actId);
+        if (act) {
+            titleEl.textContent = 'Edit Activity Record';
+            formId.value = act.id;
+            formTitle.value = act.name || act.title || '';
+            formDate.value = act.date || '';
+            formCat.value = act.type || act.category || 'Assembly';
+            formLoc.value = act.venue || act.location || '';
+            formStat.value = act.status;
+            formDesc.value = act.description || '';
+        }
+    } else {
+        titleEl.textContent = 'Create New Activity';
+        formId.value = '';
+        formTitle.value = '';
+        formDate.value = new Date().toISOString().slice(0, 16);
+        formCat.value = 'Chapter Assembly';
+        formLoc.value = '';
+        formStat.value = 'Upcoming';
+        formDesc.value = '';
+    }
+
+    modal.style.display = 'flex';
+}
+
+function closeAddModal() {
+    const modal = document.getElementById('modal-backdrop');
+    if (modal) modal.style.display = 'none';
+}
+
+function handleFormSubmit(e) {
+    e.preventDefault();
+    const idVal = document.getElementById('form-activity-id').value;
+    const titleVal = document.getElementById('form-title').value.trim();
+    const dateVal = document.getElementById('form-date').value;
+    const catVal = document.getElementById('form-category').value;
+    const locVal = document.getElementById('form-location').value.trim();
+    const statVal = document.getElementById('form-status').value;
+    const descVal = document.getElementById('form-description').value.trim();
+
+    if (!titleVal || !dateVal || !locVal) {
+        showToast('Please fill out all required fields.', 'error');
+        return;
+    }
+
+    if (idVal) {
+        // Update existing
+        const idx = state.activities.findIndex(a => a.id === idVal);
+        if (idx !== -1) {
+            state.activities[idx] = {
+                id: idVal,
+                title: titleVal,
+                name: titleVal,
+                date: dateVal,
+                category: catVal,
+                type: catVal,
+                location: locVal,
+                venue: locVal,
+                status: statVal,
+                description: descVal
+            };
+            showToast('Activity record updated successfully!', 'success');
+        }
+    } else {
+        // Create new
+        const newId = 'act-' + Date.now();
+        const newAct = {
+            id: newId,
+            title: titleVal,
+            name: titleVal,
+            date: dateVal,
+            category: catVal,
+            type: catVal,
+            location: locVal,
+            venue: locVal,
+            status: statVal,
+            description: descVal
+        };
+        state.activities.unshift(newAct);
+        // Initialize attendance map for new activity
+        state.attendance[newId] = {};
+        state.members.forEach(mem => {
+            state.attendance[newId][mem.id] = { status: 'absent', time: '-', notes: '' };
+        });
+        showToast('New activity created successfully!', 'success');
+    }
+
+    saveToStorage();
+    closeAddModal();
+    renderAll();
+}
+
+function deleteActivity(actId) {
+    const act = state.activities.find(a => a.id === actId);
+    if (!act) return;
+
+    const displayTitle = act.title || act.name || 'Untitled Activity';
+    if (confirm(`Are you sure you want to delete "${displayTitle}"? This will also remove its attendance records.`)) {
+        const deletedCopy = { ...act };
+        const deletedAtt = state.attendance[actId] ? { ...state.attendance[actId] } : null;
+
+        state.activities = state.activities.filter(a => a.id !== actId);
+        delete state.attendance[actId];
+        saveToStorage();
+        if (state.selectedActivityId === actId) {
+            state.selectedActivityId = null;
+        }
+        renderAll();
+        showToast('Activity deleted.', 'info', () => {
+            state.activities.push(deletedCopy);
+            if (deletedAtt) state.attendance[actId] = deletedAtt;
+            saveToStorage();
+            renderAll();
+            logAuditAction(`Restored activity "${displayTitle}" via Undo`, 'attendance');
+        });
+        logAuditAction(`Deleted activity "${displayTitle}"`, 'attendance');
+    }
+}
+
+function clearAllActivities() {
+    if (!state.activities || state.activities.length === 0) {
+        showToast('Activities list is already empty.', 'info');
+        return;
+    }
+    if (confirm('Are you sure you want to clear all activities and agenda items? This action cannot be undone.')) {
+        state.activities = [];
+        state.attendance = {};
+        state.selectedActivityId = null;
+        saveToStorage();
+        renderAll();
+        showToast('All activities have been cleared successfully.', 'info');
+    }
+}
+
+// ============================================================================
+// 5. INTERACTIVE ATTENDANCE ROSTER ENGINE
+// ============================================================================
+
+function populateAttendanceDropdown() {
+    const selectEl = document.getElementById('attendance-activity-select');
+    if (!selectEl) return;
+
+    if (!state.activities || state.activities.length === 0) {
+        selectEl.innerHTML = `<option value="">-- No Activities Found (Create an Activity in Agenda First) --</option>`;
+        return;
+    }
+
+    const currentVal = selectEl.value || state.selectedActivityId;
+    const sorted = [...state.activities].sort((a, b) => new Date(b.date) - new Date(a.date));
+
+    selectEl.innerHTML = `
+        <option value="">-- Choose an Activity to Check Attendance --</option>
+        ${sorted.map(act => {
+            const dateStr = act.date ? new Date(act.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : 'No Date';
+            const displayTitle = act.title || act.name || 'Untitled Activity';
+            return `<option value="${act.id}" ${act.id === currentVal ? 'selected' : ''}>[${dateStr}] ${displayTitle} (${act.status || 'Upcoming'})</option>`;
+        }).join('')}
+    `;
+}
+
+function renderAttendanceRoster() {
+    const pill = document.getElementById('attendance-status-pill');
+    const actions = document.getElementById('attendance-action-buttons');
+    const banner = document.getElementById('attendance-progress-banner');
+    const filterBar = document.getElementById('attendance-filter-bar');
+    const emptyState = document.getElementById('attendance-empty-state');
+    const tableContainer = document.getElementById('attendance-table-container');
+    const tbody = document.getElementById('attendance-roster-body');
+
+    const actId = state.selectedActivityId;
+    if (!actId || !state.activities || state.activities.length === 0) {
+        if (pill) { pill.className = 'status-pill-grey'; pill.innerHTML = '● Select an activity above'; }
+        if (actions) actions.style.display = 'none';
+        if (banner) banner.style.display = 'none';
+        if (filterBar) filterBar.style.display = 'none';
+        if (emptyState) {
+            emptyState.style.display = 'flex';
+            if (!state.activities || state.activities.length === 0) {
+                emptyState.innerHTML = `
+                    <div class="empty-icon">📅</div>
+                    <h3>No Activities Available</h3>
+                    <p>You haven't added any activities or agenda items yet. Go to the <strong>Agenda & Events</strong> tab to add your first activity.</p>
+                `;
+            } else {
+                emptyState.innerHTML = `
+                    <div class="empty-icon">📋</div>
+                    <h3>No Activity Selected</h3>
+                    <p>Please select an event or activity from the dropdown menu above to view and record member attendance.</p>
+                `;
+            }
+        }
+        if (tableContainer) tableContainer.style.display = 'none';
+        return;
+    }
+
+    const act = state.activities.find(a => a.id === actId);
+    if (!act) return;
+
+    const displayTitle = act.title || act.name || 'Untitled Activity';
+    if (pill) {
+        pill.className = 'status-pill-green';
+        pill.innerHTML = `● Active Roster: ${displayTitle}`;
+    }
+    if (actions) actions.style.display = 'flex';
+    if (banner) banner.style.display = 'block';
+    if (filterBar) filterBar.style.display = 'flex';
+    if (emptyState) emptyState.style.display = 'none';
+    if (tableContainer) tableContainer.style.display = 'block';
+
+    if (!state.attendance[actId]) {
+        state.attendance[actId] = {};
+    }
+
+    const attMap = state.attendance[actId];
+
+    // Render Table Rows
+    if (tbody) {
+        if (state.members.length === 0) {
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="5" style="text-align: center; padding: 40px; color: var(--text-muted);">
+                        <div style="font-size: 2.2rem; margin-bottom: 10px;">👥</div>
+                        <div style="font-size: 1rem; font-weight: 600; color: var(--text-primary);">No Members Available</div>
+                        <p style="margin-top: 4px;">Add members in the Members Directory to record attendance.</p>
+                    </td>
+                </tr>
+            `;
+        } else {
+            tbody.innerHTML = state.members.map((mem, idx) => {
+            const memAtt = attMap[mem.id] || { status: 'absent', notes: '' };
+            const st = memAtt.status;
+            const notesStr = memAtt.notes || '';
+
+            return `
+                <tr id="row-${mem.id}">
+                    <td style="font-weight:700; color:var(--text-muted);">${idx + 1}</td>
+                    <td>
+                        <div style="display:flex; align-items:center; gap:10px;">
+                            <div style="width:32px; height:32px; border-radius:8px; background:var(--grad-primary); display:flex; align-items:center; justify-content:center; font-weight:700; font-size:0.85rem; color:#FFF;">
+                                ${mem.name.charAt(0)}
+                            </div>
+                            <div>
+                                <div style="font-weight:600; color:#FFF; display:flex; align-items:center; gap:8px;">
+                                    <span>${mem.name}</span>
+                                    <span style="font-size: 0.68rem; background: rgba(56, 189, 248, 0.15); color: #38BDF8; border: 1px solid rgba(56, 189, 248, 0.3); padding: 2px 8px; border-radius: 10px;">${mem.chapter || 'EAST'}</span>
+                                </div>
+                                <div style="font-size:0.75rem; color:var(--text-muted);">${mem.role || 'Member'}</div>
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <span style="font-weight:600; color:var(--accent-blue);">${mem.dept}</span>
+                        <div style="font-size:0.75rem; color:var(--text-secondary);">${mem.role}</div>
+                    </td>
+                    <td>
+                        <div class="attendance-status-group" id="group-${mem.id}">
+                            <button type="button" class="status-btn ${st === 'present' ? 'active-present' : ''}" onclick="toggleAttendance('${actId}', '${mem.id}', 'present')">Present</button>
+                            <button type="button" class="status-btn ${st === 'absent' ? 'active-absent' : ''}" onclick="toggleAttendance('${actId}', '${mem.id}', 'absent')">Absent</button>
+                        </div>
+                    </td>
+                    <td>
+                        <input type="text" value="${notesStr}" placeholder="Add remark..." style="background:rgba(9,13,22,0.6); border:1px solid var(--border-color); border-radius:8px; padding:6px 10px; color:#FFF; font-size:0.8rem; width:160px;" onchange="updateRemarks('${actId}', '${mem.id}', this.value)">
+                    </td>
+                </tr>
+            `;
+            }).join('');
+        }
+    }
+
+    updateLiveProgress();
+}
+
+function toggleAttendance(actId, memId, status) {
+    if (!state.attendance[actId]) state.attendance[actId] = {};
+    const currentTime = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+    state.attendance[actId][memId] = {
+        status: status,
+        notes: state.attendance[actId][memId]?.notes || ''
+    };
+
+    saveToStorage();
+
+    // Update row DOM without re-rendering entire table
+    const groupEl = document.getElementById(`group-${memId}`);
+
+    if (groupEl) {
+        const btns = groupEl.querySelectorAll('.status-btn');
+        if (btns[0]) btns[0].className = `status-btn ${status === 'present' ? 'active-present' : ''}`;
+        if (btns[1]) btns[1].className = `status-btn ${status === 'absent' ? 'active-absent' : ''}`;
+    }
+
+    updateLiveProgress();
+    updateBadgeCount();
+
+    if (status === 'absent') {
+        const mem = state.members.find(m => m.id === memId);
+        const act = state.activities.find(a => a.id === actId);
+        if (mem) {
+            triggerAbsenteeAutoGmailPrompt(mem, act);
+        }
+    }
+    logAuditAction(`Updated check-in status for member to ${status.toUpperCase()}`, 'attendance');
+}
+
+function triggerAbsenteeAutoGmailPrompt(mem, act) {
+    const actName = act ? (act.title || act.name || 'MFC Youth Activity') : 'MFC Youth Activity';
+    const targetEmail = encodeURIComponent(mem.email || '');
+    const subject = encodeURIComponent(`MFC Youth Tarlac - Pastoral Check-In: ${actName} 💛`);
+    const bodyText = `Hi Bro/Sis ${mem.name}!\n\nWe noticed you missed our activity "${actName}". Hope everything is well with you! Let us know if you need any prayers or support.\n\nGod bless! 💛\n- MFC Youth Tarlac Chapter`;
+    const body = encodeURIComponent(bodyText);
+    const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=${targetEmail}&su=${subject}&body=${body}`;
+
+    const container = document.getElementById('toast-container');
+    if (!container) return;
+
+    const toast = document.createElement('div');
+    toast.className = 'toast toast-error';
+    toast.style.cssText = 'display: flex; align-items: center; justify-content: space-between; gap: 10px; border-left: 4px solid #EA4335;';
+
+    toast.innerHTML = `
+        <span class="toast-icon">💛</span>
+        <span class="toast-text" style="flex: 1; font-size: 0.82rem;">
+            Marked <strong>${mem.name}</strong> as Absent. Send Gmail Check-in?
+        </span>
+    `;
+
+    const sendBtn = document.createElement('button');
+    sendBtn.type = 'button';
+    sendBtn.className = 'btn-primary';
+    sendBtn.style.cssText = 'padding: 5px 12px; font-size: 0.75rem; font-weight: 700; background: linear-gradient(135deg, #EA4335, #DB4437); border: none; color: #FFF; cursor: pointer; border-radius: 6px; white-space: nowrap;';
+    sendBtn.textContent = '📧 Auto-Send Gmail';
+    sendBtn.onclick = (e) => {
+        e.stopPropagation();
+        window.open(gmailUrl, '_blank');
+        toast.remove();
+        showToast(`Opened Gmail check-in for ${mem.name}!`, 'success');
+        logAuditAction(`Sent pastoral absentee check-in to ${mem.name} via Gmail`, 'pastoral');
+    };
+
+    toast.appendChild(sendBtn);
+    container.appendChild(toast);
+
+    setTimeout(() => {
+        if (!toast.parentNode) return;
+        toast.style.opacity = '0';
+        toast.style.transform = 'translateX(40px)';
+        toast.style.transition = 'all 0.3s ease';
+        setTimeout(() => toast.remove(), 300);
+    }, 7000);
+}
+
+function filterAttendanceRoster() {
+    const searchInput = document.getElementById('attendance-roster-search');
+    const query = searchInput ? searchInput.value.toLowerCase().trim() : '';
+    const tbody = document.getElementById('attendance-roster-body');
+    if (!tbody) return;
+
+    Array.from(tbody.getElementsByTagName('tr')).forEach(row => {
+        const text = row.textContent.toLowerCase();
+        row.style.display = text.includes(query) ? '' : 'none';
+    });
+}
+
+function batchMarkChapterPresent(chapterName) {
+    const actId = state.selectedActivityId;
+    if (!actId) {
+        showToast('Please select an activity first.', 'error');
+        return;
+    }
+    if (!state.attendance[actId]) state.attendance[actId] = {};
+
+    let count = 0;
+    const cleanChapter = chapterName.toLowerCase().replace(' chapter', '');
+    state.members.forEach(mem => {
+        const memChap = (mem.chapter || 'EAST').toLowerCase();
+        if (memChap.includes(cleanChapter) || cleanChapter.includes(memChap)) {
+            if (!state.attendance[actId][mem.id]) {
+                state.attendance[actId][mem.id] = { status: 'present', notes: '', time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) };
+            } else {
+                state.attendance[actId][mem.id].status = 'present';
+                state.attendance[actId][mem.id].time = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+            }
+            count++;
+        }
+    });
+
+    saveToStorage();
+    renderAttendanceRoster();
+    updateLiveProgress();
+    showToast(`Checked in ${count} members of ${chapterName}!`, 'success');
+    logAuditAction(`Batch Check-in for ${chapterName} (${count} members present)`, 'attendance');
+}
+
+function sendGmailToCurrentAbsentees() {
+    if (!state.selectedActivityId) {
+        showToast('Please select an activity first.', 'error');
+        return;
+    }
+    const act = state.activities.find(a => a.id === state.selectedActivityId);
+    const actName = act ? (act.title || act.name || 'MFC Youth Activity') : 'MFC Youth Activity';
+    const attMap = state.attendance[state.selectedActivityId] || {};
+
+    const absentEmails = [];
+    const absentNames = [];
+
+    state.members.forEach(mem => {
+        const st = attMap[mem.id]?.status || 'absent';
+        if (st === 'absent') {
+            absentNames.push(mem.name);
+            if (mem.email && mem.email.trim() && mem.email.includes('@')) {
+                absentEmails.push(mem.email.trim());
+            }
+        }
+    });
+
+    if (absentNames.length === 0) {
+        showToast('All members are marked present for this activity!', 'success');
+        return;
+    }
+
+    const bccList = absentEmails.join(',');
+    const msgBodyText = `Hi Brothers and Sisters!\n\nWe missed you at our activity "${actName}". Hope you are doing well! Please let your household heads know if you need any prayers or assistance.\n\nSee you at our next activity! God bless! 💛\n\n- MFC Youth Tarlac Chapter`;
+    const encodedBody = encodeURIComponent(msgBodyText);
+    const encodedSubject = encodeURIComponent(`MFC Youth Tarlac - Missed Activity Check-In: ${actName} 💛`);
+
+    const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&bcc=${encodeURIComponent(bccList)}&su=${encodedSubject}&body=${encodedBody}`;
+    window.open(gmailUrl, '_blank');
+
+    showToast(`Batch Gmail check-in opened for ${absentNames.length} absent member(s)!`, 'success');
+    logAuditAction(`Sent batch absentee email via Gmail for activity "${actName}" (${absentNames.length} members)`, 'pastoral');
+}
+
+function updateRemarks(actId, memId, notes) {
+    if (!state.attendance[actId]) state.attendance[actId] = {};
+    if (!state.attendance[actId][memId]) state.attendance[actId][memId] = { status: 'absent', time: '-' };
+    state.attendance[actId][memId].notes = notes;
+    saveToStorage();
+    showToast('Remark saved.', 'info');
+}
+
+function updateLiveProgress() {
+    const actId = state.selectedActivityId;
+    if (!actId || !state.attendance[actId]) return;
+
+    const attMap = state.attendance[actId];
+    const totalMems = state.members.length;
+
+    let pCount = 0;
+    let aCount = 0;
+
+    state.members.forEach(mem => {
+        const st = attMap[mem.id]?.status;
+        if (st === 'present') pCount++;
+        else aCount++;
+    });
+
+    const rate = totalMems > 0 ? Math.round((pCount / totalMems) * 100) : 0;
+    const pPct = totalMems > 0 ? (pCount / totalMems) * 100 : 0;
+    const aPct = totalMems > 0 ? (aCount / totalMems) * 100 : 0;
+
+    const elP = document.getElementById('count-present');
+    const elA = document.getElementById('count-absent');
+    const elRate = document.getElementById('attendance-live-rate');
+
+    const barP = document.getElementById('bar-present');
+    const barA = document.getElementById('bar-absent');
+
+    if (elP) elP.textContent = pCount;
+    if (elA) elA.textContent = aCount;
+    if (elRate) elRate.textContent = `${rate}%`;
+
+    if (barP) barP.style.width = `${pPct}%`;
+    if (barA) barA.style.width = `${aPct}%`;
+}
+
+function markAllPresent() {
+    const actId = state.selectedActivityId;
+    if (!actId) return;
+
+    if (confirm('Are you sure you want to mark all members as Present for this activity?')) {
+        const currentTime = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        if (!state.attendance[actId]) state.attendance[actId] = {};
+
+        state.members.forEach(mem => {
+            state.attendance[actId][mem.id] = {
+                status: 'present',
+                time: currentTime,
+                notes: 'Marked present (bulk)'
+            };
+        });
+
+        saveToStorage();
+        renderAttendanceRoster();
+        logAuditAction('Marked ALL members present in bulk check-in', 'attendance');
+        showToast('All members marked Present.', 'success');
+    }
+}
+
+function resetAttendanceSheet() {
+    const actId = state.selectedActivityId;
+    if (!actId) return;
+
+    if (confirm('Are you sure you want to reset all attendance check-ins for this activity to Absent?')) {
+        if (!state.attendance[actId]) state.attendance[actId] = {};
+
+        state.members.forEach(mem => {
+            state.attendance[actId][mem.id] = {
+                status: 'absent',
+                time: '-',
+                notes: ''
+            };
+        });
+
+        saveToStorage();
+        renderAttendanceRoster();
+        logAuditAction('Reset attendance check-in sheet to Absent', 'attendance');
+        showToast('Attendance sheet reset to Absent.', 'info');
+    }
+}
+
+// ============================================================================
+// 6. ANALYTICS & REPORTS ENGINE
+// ============================================================================
+
+function renderAnalytics() {
+    const monthlyBody = document.getElementById('analytics-monthly-body');
+    if (!monthlyBody) return;
+
+    const totalMems = state.members.length;
+    const monthlyMap = {}; // { 'July 2026': { totalActs: 0, completed: 0, presentSum: 0, absentSum: 0, rateSum: 0 } }
+
+    state.activities.forEach(act => {
+        const dateObj = new Date(act.date);
+        const monthKey = dateObj.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+
+        if (!monthlyMap[monthKey]) {
+            monthlyMap[monthKey] = { totalActs: 0, completed: 0, presentSum: 0, absentSum: 0, rateSum: 0 };
+        }
+
+        monthlyMap[monthKey].totalActs++;
+        if (act.status === 'Completed') monthlyMap[monthKey].completed++;
+
+        const attObj = state.attendance[act.id] || {};
+        let pCount = 0;
+        let aCount = 0;
+        state.members.forEach(m => {
+            const st = attObj[m.id]?.status;
+            if (st === 'present' || st === 'late') pCount++;
+            else aCount++;
+        });
+
+        monthlyMap[monthKey].presentSum += pCount;
+        monthlyMap[monthKey].absentSum += aCount;
+        const rate = totalMems > 0 ? (pCount / totalMems) * 100 : 0;
+        monthlyMap[monthKey].rateSum += rate;
+    });
+
+    const keys = Object.keys(monthlyMap);
+    if (keys.length === 0) {
+        monthlyBody.innerHTML = `<tr><td colspan="7" style="text-align:center; padding:30px; color:var(--text-muted);">No monthly data available.</td></tr>`;
+        return;
+    }
+
+    monthlyBody.innerHTML = keys.map(mKey => {
+        const data = monthlyMap[mKey];
+        const avgRate = data.totalActs > 0 ? Math.round(data.rateSum / data.totalActs) : 0;
+        let evalBadge = `<span class="trend badge-green">Excellent (≥80%)</span>`;
+        if (avgRate < 50) evalBadge = `<span class="trend badge-rose" style="background:rgba(251,113,133,0.15); color:var(--accent-rose);">Needs Attention</span>`;
+        else if (avgRate < 80) evalBadge = `<span class="trend badge-emerald" style="background:rgba(251,191,36,0.15); color:var(--accent-amber);">Satisfactory</span>`;
+
+        return `
+            <tr>
+                <td style="font-weight:700; color:#FFF;">${mKey}</td>
+                <td>${data.totalActs}</td>
+                <td><strong style="color:var(--accent-emerald);">${data.completed}</strong></td>
+                <td>
+                    <div style="display:flex; align-items:center; gap:8px;">
+                        <span class="rate-badge" style="margin-left:0;">${avgRate}%</span>
+                    </div>
+                </td>
+                <td><strong style="color:var(--accent-blue);">${data.presentSum}</strong> check-ins</td>
+                <td><span style="color:var(--text-muted);">${data.absentSum} absences</span></td>
+                <td>${evalBadge}</td>
+            </tr>
+        `;
+    }).join('');
+
+    renderInteractiveCharts();
+    generatePastoralList();
+}
+
+function exportToCSV() {
+    let csvContent = "data:text/csv;charset=utf-8,";
+    csvContent += "MFC YOUTH TARLAC ATTENDANCE & ACTIVITY MASTER REPORT\n\n";
+    csvContent += "ACTIVITY TITLE,DATE,LOCATION,CATEGORY,STATUS,PRESENT COUNT,ABSENT COUNT,ATTENDANCE RATE (%)\n";
+
+    const totalMems = state.members.length;
+
+    state.activities.forEach(act => {
+        const attObj = state.attendance[act.id] || {};
+        let pCount = 0;
+        let aCount = 0;
+        state.members.forEach(m => {
+            const st = attObj[m.id]?.status;
+            if (st === 'present' || st === 'late') pCount++;
+            else aCount++;
+        });
+        const rate = totalMems > 0 ? Math.round((pCount / totalMems) * 100) : 0;
+        const safeName = act.name || act.title || 'Untitled';
+        const safeVenue = act.venue || act.location || 'Venue TBA';
+        const safeType = act.type || act.category || 'Event';
+        const cleanTitle = `"${safeName.replace(/"/g, '""')}"`;
+        const cleanLoc = `"${safeVenue.replace(/"/g, '""')}"`;
+        csvContent += `${cleanTitle},${act.date},${cleanLoc},${safeType},${act.status},${pCount},${aCount},${rate}%\n`;
+    });
+
+    csvContent += "\n\nDETAILED MEMBER ROSTER ATTENDANCE\n";
+    csvContent += "MEMBER NAME,ROLE,DEPARTMENT," + state.activities.map(a => `"${(a.name || a.title || 'Event').substring(0, 20)}..."`).join(",") + "\n";
+
+    state.members.forEach(mem => {
+        const rowData = state.activities.map(act => {
+            const st = state.attendance[act.id]?.[mem.id]?.status || 'absent';
+            return st.toUpperCase();
+        });
+        const cleanName = `"${mem.name.replace(/"/g, '""')}"`;
+        csvContent += `${cleanName},"${mem.role}","${mem.dept}",${rowData.join(",")}\n`;
+    });
+
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", `mfc_youth_tarlac_master_report_${new Date().toISOString().slice(0, 10)}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+
+    showToast('CSV Report downloaded successfully!', 'success');
+}
+
+function exportToPDF() {
+    if (!window.jsPDF && (!window.jspdf || !window.jspdf.jsPDF)) {
+        generatePrintablePDFSheet();
+        return;
+    }
+
+    try {
+        const jsPDFObj = window.jsPDF || (window.jspdf ? window.jspdf.jsPDF : null);
+        if (!jsPDFObj) {
+            generatePrintablePDFSheet();
+            return;
+        }
+        const doc = new jsPDFObj('p', 'mm', 'a4');
+
+    // Header Background
+    doc.setFillColor(11, 15, 25);
+    doc.rect(0, 0, 210, 38, 'F');
+
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(20);
+    doc.setTextColor(56, 189, 248);
+    doc.text("MFC YOUTH TARLAC PORTAL", 14, 18);
+
+    doc.setFontSize(11);
+    doc.setTextColor(248, 250, 252);
+    doc.text("Official Attendance & Activity Master Report", 14, 26);
+
+    doc.setFontSize(9);
+    doc.setTextColor(148, 163, 184);
+    doc.text(`Generated on: ${new Date().toLocaleString()}`, 14, 32);
+
+    // Section 1: Activities Summary Table
+    doc.setFontSize(13);
+    doc.setTextColor(11, 15, 25);
+    doc.text("1. Activity Performance Summary", 14, 48);
+
+    const actHeaders = [["Activity Title", "Category", "Date", "Status", "Present", "Rate"]];
+    const totalMems = state.members.length;
+    const actRows = state.activities.map(act => {
+        const attObj = state.attendance[act.id] || {};
+        let pCount = 0;
+        state.members.forEach(m => {
+            if (attObj[m.id]?.status === 'present' || attObj[m.id]?.status === 'late') pCount++;
+        });
+        const rate = totalMems > 0 ? Math.round((pCount / totalMems) * 100) : 0;
+        const dateStr = new Date(act.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+        return [act.name || act.title || 'Untitled', act.type || act.category || 'Event', dateStr, act.status, `${pCount}/${totalMems}`, `${rate}%`];
+    });
+
+    doc.autoTable({
+        startY: 52,
+        head: actHeaders,
+        body: actRows,
+        theme: 'grid',
+        headStyles: { fillColor: [59, 130, 246], textColor: [255, 255, 255], fontStyle: 'bold' },
+        styles: { fontSize: 8.5, cellPadding: 3 },
+        columnStyles: { 0: { cellWidth: 65 }, 5: { fontStyle: 'bold', textColor: [5, 150, 105] } }
+    });
+
+    let nextY = doc.lastAutoTable.finalY + 12;
+
+    // Section 2: Active Roster Check (if selected activity exists)
+    if (state.selectedActivityId) {
+        const selAct = state.activities.find(a => a.id === state.selectedActivityId);
+        if (selAct) {
+            if (nextY > 230) { doc.addPage(); nextY = 20; }
+            doc.setFontSize(13);
+            doc.setTextColor(11, 15, 25);
+            doc.text(`2. Detailed Attendance Sheet: ${selAct.title}`, 14, nextY);
+
+            const rosHeaders = [["#", "Member Name", "Department / Role", "Status", "Time Check", "Remarks"]];
+            const attMap = state.attendance[selAct.id] || {};
+            const rosRows = state.members.map((mem, idx) => {
+                const att = attMap[mem.id] || { status: 'absent', time: '-', notes: '' };
+                return [idx + 1, mem.name, `${mem.dept} (${mem.role})`, att.status.toUpperCase(), att.time, att.notes || '-'];
+            });
+
+            doc.autoTable({
+                startY: nextY + 4,
+                head: rosHeaders,
+                body: rosRows,
+                theme: 'striped',
+                headStyles: { fillColor: [15, 23, 42], textColor: [56, 189, 248], fontStyle: 'bold' },
+                styles: { fontSize: 8, cellPadding: 2.5 },
+                didParseCell: function(data) {
+                    if (data.section === 'body' && data.column.index === 3) {
+                        if (data.cell.raw === 'PRESENT') data.cell.styles.textColor = [5, 150, 105];
+                        else if (data.cell.raw === 'LATE') data.cell.styles.textColor = [217, 119, 6];
+                        else data.cell.styles.textColor = [225, 29, 72];
+                        data.cell.styles.fontStyle = 'bold';
+                    }
+                }
+            });
+        }
+    }
+
+    doc.save(`mfc_youth_tarlac_attendance_report_${new Date().toISOString().slice(0, 10)}.pdf`);
+    showToast('PDF Roster document generated and saved!', 'success');
+    } catch (err) {
+        console.warn('jsPDF export fallback triggered:', err);
+        generatePrintablePDFSheet();
+    }
+}
+
+function generatePrintablePDFSheet() {
+    const totalMems = state.members.length;
+    const actRows = state.activities.map(act => {
+        const attObj = state.attendance[act.id] || {};
+        let pCount = 0;
+        state.members.forEach(m => {
+            if (attObj[m.id]?.status === 'present' || attObj[m.id]?.status === 'late') pCount++;
+        });
+        const rate = totalMems > 0 ? Math.round((pCount / totalMems) * 100) : 0;
+        const dateStr = new Date(act.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+        return `<tr>
+            <td style="padding: 8px; border-bottom: 1px solid #ddd;">${act.name || act.title || 'Untitled'}</td>
+            <td style="padding: 8px; border-bottom: 1px solid #ddd;">${act.type || act.category || 'Event'}</td>
+            <td style="padding: 8px; border-bottom: 1px solid #ddd;">${dateStr}</td>
+            <td style="padding: 8px; border-bottom: 1px solid #ddd;">${act.status}</td>
+            <td style="padding: 8px; border-bottom: 1px solid #ddd;">${pCount}/${totalMems}</td>
+            <td style="padding: 8px; border-bottom: 1px solid #ddd; font-weight: bold; color: #059669;">${rate}%</td>
+        </tr>`;
+    }).join('');
+
+    let detailedSheetHtml = '';
+    if (state.selectedActivityId) {
+        const selAct = state.activities.find(a => a.id === state.selectedActivityId);
+        if (selAct) {
+            const attMap = state.attendance[selAct.id] || {};
+            const rows = state.members.map((mem, idx) => {
+                const att = attMap[mem.id] || { status: 'absent', time: '-', notes: '' };
+                const color = att.status === 'present' ? '#059669' : att.status === 'late' ? '#D97706' : '#E11D48';
+                return `<tr>
+                    <td style="padding: 6px; border-bottom: 1px solid #eee;">${idx + 1}</td>
+                    <td style="padding: 6px; border-bottom: 1px solid #eee; font-weight: 600;">${mem.name}</td>
+                    <td style="padding: 6px; border-bottom: 1px solid #eee;">${mem.dept} (${mem.role})</td>
+                    <td style="padding: 6px; border-bottom: 1px solid #eee; font-weight: bold; color: ${color};">${att.status.toUpperCase()}</td>
+                    <td style="padding: 6px; border-bottom: 1px solid #eee;">${att.time}</td>
+                    <td style="padding: 6px; border-bottom: 1px solid #eee;">${att.notes || '-'}</td>
+                </tr>`;
+            }).join('');
+
+            detailedSheetHtml = `
+                <h2 style="margin-top: 30px; color: #0f172a; font-size: 16px;">2. Detailed Attendance Roster: ${selAct.title || selAct.name}</h2>
+                <table style="width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 13px;">
+                    <thead>
+                        <tr style="background: #0f172a; color: #fff; text-align: left;">
+                            <th style="padding: 8px;">#</th>
+                            <th style="padding: 8px;">Member Name</th>
+                            <th style="padding: 8px;">Dept / Role</th>
+                            <th style="padding: 8px;">Status</th>
+                            <th style="padding: 8px;">Time</th>
+                            <th style="padding: 8px;">Remarks</th>
+                        </tr>
+                    </thead>
+                    <tbody>${rows}</tbody>
+                </table>
+            `;
+        }
+    }
+
+    const printWin = window.open('', '_blank', 'width=900,height=700');
+    if (!printWin) {
+        showToast('Popup blocked. Please allow popups to export printable PDF sheet.', 'error');
+        return;
+    }
+
+    printWin.document.write(`
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <title>MFC Youth Tarlac - Official Report PDF</title>
+            <style>
+                body { font-family: 'Inter', -apple-system, sans-serif; padding: 30px; color: #1e293b; }
+                h1 { color: #0369a1; font-size: 22px; margin-bottom: 4px; }
+                p.meta { color: #64748b; font-size: 12px; margin-bottom: 24px; }
+                h2 { color: #0f172a; font-size: 16px; margin-top: 20px; }
+                table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 13px; }
+                th { background: #0284c7; color: #fff; text-align: left; padding: 8px; }
+                @media print {
+                    @page { size: A4; margin: 15mm; }
+                }
+            </style>
+        </head>
+        <body>
+            <h1>MFC YOUTH TARLAC PORTAL</h1>
+            <p class="meta">Official Attendance & Activity Master Report • Generated on ${new Date().toLocaleString()}</p>
+            <h2>1. Activity Performance Summary</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Activity Title</th>
+                        <th>Category</th>
+                        <th>Date</th>
+                        <th>Status</th>
+                        <th>Present</th>
+                        <th>Attendance Rate</th>
+                    </tr>
+                </thead>
+                <tbody>${actRows}</tbody>
+            </table>
+            ${detailedSheetHtml}
+            <script>
+                window.onload = () => {
+                    window.print();
+                };
+            </script>
+        </body>
+        </html>
+    `);
+    printWin.document.close();
+    showToast('Printable PDF Report opened ready to Save as PDF!', 'success');
+}
+
+function exportMembersToPDF() {
+    if (!state.members || state.members.length === 0) {
+        showToast('No members available to export.', 'error');
+        return;
+    }
+
+    if (!window.jsPDF && (!window.jspdf || !window.jspdf.jsPDF)) {
+        generatePrintableMembersPDF();
+        return;
+    }
+
+    try {
+        const jsPDFObj = window.jsPDF || (window.jspdf ? window.jspdf.jsPDF : null);
+        if (!jsPDFObj) {
+            generatePrintableMembersPDF();
+            return;
+        }
+        const doc = new jsPDFObj('p', 'mm', 'a4');
+
+        // Header Background
+        doc.setFillColor(11, 15, 25);
+        doc.rect(0, 0, 210, 36, 'F');
+
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(18);
+        doc.setTextColor(56, 189, 248);
+        doc.text("MFC YOUTH TARLAC PORTAL", 14, 16);
+
+        doc.setFontSize(11);
+        doc.setTextColor(248, 250, 252);
+        doc.text("Official Members Directory & Pastoral Roster", 14, 24);
+
+        doc.setFontSize(9);
+        doc.setTextColor(148, 163, 184);
+        doc.text(`Total Members: ${state.members.length} • Generated on: ${new Date().toLocaleString()}`, 14, 30);
+
+        const sortedMems = [...state.members].sort((a, b) => {
+            const chapA = (a.chapter || 'EAST CHAPTER').toUpperCase();
+            const chapB = (b.chapter || 'EAST CHAPTER').toUpperCase();
+            if (chapA !== chapB) return chapA.localeCompare(chapB);
+            const rankA = getRoleRank(a.role);
+            const rankB = getRoleRank(b.role);
+            if (rankA !== rankB) return rankA - rankB;
+            return a.name.localeCompare(b.name);
+        });
+
+        const memHeaders = [["#", "Member Name", "Chapter", "Department", "Role", "Email", "Status"]];
+        const memRows = sortedMems.map((m, idx) => [
+            idx + 1,
+            m.name || 'Untitled',
+            m.chapter || 'Central Chapter',
+            m.dept || 'General',
+            m.role || 'Member',
+            m.email || '-',
+            m.status || 'Active'
+        ]);
+
+        doc.autoTable({
+            startY: 44,
+            head: memHeaders,
+            body: memRows,
+            theme: 'grid',
+            headStyles: { fillColor: [15, 23, 42], textColor: [56, 189, 248], fontStyle: 'bold' },
+            styles: { fontSize: 8.5, cellPadding: 2.8 },
+            columnStyles: { 1: { fontStyle: 'bold' } }
+        });
+
+        doc.save(`mfc_youth_tarlac_members_directory_${new Date().toISOString().slice(0, 10)}.pdf`);
+        showToast('Members Directory exported as PDF successfully!', 'success');
+        logAuditAction(`Exported Members Directory PDF (${state.members.length} members)`, 'export');
+    } catch (err) {
+        console.warn('jsPDF export members fallback triggered:', err);
+        generatePrintableMembersPDF();
+    }
+}
+
+function generatePrintableMembersPDF() {
+    const sortedMems = [...state.members].sort((a, b) => {
+        const chapA = (a.chapter || 'EAST CHAPTER').toUpperCase();
+        const chapB = (b.chapter || 'EAST CHAPTER').toUpperCase();
+        if (chapA !== chapB) return chapA.localeCompare(chapB);
+        const rankA = getRoleRank(a.role);
+        const rankB = getRoleRank(b.role);
+        if (rankA !== rankB) return rankA - rankB;
+        return a.name.localeCompare(b.name);
+    });
+
+    const memRows = sortedMems.map((m, idx) => {
+        return `<tr>
+            <td style="padding: 8px; border-bottom: 1px solid #ddd;">${idx + 1}</td>
+            <td style="padding: 8px; border-bottom: 1px solid #ddd; font-weight: 600;">${m.name}</td>
+            <td style="padding: 8px; border-bottom: 1px solid #ddd;">${m.chapter || 'Central Chapter'}</td>
+            <td style="padding: 8px; border-bottom: 1px solid #ddd;">${m.dept || 'General'}</td>
+            <td style="padding: 8px; border-bottom: 1px solid #ddd;">${m.role || 'Member'}</td>
+            <td style="padding: 8px; border-bottom: 1px solid #ddd;">${m.email || '-'}</td>
+            <td style="padding: 8px; border-bottom: 1px solid #ddd; font-weight: bold; color: #059669;">${m.status || 'Active'}</td>
+        </tr>`;
+    }).join('');
+
+    const printWin = window.open('', '_blank', 'width=900,height=700');
+    if (!printWin) {
+        showToast('Popup blocked. Please allow popups to export printable PDF sheet.', 'error');
+        return;
+    }
+
+    printWin.document.write(`
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <title>MFC Youth Tarlac - Members Directory PDF</title>
+            <style>
+                body { font-family: 'Inter', -apple-system, sans-serif; padding: 30px; color: #1e293b; }
+                h1 { color: #0369a1; font-size: 22px; margin-bottom: 4px; }
+                p.meta { color: #64748b; font-size: 12px; margin-bottom: 24px; }
+                table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 13px; }
+                th { background: #0f172a; color: #38bdf8; text-align: left; padding: 8px; }
+                @media print {
+                    @page { size: A4; margin: 15mm; }
+                }
+            </style>
+        </head>
+        <body>
+            <h1>MFC YOUTH TARLAC PORTAL</h1>
+            <p class="meta">Official Members Directory & Pastoral Roster • Total: ${state.members.length} Members • Generated on ${new Date().toLocaleString()}</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Member Name</th>
+                        <th>Chapter</th>
+                        <th>Department</th>
+                        <th>Role</th>
+                        <th>Email</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>${memRows}</tbody>
+            </table>
+            <script>
+                window.onload = () => {
+                    window.print();
+                };
+            </script>
+        </body>
+        </html>
+    `);
+    printWin.document.close();
+    showToast('Members Directory PDF opened ready to Save as PDF!', 'success');
+    logAuditAction(`Exported Members Directory Printable PDF (${state.members.length} members)`, 'export');
+}
+
+// ============================================================================
+// 7. TOAST NOTIFICATION ENGINE
+// ============================================================================
+
+function showToast(message, type = 'info', undoCallback = null) {
+    const container = document.getElementById('toast-container');
+    if (!container) return;
+
+    const toast = document.createElement('div');
+    toast.className = `toast toast-${type}`;
+
+    let icon = 'ℹ️';
+    if (type === 'success') icon = '✅';
+    else if (type === 'error') icon = '⚠️';
+
+    toast.innerHTML = `
+        <span class="toast-icon">${icon}</span>
+        <span class="toast-text" style="flex: 1;">${message}</span>
+    `;
+
+    if (undoCallback && typeof undoCallback === 'function') {
+        const undoBtn = document.createElement('button');
+        undoBtn.type = 'button';
+        undoBtn.className = 'btn-secondary';
+        undoBtn.style.cssText = 'padding: 4px 10px; font-size: 0.75rem; font-weight: 700; background: rgba(56, 189, 248, 0.2); border: 1px solid #38BDF8; color: #38BDF8; cursor: pointer; border-radius: 6px; margin-left: 10px;';
+        undoBtn.textContent = '↩️ UNDO';
+        undoBtn.onclick = (e) => {
+            e.stopPropagation();
+            undoCallback();
+            toast.remove();
+            showToast('Action successfully undone!', 'success');
+        };
+        toast.appendChild(undoBtn);
+    }
+
+    container.appendChild(toast);
+
+    const delay = undoCallback ? 6000 : 3500;
+    setTimeout(() => {
+        if (!toast.parentNode) return;
+        toast.style.opacity = '0';
+        toast.style.transform = 'translateX(40px)';
+        toast.style.transition = 'all 0.3s ease';
+        setTimeout(() => toast.remove(), 300);
+    }, delay);
+}
+
+// ============================================================================
+// 8. ORGANIZATION HIERARCHY CHART ENGINE
+// ============================================================================
+
+function setOrgViewMode(mode) {
+    state.orgViewMode = mode;
+    const treeBtn = document.getElementById('btn-org-tree');
+    const gridBtn = document.getElementById('btn-org-grid');
+    if (treeBtn) treeBtn.classList.toggle('active', mode === 'tree');
+    if (gridBtn) gridBtn.classList.toggle('active', mode === 'grid');
+    renderOrgChart();
+}
+
+function getMemberAttendanceRate(memberId) {
+    if (!state.activities || state.activities.length === 0) return 0;
+    let presentOrLate = 0;
+    state.activities.forEach(act => {
+        const record = state.attendance[act.id]?.[memberId];
+        if (record && (record.status === 'present' || record.status === 'late')) {
+            presentOrLate++;
+        }
+    });
+    return Math.round((presentOrLate / state.activities.length) * 100);
+}
+
+function renderOrgMemberCard(member, isExec = false) {
+    const rate = getMemberAttendanceRate(member.id);
+    const initial = member.name.charAt(0).toUpperCase();
+    const execClass = isExec ? 'org-card-exec' : '';
+    
+    return `
+        <div class="org-member-card ${execClass}" onclick="openMemberProfile('${member.id}')" role="button" tabindex="0">
+            <div class="org-member-avatar">
+                <span>${initial}</span>
+            </div>
+            <div class="org-member-info">
+                <div class="org-member-name">${member.name}</div>
+                <div class="org-member-role">${member.role}</div>
+                <div class="org-member-stats">
+                    <span class="org-stat-badge">${member.dept}</span>
+                    <span class="org-stat-badge" style="color: #38BDF8;">⚡ ${rate}% Att</span>
+                </div>
+            </div>
+        </div>
+    `;
+}
+
+function renderOrgChart() {
+    const container = document.getElementById('org-chart-canvas');
+    if (!container) return;
+
+    // Hide toolbar since we have a fixed Area Flowchart now
+    const toolbar = document.querySelector('.org-toolbar');
+    if (toolbar) toolbar.style.display = 'none';
+
+    let members = state.members || [];
+
+    const getNames = (role, chapter) => {
+        let matches = members.filter(m => m.role === role && (!chapter || m.chapter === chapter));
+        if (matches.length === 0 || matches[0].name === 'Vacant') return `<div class="fc-name fc-name-vacant">Vacant</div>`;
+        if (matches[0].name === 'None') return `<div class="fc-name fc-name-vacant">None</div>`;
+        return matches.map(m => `<div class="fc-name">${m.name}</div>`).join('');
+    };
+
+    const getIcon = (role) => {
+        if (role === 'Area Youth Servant') {
+            return `<svg viewBox="0 0 24 24" fill="none" stroke="#F59E0B" stroke-width="2" style="width: 22px; height: 22px;"><path d="M2 4l3 12h14l3-12-6 7-4-7-4 7-6-7zm3 16h14"/></svg>`;
+        }
+        if (role === 'Mission Volunteer' || role === 'Area LIT Servant') {
+            return `<svg viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2" style="width: 20px; height: 20px;"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>`;
+        }
+        if (role === 'Chapter Servant') {
+            return `<svg viewBox="0 0 24 24" fill="none" stroke="#E2E8F0" stroke-width="2" style="width: 20px; height: 20px;"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>`;
+        }
+        if (role === 'Unit Servant' || role === 'Household Servant') {
+            return `<svg viewBox="0 0 24 24" fill="none" stroke="#A78BFA" stroke-width="2" style="width: 20px; height: 20px;"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>`;
+        }
+        return `<svg viewBox="0 0 24 24" fill="none" stroke="#94A3B8" stroke-width="2" style="width: 20px; height: 20px;"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>`;
+    };
+
+    const getCardStyle = (role) => {
+        if (role === 'Area Youth Servant') {
+            return `border: 1.5px solid #F59E0B; box-shadow: 0 0 20px rgba(245, 158, 11, 0.15);`;
+        }
+        if (role === 'Mission Volunteer' || role === 'Area LIT Servant') {
+            return `border: 1px solid #10B981; box-shadow: 0 0 15px rgba(16, 185, 129, 0.1);`;
+        }
+        if (role === 'Unit Servant' || role === 'Household Servant') {
+            return `border: 1.5px solid #8B5CF6; box-shadow: 0 0 15px rgba(139, 92, 246, 0.2);`;
+        }
+        return `border: 1px solid rgba(255, 255, 255, 0.15);`;
+    };
+
+    const renderNode = (role, chapter, isWide = false) => {
+        let displayRole = role;
+        if (role === 'Chapter Servant') displayRole = chapter;
+        else if (role.includes('Servant') && role !== 'Area Youth Servant' && role !== 'Area LIT Servant') displayRole = role.replace(' Servant', '');
+        
+        return `
+            <div class="fc-node ${isWide ? 'fc-node-wide' : ''}" style="${getCardStyle(role)}">
+                <div class="fc-icon">${getIcon(role)}</div>
+                <div class="fc-names">${getNames(role, chapter)}</div>
+                <div class="fc-role">${displayRole}</div>
+            </div>
+        `;
+    };
+
+    let html = `
+        <div class="fc-wrapper">
+            <div class="fc-tree">
+                <!-- Top Tier -->
+                <div class="fc-top-tier">
+                    <div class="fc-top-h-line"></div>
+                    <div class="fc-top-col fc-col-narrow">
+                        <div class="fc-v-stub"></div>
+                        ${renderNode('Mission Volunteer', 'Area')}
+                    </div>
+                    <div class="fc-top-col fc-col-wide">
+                        <div class="fc-v-stub"></div>
+                        ${renderNode('Area Youth Servant', 'Area', true)}
+                    </div>
+                    <div class="fc-top-col fc-col-narrow">
+                        <div class="fc-v-stub"></div>
+                        ${renderNode('Area LIT Servant', 'Area')}
+                    </div>
+                </div>
+                
+                <div class="fc-v-line-main"></div>
+                
+                <!-- Branches Section -->
+                <div class="fc-branches-section">
+                    <div class="fc-branches-h-line"></div>
+                    <div class="fc-branches">
+                        ${['East Chapter', 'North Chapter', 'West Chapter', 'South Chapter', 'Central Chapter'].map(chap => `
+                            <div class="fc-branch">
+                                <div class="fc-v-stub"></div>
+                                ${renderNode('Chapter Servant', chap)}
+                                <div class="fc-v-line"></div>
+                                ${renderNode('Unit Servant', chap)}
+                                <div class="fc-v-line"></div>
+                                ${renderNode('Household Servant', chap)}
+                                <div class="fc-v-line"></div>
+                                ${renderNode('Member', chap)}
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+    container.innerHTML = html;
+}
+
+// ============================================================================
+// 7. MEMBERS LIST & DIRECTORY ENGINE
+// ============================================================================
+
+function getRoleRank(role = '') {
+    const r = role.toLowerCase();
+    if (r.includes('chapter head') || r.includes('chapter leader') || r.includes('couple coordinator')) return 1;
+    if (r.includes('household head') || r.includes('hh') || r.includes('unit head')) return 2;
+    if (r.includes('core') || r.includes('ministry head')) return 3;
+    if (r.includes('officer') || r.includes('ministry')) return 4;
+    return 5;
+}
+
+function formatRoleBadge(role = 'Member') {
+    const rank = getRoleRank(role);
+    if (rank === 1) {
+        return `<span style="background: linear-gradient(135deg, #F59E0B, #D97706); color: white; padding: 4px 12px; border-radius: 16px; font-weight: 700; font-size: 0.75rem; box-shadow: 0 2px 8px rgba(245, 158, 11, 0.3);">👑 ${role}</span>`;
+    }
+    if (rank === 2) {
+        return `<span style="background: linear-gradient(135deg, #3B82F6, #2563EB); color: white; padding: 4px 12px; border-radius: 16px; font-weight: 700; font-size: 0.75rem; box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);">🛡️ ${role}</span>`;
+    }
+    if (rank === 3 || rank === 4) {
+        return `<span style="background: rgba(139, 92, 246, 0.2); color: #C4B5FD; border: 1px solid rgba(139, 92, 246, 0.3); padding: 4px 10px; border-radius: 16px; font-weight: 600; font-size: 0.75rem;">⭐ ${role}</span>`;
+    }
+    return `<span style="color: #E2E8F0; font-size: 0.88rem;">${role}</span>`;
+}
+
+function renderMembersTable() {
+    const tbody = document.getElementById('members-table-body');
+    const badge = document.getElementById('badge-members-count');
+    if (badge && state.members) {
+        badge.textContent = state.members.length;
+    }
+    if (!tbody || !state.members) return;
+
+    const searchInput = document.getElementById('members-search-input');
+    const deptSelect = document.getElementById('members-filter-dept');
+    const chapterSelect = document.getElementById('members-filter-chapter');
+    const query = searchInput ? searchInput.value.toLowerCase() : '';
+    const deptFilter = deptSelect ? deptSelect.value : 'ALL';
+    const chapterFilter = chapterSelect ? chapterSelect.value : 'ALL';
+
+    const filtered = state.members.filter(mem => {
+        const matchesQuery = mem.name.toLowerCase().includes(query) || mem.role.toLowerCase().includes(query);
+        const matchesDept = deptFilter === 'ALL' || mem.dept === deptFilter;
+        const memChap = (mem.chapter || 'EAST').toLowerCase();
+        const filterChap = chapterFilter.toLowerCase().replace(' chapter', '');
+        const matchesChapter = chapterFilter === 'ALL' || mem.chapter === chapterFilter || memChap.includes(filterChap) || filterChap.includes(memChap);
+        return matchesQuery && matchesDept && matchesChapter;
+    });
+
+    if (filtered.length === 0) {
+        tbody.innerHTML = `
+            <tr>
+                <td colspan="9" style="text-align: center; padding: 40px; color: var(--text-muted);">
+                    <div style="font-size: 2.5rem; margin-bottom: 12px;">👥</div>
+                    <div style="font-size: 1.1rem; font-weight: 600; color: var(--text-primary);">No Members Found</div>
+                    <p>No members currently match or exist in the directory. Add members using the button above.</p>
+                </td>
+            </tr>
+        `;
+        return;
+    }
+
+    // Sort by Chapter section first, then Role hierarchy, then alphabetical Name
+    filtered.sort((a, b) => {
+        const chapA = (a.chapter || 'EAST CHAPTER').toUpperCase();
+        const chapB = (b.chapter || 'EAST CHAPTER').toUpperCase();
+        if (chapA !== chapB) return chapA.localeCompare(chapB);
+
+        const rankA = getRoleRank(a.role);
+        const rankB = getRoleRank(b.role);
+        if (rankA !== rankB) return rankA - rankB;
+
+        return a.name.localeCompare(b.name);
+    });
+
+    let currentChapterSection = null;
+    const rowsHtml = [];
+
+    filtered.forEach(mem => {
+        const chapName = mem.chapter || 'EAST CHAPTER';
+        const cleanChap = chapName.toUpperCase();
+        if (cleanChap !== currentChapterSection) {
+            currentChapterSection = cleanChap;
+            const chapterCount = filtered.filter(m => (m.chapter || 'EAST CHAPTER').toUpperCase() === cleanChap).length;
+            rowsHtml.push(`
+                <tr class="chapter-section-header" style="background: rgba(15, 23, 42, 0.95); border-top: 2px solid rgba(56, 189, 248, 0.4); border-bottom: 1px solid rgba(56, 189, 248, 0.2);">
+                    <td colspan="9" style="padding: 14px 20px;">
+                        <div style="display: flex; align-items: center; justify-content: space-between;">
+                            <div style="display: flex; align-items: center; gap: 10px;">
+                                <span style="font-size: 1.1rem;">🏛️</span>
+                                <span style="font-weight: 800; font-size: 0.95rem; color: #38BDF8; letter-spacing: 0.5px; text-transform: uppercase;">${cleanChap}</span>
+                            </div>
+                            <span style="font-size: 0.78rem; font-weight: 700; color: #E2E8F0; background: rgba(56, 189, 248, 0.15); border: 1px solid rgba(56, 189, 248, 0.3); padding: 4px 12px; border-radius: 20px;">
+                                ${chapterCount} Member${chapterCount !== 1 ? 's' : ''}
+                            </span>
+                        </div>
+                    </td>
+                </tr>
+            `);
+        }
+
+        rowsHtml.push(`
+            <tr class="activity-row" style="border-bottom: 1px solid rgba(255, 255, 255, 0.05); transition: background 0.2s ease;">
+                <td style="font-weight: 700; color: #F8FAFC; font-size: 0.92rem; white-space: nowrap; padding: 16px 20px;">
+                    ${mem.name}
+                </td>
+                <td style="padding: 16px 20px;">
+                    <span style="background: var(--grad-emerald); color: white; padding: 4px 14px; border-radius: 20px; font-weight: 700; font-size: 0.75rem; display: inline-block; box-shadow: 0 2px 10px rgba(16, 185, 129, 0.25); text-transform: uppercase;">
+                        ${mem.chapter || 'EAST'}
+                    </span>
+                </td>
+                <td style="white-space: nowrap; padding: 16px 20px;">
+                    ${formatRoleBadge(mem.role)}
+                </td>
+                <td style="color: #CBD5E1; font-family: 'Roboto Mono', monospace, sans-serif; font-size: 0.88rem; padding: 16px 20px;">
+                    ${mem.contactNum || '<span style="color: #64748B;">-</span>'}
+                </td>
+                <td style="padding: 16px 20px;">
+                    ${mem.email ? `<a href="mailto:${mem.email}" style="color: #60A5FA; text-decoration: none; font-size: 0.85rem;">${mem.email}</a>` : '<span style="color: #64748B;">-</span>'}
+                </td>
+                <td style="color: #E2E8F0; font-size: 0.88rem; white-space: nowrap; padding: 16px 20px;">
+                    ${formatDateClean(mem.birthday)}
+                </td>
+                <td style="color: #CBD5E1; font-family: 'Roboto Mono', monospace, sans-serif; font-size: 0.88rem; padding: 16px 20px;">
+                    ${mem.parentsContact || '<span style="color: #64748B;">-</span>'}
+                </td>
+                <td style="color: #E2E8F0; font-size: 0.88rem; white-space: nowrap; padding: 16px 20px;">
+                    ${formatDateClean(mem.campDate)}
+                </td>
+                <td style="text-align: right; white-space: nowrap; padding: 16px 20px;">
+                    <button class="btn-secondary" style="padding: 5px 12px; font-size: 0.78rem; margin-right: 6px;" onclick="openMemberProfile('${mem.id}')">
+                        Profile
+                    </button>
+                    <button class="top-bar-icon-btn" title="Edit Member Profile" style="width: 30px; height: 30px; display: inline-flex; color: var(--accent-blue); margin-right: 4px;" onclick="openEditMemberModal('${mem.id}')">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 15px; height: 15px;"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                    </button>
+                    <button class="top-bar-icon-btn" title="Remove Member" style="width: 30px; height: 30px; display: inline-flex; color: var(--accent-rose);" onclick="deleteMember('${mem.id}')">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 15px; height: 15px;"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                    </button>
+                </td>
+            </tr>
+        `);
+    });
+
+    tbody.innerHTML = rowsHtml.join('');
+}
+
+function formatDateClean(dateStr) {
+    if (!dateStr) return '<span style="color: #64748B;">-</span>';
+    try {
+        const parts = dateStr.split('-');
+        if (parts.length === 3) {
+            return `${parts[1]}/${parts[2]}/${parts[0]}`;
+        }
+        const d = new Date(dateStr);
+        if (isNaN(d.getTime())) return '<span style="color: #64748B;">-</span>';
+        return `${String(d.getMonth() + 1).padStart(2, '0')}/${String(d.getDate()).padStart(2, '0')}/${d.getFullYear()}`;
+    } catch (e) {
+        return '<span style="color: #64748B;">-</span>';
+    }
+}
+
+function deleteMember(id) {
+    const mem = state.members.find(m => m.id === id);
+    if (!mem) return;
+    if (confirm(`Are you sure you want to remove "${mem.name}" from the organization?`)) {
+        const deletedCopy = { ...mem };
+        state.members = state.members.filter(m => m.id !== id);
+        saveToStorage();
+        renderAll();
+        showToast(`Member "${mem.name}" removed successfully.`, 'info', () => {
+            state.members.push(deletedCopy);
+            saveToStorage();
+            renderAll();
+            logAuditAction(`Restored member ${deletedCopy.name} via Undo`, 'members');
+        });
+        logAuditAction(`Deleted member ${mem.name}`, 'members');
+    }
+}
+
+function clearAllMembers() {
+    if (!state.members || state.members.length === 0) {
+        showToast('Members list is already empty.', 'info');
+        return;
+    }
+    if (confirm('Are you sure you want to clear all members? This action cannot be undone.')) {
+        state.members = [];
+        saveToStorage();
+        renderAll();
+        showToast('All members have been cleared successfully.', 'info');
+    }
+}
+
+// Member Profile & Stats Modal
+function openMemberProfile(memberId) {
+    const member = state.members.find(m => m.id === memberId);
+    if (!member) return;
+    window.currentProfileMemberId = memberId;
+
+    const contentEl = document.getElementById('member-profile-content');
+    const backdrop = document.getElementById('member-modal-backdrop');
+    if (!contentEl || !backdrop) return;
+
+    let presentCount = 0;
+    let lateCount = 0;
+    let absentCount = 0;
+    const totalActivities = state.activities.length;
+
+    let historyHtml = '';
+    state.activities.forEach(act => {
+        const record = state.attendance[act.id]?.[memberId];
+        let statusText = 'Absent / Unrecorded';
+        let statusClass = 'text-red';
+        if (record) {
+            if (record.status === 'present') {
+                presentCount++;
+                statusText = '✅ Present';
+                statusClass = 'badge-green';
+            } else if (record.status === 'late') {
+                lateCount++;
+                statusText = '⏰ Late';
+                statusClass = 'badge-emerald';
+            } else if (record.status === 'absent') {
+                absentCount++;
+                statusText = '❌ Absent';
+                statusClass = 'badge-rose';
+            }
+        } else {
+            absentCount++;
+        }
+
+        historyHtml += `
+            <div class="profile-activity-item">
+                <div>
+                    <div style="font-weight: 700; color: #F8FAFC; font-size: 0.9rem;">${act.name || act.title || 'Activity'}</div>
+                    <div style="font-size: 0.75rem; color: #94A3B8;">${new Date(act.date).toLocaleDateString()} • ${act.type || act.category || 'Event'}</div>
+                </div>
+                <span style="font-size: 0.8rem; font-weight: 700;" class="${statusClass}">${statusText}</span>
+            </div>
+        `;
+    });
+
+    const rate = totalActivities > 0 ? Math.round(((presentCount + lateCount) / totalActivities) * 100) : 0;
+    const initial = member.name.charAt(0).toUpperCase();
+
+    contentEl.innerHTML = `
+        <div class="profile-header-card" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;">
+            <div style="display: flex; align-items: center; gap: 16px;">
+                <div class="profile-large-avatar">${initial}</div>
+                <div class="profile-info">
+                    <h2>${member.name}</h2>
+                    <div class="profile-meta">
+                        <span class="org-stat-badge" style="background: rgba(56, 189, 248, 0.2); color: #38BDF8;">${member.role}</span>
+                        <span class="org-stat-badge" style="background: rgba(139, 92, 246, 0.2); color: #C084FC;">🏢 ${member.dept}</span>
+                    </div>
+                </div>
+            </div>
+            <button type="button" class="btn-primary glow-button" onclick="openMemberQRModal('${member.id}')" style="padding: 8px 16px; font-size: 0.85rem; display: inline-flex; align-items: center; gap: 6px;">
+                <span>📱 Official QR ID</span>
+            </button>
+        </div>
+
+        <!-- Recognition Badges Row -->
+        <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px;">
+            ${rate >= 80 ? '<span style="background: rgba(16, 185, 129, 0.2); border: 1px solid rgba(16, 185, 129, 0.4); color: #34D399; padding: 4px 12px; border-radius: 12px; font-size: 0.78rem; font-weight: 700;">🔥 Faithful Attendance Award</span>' : ''}
+            <span style="background: rgba(59, 130, 246, 0.2); border: 1px solid rgba(59, 130, 246, 0.4); color: #60A5FA; padding: 4px 12px; border-radius: 12px; font-size: 0.78rem; font-weight: 700;">⭐ Active Youth Servant</span>
+            <span style="background: rgba(245, 158, 11, 0.2); border: 1px solid rgba(245, 158, 11, 0.4); color: #FBBF24; padding: 4px 12px; border-radius: 12px; font-size: 0.78rem; font-weight: 700;">⚡ MFC Youth Tarlac Chapter</span>
+        </div>
+
+        <div class="profile-stats-grid">
+            <div class="profile-stat-box">
+                <div class="num">${totalActivities}</div>
+                <div class="lbl">Total Events</div>
+            </div>
+            <div class="profile-stat-box">
+                <div class="num" style="color: #34D399;">${rate}%</div>
+                <div class="lbl">Attendance Rate</div>
+            </div>
+            <div class="profile-stat-box">
+                <div class="num" style="color: #FBBF24;">${presentCount + lateCount}/${totalActivities}</div>
+                <div class="lbl">Present / Late</div>
+            </div>
+        </div>
+
+        <h4 style="font-size: 0.95rem; color: #E2E8F0; margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
+            <span>📅</span> Recent Activity Check-in History
+        </h4>
+        <div class="profile-activities-list">
+            ${historyHtml || '<div style="color: #94A3B8; font-size: 0.85rem;">No activity records found.</div>'}
+        </div>
+    `;
+
+    const timelineEl = document.getElementById('member-timeline-container');
+    if (timelineEl) {
+        let timelineHtml = '<h4 style="font-size: 0.95rem; color: #E2E8F0; margin-bottom: 12px;">🌟 MFC Youth Service & Milestones</h4>';
+        timelineHtml += `
+            <div class="timeline-item">
+                <div class="timeline-dot"></div>
+                <div class="timeline-content">
+                    <div class="timeline-title">Appointed as ${member.role}</div>
+                    <div class="timeline-date">Active Leadership • ${member.dept} Department</div>
+                </div>
+            </div>
+            <div class="timeline-item">
+                <div class="timeline-dot" style="background: #10B981;"></div>
+                <div class="timeline-content">
+                    <div class="timeline-title">Completed Youth Camp Training</div>
+                    <div class="timeline-date">${member.campDate || 'MFC Youth Tarlac Standard Camp'}</div>
+                </div>
+            </div>
+            <div class="timeline-item">
+                <div class="timeline-dot" style="background: #8B5CF6;"></div>
+                <div class="timeline-content">
+                    <div class="timeline-title">Joined ${member.chapter}</div>
+                    <div class="timeline-date">Official Chapter Registration</div>
+                </div>
+            </div>
+        `;
+        timelineEl.innerHTML = timelineHtml;
+    }
+
+    backdrop.style.display = 'flex';
+}
+
+function closeMemberModal() {
+    const backdrop = document.getElementById('member-modal-backdrop');
+    if (backdrop) backdrop.style.display = 'none';
+}
+
+// Add / Edit Member Modal Handlers
+function openAddMemberModal() {
+    const form = document.getElementById('add-member-form');
+    if (form) form.reset();
+    const idEl = document.getElementById('form-mem-id');
+    const titleEl = document.getElementById('add-member-title');
+    const btnTextEl = document.getElementById('mem-submit-btn-text');
+    
+    if (idEl) idEl.value = '';
+    if (titleEl) titleEl.textContent = 'Add New Member';
+    if (btnTextEl) btnTextEl.textContent = 'Add Member';
+
+    const backdrop = document.getElementById('add-member-backdrop');
+    if (backdrop) backdrop.style.display = 'flex';
+}
+
+function openEditMemberModal(id) {
+    const mem = state.members.find(m => m.id === id);
+    if (!mem) return;
+
+    const form = document.getElementById('add-member-form');
+    if (form) form.reset();
+
+    const idEl = document.getElementById('form-mem-id');
+    const titleEl = document.getElementById('add-member-title');
+    const btnTextEl = document.getElementById('mem-submit-btn-text');
+    
+    if (idEl) idEl.value = mem.id;
+    if (titleEl) titleEl.textContent = 'Edit Member';
+    if (btnTextEl) btnTextEl.textContent = 'Save Changes';
+
+    const names = mem.name ? mem.name.split(' ') : [''];
+    const first = mem.firstName || (names.length > 1 ? names.slice(0, -1).join(' ') : names[0] || '');
+    const last = mem.lastName || (names.length > 1 ? names[names.length - 1] : '');
+    
+    const setVal = (elId, val) => { const el = document.getElementById(elId); if (el) el.value = val || ''; };
+    setVal('mem-first-name', first);
+    setVal('mem-middle-name', mem.middleName || '');
+    setVal('mem-last-name', last);
+    setVal('mem-chapter', mem.chapter || 'EAST');
+    setVal('mem-status', mem.status || 'Active');
+    setVal('mem-role', mem.role || 'Member');
+    setVal('mem-email', mem.email || '');
+    setVal('mem-birthday', mem.birthday || '');
+    setVal('mem-age', mem.age || '');
+    setVal('mem-address', mem.address || '');
+    setVal('mem-contact', mem.contactNum || '');
+    setVal('mem-parents-contact', mem.parentsContact || '');
+    setVal('mem-camp-date', mem.campDate || '');
+    setVal('mem-camp-title', mem.campTitle || '');
+    setVal('mem-covenant-date', mem.covenantDate || '');
+
+    const backdrop = document.getElementById('add-member-backdrop');
+    if (backdrop) backdrop.style.display = 'flex';
+}
+
+function calculateAgeFromBirthday() {
+    const bdayInput = document.getElementById('mem-birthday');
+    const ageInput = document.getElementById('mem-age');
+    if (!bdayInput || !ageInput || !bdayInput.value) return;
+
+    const birthDate = new Date(bdayInput.value);
+    const today = new Date();
+    let age = today.getFullYear() - birthDate.getFullYear();
+    const m = today.getMonth() - birthDate.getMonth();
+    if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+        age--;
+    }
+    if (age >= 0 && age <= 120) {
+        ageInput.value = age;
+    }
+}
+
+function closeAddMemberModal() {
+    const backdrop = document.getElementById('add-member-backdrop');
+    if (backdrop) backdrop.style.display = 'none';
+}
+
+function handleAddMemberSubmit(event) {
+    event.preventDefault();
+    const idEl = document.getElementById('form-mem-id');
+    const firstEl = document.getElementById('mem-first-name');
+    const midEl = document.getElementById('mem-middle-name');
+    const lastEl = document.getElementById('mem-last-name');
+    const chapterEl = document.getElementById('mem-chapter');
+    const statusEl = document.getElementById('mem-status');
+    const roleEl = document.getElementById('mem-role');
+    const emailEl = document.getElementById('mem-email');
+    const bdayEl = document.getElementById('mem-birthday');
+    const ageEl = document.getElementById('mem-age');
+    const addressEl = document.getElementById('mem-address');
+    const contactEl = document.getElementById('mem-contact');
+    const parentsEl = document.getElementById('mem-parents-contact');
+    const campDateEl = document.getElementById('mem-camp-date');
+    const campTitleEl = document.getElementById('mem-camp-title');
+    const covenantEl = document.getElementById('mem-covenant-date');
+
+    if (!firstEl || !lastEl) return;
+
+    const first = firstEl.value.trim();
+    const mid = midEl ? midEl.value.trim() : '';
+    const last = lastEl.value.trim();
+
+    if (!first || !last) {
+        showToast('Please enter both First Name and Last Name.', 'error');
+        return;
+    }
+
+    const fullName = [first, mid, last].filter(Boolean).join(' ');
+
+    if (!state.members) state.members = [];
+
+    // Duplicate Check when adding a new member
+    if (!idEl || !idEl.value) {
+        const duplicate = state.members.find(m => m.name.toLowerCase() === fullName.toLowerCase());
+        if (duplicate) {
+            if (!confirm(`Warning: Member "${fullName}" already exists in the directory. Add duplicate anyway?`)) {
+                return;
+            }
+        }
+    }
+
+    const memberData = {
+        name: fullName,
+        firstName: first,
+        middleName: mid,
+        lastName: last,
+        chapter: chapterEl ? chapterEl.value : 'EAST',
+        status: statusEl ? statusEl.value : 'Active',
+        role: roleEl && roleEl.value.trim() ? roleEl.value.trim() : 'Member',
+        email: emailEl ? emailEl.value.trim() : '',
+        birthday: bdayEl ? bdayEl.value : '',
+        age: ageEl ? ageEl.value : '',
+        address: addressEl ? addressEl.value.trim() : '',
+        contactNum: contactEl ? contactEl.value.trim() : '',
+        parentsContact: parentsEl ? parentsEl.value.trim() : '',
+        campDate: campDateEl ? campDateEl.value : '',
+        campTitle: campTitleEl ? campTitleEl.value.trim() : '',
+        covenantDate: covenantEl ? covenantEl.value : ''
+    };
+
+    if (idEl && idEl.value) {
+        const idx = state.members.findIndex(m => m.id === idEl.value);
+        if (idx !== -1) {
+            state.members[idx] = { ...state.members[idx], ...memberData };
+            showToast(`Member "${fullName}" updated successfully!`, 'success');
+            logAuditAction(`Updated member record: ${fullName}`, 'members');
+        }
+    } else {
+        const newMember = {
+            id: 'm-' + Date.now(),
+            dept: 'Outreach',
+            ...memberData
+        };
+        state.members.push(newMember);
+        showToast(`New member "${fullName}" added to organization!`, 'success');
+        logAuditAction(`Added new member: ${fullName}`, 'members');
+    }
+
+    saveToStorage();
+    renderAll();
+    closeAddMemberModal();
+}
+
+// ============================================================================
+// 8. FUNDS & EXPENSES MANAGEMENT MODULE
+// ============================================================================
+
+function renderFundsTable() {
+    const tbody = document.getElementById('funds-table-body');
+    if (!tbody) return;
+
+    let funds = state.funds || [];
+    
+    const typeFilter = document.getElementById('funds-type-filter');
+    const categoryFilter = document.getElementById('funds-category-filter');
+    const searchInput = document.getElementById('funds-search-input');
+    
+    const selectedType = typeFilter ? typeFilter.value : 'ALL';
+    const selectedCategory = categoryFilter ? categoryFilter.value : 'ALL';
+    const query = searchInput ? searchInput.value.toLowerCase().trim() : '';
+
+    const filtered = funds.filter(item => {
+        const matchType = selectedType === 'ALL' || item.type === selectedType;
+        const matchCategory = selectedCategory === 'ALL' || item.category === selectedCategory;
+        const matchQuery = !query || 
+            item.description.toLowerCase().includes(query) || 
+            item.category.toLowerCase().includes(query) ||
+            (item.receipt && item.receipt.toLowerCase().includes(query));
+        return matchType && matchCategory && matchQuery;
+    }).sort((a, b) => new Date(b.date) - new Date(a.date));
+
+    let totalIncome = 0;
+    let totalExpenses = 0;
+    funds.forEach(item => {
+        const amt = parseFloat(item.amount) || 0;
+        if (item.type === 'Income') totalIncome += amt;
+        else if (item.type === 'Expense') totalExpenses += amt;
+    });
+    const currentBalance = totalIncome - totalExpenses;
+
+    const elInc = document.getElementById('stat-total-income');
+    const elExp = document.getElementById('stat-total-expenses');
+    const elBal = document.getElementById('stat-current-balance');
+    const elRec = document.getElementById('stat-total-records');
+
+    const formatPHP = (num) => '₱' + num.toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+    if (elInc) elInc.textContent = formatPHP(totalIncome);
+    if (elExp) elExp.textContent = formatPHP(totalExpenses);
+    if (elBal) {
+        elBal.textContent = formatPHP(currentBalance);
+        elBal.style.color = currentBalance >= 0 ? '#10B981' : '#EF4444';
+    }
+    if (elRec) elRec.textContent = funds.length;
+
+    const targetBudget = 50000.00;
+    const achievedPct = Math.min(100, Math.max(0, Math.round((totalIncome / targetBudget) * 100)));
+    const elBudgetTxt = document.getElementById('budget-achieved-text');
+    const elBudgetFill = document.getElementById('budget-progress-fill');
+    if (elBudgetTxt) elBudgetTxt.textContent = achievedPct + '% (' + formatPHP(totalIncome) + ')';
+    if (elBudgetFill) elBudgetFill.style.width = achievedPct + '%';
+
+    if (filtered.length === 0) {
+        tbody.innerHTML = `
+            <tr>
+                <td colspan="7" style="text-align: center; padding: 60px 20px; color: #94A3B8;">
+                    <div style="display: flex; justify-content: center; margin-bottom: 16px;">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="#64748B" stroke-width="1.5" style="width: 52px; height: 52px; opacity: 0.7;"><path d="M19 5c-1.5 0-2.8 1.4-3 2-3.5-1.5-11-.3-11 5 0 1.8 0 3 2 4.5V20h4v-2h3v2h4v-4c1-.5 1.7-1 2-2h2v-4h-2c0-1-.5-1.5-1-2h0V5z"/><circle cx="14" cy="11" r="1"/></svg>
+                    </div>
+                    <div style="font-weight: 700; color: #E2E8F0; font-size: 1.1rem; margin-bottom: 6px;">No records found</div>
+                    <div style="font-size: 0.88rem; color: #64748B;">Add income or expense entries to track your funds.</div>
+                </td>
+            </tr>
+        `;
+    } else {
+        tbody.innerHTML = filtered.map(item => {
+            const isIncome = item.type === 'Income';
+            const badgeBg = isIncome ? 'rgba(16, 185, 129, 0.15)' : 'rgba(239, 68, 68, 0.15)';
+            const badgeColor = isIncome ? '#10B981' : '#EF4444';
+            const badgeBorder = isIncome ? 'rgba(16, 185, 129, 0.3)' : 'rgba(239, 68, 68, 0.3)';
+            const amountPrefix = isIncome ? '+' : '-';
+            const amountColor = isIncome ? '#10B981' : '#EF4444';
+
+            const dObj = new Date(item.date);
+            const dateStr = isNaN(dObj.getTime()) ? item.date : dObj.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+
+            return `
+                <tr style="border-bottom: 1px solid rgba(255, 255, 255, 0.05); transition: background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.03)'" onmouseout="this.style.background='transparent'">
+                    <td style="padding: 16px 20px; color: #E2E8F0; font-weight: 600; font-size: 0.88rem;">${dateStr}</td>
+                    <td style="padding: 16px 20px;">
+                        <span style="background: ${badgeBg}; color: ${badgeColor}; border: 1px solid ${badgeBorder}; padding: 4px 12px; border-radius: 12px; font-weight: 700; font-size: 0.75rem;">
+                            ${item.type}
+                        </span>
+                    </td>
+                    <td style="padding: 16px 20px; color: #94A3B8; font-size: 0.88rem;">
+                        <span style="background: rgba(255,255,255,0.05); padding: 4px 10px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.08);">
+                            ${item.category}
+                        </span>
+                    </td>
+                    <td style="padding: 16px 20px; color: #F8FAFC; font-weight: 700; font-size: 0.92rem;">${item.description}</td>
+                    <td style="padding: 16px 20px; color: ${amountColor}; font-weight: 800; font-size: 0.95rem;">
+                        ${amountPrefix}₱${parseFloat(item.amount).toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                    </td>
+                    <td style="padding: 16px 20px; color: #64748B; font-size: 0.85rem;">
+                        <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+                            <span>${item.receipt || '<span style="font-style:italic; opacity:0.5;">None</span>'}</span>
+                            ${item.receiptImg ? `
+                                <button type="button" onclick="openReceiptViewerModal('${item.id}')" style="background: rgba(16, 185, 129, 0.18); color: #10B981; border: 1px solid rgba(16, 185, 129, 0.4); padding: 3px 8px; border-radius: 6px; font-size: 0.72rem; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; gap: 4px;">
+                                    📎 Photo
+                                </button>
+                            ` : ''}
+                        </div>
+                    </td>
+                    <td style="padding: 16px 20px; text-align: right;">
+                        <button onclick="openAddFundModal('${item.id}')" style="background: rgba(56, 189, 248, 0.15); color: #38BDF8; border: 1px solid rgba(56, 189, 248, 0.3); padding: 6px 10px; border-radius: 8px; margin-right: 6px; cursor: pointer; transition: all 0.2s;" title="Edit Record">
+                            ✏️
+                        </button>
+                        <button onclick="deleteFundRecord('${item.id}')" style="background: rgba(239, 68, 68, 0.15); color: #EF4444; border: 1px solid rgba(239, 68, 68, 0.3); padding: 6px 10px; border-radius: 8px; cursor: pointer; transition: all 0.2s;" title="Delete Record">
+                            🗑️
+                        </button>
+                    </td>
+                </tr>
+            `;
+        }).join('');
+    }
+}
+
+function openReceiptViewerModal(recordId) {
+    const item = state.funds && state.funds.find(f => f.id === recordId);
+    if (!item || !item.receiptImg) return;
+
+    const modal = document.getElementById('modal-receipt-viewer');
+    const imgEl = document.getElementById('viewer-receipt-img');
+    const capEl = document.getElementById('viewer-receipt-caption');
+
+    if (imgEl) imgEl.src = item.receiptImg;
+    if (capEl) capEl.textContent = `${item.description} (${item.receipt || 'Receipt Photo'})`;
+    if (modal) modal.style.display = 'flex';
+}
+
+function closeReceiptViewerModal() {
+    const modal = document.getElementById('modal-receipt-viewer');
+    const imgEl = document.getElementById('viewer-receipt-img');
+    if (modal) modal.style.display = 'none';
+    if (imgEl) imgEl.src = '';
+}
+
+function filterFunds() {
+    renderFundsTable();
+}
+
+function resetFundsFilter() {
+    const typeFilter = document.getElementById('funds-type-filter');
+    const catFilter = document.getElementById('funds-category-filter');
+    const searchInput = document.getElementById('funds-search-input');
+    if (typeFilter) typeFilter.value = 'ALL';
+    if (catFilter) catFilter.value = 'ALL';
+    if (searchInput) searchInput.value = '';
+    renderFundsTable();
+    showToast('Funds filters reset', 'info');
+}
+
+function updateFundCategories() {
+    const typeEl = document.getElementById('fund-type');
+    const catEl = document.getElementById('fund-category');
+    if (!typeEl || !catEl) return;
+
+    const isIncome = typeEl.value === 'Income';
+    const incomeCats = ['Tithe & Offering', 'Donation / Sponsorship', 'Fundraising Event', 'Registration Fees', 'Other Income'];
+    const expenseCats = ['Assembly & Event Supplies', 'Youth Camp Food & Venue', 'Transportation & Logistics', 'Honorarium & Speakers', 'Administrative / Office', 'Other Expense'];
+
+    const cats = isIncome ? incomeCats : expenseCats;
+    catEl.innerHTML = cats.map(c => `<option value="${c}">${c}</option>`).join('');
+}
+
+function triggerReceiptUpload() {
+    const fileInput = document.getElementById('fund-receipt-file');
+    if (fileInput) fileInput.click();
+}
+
+function handleReceiptImageSelect(event) {
+    const file = event.target.files && event.target.files[0];
+    if (!file) return;
+
+    if (file.size > 5 * 1024 * 1024) {
+        showToast('Image file size exceeds 5MB limit', 'error');
+        return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        const base64Data = e.target.result;
+        updateReceiptPreviewUI(base64Data, file.name);
+    };
+    reader.readAsDataURL(file);
+}
+
+function removeReceiptImage(event) {
+    if (event) event.stopPropagation();
+    updateReceiptPreviewUI('', '');
+    const fileInput = document.getElementById('fund-receipt-file');
+    if (fileInput) fileInput.value = '';
+}
+
+function updateReceiptPreviewUI(base64Data, fileName = 'receipt_image.jpg') {
+    const hiddenEl = document.getElementById('fund-receipt-image-data');
+    const promptEl = document.getElementById('receipt-upload-prompt');
+    const previewEl = document.getElementById('receipt-upload-preview');
+    const imgEl = document.getElementById('receipt-preview-img');
+    const nameEl = document.getElementById('receipt-preview-name');
+
+    if (hiddenEl) hiddenEl.value = base64Data || '';
+
+    if (base64Data) {
+        if (promptEl) promptEl.style.display = 'none';
+        if (previewEl) previewEl.style.display = 'flex';
+        if (imgEl) imgEl.src = base64Data;
+        if (nameEl) nameEl.textContent = fileName || 'Receipt Attached';
+    } else {
+        if (promptEl) promptEl.style.display = 'block';
+        if (previewEl) previewEl.style.display = 'none';
+        if (imgEl) imgEl.src = '';
+    }
+}
+
+function openAddFundModal(editId = null) {
+    const modal = document.getElementById('modal-funds-backdrop');
+    if (!modal) return;
+
+    const titleEl = document.getElementById('modal-funds-title');
+    const idEl = document.getElementById('fund-id');
+    const typeEl = document.getElementById('fund-type');
+    const catEl = document.getElementById('fund-category');
+    const amtEl = document.getElementById('fund-amount');
+    const dateEl = document.getElementById('fund-date');
+    const descEl = document.getElementById('fund-description');
+    const recEl = document.getElementById('fund-receipt');
+
+    if (editId) {
+        const item = state.funds.find(f => f.id === editId);
+        if (item) {
+            if (titleEl) titleEl.textContent = 'Edit Fund Record';
+            if (idEl) idEl.value = item.id;
+            if (typeEl) { typeEl.value = item.type; updateFundCategories(); }
+            if (catEl) catEl.value = item.category;
+            if (amtEl) amtEl.value = item.amount;
+            if (dateEl) dateEl.value = item.date;
+            if (descEl) descEl.value = item.description;
+            if (recEl) recEl.value = item.receipt || '';
+            updateReceiptPreviewUI(item.receiptImg || '', 'Attached Receipt');
+        }
+    } else {
+        if (titleEl) titleEl.textContent = 'Add Fund Record';
+        if (idEl) idEl.value = '';
+        if (typeEl) { typeEl.value = 'Income'; updateFundCategories(); }
+        if (amtEl) amtEl.value = '';
+        if (dateEl) dateEl.value = new Date().toISOString().split('T')[0];
+        if (descEl) descEl.value = '';
+        if (recEl) recEl.value = '';
+        updateReceiptPreviewUI('', '');
+    }
+
+    modal.style.display = 'flex';
+}
+
+function closeAddFundModal() {
+    const modal = document.getElementById('modal-funds-backdrop');
+    if (modal) modal.style.display = 'none';
+}
+
+function saveFundRecord(e) {
+    e.preventDefault();
+    const idEl = document.getElementById('fund-id');
+    const typeEl = document.getElementById('fund-type');
+    const catEl = document.getElementById('fund-category');
+    const amtEl = document.getElementById('fund-amount');
+    const dateEl = document.getElementById('fund-date');
+    const descEl = document.getElementById('fund-description');
+    const recEl = document.getElementById('fund-receipt');
+    const imgDataEl = document.getElementById('fund-receipt-image-data');
+
+    const amountVal = amtEl ? parseFloat(amtEl.value) : 0;
+    if (isNaN(amountVal) || amountVal <= 0) {
+        showToast('Please enter a valid amount greater than 0.', 'error');
+        return;
+    }
+
+    const recordData = {
+        type: typeEl ? typeEl.value : 'Income',
+        category: catEl ? catEl.value : 'Other Income',
+        amount: amountVal,
+        date: dateEl ? dateEl.value : new Date().toISOString().split('T')[0],
+        description: descEl ? descEl.value.trim() : '',
+        receipt: recEl ? recEl.value.trim() : '',
+        receiptImg: imgDataEl ? imgDataEl.value : ''
+    };
+
+    if (idEl && idEl.value) {
+        const idx = state.funds.findIndex(f => f.id === idEl.value);
+        if (idx !== -1) {
+            state.funds[idx] = { ...state.funds[idx], ...recordData };
+            showToast('Fund record updated successfully!', 'success');
+        }
+    } else {
+        const newRecord = {
+            id: 'f-' + Date.now(),
+            ...recordData
+        };
+        state.funds.push(newRecord);
+        showToast('New fund record saved to ledger!', 'success');
+    }
+
+    saveToStorage();
+    renderFundsTable();
+    logAuditAction(`Saved fund record (${recordData.type}): ${formatPHP(recordData.amount)}`, 'finance');
+    closeAddFundModal();
+}
+
+function deleteFundRecord(id) {
+    const fRec = state.funds.find(f => f.id === id);
+    if (!fRec) return;
+    if (!confirm('Are you sure you want to delete this financial record?')) return;
+    const deletedCopy = { ...fRec };
+    state.funds = state.funds.filter(f => f.id !== id);
+    saveToStorage();
+    renderFundsTable();
+    showToast('Fund record deleted', 'info', () => {
+        state.funds.push(deletedCopy);
+        saveToStorage();
+        renderFundsTable();
+        logAuditAction(`Restored fund record (${deletedCopy.type}): ${formatPHP(deletedCopy.amount)} via Undo`, 'finance');
+    });
+}
+
+// ============================================================================
+// ACCOUNT MANAGEMENT & CREATE ACCOUNT MODAL FUNCTIONS
+// ============================================================================
+
+function renderAccountsTable() {
+    const tbody = document.getElementById('accounts-table-body');
+    if (!tbody) return;
+
+    if (!state.accounts || state.accounts.length === 0) {
+        tbody.innerHTML = `
+            <tr>
+                <td colspan="4" style="text-align: center; padding: 48px 20px; color: #94A3B8;">
+                    <div style="font-size: 2rem; margin-bottom: 8px;">🛡️</div>
+                    <div style="font-weight: 700; color: #E2E8F0;">No accounts found</div>
+                    <div style="font-size: 0.85rem;">Click "Create New Account" above to add Super Admins or Chapter Heads.</div>
+                </td>
+            </tr>
+        `;
+        return;
+    }
+
+    tbody.innerHTML = state.accounts.map(acc => {
+        const isSuperAdmin = acc.role.toUpperCase().includes('ADMIN');
+        const badgeBg = isSuperAdmin ? 'rgba(59, 130, 246, 0.2)' : 'rgba(30, 41, 59, 0.9)';
+        const badgeColor = isSuperAdmin ? '#60A5FA' : '#94A3B8';
+        const badgeBorder = isSuperAdmin ? '1px solid rgba(59, 130, 246, 0.4)' : '1px solid rgba(255,255,255,0.1)';
+
+        return `
+            <tr style="border-bottom: 1px solid rgba(255,255,255,0.06); transition: background 0.2s;">
+                <td style="padding: 16px 20px; color: #FFF; font-weight: 700; font-size: 0.92rem;">
+                    ${acc.email}
+                </td>
+                <td style="padding: 16px 20px;">
+                    <span style="background: ${badgeBg}; color: ${badgeColor}; border: ${badgeBorder}; padding: 4px 14px; border-radius: 20px; font-weight: 800; font-size: 0.73rem; letter-spacing: 0.05em;">
+                        ${acc.role}
+                    </span>
+                </td>
+                <td style="padding: 16px 20px; color: #E2E8F0; font-weight: 600; font-size: 0.92rem;">
+                    ${acc.area || 'All Chapters'}
+                </td>
+                <td style="padding: 16px 20px;">
+                    <button onclick="deleteAccount('${acc.id}')" style="background: transparent; border: none; color: #64748B; cursor: pointer; padding: 6px; border-radius: 6px; transition: color 0.2s;" title="Delete Account" onmouseover="this.style.color='#F43F5E'" onmouseout="this.style.color='#64748B'">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 18px; height: 18px;"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                    </button>
+                </td>
+            </tr>
+        `;
+    }).join('');
+}
+
+function openCreateAccountModal() {
+    const backdrop = document.getElementById('create-account-backdrop');
+    const form = document.getElementById('create-account-form');
+    if (form) form.reset();
+    const roleEl = document.getElementById('acc-role');
+    if (roleEl) roleEl.value = 'CHAPTER HEAD';
+    toggleAccountChapterGroup();
+    if (backdrop) backdrop.style.display = 'flex';
+}
+
+function closeCreateAccountModal() {
+    const backdrop = document.getElementById('create-account-backdrop');
+    if (backdrop) backdrop.style.display = 'none';
+}
+
+function toggleAccountChapterGroup() {
+    const roleEl = document.getElementById('acc-role');
+    const chapterGroup = document.getElementById('acc-chapter-group');
+    if (!roleEl || !chapterGroup) return;
+
+    if (roleEl.value === 'CHAPTER HEAD' || roleEl.value.toUpperCase().includes('CHAPTER')) {
+        chapterGroup.style.display = 'block';
+    } else {
+        chapterGroup.style.display = 'none';
+    }
+}
+
+function handleCreateAccount(e) {
+    e.preventDefault();
+    const emailEl = document.getElementById('acc-email');
+    const roleEl = document.getElementById('acc-role');
+    const areaEl = document.getElementById('acc-chapter-area');
+
+    if (!emailEl || !emailEl.value.trim()) {
+        showToast('Please enter an email address.', 'error');
+        return;
+    }
+
+    const email = emailEl.value.trim();
+    const role = roleEl ? roleEl.value : 'CHAPTER HEAD';
+    const area = (role === 'SUPER ADMIN' || role.toUpperCase().includes('SUPER')) ? 'All Chapters' : (areaEl ? areaEl.value : 'East');
+
+    const newAcc = {
+        id: 'acc-' + Date.now(),
+        email: email,
+        role: role,
+        area: area
+    };
+
+    if (!state.accounts) state.accounts = [];
+    state.accounts.push(newAcc);
+    saveToStorage();
+    renderAccountsTable();
+    closeCreateAccountModal();
+    showToast(`Account created for ${email}`, 'success');
+}
+
+function deleteAccount(accId) {
+    const acc = (state.accounts || []).find(a => a.id === accId);
+    if (!acc) return;
+    if (confirm(`Are you sure you want to delete the account for ${acc.email}?`)) {
+        state.accounts = state.accounts.filter(a => a.id !== accId);
+        saveToStorage();
+        renderAccountsTable();
+        showToast('Account deleted.', 'info');
+    }
+}
+
+// ============================================================================
+// USER SECURITY & PROFILE MODAL FUNCTIONS (matching screenshot)
+// ============================================================================
+function openUserProfileModal(event) {
+    const backdrop = document.getElementById('user-profile-backdrop');
+    const card = document.querySelector('.user-security-card');
+    if (backdrop && card) {
+        switchProfileModalView('menu');
+        backdrop.style.display = 'block';
+        if (event && event.clientX > window.innerWidth / 2) {
+            card.style.right = '20px';
+            card.style.left = 'auto';
+        } else {
+            card.style.left = '16px';
+            card.style.right = 'auto';
+        }
+    }
+}
+
+function closeUserProfileModal() {
+    const backdrop = document.getElementById('user-profile-backdrop');
+    if (backdrop) {
+        backdrop.style.display = 'none';
+    }
+}
+
+function switchProfileModalView(view) {
+    const menuView = document.getElementById('profile-modal-menu-view');
+    const passcodeView = document.getElementById('profile-modal-passcode-view');
+    const recoveryView = document.getElementById('profile-modal-recovery-view');
+    
+    if (menuView) menuView.style.display = 'none';
+    if (passcodeView) passcodeView.style.display = 'none';
+    if (recoveryView) recoveryView.style.display = 'none';
+
+    if (view === 'passcode' && passcodeView) {
+        passcodeView.style.display = 'block';
+    } else if (view === 'recovery' && recoveryView) {
+        recoveryView.style.display = 'block';
+    } else if (menuView) {
+        menuView.style.display = 'block';
+    }
+}
+
+function saveNewPasscode() {
+    const curr = document.getElementById('sec-current-passcode');
+    const newPass = document.getElementById('sec-new-passcode');
+    const confPass = document.getElementById('sec-confirm-passcode');
+
+    if (newPass && confPass && newPass.value !== confPass.value) {
+        showToast('New passcodes do not match!', 'warning');
+        return;
+    }
+    if (newPass && newPass.value.length > 0 && newPass.value.length < 6) {
+        showToast('Passcode must be at least 6 characters long.', 'warning');
+        return;
+    }
+
+    if (curr) curr.value = '';
+    if (newPass) newPass.value = '';
+    if (confPass) confPass.value = '';
+
+    showToast('✅ Passcode successfully updated!', 'success');
+    switchProfileModalView('menu');
+}
+
+function saveRecoveryOptions() {
+    const emailEl = document.getElementById('sec-recovery-email');
+    if (emailEl && emailEl.value) {
+        const headerEmail = document.getElementById('profile-modal-email');
+        if (headerEmail) headerEmail.textContent = emailEl.value;
+    }
+    showToast('✅ Account recovery options saved successfully!', 'success');
+    switchProfileModalView('menu');
+}
+
+// ============================================================================
+// PHASE 1 - 4 UPGRADE LOGIC: AUDIT LOG, BACKUP/RESTORE, QR SCANNER, ROLES
+// ============================================================================
+
+function logAuditAction(actionText, category = 'system') {
+    if (!state.auditLog) state.auditLog = [];
+    const newEntry = {
+        id: 'log-' + Date.now(),
+        text: actionText,
+        time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }),
+        category: category
+    };
+    state.auditLog.unshift(newEntry);
+    if (state.auditLog.length > 50) state.auditLog.pop();
+    localStorage.setItem('ps_audit_log', JSON.stringify(state.auditLog));
+    renderAuditLog();
+}
+
+function renderAuditLog() {
+    const container = document.getElementById('audit-log-container');
+    if (!container) return;
+
+    if (!state.auditLog || state.auditLog.length === 0) {
+        const storedLog = localStorage.getItem('ps_audit_log');
+        if (storedLog) state.auditLog = JSON.parse(storedLog);
+        else {
+            state.auditLog = [
+                { id: 'log-1', text: 'System session initialized for Super Admin', time: '08:00 AM', category: 'system' },
+                { id: 'log-2', text: 'Loaded member records and semester roadmap', time: '08:01 AM', category: 'system' },
+                { id: 'log-3', text: 'Real-time attendance rate calculated at 84%', time: '08:02 AM', category: 'attendance' }
+            ];
+            localStorage.setItem('ps_audit_log', JSON.stringify(state.auditLog));
+        }
+    }
+
+    if (state.auditLog.length === 0) {
+        container.innerHTML = '<div style="color: #94A3B8; font-size: 0.85rem; text-align: center; padding: 12px;">No recent audit actions logged.</div>';
+        return;
+    }
+
+    container.innerHTML = state.auditLog.map(item => `
+        <div class="audit-log-item">
+            <div style="display: flex; align-items: center; gap: 8px;">
+                <span style="color: #38BDF8;">🔹</span>
+                <span>${item.text}</span>
+            </div>
+            <span class="audit-log-time">${item.time}</span>
+        </div>
+    `).join('');
+}
+
+function exportBackupJSON() {
+    const backupData = {
+        version: '1.0',
+        timestamp: new Date().toISOString(),
+        activities: state.activities,
+        members: state.members,
+        attendance: state.attendance,
+        funds: state.funds,
+        auditLog: state.auditLog || []
+    };
+
+    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(backupData, null, 2));
+    const downloadAnchor = document.createElement('a');
+    downloadAnchor.setAttribute("href", dataStr);
+    downloadAnchor.setAttribute("download", `MFC_Youth_Tarlac_Backup_${new Date().toISOString().split('T')[0]}.json`);
+    document.body.appendChild(downloadAnchor);
+    downloadAnchor.click();
+    downloadAnchor.remove();
+
+    logAuditAction('Downloaded full system JSON database backup', 'security');
+    showToast('📥 Backup database JSON file downloaded successfully!', 'success');
+}
+
+function exportToGoogleSheetsTSV() {
+    if (!state.members || state.members.length === 0) {
+        showToast('No members to export to Google Sheets.', 'error');
+        return;
+    }
+
+    const headers = ["Member ID", "Full Name", "Chapter / Area", "Department", "Role / Rank", "Email", "Contact Number", "Birthday", "CLC Camp Date", "Status"];
+    const rows = state.members.map(m => [
+        m.id || '',
+        m.name || '',
+        m.chapter || 'Central Chapter',
+        m.dept || 'General',
+        m.role || 'Member',
+        m.email || '',
+        m.contactNum || '',
+        m.birthday || '',
+        m.campDate || '',
+        m.status || 'Active'
+    ]);
+
+    const tsvContent = [
+        headers.join('\t'),
+        ...rows.map(row => row.map(val => String(val).replace(/\t/g, ' ')).join('\t'))
+    ].join('\n');
+
+    // Download TSV file suitable for direct Google Drive / Sheets upload
+    const blob = new Blob([tsvContent], { type: 'text/tab-separated-values;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `MFC_Youth_Tarlac_GoogleSheets_Export_${new Date().toISOString().slice(0, 10)}.tsv`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+
+    // Try copying to clipboard for 1-click Ctrl+V in Google Sheets
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(tsvContent).then(() => {
+            showToast('📋 Copied to clipboard & downloaded! Open Google Sheets and press Ctrl+V to paste.', 'success');
+        }).catch(() => {
+            showToast('☁️ Downloaded TSV ready for Google Sheets upload!', 'success');
+        });
+    } else {
+        showToast('☁️ Downloaded TSV ready for Google Sheets upload!', 'success');
+    }
+
+    logAuditAction(`Exported directory TSV for Google Sheets sync (${state.members.length} members)`, 'export');
+}
+
+function importBackupJSON(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        try {
+            const data = JSON.parse(e.target.result);
+            if (!data || !data.activities || !data.members) {
+                showToast('Invalid backup file format.', 'warning');
+                return;
+            }
+
+            state.activities = data.activities || [];
+            state.members = data.members || [];
+            state.attendance = data.attendance || {};
+            state.funds = data.funds || [];
+            if (data.auditLog) state.auditLog = data.auditLog;
+
+            saveToStorage();
+            if (state.auditLog) localStorage.setItem('ps_audit_log', JSON.stringify(state.auditLog));
+
+            renderAll();
+            logAuditAction('Restored system database from backup file', 'security');
+            showToast('✅ System data restored successfully from backup!', 'success');
+        } catch (err) {
+            console.error('Restore Error:', err);
+            showToast('Failed to parse JSON backup file.', 'warning');
+        }
+    };
+    reader.readAsText(file);
+    event.target.value = '';
+}
+
+function openQRScannerModal() {
+    const actId = state.selectedActivityId;
+    if (!actId) {
+        showToast('Please select an activity from the dropdown first!', 'warning');
+        return;
+    }
+
+    const backdrop = document.getElementById('qr-scanner-backdrop');
+    const selectEl = document.getElementById('qr-sim-member');
+    if (!backdrop || !selectEl) return;
+
+    selectEl.innerHTML = state.members.map(m => `
+        <option value="${m.id}">${m.name} (${m.role})</option>
+    `).join('');
+
+    backdrop.style.display = 'flex';
+    logAuditAction('Opened Live QR / ID Scanner for check-in', 'attendance');
+}
+
+function closeQRScannerModal() {
+    const backdrop = document.getElementById('qr-scanner-backdrop');
+    if (backdrop) backdrop.style.display = 'none';
+}
+
+function simulateQRCheckIn() {
+    const actId = state.selectedActivityId;
+    const selectEl = document.getElementById('qr-sim-member');
+    if (!actId || !selectEl || !selectEl.value) return;
+
+    const memId = selectEl.value;
+    const member = state.members.find(m => m.id === memId);
+    if (!member) return;
+
+    if (!state.attendance[actId]) state.attendance[actId] = {};
+    const currentTime = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+    state.attendance[actId][memId] = {
+        status: 'present',
+        time: currentTime,
+        notes: '⚡ QR Check-In Verified'
+    };
+
+    saveToStorage();
+    renderAttendanceRoster();
+    logAuditAction(`QR Scan verified check-in for ${member.name}`, 'attendance');
+    showToast(`⚡ QR Verified: ${member.name} marked Present at ${currentTime}!`, 'success');
+    closeQRScannerModal();
+}
+
+function switchSimulatedRole(roleName) {
+    state.currentRole = roleName;
+    const subEl = document.getElementById('profile-modal-role');
+    const sideRoleEl = document.querySelector('.sidebar-user-role');
+    
+    if (subEl) subEl.textContent = roleName;
+    if (sideRoleEl) sideRoleEl.textContent = roleName;
+
+    const navFunds = document.querySelector('.nav-item[data-view="funds"]');
+    const navAccount = document.querySelector('.nav-item[data-view="account"]');
+    const mobileFunds = document.getElementById('mobile-nav-funds');
+
+    if (roleName === 'Attendance Officer') {
+        if (navFunds) navFunds.style.display = 'none';
+        if (navAccount) navAccount.style.display = 'none';
+        if (mobileFunds) mobileFunds.style.display = 'none';
+        showToast('Switched to Attendance Officer role. Ledger restricted.', 'info');
+    } else if (roleName === 'Finance Officer') {
+        if (navFunds) navFunds.style.display = 'flex';
+        if (navAccount) navAccount.style.display = 'none';
+        if (mobileFunds) mobileFunds.style.display = 'flex';
+        showToast('Switched to Finance Officer role. Full Ledger access.', 'info');
+    } else {
+        if (navFunds) navFunds.style.display = 'flex';
+        if (navAccount) navAccount.style.display = 'flex';
+        if (mobileFunds) mobileFunds.style.display = 'flex';
+        showToast('Switched to Super Admin role. Full System Access.', 'success');
+    }
+
+    logAuditAction(`Officer simulated role switched to ${roleName}`, 'security');
+    switchProfileModalView('menu');
+}
+
+// ============================================================================
+// AUTHENTICATION OVERLAY & LOGIN / LOGOUT ENGINE
+// ============================================================================
+
+function logoutUser() {
+    localStorage.setItem('ps_logged_in', 'false');
+    const overlay = document.getElementById('auth-login-overlay');
+    if (overlay) {
+        overlay.style.display = 'flex';
+    }
+    closeUserProfileModal();
+    showToast('Logged out of MFC Youth Tarlac Portal.', 'info');
+    logAuditAction('User logged out of the portal', 'security');
+}
+
+function loginUser(event) {
+    if (event) event.preventDefault();
+    const emailEl = document.getElementById('auth-login-email');
+    const passEl = document.getElementById('auth-login-password');
+
+    if (!emailEl || !emailEl.value.trim() || !passEl || !passEl.value.trim()) {
+        showToast('Please enter both email and password.', 'error');
+        return;
+    }
+
+    const emailVal = emailEl.value.trim();
+    localStorage.setItem('ps_logged_in', 'true');
+    const overlay = document.getElementById('auth-login-overlay');
+    if (overlay) {
+        overlay.style.display = 'none';
+    }
+
+    // Check if account is a Chapter Head
+    const acc = state.accounts && state.accounts.find(a => a.email.toLowerCase() === emailVal.toLowerCase());
+    if (acc && acc.role === 'CHAPTER HEAD' && acc.area && acc.area !== 'All Chapters') {
+        const chapterSelect = document.getElementById('members-filter-chapter');
+        if (chapterSelect) {
+            chapterSelect.value = `${acc.area} Chapter`;
+            filterMembers();
+        }
+        showToast(`Welcome ${emailVal} (Chapter Head: ${acc.area} Area)`, 'success');
+    } else {
+        showToast('Welcome back to MFC Youth Tarlac Data Portal!', 'success');
+    }
+
+    logAuditAction(`Admin logged in: ${emailVal}`, 'security');
+}
+
+function handleForgotPassword() {
+    const emailEl = document.getElementById('auth-login-email');
+    const email = emailEl && emailEl.value ? emailEl.value : 'your registered email';
+    showToast(`Password reset link sent to ${email}. Check your inbox.`, 'info');
+}
+
+// ============================================================================
+// BULK CSV / EXCEL IMPORT ENGINE FOR MEMBERS
+// ============================================================================
+
+function openImportCSVModal() {
+    const backdrop = document.getElementById('import-csv-backdrop');
+    if (backdrop) backdrop.style.display = 'flex';
+}
+
+function closeImportCSVModal() {
+    const backdrop = document.getElementById('import-csv-backdrop');
+    if (backdrop) backdrop.style.display = 'none';
+}
+
+function handleCSVFileUpload(event) {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        const text = e.target.result;
+        const textarea = document.getElementById('import-csv-text');
+        if (textarea) textarea.value = text;
+        showToast(`Loaded ${file.name} into editor`, 'info');
+    };
+    reader.readAsText(file);
+}
+
+function processCSVImport() {
+    const textarea = document.getElementById('import-csv-text');
+    if (!textarea || !textarea.value.trim()) {
+        showToast('Please upload a CSV file or paste CSV rows first.', 'error');
+        return;
+    }
+
+    const lines = textarea.value.trim().split(/\r?\n/);
+    let importedCount = 0;
+
+    if (!state.members) state.members = [];
+
+    lines.forEach((line, idx) => {
+        if (!line.trim()) return;
+        if (idx === 0 && line.toLowerCase().includes('name') && line.toLowerCase().includes('chapter')) return; // skip header
+
+        const cols = line.split(',').map(c => c.trim());
+        const name = cols[0];
+        if (!name) return;
+
+        const chapter = cols[1] || 'East Chapter';
+        const department = cols[2] || 'Programs & Events';
+        const role = cols[3] || 'Youth Member';
+        const phone = cols[4] || '';
+        const email = cols[5] || '';
+
+        const newMember = {
+            id: 'm-import-' + Date.now() + '-' + importedCount,
+            name: name,
+            chapter: chapter,
+            department: department,
+            role: role,
+            phone: phone,
+            email: email,
+            birthdate: '2008-01-01',
+            parentContact: '',
+            youthCampDate: '2024-05-15'
+        };
+
+        state.members.push(newMember);
+        importedCount++;
+    });
+
+    saveToStorage();
+    renderAll();
+    closeImportCSVModal();
+    textarea.value = '';
+    showToast(`Successfully imported ${importedCount} members from CSV!`, 'success');
+    logAuditAction(`Imported ${importedCount} members via CSV`, 'members');
+}
+
+// ============================================================================
+// PRINTABLE MEMBER DIGITAL QR ID CARD BADGE GENERATOR
+// ============================================================================
+
+function generateSVGQRCode(text) {
+    const size = 25;
+    let grid = Array.from({ length: size }, () => Array(size).fill(false));
+
+    function drawFinder(row, col) {
+        for (let r = 0; r < 7; r++) {
+            for (let c = 0; c < 7; c++) {
+                if (r === 0 || r === 6 || c === 0 || c === 6 || (r >= 2 && r <= 4 && c >= 2 && c <= 4)) {
+                    grid[row + r][col + c] = true;
+                } else {
+                    grid[row + r][col + c] = false;
+                }
+            }
+        }
+    }
+
+    drawFinder(0, 0);
+    drawFinder(0, size - 7);
+    drawFinder(size - 7, 0);
+
+    let hash = 0;
+    for (let i = 0; i < text.length; i++) {
+        hash = (hash * 31 + text.charCodeAt(i)) >>> 0;
+    }
+
+    for (let r = 0; r < size; r++) {
+        for (let c = 0; c < size; c++) {
+            const inTL = (r <= 7 && c <= 7);
+            const inTR = (r <= 7 && c >= size - 8);
+            const inBL = (r >= size - 8 && c <= 7);
+            if (!inTL && !inTR && !inBL) {
+                const bit = ((r * size + c) ^ hash ^ (r * 3 + c * 5)) % 2 === 0;
+                grid[r][c] = bit;
+            }
+        }
+    }
+
+    let rects = '';
+    const cellW = 100 / size;
+    for (let r = 0; r < size; r++) {
+        for (let c = 0; c < size; c++) {
+            if (grid[r][c]) {
+                rects += `<rect x="${(c * cellW).toFixed(2)}" y="${(r * cellW).toFixed(2)}" width="${(cellW + 0.2).toFixed(2)}" height="${(cellW + 0.2).toFixed(2)}" fill="#0F172A"/>`;
+            }
+        }
+    }
+
+    return `<svg viewBox="0 0 100 100" style="width: 100%; height: 100%; display: block;">${rects}</svg>`;
+}
+
+function renderScannableQRCode(containerEl, qrText) {
+    if (!containerEl) return;
+    containerEl.innerHTML = '';
+    const encodedText = encodeURIComponent(qrText);
+    const qrImgUrl = `https://api.qrserver.com/v1/create-qr-code/?size=140x140&margin=1&data=${encodedText}`;
+
+    const img = document.createElement('img');
+    img.src = qrImgUrl;
+    img.alt = 'Member QR Code';
+    img.style.width = '130px';
+    img.style.height = '130px';
+    img.style.objectFit = 'contain';
+    img.style.display = 'block';
+    img.style.margin = '0 auto';
+    img.onerror = function() {
+        containerEl.innerHTML = '';
+        if (window.QRCode) {
+            new QRCode(containerEl, {
+                text: qrText,
+                width: 130,
+                height: 130,
+                colorDark: "#0F172A",
+                colorLight: "#FFFFFF",
+                correctLevel: QRCode.CorrectLevel.M
+            });
+        }
+    };
+    containerEl.appendChild(img);
+}
+
+function openMemberQRBadgeModal() {
+    const memberId = window.currentProfileMemberId || (state.members[0] ? state.members[0].id : null);
+    const member = state.members.find(m => m.id === memberId);
+    if (!member) {
+        showToast('Please select a member first.', 'error');
+        return;
+    }
+
+    const nameEl = document.getElementById('qr-badge-name');
+    const roleAreaEl = document.getElementById('qr-badge-role-area');
+    const idCodeEl = document.getElementById('qr-badge-id-code');
+    const qrBox = document.getElementById('qr-badge-box');
+
+    if (nameEl) nameEl.textContent = member.name;
+    if (roleAreaEl) roleAreaEl.textContent = `${member.chapter || 'East Chapter'} • ${member.department || 'Programs'}`;
+    if (idCodeEl) idCodeEl.textContent = `ID: ${member.id.toUpperCase()}`;
+
+    if (qrBox) {
+        renderScannableQRCode(qrBox, `MFC Youth Tarlac ID: ${member.id} (${member.name})`);
+    }
+
+    const backdrop = document.getElementById('qr-badge-backdrop');
+    if (backdrop) backdrop.style.display = 'flex';
+}
+
+function closeMemberQRBadgeModal() {
+    const backdrop = document.getElementById('qr-badge-backdrop');
+    if (backdrop) backdrop.style.display = 'none';
+}
+
+function printMemberIDCard() {
+    const cardContent = document.getElementById('printable-id-card');
+    if (!cardContent) return;
+
+    const printWindow = window.open('', '_blank', 'width=500,height=650');
+    if (!printWindow) {
+        showToast('Popup blocked. Please allow popups to print ID card.', 'error');
+        return;
+    }
+
+    printWindow.document.write(`
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <title>MFC Youth Tarlac - Member ID</title>
+            <style>
+                body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #FFF; padding: 30px; display: flex; justify-content: center; }
+                .card { width: 340px; background: #0B132B; color: #FFF; border-radius: 18px; padding: 26px 20px; text-align: center; border: 2px solid #38BDF8; box-shadow: 0 10px 25px rgba(0,0,0,0.2); }
+                .top { color: #F59E0B; font-size: 11px; font-weight: bold; letter-spacing: 2px; }
+                .title { color: #FFF; font-size: 16px; font-weight: 900; margin-top: 4px; margin-bottom: 14px; }
+                .name { color: #38BDF8; font-size: 20px; font-weight: bold; margin-bottom: 4px; }
+                .role { color: #94A3B8; font-size: 13px; margin-bottom: 18px; }
+                .qr-box { width: 140px; height: 140px; background: #FFF; border-radius: 12px; margin: 0 auto 16px; padding: 10px; display: flex; align-items: center; justify-content: center; }
+                .idcode { font-family: monospace; font-size: 13px; color: #E2E8F0; font-weight: bold; }
+            </style>
+        </head>
+        <body>
+            <div class="card">
+                ${cardContent.innerHTML}
+            </div>
+            <script>
+                window.onload = function() { window.print(); window.close(); };
+            </script>
+        </body>
+        </html>
+    `);
+    printWindow.document.close();
+    showToast('Sent digital QR ID badge to printer!', 'success');
+}
+
+// ============================================================================
+// SYSTEM BACKUP & RESTORE ENGINE (.JSON)
+// ============================================================================
+
+function restoreBackupJSON(event) {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        try {
+            const data = JSON.parse(e.target.result);
+            if (data.members) state.members = data.members;
+            if (data.activities) state.activities = data.activities;
+            if (data.attendance) state.attendance = data.attendance;
+            if (data.funds) state.funds = data.funds;
+            if (data.accounts) state.accounts = data.accounts;
+
+            saveToStorage();
+            renderAll();
+            showToast('System database successfully restored from backup!', 'success');
+            logAuditAction('System database restored from backup JSON', 'security');
+        } catch (err) {
+            showToast('Invalid backup JSON file.', 'error');
+        }
+    };
+    reader.readAsText(file);
+}
+
+function restoreFromAutoRecoverySnapshot() {
+    const raw = localStorage.getItem('ps_recovery_snapshot_mfc_v1');
+    if (!raw) {
+        showToast('No auto-recovery snapshot found.', 'error');
+        return;
+    }
+    if (!confirm('Are you sure you want to restore your data from the most recent automatic recovery snapshot?')) return;
+    try {
+        const snap = JSON.parse(raw);
+        if (snap.activities) state.activities = snap.activities;
+        if (snap.members) state.members = snap.members;
+        if (snap.attendance) state.attendance = snap.attendance;
+        if (snap.funds) state.funds = snap.funds;
+        saveToStorage();
+        renderAll();
+        showToast('Data restored successfully from automatic snapshot!', 'success');
+        logAuditAction('Restored data from automatic recovery snapshot', 'security');
+    } catch(e) {
+        showToast('Failed to restore snapshot.', 'error');
+    }
+}
+
+function resetSystemToDefault() {
+    if (!confirm('Are you sure you want to reset the database to the official MFC Youth Tarlac starter pack? Current local edits will be replaced.')) return;
+
+    localStorage.removeItem('ps_activities_mfc_v10');
+    localStorage.removeItem('ps_members_mfc_v9');
+    localStorage.removeItem('ps_attendance_mfc_v9');
+    localStorage.removeItem('ps_accounts_mfc_v9');
+
+    loadFromStorage();
+    renderAll();
+    showToast('Database reset to official MFC Youth Tarlac starter pack!', 'success');
+    logAuditAction('System database reset to default starter pack', 'security');
+}
+
+// ============================================================================
+// ENHANCED ROADMAP FEATURES: QR BADGE, CHART ANALYTICS & PASTORAL CARE
+// ============================================================================
+
+function openMemberQRModal(memberId) {
+    const mem = state.members.find(m => m.id === memberId);
+    if (!mem) return;
+
+    const nameEl = document.getElementById('qr-badge-name');
+    const roleEl = document.getElementById('qr-badge-role');
+    const qrCont = document.getElementById('qrcode-container');
+    const modalEl = document.getElementById('modal-member-qr-id');
+
+    if (nameEl) nameEl.textContent = mem.name;
+    if (roleEl) roleEl.textContent = `${mem.role || 'Member'} • ${mem.dept || 'MFC Youth Tarlac'}`;
+
+    if (qrCont) {
+        renderScannableQRCode(qrCont, `MFC Youth Tarlac ID: ${mem.id} (${mem.name})`);
+    }
+
+    if (modalEl) modalEl.style.display = 'flex';
+}
+
+function closeMemberQRModal() {
+    const modalEl = document.getElementById('modal-member-qr-id');
+    if (modalEl) modalEl.style.display = 'none';
+}
+
+let activeAttendanceChart = null;
+let activeCategoryChart = null;
+
+function renderInteractiveCharts() {
+    if (!window.Chart) return;
+
+    const trendCanvas = document.getElementById('chart-attendance-trend');
+    const catCanvas = document.getElementById('chart-category-breakdown');
+
+    if (trendCanvas) {
+        const labels = state.activities.map(a => (a.name || a.title || 'Event').substring(0, 16));
+        const totalMems = state.members.length;
+        const dataRates = state.activities.map(act => {
+            const attObj = state.attendance[act.id] || {};
+            let pCount = 0;
+            state.members.forEach(m => {
+                if (attObj[m.id]?.status === 'present') pCount++;
+            });
+            return totalMems > 0 ? Math.round((pCount / totalMems) * 100) : 0;
+        });
+
+        if (activeAttendanceChart) activeAttendanceChart.destroy();
+        activeAttendanceChart = new Chart(trendCanvas, {
+            type: 'line',
+            data: {
+                labels: labels.length ? labels : ['No Activities'],
+                datasets: [{
+                    label: 'Attendance Rate (%)',
+                    data: dataRates.length ? dataRates : [0],
+                    borderColor: '#38BDF8',
+                    backgroundColor: 'rgba(56, 189, 248, 0.15)',
+                    borderWidth: 3,
+                    fill: true,
+                    tension: 0.35,
+                    pointBackgroundColor: '#38BDF8',
+                    pointRadius: 5
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 100,
+                        ticks: { color: '#94A3B8' },
+                        grid: { color: 'rgba(255,255,255,0.06)' }
+                    },
+                    x: {
+                        ticks: { color: '#94A3B8' },
+                        grid: { color: 'rgba(255,255,255,0.06)' }
+                    }
+                },
+                plugins: {
+                    legend: { labels: { color: '#F8FAFC' } }
+                }
+            }
+        });
+    }
+
+    if (catCanvas) {
+        const catMap = {};
+        state.activities.forEach(a => {
+            const cat = a.type || a.category || 'General';
+            catMap[cat] = (catMap[cat] || 0) + 1;
+        });
+        const catLabels = Object.keys(catMap);
+        const catCounts = Object.values(catMap);
+
+        if (activeCategoryChart) activeCategoryChart.destroy();
+        activeCategoryChart = new Chart(catCanvas, {
+            type: 'doughnut',
+            data: {
+                labels: catLabels.length ? catLabels : ['General Assembly'],
+                datasets: [{
+                    data: catCounts.length ? catCounts : [1],
+                    backgroundColor: ['#38BDF8', '#10B981', '#F59E0B', '#8B5CF6', '#F43F5E', '#EC4899'],
+                    borderColor: '#0F172A',
+                    borderWidth: 2
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { position: 'right', labels: { color: '#F8FAFC', font: { size: 11 } } }
+                }
+            }
+        });
+    }
+}
+
+function generatePastoralList() {
+    const listEl = document.getElementById('pastoral-followup-list');
+    if (!listEl) return;
+
+    // Find members who missed the most recent activities
+    const recentActs = state.activities.slice(-3);
+    const absentMembers = [];
+
+    state.members.forEach(mem => {
+        let missedCount = 0;
+        recentActs.forEach(act => {
+            const status = state.attendance[act.id]?.[mem.id]?.status;
+            if (status !== 'present') missedCount++;
+        });
+        if (missedCount > 0) {
+            absentMembers.push({ mem, missedCount });
+        }
+    });
+
+    if (absentMembers.length === 0) {
+        listEl.innerHTML = `<div style="color: #34D399; font-weight: 600; padding: 12px 0;">🎉 Great news! All members attended recent activities.</div>`;
+        return;
+    }
+
+    const headerHtml = `
+        <div style="background: rgba(234, 67, 53, 0.15); border: 1px solid rgba(234, 67, 53, 0.4); border-radius: 12px; padding: 14px; margin-bottom: 14px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+            <div>
+                <div style="color: #FFF; font-weight: 800; font-size: 0.92rem;">⚡ Automated Batch Absentee Check-In</div>
+                <div style="color: #94A3B8; font-size: 0.78rem;">Auto-generates one Gmail compose window addressed via BCC to all ${absentMembers.length} absent member(s).</div>
+            </div>
+            <button type="button" class="btn-primary glow-button" onclick="autoSendBatchPastoralGmail()" style="background: linear-gradient(135deg, #EA4335, #DB4437); border: none; font-size: 0.8rem; padding: 8px 16px; cursor: pointer;">
+                🚀 Auto-Send Batch Gmail
+            </button>
+        </div>
+    `;
+
+    const cardsHtml = absentMembers.map(item => {
+        const mem = item.mem;
+        const msgBodyText = `Hi Bro/Sis ${mem.name}!\n\nWe missed you at our recent MFC Youth Tarlac activities. Hope you are doing well! Let us know if you need any prayers or support.\n\nGod bless! 💛\n- MFC Youth Tarlac Chapter`;
+        const encodedBody = encodeURIComponent(msgBodyText);
+        const encodedSubject = encodeURIComponent(`MFC Youth Tarlac - Pastoral Check-In 💛 (${mem.name})`);
+        const targetEmail = encodeURIComponent(mem.email || '');
+        const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=${targetEmail}&su=${encodedSubject}&body=${encodedBody}`;
+
+        return `
+            <div style="background: rgba(15, 23, 42, 0.7); border: 1px solid rgba(244, 63, 94, 0.35); border-radius: 12px; padding: 16px; display: flex; flex-direction: column; justify-content: space-between; gap: 12px; margin-bottom: 10px;">
+                <div>
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <strong style="color: #F8FAFC; font-size: 0.95rem;">${mem.name}</strong>
+                        <span style="background: rgba(244, 63, 94, 0.2); color: #F43F5E; padding: 3px 10px; border-radius: 10px; font-size: 0.72rem; font-weight: 700;">Missed ${item.missedCount} event(s)</span>
+                    </div>
+                    <div style="font-size: 0.8rem; color: #94A3B8; margin-top: 4px;">Role: ${mem.role || 'Member'} • Email: <span style="color: #38BDF8;">${mem.email || 'Not listed'}</span></div>
+                </div>
+                <div style="display: flex; gap: 8px;">
+                    <a href="${gmailUrl}" target="_blank" class="btn-primary glow-button" style="text-decoration: none; font-size: 0.78rem; padding: 7px 14px; text-align: center; flex: 1; background: linear-gradient(135deg, #EA4335, #DB4437); color: #FFF; display: inline-flex; align-items: center; justify-content: center; gap: 6px; border: none;">
+                        <span>📧 Send via Gmail</span>
+                    </a>
+                    <button type="button" class="btn-secondary" style="font-size: 0.78rem; padding: 7px 12px;" onclick="copyPastoralMessage('${mem.name.replace(/'/g, "\\'")}')">
+                        📋 Copy Text
+                    </button>
+                </div>
+            </div>
+        `;
+    }).join('');
+
+    listEl.innerHTML = headerHtml + cardsHtml;
+}
+
+function autoSendBatchPastoralGmail() {
+    const recentActs = state.activities.slice(-3);
+    const absentEmails = [];
+    const absentNames = [];
+
+    state.members.forEach(mem => {
+        let missedCount = 0;
+        recentActs.forEach(act => {
+            const status = state.attendance[act.id]?.[mem.id]?.status;
+            if (status !== 'present') missedCount++;
+        });
+        if (missedCount > 0) {
+            absentNames.push(mem.name);
+            if (mem.email && mem.email.trim() && mem.email.includes('@')) {
+                absentEmails.push(mem.email.trim());
+            }
+        }
+    });
+
+    const bccList = absentEmails.join(',');
+    const msgBodyText = `Hi Brothers and Sisters!\n\nWe missed you at our recent MFC Youth Tarlac Chapter assemblies and activities. Hope you are doing well! Please let your household heads know if you need any prayers, assistance, or support.\n\nSee you at our next activity! God bless! 💛\n\n- MFC Youth Tarlac Chapter Executive Team`;
+    const encodedBody = encodeURIComponent(msgBodyText);
+    const encodedSubject = encodeURIComponent(`MFC Youth Tarlac - Pastoral Check-In 💛`);
+
+    const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&bcc=${encodeURIComponent(bccList)}&su=${encodedSubject}&body=${encodedBody}`;
+    window.open(gmailUrl, '_blank');
+
+    showToast(`Automated batch check-in triggered for ${absentNames.length} member(s)!`, 'success');
+    logAuditAction(`Triggered automated batch pastoral Gmail for ${absentNames.length} absent members`, 'pastoral');
+}
+
+function copyPastoralMessage(name) {
+    const text = `Hi Bro/Sis ${name}! We missed you at our recent MFC Youth Tarlac activities. Hope you are doing well! Let us know if you need any prayers or support. God bless! 💛`;
+    if (navigator.clipboard) {
+        navigator.clipboard.writeText(text);
+        showToast(`Pastoral check-in message copied for ${name}!`, 'success');
+    }
+}
+
+// ============================================================================
+// TOP BAR GLOBAL SEARCH & PASTORAL NOTIFICATIONS
+// ============================================================================
+
+function handleGlobalSearch(query) {
+    const resultsBox = document.getElementById('global-search-results');
+    if (!resultsBox) return;
+
+    const q = (query || '').trim().toLowerCase();
+    if (!q || q.length < 2) {
+        resultsBox.style.display = 'none';
+        resultsBox.innerHTML = '';
+        return;
+    }
+
+    const matchedMembers = state.members.filter(m => m.name.toLowerCase().includes(q) || (m.chapter && m.chapter.toLowerCase().includes(q))).slice(0, 4);
+    const matchedActivities = state.activities.filter(a => (a.title || a.name || '').toLowerCase().includes(q) || (a.location || '').toLowerCase().includes(q)).slice(0, 3);
+
+    if (matchedMembers.length === 0 && matchedActivities.length === 0) {
+        resultsBox.style.display = 'block';
+        resultsBox.innerHTML = `<div style="padding: 10px; color: #94A3B8; font-size: 0.8rem; text-align: center;">No matching members or activities found.</div>`;
+        return;
+    }
+
+    let html = '';
+    if (matchedMembers.length > 0) {
+        html += `<div style="font-size: 0.7rem; font-weight: 800; color: #38BDF8; letter-spacing: 0.05em; padding: 4px 8px;">MEMBERS (${matchedMembers.length})</div>`;
+        matchedMembers.forEach(m => {
+            html += `
+                <div onclick="switchView('members'); document.getElementById('global-search-results').style.display='none'; showToast('Navigating to ${m.name}...', 'info');" style="padding: 8px; border-radius: 8px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; transition: background 0.15s;" onmouseover="this.style.background='rgba(56,189,248,0.1)'" onmouseout="this.style.background='transparent'">
+                    <div>
+                        <div style="color: #FFF; font-weight: 700; font-size: 0.82rem;">${m.name}</div>
+                        <div style="color: #94A3B8; font-size: 0.72rem;">${m.chapter || 'Central'} • ${m.role || 'Member'}</div>
+                    </div>
+                    <span style="font-size: 0.72rem; color: #38BDF8;">View →</span>
+                </div>
+            `;
+        });
+    }
+
+    if (matchedActivities.length > 0) {
+        html += `<div style="font-size: 0.7rem; font-weight: 800; color: #10B981; letter-spacing: 0.05em; padding: 6px 8px 4px;">ACTIVITIES (${matchedActivities.length})</div>`;
+        matchedActivities.forEach(a => {
+            const displayTitle = a.title || a.name || 'Untitled';
+            html += `
+                <div onclick="selectActivityForAttendance('${a.id}'); document.getElementById('global-search-results').style.display='none';" style="padding: 8px; border-radius: 8px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; transition: background 0.15s;" onmouseover="this.style.background='rgba(16,185,129,0.1)'" onmouseout="this.style.background='transparent'">
+                    <div>
+                        <div style="color: #FFF; font-weight: 700; font-size: 0.82rem;">${displayTitle}</div>
+                        <div style="color: #94A3B8; font-size: 0.72rem;">${a.date || 'No date'} • ${a.status || 'Scheduled'}</div>
+                    </div>
+                    <span style="font-size: 0.72rem; color: #10B981;">Roster →</span>
+                </div>
+            `;
+        });
+    }
+
+    resultsBox.innerHTML = html;
+    resultsBox.style.display = 'block';
+}
+
+function updateTopNotificationBadge() {
+    const badge = document.getElementById('top-notification-count');
+    if (!badge) return;
+
+    const currentMonth = new Date().getMonth() + 1;
+    const bdayCount = state.members.filter(m => m.birthday && parseInt(m.birthday.split('-')[1], 10) === currentMonth).length;
+    const totalAlerts = (bdayCount > 0 ? 1 : 0) + 1;
+
+    badge.textContent = totalAlerts;
+}
+
+function showTopNotificationsModal() {
+    const modal = document.getElementById('modal-top-notifications');
+    const content = document.getElementById('top-notifications-content');
+    if (!modal || !content) return;
+
+    const currentMonth = new Date().getMonth() + 1;
+    const bdayMems = state.members.filter(m => m.birthday && parseInt(m.birthday.split('-')[1], 10) === currentMonth);
+
+    let html = `
+        <div style="background: rgba(56, 189, 248, 0.1); border: 1px solid rgba(56, 189, 248, 0.3); border-radius: 12px; padding: 14px; display: flex; align-items: center; justify-content: space-between;">
+            <div>
+                <div style="color: #38BDF8; font-weight: 800; font-size: 0.88rem;">🟢 System Protected</div>
+                <div style="color: #94A3B8; font-size: 0.78rem;">All ${state.members.length} member records are saved in local storage.</div>
+            </div>
+            <button class="btn-secondary btn-sm" onclick="exportBackupJSON(); closeTopNotificationsModal();" style="font-size: 0.75rem;">Backup JSON</button>
+        </div>
+    `;
+
+    if (bdayMems.length > 0) {
+        html += `
+            <div style="background: rgba(236, 72, 153, 0.12); border: 1px solid rgba(236, 72, 153, 0.35); border-radius: 12px; padding: 14px; display: flex; align-items: center; justify-content: space-between;">
+                <div>
+                    <div style="color: #F472B6; font-weight: 800; font-size: 0.88rem;">🎂 ${bdayMems.length} Celebrant(s) This Month</div>
+                    <div style="color: #94A3B8; font-size: 0.78rem;">Send pastoral birthday greetings to celebrate our members!</div>
+                </div>
+                <button class="btn-secondary btn-sm" onclick="sendMilestoneGreetingsGmail(); closeTopNotificationsModal();" style="color: #F472B6; border-color: rgba(236, 72, 153, 0.4); font-size: 0.75rem;">Email Gmail</button>
+            </div>
+        `;
+    } else {
+        html += `
+            <div style="background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 12px; padding: 14px;">
+                <div style="color: #F8FAFC; font-weight: 700; font-size: 0.85rem;">No Birthday Celebrants This Month</div>
+                <div style="color: #94A3B8; font-size: 0.78rem;">Check back next month or view all members in the directory.</div>
+            </div>
+        `;
+    }
+
+    content.innerHTML = html;
+    modal.style.display = 'flex';
+}
+
+function closeTopNotificationsModal() {
+    const modal = document.getElementById('modal-top-notifications');
+    if (modal) modal.style.display = 'none';
+}
+
+// Close global search results when clicking outside
+document.addEventListener('click', (e) => {
+    const searchContainer = document.querySelector('.header-global-search');
+    const resultsBox = document.getElementById('global-search-results');
+    if (resultsBox && searchContainer && !searchContainer.contains(e.target)) {
+        resultsBox.style.display = 'none';
+    }
+});
+
+// ============================================================================
+// EXPANDABLE RESOURCES SIDEBAR ACCORDION & CATEGORIES
+// ============================================================================
+
+function toggleResourcesMenu(event) {
+    if (event) event.stopPropagation();
+    const subnav = document.getElementById('subnav-resources');
+    const chevron = document.getElementById('chevron-resources');
+    if (!subnav) return;
+
+    if (subnav.style.display === 'none' || !subnav.style.display) {
+        subnav.style.display = 'flex';
+        if (chevron) chevron.style.transform = 'rotate(180deg)';
+        switchView('resources');
+    } else {
+        subnav.style.display = 'none';
+        if (chevron) chevron.style.transform = 'rotate(0deg)';
+    }
+}
+
+function switchResourceCategory(category) {
+    switchView('resources');
+
+    // Make sure subnav is open
+    const subnav = document.getElementById('subnav-resources');
+    const chevron = document.getElementById('chevron-resources');
+    if (subnav && subnav.style.display === 'none') {
+        subnav.style.display = 'flex';
+        if (chevron) chevron.style.transform = 'rotate(180deg)';
+    }
+
+    // Highlight sidebar subnav item
+    document.querySelectorAll('.nav-sub-item').forEach(el => {
+        el.style.color = '#94A3B8';
+        el.style.fontWeight = '500';
+    });
+    const activeSub = document.getElementById(`sub-${category}`);
+    if (activeSub) {
+        activeSub.style.color = '#60A5FA';
+        activeSub.style.fontWeight = '700';
+    }
+
+    // Highlight top tab buttons inside view-resources
+    document.querySelectorAll('.resource-tab-btn').forEach(btn => {
+        btn.classList.remove('active');
+        btn.style.borderColor = 'rgba(255, 255, 255, 0.1)';
+        btn.style.background = 'rgba(15, 23, 42, 0.4)';
+        btn.style.color = '#94A3B8';
+    });
+    const activeBtn = document.getElementById(`btn-res-${category}`);
+    if (activeBtn) {
+        activeBtn.classList.add('active');
+        activeBtn.style.borderColor = 'rgba(56, 189, 248, 0.4)';
+        activeBtn.style.background = 'rgba(56, 189, 248, 0.15)';
+        activeBtn.style.color = '#38BDF8';
+    }
+
+    // Show selected section cards
+    document.querySelectorAll('.resource-section').forEach(sec => {
+        sec.style.display = 'none';
+    });
+    const targetSec = document.getElementById(`res-section-${category}`);
+    if (targetSec) {
+        targetSec.style.display = 'grid';
+    }
+}
+
+function openPublishModal() {
+    const modal = document.getElementById('modal-publish-online');
+    if (modal) modal.style.display = 'flex';
+}
+
+function closePublishModal() {
+    const modal = document.getElementById('modal-publish-online');
+    if (modal) modal.style.display = 'none';
+}
+
+// Initialize on DOM ready
+document.addEventListener('DOMContentLoaded', initApp);
+

@@ -1,0 +1,22 @@
+{
+  "name": "MFC Youth Tarlac Chapter Portal",
+  "short_name": "MFC Youth Tarlac",
+  "description": "Official Attendance, Pastoral Care, and Activity Ledger for MFC Youth Tarlac Chapter.",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#0B0F19",
+  "theme_color": "#0284C7",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "mfc-logo.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "mfc-logo.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
