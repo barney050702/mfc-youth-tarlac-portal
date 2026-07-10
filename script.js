@@ -91,11 +91,16 @@ function loadFromStorage() {
 
     if (storedMembers && localStorage.getItem('ps_members_mfc_v9')) {
         state.members = JSON.parse(storedMembers);
+        if (!Array.isArray(state.members) || state.members.length === 0) {
+            state.members = [...SAMPLE_MEMBERS];
+            localStorage.setItem('ps_members', JSON.stringify(state.members));
+        }
     } else {
         state.members = [...SAMPLE_MEMBERS];
         localStorage.setItem('ps_members', JSON.stringify(state.members));
         localStorage.setItem('ps_members_mfc_v9', 'true');
     }
+
 
     if (storedAttendance && localStorage.getItem('ps_attendance_mfc_v9')) {
         state.attendance = JSON.parse(storedAttendance);
@@ -2251,6 +2256,9 @@ function renderOrgChart() {
     const filterDept = deptFilterEl ? deptFilterEl.value : 'ALL';
     const viewMode = state.orgViewMode || 'tree';
 
+    if (!state.members || !Array.isArray(state.members) || state.members.length === 0) {
+        state.members = typeof SAMPLE_MEMBERS !== 'undefined' ? [...SAMPLE_MEMBERS] : [];
+    }
     let members = state.members || [];
     if (filterDept !== 'ALL') {
         members = members.filter(m => matchOrgDepartment(m.department || m.dept, filterDept));
