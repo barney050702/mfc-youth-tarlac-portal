@@ -3118,3 +3118,87 @@ body.light-mode .theme-switch-thumb {
     border-radius: 10px;
 }
 
+/* ============================================================================
+   PRINT-FRIENDLY CSS MODULE (@media print)
+   ============================================================================ */
+@media print {
+    body, html {
+        background: #FFF !important;
+        color: #0F172A !important;
+        font-size: 11pt !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+    }
+
+    /* Hide UI navigation and interactive overlays */
+    .sidebar,
+    .top-header,
+    .mobile-header,
+    .org-toolbar,
+    .attendance-batch-toolbar,
+    .modal-backdrop,
+    button,
+    .btn-primary,
+    .btn-secondary,
+    .btn-danger,
+    .btn-icon {
+        display: none !important;
+    }
+
+    .main-wrapper,
+    .main-content {
+        margin: 0 !important;
+        padding: 0 !important;
+        width: 100% !important;
+        max-width: 100% !important;
+    }
+
+    /* Strip glassmorphism for print clarity */
+    .glass-card,
+    .glass-panel,
+    .metric-card {
+        background: #FFF !important;
+        border: 1px solid #CBD5E1 !important;
+        box-shadow: none !important;
+        backdrop-filter: none !important;
+        color: #0F172A !important;
+        page-break-inside: avoid !important;
+    }
+
+    h1, h2, h3, h4, h5, h6,
+    .metric-value,
+    .panel-title-box h3 {
+        color: #0F172A !important;
+    }
+
+    p, span, td, th {
+        color: #1E293B !important;
+    }
+
+    table {
+        width: 100% !important;
+        border-collapse: collapse !important;
+    }
+
+    thead th {
+        background: #0F172A !important;
+        color: #FFF !important;
+        border-bottom: 2px solid #0F172A !important;
+    }
+
+    tbody tr {
+        page-break-inside: avoid !important;
+        border-bottom: 1px solid #E2E8F0 !important;
+    }
+
+    /* Org Chart printable layout */
+    .org-member-card {
+        background: #F8FAFC !important;
+        border: 1px solid #CBD5E1 !important;
+        page-break-inside: avoid !important;
+        color: #0F172A !important;
+    }
+}
+

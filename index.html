@@ -458,6 +458,25 @@
                         </div>
                     </div>
 
+                    <!-- Pastoral Care & Follow-Up Alert Widget (< 60% attendance) -->
+                    <div class="glass-card" id="pastoral-care-widget"
+                        style="margin-bottom: 24px; padding: 20px 24px; background: linear-gradient(135deg, rgba(244, 63, 94, 0.12) 0%, rgba(245, 158, 11, 0.12) 100%); border: 1px solid rgba(244, 63, 94, 0.35); border-radius: 16px; display: flex; flex-direction: column; gap: 16px; box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);">
+                        <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;">
+                            <div style="display: flex; align-items: center; gap: 14px;">
+                                <div style="width: 44px; height: 44px; border-radius: 12px; background: rgba(244, 63, 94, 0.2); display: flex; align-items: center; justify-content: center; font-size: 1.4rem;">🛡️</div>
+                                <div>
+                                    <h4 style="margin: 0; font-size: 1.08rem; font-weight: 800; color: #F8FAFC;">Pastoral Care & Member Follow-Up Alert</h4>
+                                    <p id="pastoral-care-subtitle" style="margin: 3px 0 0; font-size: 0.83rem; color: #FDA4AF;">Youth members needing pastoral check-in or assembly encouragement</p>
+                                </div>
+                            </div>
+                            <span class="badge-red" id="pastoral-care-count-badge" style="font-weight: 700; padding: 6px 14px; border-radius: 20px; font-size: 0.78rem;">0 Members Flagged</span>
+                        </div>
+                        <div id="pastoral-care-list" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 12px;">
+                            <!-- Populated via script.js -->
+                        </div>
+                    </div>
+
+
                     <!-- Dashboard Content Section -->
                     <div class="dashboard-split-grid" style="grid-template-columns: 1fr;">
                         <!-- Full-width Agenda Panel -->
@@ -731,16 +750,28 @@
                         </div>
 
                         <!-- Real-Time Progress Bar Section -->
-                        <div class="attendance-progress-banner" id="attendance-progress-banner" style="display: none;">
-                            <div class="progress-stats">
-                                <div class="progress-item">
-                                    <span class="dot dot-present"></span> Present: <strong id="count-present">0</strong>
+                        <div class="attendance-progress-banner" id="attendance-progress-banner" style="display: none; padding: 14px 20px; background: rgba(15, 23, 42, 0.75); border-top: 1px solid rgba(255, 255, 255, 0.08); border-bottom: 1px solid rgba(255, 255, 255, 0.08);">
+                            <div class="progress-stats" style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 14px;">
+                                <div style="display: flex; align-items: center; gap: 16px; flex-wrap: wrap;">
+                                    <div class="progress-item" style="display: flex; align-items: center; gap: 6px; font-size: 0.88rem; color: #E2E8F0;">
+                                        <span class="dot dot-present" style="width: 10px; height: 10px; border-radius: 50%; background: #10B981; display: inline-block;"></span>
+                                        <span>Present: <strong id="count-present" style="color: #34D399;">0</strong></span>
+                                    </div>
+                                    <div class="progress-item" style="display: flex; align-items: center; gap: 6px; font-size: 0.88rem; color: #E2E8F0;">
+                                        <span class="dot dot-late" style="width: 10px; height: 10px; border-radius: 50%; background: #38BDF8; display: inline-block;"></span>
+                                        <span>Late: <strong id="count-late" style="color: #38BDF8;">0</strong></span>
+                                    </div>
+                                    <div class="progress-item" style="display: flex; align-items: center; gap: 6px; font-size: 0.88rem; color: #E2E8F0;">
+                                        <span class="dot dot-absent" style="width: 10px; height: 10px; border-radius: 50%; background: #F43F5E; display: inline-block;"></span>
+                                        <span>Absent: <strong id="count-absent" style="color: #FB7185;">0</strong></span>
+                                    </div>
+                                    <div class="progress-item" style="font-size: 0.84rem; color: #94A3B8;">
+                                        <span>Total Recorded: <strong id="count-total-checkins" style="color: #FFF;">0</strong></span>
+                                    </div>
                                 </div>
-                                <div class="progress-item">
-                                    <span class="dot dot-absent"></span> Absent: <strong id="count-absent">0</strong>
-                                </div>
-                                <div class="progress-rate ml-auto">
-                                    Attendance Rate: <span class="rate-badge" id="attendance-live-rate">0%</span>
+                                <div class="progress-rate ml-auto" style="font-size: 0.92rem; font-weight: 700; color: #F8FAFC; display: flex; align-items: center; gap: 8px;">
+                                    <span>Live Attendance Rate:</span>
+                                    <span class="rate-badge" id="attendance-live-rate" style="background: rgba(16, 185, 129, 0.2); border: 1px solid rgba(16, 185, 129, 0.4); color: #34D399; padding: 4px 12px; border-radius: 12px; font-size: 0.85rem;">0%</span>
                                 </div>
                             </div>
                             <div class="multi-progress-bar mt-2">
@@ -1084,10 +1115,15 @@
                                 <p>Interactive command tree of officers, coordinators, and general members</p>
                             </div>
                         </div>
-                        <div class="org-toolbar-right">
-                            <div class="filter-group">
-                                <label>Department:</label>
-                                <select id="org-dept-filter" class="custom-select" onchange="renderOrgChart()">
+                        <div class="org-toolbar-right" style="display: flex; align-items: center; flex-wrap: wrap; gap: 12px;">
+                            <div class="filter-group" style="display: flex; align-items: center; gap: 6px;">
+                                <label style="font-size: 0.82rem; color: #94A3B8; font-weight: 600;">Search:</label>
+                                <input type="text" id="org-search-input" placeholder="Search name or role..." oninput="renderOrgChart()"
+                                    style="background: rgba(15, 23, 42, 0.85); border: 1px solid rgba(255,255,255,0.15); color: #F8FAFC; padding: 7px 12px; border-radius: 8px; font-size: 0.84rem; outline: none; width: 170px;">
+                            </div>
+                            <div class="filter-group" style="display: flex; align-items: center; gap: 6px;">
+                                <label style="font-size: 0.82rem; color: #94A3B8; font-weight: 600;">Department:</label>
+                                <select id="org-dept-filter" class="custom-select" onchange="renderOrgChart()" style="background: rgba(15, 23, 42, 0.85); border: 1px solid rgba(255,255,255,0.15); color: #F8FAFC; padding: 7px 12px; border-radius: 8px; font-size: 0.84rem;">
                                     <option value="ALL">All Departments</option>
                                     <option value="Executive">Executive Board</option>
                                     <option value="Logistics & Tech">Logistics & Tech</option>
@@ -1297,15 +1333,21 @@
                                 </svg>
                             </button>
                         </div>
-                        <button class="btn-primary glow-button" onclick="openAddFundModal()"
-                            style="background: linear-gradient(135deg, #6366F1, #3B82F6); color: #FFF; font-weight: 600; padding: 10px 20px; border-radius: 10px; border: none; display: flex; align-items: center; gap: 8px; cursor: pointer; box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4);">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
-                                style="width: 18px; height: 18px;">
-                                <line x1="12" y1="5" x2="12" y2="19" />
-                                <line x1="5" y1="12" x2="19" y2="12" />
-                            </svg>
-                            <span>Add Record</span>
-                        </button>
+                        <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+                            <button class="btn-secondary" onclick="exportFinancialStatementPDF()"
+                                style="padding: 10px 18px; border-color: rgba(16, 185, 129, 0.4); color: #34D399; font-weight: 600; display: inline-flex; align-items: center; gap: 8px;">
+                                <span>📄 Official Financial Ledger PDF</span>
+                            </button>
+                            <button class="btn-primary glow-button" onclick="openAddFundModal()"
+                                style="background: linear-gradient(135deg, #6366F1, #3B82F6); color: #FFF; font-weight: 600; padding: 10px 20px; border-radius: 10px; border: none; display: inline-flex; align-items: center; gap: 8px; cursor: pointer; box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4);">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                    style="width: 18px; height: 18px;">
+                                    <line x1="12" y1="5" x2="12" y2="19" />
+                                    <line x1="5" y1="12" x2="19" y2="12" />
+                                </svg>
+                                <span>Add Record</span>
+                            </button>
+                        </div>
                     </div>
 
                     <!-- Funds Ledger Table Panel -->
@@ -2400,21 +2442,20 @@
                 <button class="btn-close" onclick="closeMemberQRModal()">×</button>
             </div>
             <div id="qr-id-badge-card"
-                style="background: linear-gradient(145deg, #0F172A, #1E293B); border: 2px solid rgba(56, 189, 248, 0.4); border-radius: 16px; padding: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); position: relative;">
-                <div style="font-size: 0.72rem; color: #38BDF8; font-weight: 800; letter-spacing: 0.1em;">MFC YOUTH
-                    TARLAC CHAPTER</div>
+                style="background: linear-gradient(145deg, #0F172A, #1E293B); border: 2px solid rgba(56, 189, 248, 0.4); border-radius: 16px; padding: 22px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); position: relative;">
+                <div style="font-size: 0.72rem; color: #38BDF8; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase;">MFC YOUTH TARLAC CHAPTER</div>
                 <h4 id="qr-badge-name"
                     style="color: #F8FAFC; font-size: 1.25rem; font-weight: 800; margin: 8px 0 4px 0;">Member Name</h4>
-                <div id="qr-badge-role" style="font-size: 0.85rem; color: #94A3B8; margin-bottom: 16px;">Role / Dept
-                </div>
+                <div id="qr-badge-role" style="font-size: 0.85rem; color: #94A3B8; margin-bottom: 16px;">Role / Dept</div>
                 <div id="qrcode-container"
-                    style="background: white; padding: 12px; border-radius: 12px; display: inline-block; margin-bottom: 12px;">
+                    style="background: white; padding: 14px; border-radius: 14px; display: inline-flex; flex-direction: column; align-items: center; justify-content: center; margin-bottom: 14px; box-shadow: inset 0 2px 6px rgba(0,0,0,0.1);">
                 </div>
+                <div id="qr-badge-id-num" style="font-family: monospace; font-size: 0.82rem; color: #38BDF8; font-weight: 700; margin-bottom: 6px;">ID: #M-000</div>
                 <div style="font-size: 0.72rem; color: #64748B;">Scan code at door for instant attendance check-in</div>
             </div>
-            <div style="margin-top: 16px; display: flex; gap: 8px; justify-content: center;">
-                <button type="button" class="btn-primary" style="width: 100%;" onclick="closeMemberQRModal()">Close ID
-                    Card</button>
+            <div style="margin-top: 18px; display: flex; gap: 10px; justify-content: center;">
+                <button type="button" class="btn-primary glow-button" style="flex: 1;" onclick="printMemberQRCard()">🖨️ Print ID Card</button>
+                <button type="button" class="btn-secondary" style="flex: 1;" onclick="closeMemberQRModal()">Close</button>
             </div>
         </div>
     </div>

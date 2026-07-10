@@ -696,6 +696,55 @@ function renderAgendaTimeline() {
 
     const agendaCont = document.getElementById('agenda-timeline-list');
     if (agendaCont) agendaCont.innerHTML = htmlContent;
+
+    updatePastoralCareWidget();
+}
+
+function updatePastoralCareWidget() {
+    const listEl = document.getElementById('pastoral-care-list');
+    const badgeEl = document.getElementById('pastoral-care-count-badge');
+    const subEl = document.getElementById('pastoral-care-subtitle');
+    if (!listEl) return;
+
+    const flaggedMembers = (state.members || []).filter(m => {
+        const rate = getMemberAttendanceRate(m.id);
+        return rate < 60;
+    });
+
+    if (badgeEl) badgeEl.textContent = `${flaggedMembers.length} Member(s) Flagged`;
+    if (subEl) subEl.textContent = flaggedMembers.length > 0
+        ? `Found ${flaggedMembers.length} member(s) with <60% attendance needing pastoral reach-out`
+        : `All youth members currently maintain healthy attendance rates (≥60%)`;
+
+    if (flaggedMembers.length === 0) {
+        listEl.innerHTML = `
+            <div style="grid-column: 1 / -1; padding: 18px; text-align: center; color: #10B981; font-weight: 700; background: rgba(16, 185, 129, 0.08); border-radius: 12px; border: 1px solid rgba(16, 185, 129, 0.25);">
+                ✨ Excellent Pastoral Health! All youth members currently maintain ≥60% attendance across activities.
+            </div>
+        `;
+    } else {
+        listEl.innerHTML = flaggedMembers.map(m => {
+            const rate = getMemberAttendanceRate(m.id);
+            const initial = (m.name || '?').charAt(0).toUpperCase();
+            return `
+                <div style="background: rgba(15, 23, 42, 0.85); border: 1px solid rgba(244, 63, 94, 0.35); border-radius: 12px; padding: 14px; display: flex; align-items: center; justify-content: space-between; gap: 12px;">
+                    <div style="display: flex; align-items: center; gap: 10px; min-width: 0;">
+                        <div style="width: 38px; height: 38px; border-radius: 50%; background: rgba(244, 63, 94, 0.2); color: #FDA4AF; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 1rem; flex-shrink: 0;">
+                            ${initial}
+                        </div>
+                        <div style="min-width: 0;">
+                            <div style="color: #FFF; font-weight: 700; font-size: 0.92rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${m.name}</div>
+                            <div style="color: #94A3B8; font-size: 0.75rem;">📍 ${m.chapter || 'MFC Youth Tarlac'} • ${m.department || 'Member'}</div>
+                        </div>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 8px; flex-shrink: 0;">
+                        <span style="background: rgba(244, 63, 94, 0.2); color: #FB7185; border: 1px solid rgba(244, 63, 94, 0.4); font-weight: 800; font-size: 0.78rem; padding: 4px 10px; border-radius: 10px;">${rate}% Att</span>
+                        <button onclick="openMemberProfile('${m.id}')" title="View & Follow Up" style="background: rgba(56, 189, 248, 0.15); color: #38BDF8; border: 1px solid rgba(56, 189, 248, 0.3); border-radius: 8px; padding: 6px 10px; font-size: 0.75rem; font-weight: 700; cursor: pointer;">Connect</button>
+                    </div>
+                </div>
+            `;
+        }).join('');
+    }
 }
 
 function jumpToAttendance(actId) {
@@ -1532,36 +1581,49 @@ function updateRemarks(actId, memId, notes) {
 
 function updateLiveProgress() {
     const actId = state.selectedActivityId;
-    if (!actId || !state.attendance[actId]) return;
+    const bannerEl = document.getElementById('attendance-progress-banner');
+    if (!actId) {
+        if (bannerEl) bannerEl.style.display = 'none';
+        return;
+    }
+    if (bannerEl) bannerEl.style.display = 'block';
 
-    const attMap = state.attendance[actId];
+    const attMap = state.attendance[actId] || {};
     const totalMems = state.members.length;
 
     let pCount = 0;
+    let lCount = 0;
     let aCount = 0;
 
     state.members.forEach(mem => {
         const st = attMap[mem.id]?.status;
         if (st === 'present') pCount++;
+        else if (st === 'late') lCount++;
         else aCount++;
     });
 
-    const rate = totalMems > 0 ? Math.round((pCount / totalMems) * 100) : 0;
+    const totalRecorded = pCount + lCount;
+    const rate = totalMems > 0 ? Math.round((totalRecorded / totalMems) * 100) : 0;
     const pPct = totalMems > 0 ? (pCount / totalMems) * 100 : 0;
+    const lPct = totalMems > 0 ? (lCount / totalMems) * 100 : 0;
     const aPct = totalMems > 0 ? (aCount / totalMems) * 100 : 0;
 
     const elP = document.getElementById('count-present');
+    const elL = document.getElementById('count-late');
     const elA = document.getElementById('count-absent');
+    const elTotal = document.getElementById('count-total-checkins');
     const elRate = document.getElementById('attendance-live-rate');
 
     const barP = document.getElementById('bar-present');
     const barA = document.getElementById('bar-absent');
 
     if (elP) elP.textContent = pCount;
+    if (elL) elL.textContent = lCount;
     if (elA) elA.textContent = aCount;
+    if (elTotal) elTotal.textContent = `${totalRecorded} / ${totalMems}`;
     if (elRate) elRate.textContent = `${rate}%`;
 
-    if (barP) barP.style.width = `${pPct}%`;
+    if (barP) barP.style.width = `${pPct + lPct}%`;
     if (barA) barA.style.width = `${aPct}%`;
 }
 
@@ -2259,9 +2321,19 @@ function renderOrgChart() {
     if (!state.members || !Array.isArray(state.members) || state.members.length === 0) {
         state.members = typeof SAMPLE_MEMBERS !== 'undefined' ? [...SAMPLE_MEMBERS] : [];
     }
+    const searchInputEl = document.getElementById('org-search-input');
+    const searchQuery = searchInputEl ? searchInputEl.value.trim().toLowerCase() : '';
+
     let members = state.members || [];
     if (filterDept !== 'ALL') {
         members = members.filter(m => matchOrgDepartment(m.department || m.dept, filterDept));
+    }
+    if (searchQuery) {
+        members = members.filter(m =>
+            (m.name || '').toLowerCase().includes(searchQuery) ||
+            (m.role || '').toLowerCase().includes(searchQuery) ||
+            (m.chapter || '').toLowerCase().includes(searchQuery)
+        );
     }
 
     // Top summary bar inside chart canvas
@@ -2816,6 +2888,110 @@ function openMemberProfile(memberId) {
     backdrop.style.display = 'flex';
 }
 
+function generateMemberIDMatrixSVG(memberId = 'M-001') {
+    let hash = 0;
+    for (let i = 0; i < memberId.length; i++) {
+        hash = ((hash << 5) - hash) + memberId.charCodeAt(i);
+        hash |= 0;
+    }
+    const size = 11;
+    let svgRects = '';
+    const corners = [[0,0], [0,8], [8,0]];
+    for (const [cx, cy] of corners) {
+        svgRects += `<rect x="${cx*14+2}" y="${cy*14+2}" width="42" height="42" fill="#0F172A" rx="4"/>`;
+        svgRects += `<rect x="${cx*14+8}" y="${cy*14+8}" width="30" height="30" fill="#FFF" rx="2"/>`;
+        svgRects += `<rect x="${cx*14+14}" y="${cy*14+14}" width="18" height="18" fill="#0284C7" rx="2"/>`;
+    }
+    for (let r = 0; r < size; r++) {
+        for (let c = 0; c < size; c++) {
+            if ((r < 3 && c < 3) || (r < 3 && c >= 8) || (r >= 8 && c < 3)) continue;
+            const bit = Math.abs(Math.sin((r * 13 + c * 17 + hash) * 100)) > 0.45;
+            if (bit) {
+                const color = ((r + c) % 4 === 0) ? '#0284C7' : '#0F172A';
+                svgRects += `<rect x="${c*14+4}" y="${r*14+4}" width="10" height="10" fill="${color}" rx="2"/>`;
+            }
+        }
+    }
+    return `<svg viewBox="0 0 156 156" width="156" height="156" xmlns="http://www.w3.org/2000/svg">${svgRects}</svg>`;
+}
+
+function openMemberQRModal(memberId) {
+    const mem = (state.members || []).find(m => m.id === memberId);
+    if (!mem) {
+        showToast('Member not found', 'error');
+        return;
+    }
+    const nameEl = document.getElementById('qr-badge-name');
+    const roleEl = document.getElementById('qr-badge-role');
+    const qrCont = document.getElementById('qrcode-container');
+    const idNumEl = document.getElementById('qr-badge-id-num');
+    
+    if (nameEl) nameEl.textContent = mem.name || 'Member';
+    if (roleEl) roleEl.textContent = `${mem.role || 'Member'} • ${mem.chapter || 'MFC Youth Tarlac'}`;
+    if (idNumEl) idNumEl.textContent = `ID: #${mem.id.toUpperCase()}`;
+    if (qrCont) {
+        qrCont.innerHTML = generateMemberIDMatrixSVG(mem.id);
+    }
+    const modal = document.getElementById('modal-member-qr-id');
+    if (modal) modal.style.display = 'flex';
+}
+
+function openMemberQRBadgeModal(memberId) {
+    openMemberQRModal(memberId);
+}
+
+function closeMemberQRModal() {
+    const modal = document.getElementById('modal-member-qr-id');
+    if (modal) modal.style.display = 'none';
+}
+
+function printMemberQRCard() {
+    const cardEl = document.getElementById('qr-id-badge-card');
+    if (!cardEl) return;
+    const printWin = window.open('', '_blank', 'width=450,height=600');
+    printWin.document.write(`
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <title>MFC Youth Tarlac - Official Digital ID Card</title>
+            <style>
+                body {
+                    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+                    background: #FFF;
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    min-height: 90vh;
+                    margin: 0;
+                    padding: 20px;
+                }
+                .id-badge-print {
+                    width: 320px;
+                    border: 2px solid #0284C7;
+                    border-radius: 16px;
+                    padding: 24px;
+                    text-align: center;
+                    background: #0F172A;
+                    color: #FFF;
+                    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+                }
+            </style>
+        </head>
+        <body>
+            <div class="id-badge-print">
+                ${cardEl.innerHTML}
+            </div>
+            <script>
+                window.onload = function() {
+                    window.print();
+                };
+            </script>
+        </body>
+        </html>
+    `);
+    printWin.document.close();
+}
+
 function closeMemberModal() {
     const backdrop = document.getElementById('member-modal-backdrop');
     if (backdrop) backdrop.style.display = 'none';
@@ -2906,6 +3082,135 @@ function exportMemberDossierPDF(memberId) {
 
     doc.save(`${member.name.replace(/[^a-zA-Z0-9]/g, '_')}_Attendance_Dossier.pdf`);
     showToast('Member Dossier PDF exported successfully!', 'success');
+}
+
+function exportFinancialStatementPDF() {
+    const records = state.funds || [];
+    let totalIncome = 0;
+    let totalExpense = 0;
+    records.forEach(r => {
+        const amt = parseFloat(r.amount) || 0;
+        if (r.type === 'Income') totalIncome += amt;
+        else if (r.type === 'Expense') totalExpense += amt;
+    });
+    const netBalance = totalIncome - totalExpense;
+
+    if (window.jspdf && window.jspdf.jsPDF) {
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
+
+        doc.setFillColor(15, 23, 42);
+        doc.rect(0, 0, 210, 42, 'F');
+
+        doc.setTextColor(255, 255, 255);
+        doc.setFontSize(15);
+        doc.setFont('helvetica', 'bold');
+        doc.text('MFC YOUTH TARLAC - FINANCIAL LEDGER STATEMENT', 14, 18);
+
+        doc.setFontSize(10);
+        doc.setFont('helvetica', 'normal');
+        doc.setTextColor(56, 189, 248);
+        doc.text('OFFICIAL TREASURY REPORT & TRANSACTION RECORD', 14, 26);
+        doc.setTextColor(148, 163, 184);
+        doc.text(`Generated: ${new Date().toLocaleDateString()}`, 14, 34);
+
+        doc.setTextColor(15, 23, 42);
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(11);
+        doc.text(`Total Income: P${totalIncome.toLocaleString('en-PH', {minimumFractionDigits: 2})}`, 14, 52);
+        doc.text(`Total Expenses: P${totalExpense.toLocaleString('en-PH', {minimumFractionDigits: 2})}`, 80, 52);
+        doc.text(`Net Balance: P${netBalance.toLocaleString('en-PH', {minimumFractionDigits: 2})}`, 145, 52);
+
+        const rows = records.map(r => [
+            r.date || '-',
+            r.type || '-',
+            r.category || '-',
+            r.description || '-',
+            `P${(parseFloat(r.amount) || 0).toLocaleString('en-PH', {minimumFractionDigits: 2})}`
+        ]);
+
+        doc.autoTable({
+            startY: 60,
+            head: [['Date', 'Type', 'Category', 'Description', 'Amount']],
+            body: rows,
+            styles: { fontSize: 9 },
+            headStyles: { fillColor: [2, 132, 199] },
+            alternateRowStyles: { fillColor: [241, 245, 249] }
+        });
+
+        const finalY = (doc.lastAutoTable && doc.lastAutoTable.finalY) ? doc.lastAutoTable.finalY : 120;
+        doc.setFontSize(9);
+        doc.setFont('helvetica', 'italic');
+        doc.setTextColor(100, 116, 139);
+        doc.text('Certified Official Document - Missionary Families of Christ Youth Tarlac', 14, finalY + 18);
+
+        doc.save(`MFC_Youth_Tarlac_Financial_Statement_${new Date().toISOString().slice(0, 10)}.pdf`);
+        showToast('Financial Statement PDF exported successfully!', 'success');
+        return;
+    }
+
+    const rowsHtml = records.map(r => {
+        const amt = parseFloat(r.amount) || 0;
+        const color = r.type === 'Income' ? '#059669' : '#DC2626';
+        return `
+            <tr>
+                <td style="padding: 10px 12px; border-bottom: 1px solid #E2E8F0;">${r.date || '-'}</td>
+                <td style="padding: 10px 12px; border-bottom: 1px solid #E2E8F0; font-weight: 600; color: ${color};">${r.type}</td>
+                <td style="padding: 10px 12px; border-bottom: 1px solid #E2E8F0;">${r.category || '-'}</td>
+                <td style="padding: 10px 12px; border-bottom: 1px solid #E2E8F0;">${r.description || '-'}</td>
+                <td style="padding: 10px 12px; border-bottom: 1px solid #E2E8F0; text-align: right; font-weight: 700; color: ${color};">₱${amt.toLocaleString('en-PH', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
+            </tr>
+        `;
+    }).join('');
+
+    const printWin = window.open('', '_blank', 'width=900,height=800');
+    printWin.document.write(`
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <title>MFC Youth Tarlac - Official Financial Statement</title>
+            <style>
+                body { font-family: 'Inter', system-ui, sans-serif; color: #0F172A; margin: 40px; background: #FFF; }
+                .header { border-bottom: 3px solid #0284C7; padding-bottom: 16px; margin-bottom: 24px; display: flex; justify-content: space-between; align-items: flex-end; }
+                .header h1 { margin: 0; font-size: 1.6rem; color: #0F172A; }
+                .summary-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 28px; }
+                .summary-card { border: 1px solid #CBD5E1; border-radius: 12px; padding: 16px; background: #F8FAFC; }
+                table { width: 100%; border-collapse: collapse; margin-top: 16px; }
+                th { background: #0F172A; color: #FFF; text-align: left; padding: 12px; font-size: 0.8rem; }
+            </style>
+        </head>
+        <body>
+            <div class="header">
+                <div>
+                    <h1>MISSIONARY FAMILIES OF CHRIST YOUTH</h1>
+                    <p>Tarlac Chapter • Official Financial Ledger & Statement</p>
+                </div>
+            </div>
+            <div class="summary-grid">
+                <div class="summary-card">
+                    <div style="font-size:0.75rem; color:#64748B;">Total Income</div>
+                    <div style="font-size:1.4rem; font-weight:800; color:#059669;">₱${totalIncome.toLocaleString('en-PH', {minimumFractionDigits: 2})}</div>
+                </div>
+                <div class="summary-card">
+                    <div style="font-size:0.75rem; color:#64748B;">Total Expense</div>
+                    <div style="font-size:1.4rem; font-weight:800; color:#DC2626;">₱${totalExpense.toLocaleString('en-PH', {minimumFractionDigits: 2})}</div>
+                </div>
+                <div class="summary-card">
+                    <div style="font-size:0.75rem; color:#64748B;">Net Balance</div>
+                    <div style="font-size:1.4rem; font-weight:800;">₱${netBalance.toLocaleString('en-PH', {minimumFractionDigits: 2})}</div>
+                </div>
+            </div>
+            <table>
+                <thead>
+                    <tr><th>DATE</th><th>TYPE</th><th>CATEGORY</th><th>DESCRIPTION</th><th style="text-align:right;">AMOUNT</th></tr>
+                </thead>
+                <tbody>${rowsHtml}</tbody>
+            </table>
+            <script>window.onload = function() { window.print(); };</script>
+        </body>
+        </html>
+    `);
+    printWin.document.close();
 }
 
 // Add / Edit Member Modal Handlers
