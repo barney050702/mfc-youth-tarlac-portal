@@ -2182,9 +2182,34 @@ function getMemberAttendanceRate(memberId) {
     return Math.round((presentOrLate / state.activities.length) * 100);
 }
 
+function matchOrgDepartment(memberDept = '', filterVal = 'ALL') {
+    if (filterVal === 'ALL') return true;
+    const md = (memberDept || '').toLowerCase().trim();
+    const fv = (filterVal || '').toLowerCase().trim();
+    if (md === fv) return true;
+    if (fv.includes('program') && md.includes('program')) return true;
+    if (fv.includes('creative') && md.includes('creative')) return true;
+    if (fv.includes('outreach') && md.includes('outreach')) return true;
+    if (fv.includes('finance') && md.includes('finance')) return true;
+    if (fv.includes('logistics') && md.includes('logistics')) return true;
+    if (md.includes(fv) || fv.includes(md)) return true;
+    return false;
+}
+
+function getCanonicalChapterName(chapStr = '') {
+    const raw = (chapStr || 'MFC Youth Tarlac').trim();
+    const low = raw.toLowerCase();
+    if (low === 'east' || low.includes('east chapter')) return 'East Chapter';
+    if (low === 'north' || low.includes('north chapter')) return 'North Chapter';
+    if (low === 'west' || low.includes('west chapter')) return 'West Chapter';
+    if (low === 'south' || low.includes('south chapter')) return 'South Chapter';
+    if (low === 'central' || low.includes('central chapter')) return 'Central Chapter';
+    return raw.includes('Chapter') ? raw : `${raw} Chapter`;
+}
+
 function renderOrgMemberCard(member, isExec = false) {
     const rate = getMemberAttendanceRate(member.id);
-    const initial = member.name.charAt(0).toUpperCase();
+    const initial = (member.name || '?').charAt(0).toUpperCase();
     const execClass = isExec ? 'org-card-exec' : '';
     const deptName = member.department || member.dept || 'General';
     const roleName = member.role || 'Youth Member';
@@ -2194,6 +2219,8 @@ function renderOrgMemberCard(member, isExec = false) {
     if (rate >= 80) badgeColor = '#10B981';
     else if (rate < 60) badgeColor = '#F43F5E';
 
+    const roleBadgeHtml = typeof formatRoleBadge === 'function' ? formatRoleBadge(roleName) : `<span style="color:#38BDF8; font-weight:700; font-size:0.75rem;">${roleName}</span>`;
+
     return `
         <div class="org-member-card ${execClass}" onclick="openMemberProfile('${member.id}')" role="button" tabindex="0" title="Click to open full member profile">
             <div class="org-member-avatar">
@@ -2201,7 +2228,7 @@ function renderOrgMemberCard(member, isExec = false) {
             </div>
             <div class="org-member-info">
                 <div class="org-member-name">${member.name}</div>
-                <div class="org-member-role">${roleName}</div>
+                <div style="margin: 4px 0;">${roleBadgeHtml}</div>
                 <div class="org-member-chapter" style="font-size:0.73rem; color:#94A3B8; margin-bottom: 6px;">📍 ${chapterName}</div>
                 <div class="org-member-stats">
                     <span class="org-stat-badge">${deptName}</span>
@@ -2226,7 +2253,7 @@ function renderOrgChart() {
 
     let members = state.members || [];
     if (filterDept !== 'ALL') {
-        members = members.filter(m => (m.department || m.dept) === filterDept);
+        members = members.filter(m => matchOrgDepartment(m.department || m.dept, filterDept));
     }
 
     // Top summary bar inside chart canvas
@@ -2278,7 +2305,7 @@ function renderOrgChart() {
         const activeDepts = filterDept === 'ALL' ? departments : [filterDept];
 
         const gridHtml = activeDepts.map(dept => {
-            const deptMembers = members.filter(m => (m.department || m.dept) === dept);
+            const deptMembers = members.filter(m => matchOrgDepartment(m.department || m.dept, dept));
             if (deptMembers.length === 0 && filterDept !== 'ALL') return '';
 
             const deptAvg = deptMembers.length > 0 ? Math.round(deptMembers.reduce((sum, m) => sum + getMemberAttendanceRate(m.id), 0) / deptMembers.length) : 0;
@@ -2318,16 +2345,29 @@ function renderOrgChart() {
     }
 
     // TREE VIEW: Dynamic Hierarchy
-    // Tier 1: Executive & Area Leadership
-    const execMembers = members.filter(m => (m.department || m.dept) === 'Executive' || getRoleRank(m.role) === 1);
+    // Tier 1: Executive & Chapter Leadership
+    let execMembers = members.filter(m => (m.department || m.dept) === 'Executive' || getRoleRank(m.role) === 1);
+    if (execMembers.length === 0 && members.length > 0) {
+        // If filtering by a department without a Rank 1 head, showcase top ranking members in this department
+        const minRank = Math.min(...members.map(m => getRoleRank(m.role)));
+        execMembers = members.filter(m => getRoleRank(m.role) === minRank);
+    }
     const otherMembers = members.filter(m => !execMembers.some(em => em.id === m.id));
 
-    // Group other members by Chapter
-    const chapters = ['East Chapter', 'North Chapter', 'West Chapter', 'South Chapter', 'Central Chapter'];
+    // Discover canonical and custom chapters
+    const standardChapters = ['East Chapter', 'North Chapter', 'West Chapter', 'South Chapter', 'Central Chapter'];
+    const dynamicChapters = [];
+    otherMembers.forEach(m => {
+        const canonical = getCanonicalChapterName(m.chapter);
+        if (!standardChapters.includes(canonical) && !dynamicChapters.includes(canonical)) {
+            dynamicChapters.push(canonical);
+        }
+    });
+    const chapters = [...standardChapters, ...dynamicChapters];
 
     const treeHtml = `
         <div class="org-tree-wrapper">
-            <!-- Tier 1: Executive & Chapter Heads -->
+            <!-- Tier 1: Executive Leadership & Chapter Heads -->
             <div class="org-tier-header" style="text-align:center; margin-bottom:14px;">
                 <span style="background:linear-gradient(135deg, #F59E0B, #D97706); color:#FFF; font-weight:800; font-size:0.78rem; letter-spacing:0.08em; text-transform:uppercase; padding:6px 18px; border-radius:20px; box-shadow:0 4px 14px rgba(245,158,11,0.3);">👑 Executive Leadership & Chapter Heads</span>
             </div>
@@ -2352,7 +2392,7 @@ function renderOrgChart() {
             
             <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(270px, 1fr)); gap:20px;">
                 ${chapters.map(chapName => {
-                    const chapMembers = otherMembers.filter(m => m.chapter === chapName);
+                    const chapMembers = otherMembers.filter(m => getCanonicalChapterName(m.chapter) === chapName);
                     if (chapMembers.length === 0 && filterDept !== 'ALL') return '';
 
                     const hhHeads = chapMembers.filter(m => getRoleRank(m.role) === 2);
@@ -2375,7 +2415,10 @@ function renderOrgChart() {
                             <div style="font-size:0.72rem; font-weight:700; color:#94A3B8; text-transform:uppercase; letter-spacing:0.05em; margin-top:4px;">Youth Members</div>
                             <div style="display:flex; flex-direction:column; gap:10px;">
                                 ${regularMems.length > 0 ? regularMems.map(m => renderOrgMemberCard(m)).join('') : `
-                                    <div style="color:#64748B; font-size:0.82rem; text-align:center; padding:12px; border:1px dashed rgba(255,255,255,0.1); border-radius:12px;">No general members listed</div>
+                                    <div style="color:#64748B; font-size:0.82rem; text-align:center; padding:16px; border:1px dashed rgba(255,255,255,0.1); border-radius:12px; cursor:pointer;" onclick="openAddMemberModal()">
+                                        <div>No members listed</div>
+                                        <div style="color:#38BDF8; font-size:0.75rem; margin-top:4px;">+ Assign Member</div>
+                                    </div>
                                 `}
                             </div>
                         </div>
