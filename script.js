@@ -47,7 +47,14 @@ const SAMPLE_ACCOUNTS = [
     { id: 'acc-6', email: 'west.chapter@mfcyouthtarlac.com', role: 'CHAPTER HEAD', area: 'West', password: 'chapter123' }
 ];
 
-const SAMPLE_ACTIVITIES = [];
+const SAMPLE_ACTIVITIES = [
+    { id: 'act-101', name: 'MFC Youth Tarlac Chapter Assembly - May', date: '2026-05-16', location: 'Tarlac Cathedral Parish Hall', type: 'Assembly', status: 'Completed', notes: 'Monthly general youth assembly' },
+    { id: 'act-102', name: 'Youth Camp Service Team Training', date: '2026-06-06', location: 'MFC Diocesan Center Tarlac', type: 'Training', status: 'Completed', notes: 'Service team leadership formation' },
+    { id: 'act-103', name: 'East & Central Household Worship Night', date: '2026-06-20', location: 'St. Michael Parish Function Room', type: 'Household', status: 'Completed', notes: 'Joint chapter household worship' },
+    { id: 'act-104', name: 'MFC Youth Tarlac Midyear General Assembly', date: '2026-07-04', location: 'San Sebastian Cathedral Auditorium', type: 'Assembly', status: 'Completed', notes: 'Midyear thanksgiving celebration' },
+    { id: 'act-105', name: 'Logistics & Media Production Workshop', date: '2026-07-11', location: 'MFC Center Media Lab', type: 'Training', status: 'Completed', notes: 'Technical training for live production' },
+    { id: 'act-106', name: 'Chapter Fellowship & Sports Fest 2026', date: '2026-07-25', location: 'Tarlac Recreational Complex', type: 'Fellowship', status: 'Upcoming', notes: 'Chapter unity sports fest' }
+];
 
 function initApp() {
     loadFromStorage();
@@ -74,12 +81,12 @@ function loadFromStorage() {
     const storedAttendance = localStorage.getItem('ps_attendance');
     const storedAccounts = localStorage.getItem('ps_accounts');
 
-    if (storedActivities && localStorage.getItem('ps_activities_mfc_v10')) {
+    if (storedActivities && localStorage.getItem('ps_activities_mfc_v11')) {
         state.activities = JSON.parse(storedActivities);
     } else {
         state.activities = [...SAMPLE_ACTIVITIES];
         localStorage.setItem('ps_activities', JSON.stringify(state.activities));
-        localStorage.setItem('ps_activities_mfc_v10', 'true');
+        localStorage.setItem('ps_activities_mfc_v11', 'true');
     }
 
     if (storedMembers && localStorage.getItem('ps_members_mfc_v9')) {
@@ -1629,11 +1636,11 @@ function renderAnalytics() {
     if (!monthlyBody) return;
 
     const totalMems = state.members.length;
-    const monthlyMap = {}; // { 'July 2026': { totalActs: 0, completed: 0, presentSum: 0, absentSum: 0, rateSum: 0 } }
+    const monthlyMap = {};
 
     state.activities.forEach(act => {
         const dateObj = new Date(act.date);
-        const monthKey = dateObj.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+        const monthKey = !isNaN(dateObj) ? dateObj.toLocaleDateString('en-US', { month: 'long', year: 'numeric' }) : 'General Event';
 
         if (!monthlyMap[monthKey]) {
             monthlyMap[monthKey] = { totalActs: 0, completed: 0, presentSum: 0, absentSum: 0, rateSum: 0 };
@@ -1659,33 +1666,32 @@ function renderAnalytics() {
 
     const keys = Object.keys(monthlyMap);
     if (keys.length === 0) {
-        monthlyBody.innerHTML = `<tr><td colspan="7" style="text-align:center; padding:30px; color:var(--text-muted);">No monthly data available.</td></tr>`;
-        return;
+        monthlyBody.innerHTML = `<tr><td colspan="7" style="text-align:center; padding:30px; color:var(--text-muted);">No activity records available yet. Create an activity to view monthly performance metrics.</td></tr>`;
+    } else {
+        monthlyBody.innerHTML = keys.map(mKey => {
+            const data = monthlyMap[mKey];
+            const avgRate = data.totalActs > 0 ? Math.round(data.rateSum / data.totalActs) : 0;
+            let evalBadge = `<span class="trend badge-green">Excellent (≥80%)</span>`;
+            if (avgRate < 50) evalBadge = `<span class="trend badge-rose" style="background:rgba(251,113,133,0.15); color:var(--accent-rose);">Needs Attention</span>`;
+            else if (avgRate < 80) evalBadge = `<span class="trend badge-emerald" style="background:rgba(251,191,36,0.15); color:var(--accent-amber);">Satisfactory</span>`;
+
+            return `
+                <tr>
+                    <td style="font-weight:700; color:#FFF;">${mKey}</td>
+                    <td>${data.totalActs}</td>
+                    <td><strong style="color:var(--accent-emerald);">${data.completed}</strong></td>
+                    <td>
+                        <div style="display:flex; align-items:center; gap:8px;">
+                            <span class="rate-badge" style="margin-left:0;">${avgRate}%</span>
+                        </div>
+                    </td>
+                    <td><strong style="color:var(--accent-blue);">${data.presentSum}</strong> check-ins</td>
+                    <td><span style="color:var(--text-muted);">${data.absentSum} absences</span></td>
+                    <td>${evalBadge}</td>
+                </tr>
+            `;
+        }).join('');
     }
-
-    monthlyBody.innerHTML = keys.map(mKey => {
-        const data = monthlyMap[mKey];
-        const avgRate = data.totalActs > 0 ? Math.round(data.rateSum / data.totalActs) : 0;
-        let evalBadge = `<span class="trend badge-green">Excellent (≥80%)</span>`;
-        if (avgRate < 50) evalBadge = `<span class="trend badge-rose" style="background:rgba(251,113,133,0.15); color:var(--accent-rose);">Needs Attention</span>`;
-        else if (avgRate < 80) evalBadge = `<span class="trend badge-emerald" style="background:rgba(251,191,36,0.15); color:var(--accent-amber);">Satisfactory</span>`;
-
-        return `
-            <tr>
-                <td style="font-weight:700; color:#FFF;">${mKey}</td>
-                <td>${data.totalActs}</td>
-                <td><strong style="color:var(--accent-emerald);">${data.completed}</strong></td>
-                <td>
-                    <div style="display:flex; align-items:center; gap:8px;">
-                        <span class="rate-badge" style="margin-left:0;">${avgRate}%</span>
-                    </div>
-                </td>
-                <td><strong style="color:var(--accent-blue);">${data.presentSum}</strong> check-ins</td>
-                <td><span style="color:var(--text-muted);">${data.absentSum} absences</span></td>
-                <td>${evalBadge}</td>
-            </tr>
-        `;
-    }).join('');
 
     renderInteractiveCharts();
     generatePastoralList();
@@ -2165,7 +2171,7 @@ function setOrgViewMode(mode) {
 }
 
 function getMemberAttendanceRate(memberId) {
-    if (!state.activities || state.activities.length === 0) return 0;
+    if (!state.activities || state.activities.length === 0) return 100;
     let presentOrLate = 0;
     state.activities.forEach(act => {
         const record = state.attendance[act.id]?.[memberId];
@@ -2180,18 +2186,26 @@ function renderOrgMemberCard(member, isExec = false) {
     const rate = getMemberAttendanceRate(member.id);
     const initial = member.name.charAt(0).toUpperCase();
     const execClass = isExec ? 'org-card-exec' : '';
+    const deptName = member.department || member.dept || 'General';
+    const roleName = member.role || 'Youth Member';
+    const chapterName = member.chapter || 'MFC Youth Tarlac';
     
+    let badgeColor = '#38BDF8';
+    if (rate >= 80) badgeColor = '#10B981';
+    else if (rate < 60) badgeColor = '#F43F5E';
+
     return `
-        <div class="org-member-card ${execClass}" onclick="openMemberProfile('${member.id}')" role="button" tabindex="0">
+        <div class="org-member-card ${execClass}" onclick="openMemberProfile('${member.id}')" role="button" tabindex="0" title="Click to open full member profile">
             <div class="org-member-avatar">
                 <span>${initial}</span>
             </div>
             <div class="org-member-info">
                 <div class="org-member-name">${member.name}</div>
-                <div class="org-member-role">${member.role}</div>
+                <div class="org-member-role">${roleName}</div>
+                <div class="org-member-chapter" style="font-size:0.73rem; color:#94A3B8; margin-bottom: 6px;">📍 ${chapterName}</div>
                 <div class="org-member-stats">
-                    <span class="org-stat-badge">${member.dept}</span>
-                    <span class="org-stat-badge" style="color: #38BDF8;">⚡ ${rate}% Att</span>
+                    <span class="org-stat-badge">${deptName}</span>
+                    <span class="org-stat-badge" style="color: ${badgeColor}; border-color: ${badgeColor}40;">⚡ ${rate}% Att</span>
                 </div>
             </div>
         </div>
@@ -2202,106 +2216,176 @@ function renderOrgChart() {
     const container = document.getElementById('org-chart-canvas');
     if (!container) return;
 
-    // Hide toolbar since we have a fixed Area Flowchart now
+    // Ensure toolbar is visible
     const toolbar = document.querySelector('.org-toolbar');
-    if (toolbar) toolbar.style.display = 'none';
+    if (toolbar) toolbar.style.display = 'flex';
+
+    const deptFilterEl = document.getElementById('org-dept-filter');
+    const filterDept = deptFilterEl ? deptFilterEl.value : 'ALL';
+    const viewMode = state.orgViewMode || 'tree';
 
     let members = state.members || [];
+    if (filterDept !== 'ALL') {
+        members = members.filter(m => (m.department || m.dept) === filterDept);
+    }
 
-    const getNames = (role, chapter) => {
-        let matches = members.filter(m => m.role === role && (!chapter || m.chapter === chapter));
-        if (matches.length === 0 || matches[0].name === 'Vacant') return `<div class="fc-name fc-name-vacant">Vacant</div>`;
-        if (matches[0].name === 'None') return `<div class="fc-name fc-name-vacant">None</div>`;
-        return matches.map(m => `<div class="fc-name">${m.name}</div>`).join('');
-    };
+    // Top summary bar inside chart canvas
+    const totalMembers = members.length;
+    const leadersCount = members.filter(m => getRoleRank(m.role) <= 2).length;
+    const avgAtt = totalMembers > 0 ? Math.round(members.reduce((sum, m) => sum + getMemberAttendanceRate(m.id), 0) / totalMembers) : 100;
 
-    const getIcon = (role) => {
-        if (role === 'Area Youth Servant') {
-            return `<svg viewBox="0 0 24 24" fill="none" stroke="#F59E0B" stroke-width="2" style="width: 22px; height: 22px;"><path d="M2 4l3 12h14l3-12-6 7-4-7-4 7-6-7zm3 16h14"/></svg>`;
-        }
-        if (role === 'Mission Volunteer' || role === 'Area LIT Servant') {
-            return `<svg viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2" style="width: 20px; height: 20px;"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>`;
-        }
-        if (role === 'Chapter Servant') {
-            return `<svg viewBox="0 0 24 24" fill="none" stroke="#E2E8F0" stroke-width="2" style="width: 20px; height: 20px;"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>`;
-        }
-        if (role === 'Unit Servant' || role === 'Household Servant') {
-            return `<svg viewBox="0 0 24 24" fill="none" stroke="#A78BFA" stroke-width="2" style="width: 20px; height: 20px;"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>`;
-        }
-        return `<svg viewBox="0 0 24 24" fill="none" stroke="#94A3B8" stroke-width="2" style="width: 20px; height: 20px;"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>`;
-    };
-
-    const getCardStyle = (role) => {
-        if (role === 'Area Youth Servant') {
-            return `border: 1.5px solid #F59E0B; box-shadow: 0 0 20px rgba(245, 158, 11, 0.15);`;
-        }
-        if (role === 'Mission Volunteer' || role === 'Area LIT Servant') {
-            return `border: 1px solid #10B981; box-shadow: 0 0 15px rgba(16, 185, 129, 0.1);`;
-        }
-        if (role === 'Unit Servant' || role === 'Household Servant') {
-            return `border: 1.5px solid #8B5CF6; box-shadow: 0 0 15px rgba(139, 92, 246, 0.2);`;
-        }
-        return `border: 1px solid rgba(255, 255, 255, 0.15);`;
-    };
-
-    const renderNode = (role, chapter, isWide = false) => {
-        let displayRole = role;
-        if (role === 'Chapter Servant') displayRole = chapter;
-        else if (role.includes('Servant') && role !== 'Area Youth Servant' && role !== 'Area LIT Servant') displayRole = role.replace(' Servant', '');
-        
-        return `
-            <div class="fc-node ${isWide ? 'fc-node-wide' : ''}" style="${getCardStyle(role)}">
-                <div class="fc-icon">${getIcon(role)}</div>
-                <div class="fc-names">${getNames(role, chapter)}</div>
-                <div class="fc-role">${displayRole}</div>
-            </div>
-        `;
-    };
-
-    let html = `
-        <div class="fc-wrapper">
-            <div class="fc-tree">
-                <!-- Top Tier -->
-                <div class="fc-top-tier">
-                    <div class="fc-top-h-line"></div>
-                    <div class="fc-top-col fc-col-narrow">
-                        <div class="fc-v-stub"></div>
-                        ${renderNode('Mission Volunteer', 'Area')}
-                    </div>
-                    <div class="fc-top-col fc-col-wide">
-                        <div class="fc-v-stub"></div>
-                        ${renderNode('Area Youth Servant', 'Area', true)}
-                    </div>
-                    <div class="fc-top-col fc-col-narrow">
-                        <div class="fc-v-stub"></div>
-                        ${renderNode('Area LIT Servant', 'Area')}
-                    </div>
+    const summaryHeaderHtml = `
+        <div class="org-stats-header glass-card" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:16px; padding:16px 20px; margin-bottom:24px; border-radius:16px; background:rgba(15,23,42,0.85); border:1px solid rgba(56,189,248,0.2);">
+            <div style="display:flex; align-items:center; gap:14px;">
+                <div style="width:44px; height:44px; border-radius:12px; background:linear-gradient(135deg, #0284C7, #3B82F6); display:flex; align-items:center; justify-content:center; font-size:1.3rem;">🏛️</div>
+                <div>
+                    <h4 style="color:#FFF; font-size:1.05rem; font-weight:800; margin:0;">MFC Youth Tarlac Directory & Hierarchy</h4>
+                    <p style="color:#94A3B8; font-size:0.8rem; margin:2px 0 0;">Interactive organization tree • Showing <strong style="color:#38BDF8;">${filterDept === 'ALL' ? 'All Departments' : filterDept}</strong> (${viewMode.toUpperCase()} View)</p>
                 </div>
-                
-                <div class="fc-v-line-main"></div>
-                
-                <!-- Branches Section -->
-                <div class="fc-branches-section">
-                    <div class="fc-branches-h-line"></div>
-                    <div class="fc-branches">
-                        ${['East Chapter', 'North Chapter', 'West Chapter', 'South Chapter', 'Central Chapter'].map(chap => `
-                            <div class="fc-branch">
-                                <div class="fc-v-stub"></div>
-                                ${renderNode('Chapter Servant', chap)}
-                                <div class="fc-v-line"></div>
-                                ${renderNode('Unit Servant', chap)}
-                                <div class="fc-v-line"></div>
-                                ${renderNode('Household Servant', chap)}
-                                <div class="fc-v-line"></div>
-                                ${renderNode('Member', chap)}
-                            </div>
-                        `).join('')}
-                    </div>
+            </div>
+            <div style="display:flex; align-items:center; gap:16px; flex-wrap:wrap;">
+                <div class="stat-pill" style="display:flex; flex-direction:column; align-items:center; padding:6px 14px; background:rgba(255,255,255,0.04); border-radius:10px; border:1px solid rgba(255,255,255,0.08);">
+                    <span style="font-size:1.15rem; font-weight:800; color:#F8FAFC;">${totalMembers}</span>
+                    <span style="font-size:0.7rem; color:#94A3B8; text-transform:uppercase; font-weight:700;">Members</span>
+                </div>
+                <div class="stat-pill" style="display:flex; flex-direction:column; align-items:center; padding:6px 14px; background:rgba(255,255,255,0.04); border-radius:10px; border:1px solid rgba(255,255,255,0.08);">
+                    <span style="font-size:1.15rem; font-weight:800; color:#F59E0B;">${leadersCount}</span>
+                    <span style="font-size:0.7rem; color:#94A3B8; text-transform:uppercase; font-weight:700;">Chapter & HH Heads</span>
+                </div>
+                <div class="stat-pill" style="display:flex; flex-direction:column; align-items:center; padding:6px 14px; background:rgba(255,255,255,0.04); border-radius:10px; border:1px solid rgba(255,255,255,0.08);">
+                    <span style="font-size:1.15rem; font-weight:800; color:#10B981;">${avgAtt}%</span>
+                    <span style="font-size:0.7rem; color:#94A3B8; text-transform:uppercase; font-weight:700;">Avg Attendance</span>
                 </div>
             </div>
         </div>
     `;
-    container.innerHTML = html;
+
+    if (members.length === 0) {
+        container.innerHTML = summaryHeaderHtml + `
+            <div class="glass-panel" style="padding:48px; text-align:center; border-radius:16px;">
+                <div style="font-size:2.5rem; margin-bottom:12px;">🔍</div>
+                <h4 style="color:#FFF; font-size:1.15rem; margin-bottom:6px;">No Members Found in this Department</h4>
+                <p style="color:#94A3B8; font-size:0.9rem; margin-bottom:20px;">Try switching the Department filter above or click below to assign a member.</p>
+                <button class="btn-primary glow-button" onclick="openAddMemberModal()">+ Add New Member</button>
+            </div>
+        `;
+        return;
+    }
+
+    if (viewMode === 'grid') {
+        // GRID VIEW: Group by Department
+        const departments = ['Executive', 'Logistics & Tech', 'Programs & Events', 'Creative & Media', 'Outreach & Fellowship', 'Finance & Treasury'];
+        const activeDepts = filterDept === 'ALL' ? departments : [filterDept];
+
+        const gridHtml = activeDepts.map(dept => {
+            const deptMembers = members.filter(m => (m.department || m.dept) === dept);
+            if (deptMembers.length === 0 && filterDept !== 'ALL') return '';
+
+            const deptAvg = deptMembers.length > 0 ? Math.round(deptMembers.reduce((sum, m) => sum + getMemberAttendanceRate(m.id), 0) / deptMembers.length) : 0;
+            const deptIcons = {
+                'Executive': '👑',
+                'Logistics & Tech': '⚡',
+                'Programs & Events': '🎉',
+                'Creative & Media': '🎨',
+                'Outreach & Fellowship': '🤝',
+                'Finance & Treasury': '💼'
+            };
+
+            return `
+                <div class="org-dept-section glass-panel" style="margin-bottom:24px; padding:24px; border-radius:20px; border:1px solid rgba(56,189,248,0.18);">
+                    <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; margin-bottom:18px; padding-bottom:14px; border-bottom:1px solid rgba(255,255,255,0.08);">
+                        <div style="display:flex; align-items:center; gap:12px;">
+                            <span style="font-size:1.6rem;">${deptIcons[dept] || '🏛️'}</span>
+                            <div>
+                                <h3 style="color:#FFF; font-size:1.15rem; font-weight:800; margin:0;">${dept} Department</h3>
+                                <p style="color:#94A3B8; font-size:0.82rem; margin:2px 0 0;">${deptMembers.length} active member(s) assigned</p>
+                            </div>
+                        </div>
+                        <div style="display:flex; align-items:center; gap:12px;">
+                            <span style="background:rgba(56,189,248,0.15); color:#38BDF8; border:1px solid rgba(56,189,248,0.3); font-weight:700; font-size:0.78rem; padding:5px 12px; border-radius:12px;">Avg Att: ${deptAvg}%</span>
+                            <button class="btn-secondary btn-sm" onclick="openAddMemberModal()" style="font-size:0.78rem;">+ Add Member</button>
+                        </div>
+                    </div>
+                    <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(280px, 1fr)); gap:16px;">
+                        ${deptMembers.length > 0 ? deptMembers.map(m => renderOrgMemberCard(m, dept === 'Executive')).join('') : `<div style="grid-column:1/-1; text-align:center; color:#64748B; padding:20px; font-style:italic;">No members currently in ${dept}. Click "+ Add Member" to assign.</div>`}
+                    </div>
+                </div>
+            `;
+        }).join('');
+
+        container.innerHTML = summaryHeaderHtml + gridHtml;
+        return;
+    }
+
+    // TREE VIEW: Dynamic Hierarchy
+    // Tier 1: Executive & Area Leadership
+    const execMembers = members.filter(m => (m.department || m.dept) === 'Executive' || getRoleRank(m.role) === 1);
+    const otherMembers = members.filter(m => !execMembers.some(em => em.id === m.id));
+
+    // Group other members by Chapter
+    const chapters = ['East Chapter', 'North Chapter', 'West Chapter', 'South Chapter', 'Central Chapter'];
+
+    const treeHtml = `
+        <div class="org-tree-wrapper">
+            <!-- Tier 1: Executive & Chapter Heads -->
+            <div class="org-tier-header" style="text-align:center; margin-bottom:14px;">
+                <span style="background:linear-gradient(135deg, #F59E0B, #D97706); color:#FFF; font-weight:800; font-size:0.78rem; letter-spacing:0.08em; text-transform:uppercase; padding:6px 18px; border-radius:20px; box-shadow:0 4px 14px rgba(245,158,11,0.3);">👑 Executive Leadership & Chapter Heads</span>
+            </div>
+            <div style="display:flex; flex-wrap:wrap; justify-content:center; gap:16px; margin-bottom:28px;">
+                ${execMembers.length > 0 ? execMembers.map(m => renderOrgMemberCard(m, true)).join('') : `
+                    <div class="org-member-card" style="border:1px dashed rgba(245,158,11,0.5); justify-content:center; text-align:center;" onclick="openAddMemberModal()">
+                        <div class="org-member-info" style="margin:0;">
+                            <div class="org-member-name" style="color:#F59E0B;">+ Assign Executive Leader</div>
+                            <div class="org-member-role">Click to assign Chapter Youth Head</div>
+                        </div>
+                    </div>
+                `}
+            </div>
+
+            <!-- Connector line down -->
+            <div style="width:2px; height:24px; background:linear-gradient(to bottom, #38BDF8, rgba(56,189,248,0.2)); margin:0 auto 20px;"></div>
+
+            <!-- Tier 2: Chapter & Department Teams -->
+            <div class="org-tier-header" style="text-align:center; margin-bottom:18px;">
+                <span style="background:linear-gradient(135deg, #0284C7, #3B82F6); color:#FFF; font-weight:800; font-size:0.78rem; letter-spacing:0.08em; text-transform:uppercase; padding:6px 18px; border-radius:20px; box-shadow:0 4px 14px rgba(14,165,233,0.3);">🏛️ Chapter Teams & Ministries</span>
+            </div>
+            
+            <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(270px, 1fr)); gap:20px;">
+                ${chapters.map(chapName => {
+                    const chapMembers = otherMembers.filter(m => m.chapter === chapName);
+                    if (chapMembers.length === 0 && filterDept !== 'ALL') return '';
+
+                    const hhHeads = chapMembers.filter(m => getRoleRank(m.role) === 2);
+                    const regularMems = chapMembers.filter(m => getRoleRank(m.role) > 2);
+
+                    return `
+                        <div class="org-branch-column glass-panel" style="padding:18px; border-radius:18px; border:1px solid rgba(255,255,255,0.08); background:rgba(15,23,42,0.75); display:flex; flex-direction:column; gap:14px;">
+                            <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid rgba(255,255,255,0.08); padding-bottom:10px;">
+                                <strong style="color:#F8FAFC; font-size:0.98rem;">📍 ${chapName}</strong>
+                                <span style="background:rgba(56,189,248,0.15); color:#38BDF8; font-size:0.72rem; font-weight:700; padding:3px 8px; border-radius:8px;">${chapMembers.length} Members</span>
+                            </div>
+
+                            ${hhHeads.length > 0 ? `
+                                <div style="font-size:0.72rem; font-weight:700; color:#94A3B8; text-transform:uppercase; letter-spacing:0.05em;">Household & Unit Heads</div>
+                                <div style="display:flex; flex-direction:column; gap:10px;">
+                                    ${hhHeads.map(m => renderOrgMemberCard(m)).join('')}
+                                </div>
+                            ` : ''}
+
+                            <div style="font-size:0.72rem; font-weight:700; color:#94A3B8; text-transform:uppercase; letter-spacing:0.05em; margin-top:4px;">Youth Members</div>
+                            <div style="display:flex; flex-direction:column; gap:10px;">
+                                ${regularMems.length > 0 ? regularMems.map(m => renderOrgMemberCard(m)).join('') : `
+                                    <div style="color:#64748B; font-size:0.82rem; text-align:center; padding:12px; border:1px dashed rgba(255,255,255,0.1); border-radius:12px;">No general members listed</div>
+                                `}
+                            </div>
+                        </div>
+                    `;
+                }).join('')}
+            </div>
+        </div>
+    `;
+
+    container.innerHTML = summaryHeaderHtml + treeHtml;
 }
 
 // ============================================================================
@@ -4257,23 +4341,35 @@ let activeAttendanceChart = null;
 let activeCategoryChart = null;
 
 function renderInteractiveCharts() {
-    if (!window.Chart) return;
-
     const trendCanvas = document.getElementById('chart-attendance-trend');
     const catCanvas = document.getElementById('chart-category-breakdown');
 
-    if (trendCanvas) {
-        const labels = state.activities.map(a => (a.name || a.title || 'Event').substring(0, 16));
-        const totalMems = state.members.length;
-        const dataRates = state.activities.map(act => {
-            const attObj = state.attendance[act.id] || {};
-            let pCount = 0;
-            state.members.forEach(m => {
-                if (attObj[m.id]?.status === 'present') pCount++;
-            });
-            return totalMems > 0 ? Math.round((pCount / totalMems) * 100) : 0;
+    const totalMems = state.members.length;
+    const labels = state.activities.map(a => (a.name || a.title || 'Event').substring(0, 18));
+    const dataRates = state.activities.map(act => {
+        const attObj = state.attendance[act.id] || {};
+        let pCount = 0;
+        state.members.forEach(m => {
+            const st = attObj[m.id]?.status;
+            if (st === 'present' || st === 'late') pCount++;
         });
+        return totalMems > 0 ? Math.round((pCount / totalMems) * 100) : 0;
+    });
 
+    if (!window.Chart && trendCanvas && trendCanvas.parentElement) {
+        // Fallback HTML/CSS Chart if Chart CDN unavailable
+        trendCanvas.parentElement.innerHTML = `
+            <div style="display:flex; align-items:flex-end; justify-content:space-around; height:100%; padding:20px 0; gap:10px;">
+                ${state.activities.map((act, idx) => `
+                    <div style="display:flex; flex-direction:column; align-items:center; flex:1; height:100%; justify-content:flex-end;">
+                        <span style="font-size:0.75rem; color:#38BDF8; font-weight:700; margin-bottom:4px;">${dataRates[idx]}%</span>
+                        <div style="width:100%; max-width:40px; height:${Math.max(10, dataRates[idx])}%; background:linear-gradient(180deg, #38BDF8, #0284C7); border-radius:6px 6px 0 0;"></div>
+                        <span style="font-size:0.7rem; color:#94A3B8; margin-top:6px; text-align:center; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:60px;">${(act.name||'Act').substring(0,8)}</span>
+                    </div>
+                `).join('')}
+            </div>
+        `;
+    } else if (trendCanvas && window.Chart) {
         if (activeAttendanceChart) activeAttendanceChart.destroy();
         activeAttendanceChart = new Chart(trendCanvas, {
             type: 'line',
@@ -4283,12 +4379,13 @@ function renderInteractiveCharts() {
                     label: 'Attendance Rate (%)',
                     data: dataRates.length ? dataRates : [0],
                     borderColor: '#38BDF8',
-                    backgroundColor: 'rgba(56, 189, 248, 0.15)',
+                    backgroundColor: 'rgba(56, 189, 248, 0.18)',
                     borderWidth: 3,
                     fill: true,
                     tension: 0.35,
                     pointBackgroundColor: '#38BDF8',
-                    pointRadius: 5
+                    pointRadius: 5,
+                    pointHoverRadius: 7
                 }]
             },
             options: {
@@ -4298,7 +4395,7 @@ function renderInteractiveCharts() {
                     y: {
                         beginAtZero: true,
                         max: 100,
-                        ticks: { color: '#94A3B8' },
+                        ticks: { color: '#94A3B8', callback: val => val + '%' },
                         grid: { color: 'rgba(255,255,255,0.06)' }
                     },
                     x: {
@@ -4307,13 +4404,13 @@ function renderInteractiveCharts() {
                     }
                 },
                 plugins: {
-                    legend: { labels: { color: '#F8FAFC' } }
+                    legend: { labels: { color: '#F8FAFC', font: { weight: 'bold' } } }
                 }
             }
         });
     }
 
-    if (catCanvas) {
+    if (catCanvas && window.Chart) {
         const catMap = {};
         state.activities.forEach(a => {
             const cat = a.type || a.category || 'General';
@@ -4338,7 +4435,7 @@ function renderInteractiveCharts() {
                 responsive: true,
                 maintainAspectRatio: false,
                 plugins: {
-                    legend: { position: 'right', labels: { color: '#F8FAFC', font: { size: 11 } } }
+                    legend: { position: 'right', labels: { color: '#F8FAFC', font: { size: 11, weight: 'bold' } } }
                 }
             }
         });
