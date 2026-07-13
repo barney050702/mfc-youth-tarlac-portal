@@ -265,15 +265,6 @@
                     <button id="pwa-install-top-btn" onclick="triggerPWAInstall()" title="Install MFC Youth Tarlac Portal to your device"
                         style="display: flex; align-items: center; gap: 6px; padding: 6px 14px; background: linear-gradient(135deg, rgba(14,165,233,0.25), rgba(2,132,199,0.15)); border: 1px solid rgba(56,189,248,0.5); border-radius: 20px; color: #38BDF8; font-size: 0.75rem; font-weight: 700; cursor: pointer; transition: all 0.2s; box-shadow: 0 0 12px rgba(14,165,233,0.2);">
                         <span>📲 Install App</span>
-                    </button>
-
-                    <!-- Theme Switcher Button -->
-                    <button id="theme-toggle-btn" onclick="togglePortalTheme()" title="Toggle Dark/Light Clean Theme"
-                        style="display: flex; align-items: center; gap: 6px; padding: 6px 14px; background: rgba(30,41,59,0.8); border: 1px solid rgba(255,255,255,0.2); border-radius: 20px; color: #E2E8F0; font-size: 0.75rem; font-weight: 700; cursor: pointer; transition: all 0.2s;">
-                        <span id="theme-icon">☀️</span>
-                        <span id="theme-label">Light Mode</span>
-                    </button>
-
                     <!-- Social / Web Links -->
                     <a href="https://www.facebook.com/MFCYouthTarlac" target="_blank" rel="noopener noreferrer"
                         class="top-bar-icon-link text-blue" title="MFC Youth Tarlac Official Facebook Page">
@@ -2661,12 +2652,12 @@
     <div class="toast-container" id="toast-container"></div>
 
     <!-- Application Javascript -->
-    <script src="script.js?v=3.5"></script>
+    <script src="script.js?v=3.6"></script>
     <!-- PWA Offline Service Worker Registration -->
     <script>
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
-                navigator.serviceWorker.register('./sw.js?v=3.5')
+                navigator.serviceWorker.register('./sw.js?v=3.6')
                     .then(reg => {
                         console.log('[PWA] Service Worker registered successfully:', reg.scope);
                         reg.onupdatefound = () => {

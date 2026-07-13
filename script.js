@@ -651,39 +651,6 @@ function copyAbsenteesOnlyList() {
     }
 }
 
-function togglePortalTheme() {
-    const currentTheme = document.body.getAttribute('data-theme') || 'dark';
-    const nextTheme = currentTheme === 'dark' ? 'light' : 'dark';
-    document.body.setAttribute('data-theme', nextTheme);
-    localStorage.setItem('ps_portal_theme', nextTheme);
-
-    const iconEl = document.getElementById('theme-icon');
-    const labelEl = document.getElementById('theme-label');
-    if (nextTheme === 'light') {
-        if (iconEl) iconEl.textContent = '🌙';
-        if (labelEl) labelEl.textContent = 'Dark Mode';
-        showToast('☀️ Executive Clean Light Mode activated!', 'info');
-    } else {
-        if (iconEl) iconEl.textContent = '☀️';
-        if (labelEl) labelEl.textContent = 'Light Mode';
-        showToast('🌙 Glassmorphic Dark Mode activated!', 'info');
-    }
-}
-
-function applySavedTheme() {
-    const saved = localStorage.getItem('ps_portal_theme') || 'dark';
-    document.body.setAttribute('data-theme', saved);
-    const iconEl = document.getElementById('theme-icon');
-    const labelEl = document.getElementById('theme-label');
-    if (saved === 'light') {
-        if (iconEl) iconEl.textContent = '🌙';
-        if (labelEl) labelEl.textContent = 'Dark Mode';
-    } else {
-        if (iconEl) iconEl.textContent = '☀️';
-        if (labelEl) labelEl.textContent = 'Light Mode';
-    }
-}
-
 function renderDashboard() {
 
     const totalActs = state.activities.length;
@@ -6263,7 +6230,6 @@ function importFullBackupJSON(inputEl) {
 
 // Initialize on DOM ready
 document.addEventListener('DOMContentLoaded', () => {
-    applySavedTheme();
     initApp();
     initMobileNativeGestures();
 });
