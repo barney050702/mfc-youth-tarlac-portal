@@ -3240,6 +3240,7 @@ function renderMembersTable() {
                 </td>
             </tr>
         `;
+        renderMembersMobileCards(filtered);
         return;
     }
 
@@ -3340,6 +3341,121 @@ function renderMembersTable() {
     });
 
     tbody.innerHTML = rowsHtml.join('');
+    renderMembersMobileCards(filtered);
+}
+
+function renderMembersMobileCards(filtered) {
+    const container = document.getElementById('members-mobile-cards-container');
+    if (!container) return;
+
+    if (!filtered || filtered.length === 0) {
+        container.innerHTML = `
+            <div style="text-align: center; padding: 40px 20px; background: rgba(15, 23, 42, 0.7); border-radius: 16px; border: 1px dashed rgba(255,255,255,0.1); color: #94A3B8;">
+                <div style="font-size: 2.5rem; margin-bottom: 12px;">👥</div>
+                <div style="font-size: 1.05rem; font-weight: 700; color: #F8FAFC;">No Members Found</div>
+                <p style="font-size: 0.85rem; margin-top: 6px;">No members match your search or filter.</p>
+            </div>
+        `;
+        return;
+    }
+
+    let currentChapterSection = null;
+    const cardsHtml = [];
+
+    filtered.forEach(mem => {
+        const chapName = mem.chapter || 'EAST CHAPTER';
+        const cleanChap = chapName.toUpperCase();
+        if (cleanChap !== currentChapterSection) {
+            currentChapterSection = cleanChap;
+            const chapterCount = filtered.filter(m => (m.chapter || 'EAST CHAPTER').toUpperCase() === cleanChap).length;
+            cardsHtml.push(`
+                <div class="mobile-chapter-section-banner" style="background: linear-gradient(135deg, rgba(14, 165, 233, 0.25), rgba(15, 23, 42, 0.95)); border-left: 4px solid #38BDF8; padding: 10px 14px; border-radius: 10px; display: flex; align-items: center; justify-content: space-between; margin: 6px 0;">
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <span>🏛️</span>
+                        <strong style="color: #38BDF8; font-size: 0.88rem; letter-spacing: 0.04em;">${cleanChap}</strong>
+                    </div>
+                    <span style="font-size: 0.72rem; font-weight: 700; color: #FFF; background: rgba(56, 189, 248, 0.2); border: 1px solid rgba(56, 189, 248, 0.4); padding: 2px 10px; border-radius: 12px;">
+                        ${chapterCount} Member${chapterCount !== 1 ? 's' : ''}
+                    </span>
+                </div>
+            `);
+        }
+
+        const initial = mem.name ? mem.name.charAt(0).toUpperCase() : 'M';
+
+        cardsHtml.push(`
+            <div class="mobile-member-card glass-card" style="padding: 16px; border-radius: 16px; background: rgba(15, 23, 42, 0.88); border: 1px solid rgba(255, 255, 255, 0.09); box-shadow: 0 4px 18px rgba(0,0,0,0.3);">
+                <!-- Header -->
+                <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; margin-bottom: 12px;">
+                    <div style="display: flex; align-items: center; gap: 12px; min-width: 0;">
+                        <div style="width: 44px; height: 44px; border-radius: 12px; background: linear-gradient(135deg, #1E3A8A, #3B82F6); display: flex; align-items: center; justify-content: center; font-size: 1.2rem; font-weight: 800; color: #FFF; flex-shrink: 0; border: 1px solid rgba(56,189,248,0.4);">
+                            ${initial}
+                        </div>
+                        <div style="min-width: 0;">
+                            <div style="font-weight: 800; font-size: 1.02rem; color: #F8FAFC; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                                ${mem.name}
+                            </div>
+                            <div style="margin-top: 4px; display: flex; align-items: center; gap: 6px; flex-wrap: wrap;">
+                                <span style="background: var(--grad-emerald); color: white; padding: 2px 10px; border-radius: 12px; font-weight: 700; font-size: 0.68rem; text-transform: uppercase;">
+                                    ${mem.chapter || 'EAST'}
+                                </span>
+                                ${formatRoleBadge(mem.role)}
+                            </div>
+                        </div>
+                    </div>
+                    <button onclick="openMemberProfile('${mem.id}')" class="btn-secondary btn-sm" style="padding: 6px 12px; font-size: 0.75rem; border-radius: 10px; border-color: rgba(56,189,248,0.4); color: #38BDF8; flex-shrink: 0;">
+                        Dossier ↗
+                    </button>
+                </div>
+
+                <!-- One-Tap Communications & Contact details -->
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; background: rgba(8, 14, 30, 0.6); padding: 12px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.05); margin-bottom: 12px; font-size: 0.8rem;">
+                    <div>
+                        <span style="color: #64748B; font-size: 0.7rem; display: block; font-weight: 700; margin-bottom: 3px;">📞 CONTACT</span>
+                        <span style="color: #FFF; font-weight: 700; font-family: 'Roboto Mono', monospace;">
+                            ${mem.contactNum ? `<a href="tel:${mem.contactNum}" style="color: #38BDF8; text-decoration: none;">${mem.contactNum}</a>` : '<span style="color:#64748B;">-</span>'}
+                        </span>
+                    </div>
+                    <div>
+                        <span style="color: #64748B; font-size: 0.7rem; display: block; font-weight: 700; margin-bottom: 3px;">📧 EMAIL</span>
+                        <span style="color: #FFF; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block;">
+                            ${mem.email ? `<a href="mailto:${mem.email}" style="color: #60A5FA; text-decoration: none;">${mem.email}</a>` : '<span style="color:#64748B;">-</span>'}
+                        </span>
+                    </div>
+                    <div>
+                        <span style="color: #64748B; font-size: 0.7rem; display: block; font-weight: 700; margin-bottom: 3px;">🎂 BIRTHDAY</span>
+                        <span style="color: #CBD5E1;">${formatDateClean(mem.birthday)}</span>
+                    </div>
+                    <div>
+                        <span style="color: #64748B; font-size: 0.7rem; display: block; font-weight: 700; margin-bottom: 3px;">🏕️ YOUTH CAMP</span>
+                        <span style="color: #CBD5E1;">${formatDateClean(mem.campDate)}</span>
+                    </div>
+                </div>
+
+                <!-- Action Toolbar Row -->
+                <div style="display: flex; align-items: center; justify-content: space-between; gap: 8px; border-top: 1px solid rgba(255,255,255,0.06); padding-top: 10px;">
+                    <div style="display: flex; gap: 6px;">
+                        <button onclick="openCertificateModal('${mem.id}')" class="btn-secondary btn-sm" title="Certificate" style="padding: 6px 10px; font-size: 0.78rem; border-color: rgba(245, 158, 11, 0.4); color: #F59E0B;">
+                            📜 Cert
+                        </button>
+                        <button onclick="openMemberQRBadgeModal('${mem.id}')" class="btn-secondary btn-sm" title="QR Badge" style="padding: 6px 10px; font-size: 0.78rem; border-color: rgba(56, 189, 248, 0.4); color: #38BDF8;">
+                            🏷️ QR
+                        </button>
+                    </div>
+                    <div style="display: flex; gap: 6px;">
+                        <button onclick="openEditMemberModal('${mem.id}')" class="btn-secondary btn-sm" title="Edit Member" style="padding: 6px 12px; font-size: 0.78rem; border-color: rgba(96, 165, 250, 0.4); color: #60A5FA;">
+                            ✏️ Edit
+                        </button>
+                        <button onclick="deleteMember('${mem.id}')" class="btn-secondary btn-sm" title="Delete Member" style="padding: 6px 10px; font-size: 0.78rem; border-color: rgba(244, 63, 94, 0.4); color: #F43F5E;">
+                            🗑️
+                        </button>
+                    </div>
+                </div>
+            </div>
+        `);
+    });
+
+    container.innerHTML = cardsHtml.join('');
 }
 
 function formatDateClean(dateStr) {

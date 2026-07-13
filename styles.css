@@ -2667,7 +2667,54 @@ body.light-mode .theme-switch-thumb {
 @media (max-width: 768px) {
     .mobile-bottom-nav { display: flex; }
     .main-content { padding-bottom: 76px; }
+
+    /* Members View Mobile Native Upgrade */
+    #view-members .table-container {
+        display: none !important;
+    }
+    #members-mobile-cards-container {
+        display: flex !important;
+        flex-direction: column;
+        gap: 14px;
+    }
+    #members-chapter-bullets {
+        flex-wrap: nowrap !important;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        padding-bottom: 8px;
+        scrollbar-width: none;
+    }
+    #members-chapter-bullets::-webkit-scrollbar {
+        display: none;
+    }
+    #view-members .toolbar {
+        flex-direction: column;
+        align-items: stretch !important;
+        gap: 12px;
+    }
+    #view-members .toolbar-left,
+    #view-members .toolbar-left .search-box,
+    #view-members .toolbar-left .search-box input {
+        width: 100% !important;
+    }
+    #view-members .toolbar-right {
+        display: flex !important;
+        flex-wrap: nowrap !important;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        padding-bottom: 6px;
+        gap: 8px;
+        scrollbar-width: none;
+    }
+    #view-members .toolbar-right::-webkit-scrollbar {
+        display: none;
+    }
+    #view-members .toolbar-right button {
+        flex: 0 0 auto;
+        white-space: nowrap;
+    }
 }
+
 
 /* Audit Log List Item */
 .audit-log-item {
