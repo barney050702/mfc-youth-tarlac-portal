@@ -61,34 +61,18 @@
                 <div
                     style="background: rgba(7, 13, 28, 0.85); border: 1px solid rgba(56, 189, 248, 0.3); border-radius: 20px; padding: 28px 24px; text-align: center; box-shadow: 0 20px 50px rgba(0,0,0,0.6);">
 
-                    <p style="color: #E2E8F0; font-size: 0.9rem; line-height: 1.5; font-weight: 600; margin: 0 0 16px 0;">
-                        Select your access role and input your passcode to unlock the portal:
+                    <p style="color: #E2E8F0; font-size: 0.95rem; line-height: 1.5; font-weight: 600; margin: 0 0 22px 0;">
+                        This page is locked to protect documents, please input the password below to access all the files:
                     </p>
-
-                    <!-- Role Selector Tabs -->
-                    <div style="display: flex; gap: 8px; justify-content: center; margin-bottom: 18px; flex-wrap: wrap;">
-                        <button type="button" class="rbac-role-btn active" data-role="Admin" onclick="selectLoginRole('Admin', this)"
-                            style="background: linear-gradient(135deg, #0284C7, #3B82F6); color: #FFF; border: 1px solid rgba(56,189,248,0.5); border-radius: 18px; padding: 6px 14px; font-size: 0.78rem; font-weight: 800; cursor: pointer; transition: all 0.2s;">
-                            👑 Chapter Admin
-                        </button>
-                        <button type="button" class="rbac-role-btn" data-role="Leader" onclick="selectLoginRole('Leader', this)"
-                            style="background: rgba(15,23,42,0.8); color: #94A3B8; border: 1px solid rgba(255,255,255,0.15); border-radius: 18px; padding: 6px 14px; font-size: 0.78rem; font-weight: 700; cursor: pointer; transition: all 0.2s;">
-                            🏛️ Household Head
-                        </button>
-                        <button type="button" class="rbac-role-btn" data-role="Finance" onclick="selectLoginRole('Finance', this)"
-                            style="background: rgba(15,23,42,0.8); color: #94A3B8; border: 1px solid rgba(255,255,255,0.15); border-radius: 18px; padding: 6px 14px; font-size: 0.78rem; font-weight: 700; cursor: pointer; transition: all 0.2s;">
-                            💰 Finance Officer
-                        </button>
-                    </div>
 
                     <form id="auth-login-form" onsubmit="loginUser(event)">
                         <div
                             style="display: flex; align-items: stretch; border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 12px; overflow: hidden; background: #060B18;">
                             <span
                                 style="display: flex; align-items: center; padding: 0 12px; color: #94A3B8; font-weight: 700; font-size: 0.82rem; border-right: 1px solid rgba(255, 255, 255, 0.1); flex-shrink: 0; white-space: nowrap;">
-                                Passcode:
+                                Password:
                             </span>
-                            <input type="password" id="auth-login-password" required placeholder="Enter passcode (e.g. mfcyouthtarlac)..." value=""
+                            <input type="password" id="auth-login-password" required placeholder="Enter chapter password..." value=""
                                 style="flex: 1; min-width: 0; background: transparent; border: none; color: #FFF; padding: 13px 10px; font-size: 0.9rem; outline: none;">
                             <button type="submit"
                                 style="flex-shrink: 0; white-space: nowrap; background: linear-gradient(135deg, #0284C7, #3B82F6); color: #FFF; font-weight: 800; font-size: 0.82rem; letter-spacing: 0.06em; text-transform: uppercase; padding: 0 18px; border: none; cursor: pointer; transition: opacity 0.2s;">
@@ -100,7 +84,7 @@
 
                 <div
                     style="margin-top: 18px; color: #94A3B8; font-size: 0.82rem; font-weight: 500; line-height: 1.5; text-align: center;">
-                    <span>Passcodes: Admin (<code>mfcyouthtarlac</code>) • Household Head (<code>hhhead2026</code>) • Finance (<code>treasury2026</code>)</span>
+                    <span>*If you don't know the password, you may ask your couple coordinator or your area servant.</span>
                 </div>
 
             </div>
@@ -282,11 +266,6 @@
                         style="display: flex; align-items: center; gap: 6px; padding: 6px 14px; background: linear-gradient(135deg, rgba(14,165,233,0.25), rgba(2,132,199,0.15)); border: 1px solid rgba(56,189,248,0.5); border-radius: 20px; color: #38BDF8; font-size: 0.75rem; font-weight: 700; cursor: pointer; transition: all 0.2s; box-shadow: 0 0 12px rgba(14,165,233,0.2);">
                         <span>📲 Install App</span>
                     </button>
-
-                    <!-- User RBAC Role Badge -->
-                    <div id="top-bar-role-pill" style="display: flex; align-items: center; gap: 6px; padding: 6px 14px; background: rgba(245,158,11,0.15); border: 1px solid rgba(245,158,11,0.4); border-radius: 20px; color: #F59E0B; font-size: 0.75rem; font-weight: 800;">
-                        <span>👑 Chapter Admin</span>
-                    </div>
 
                     <!-- Social / Web Links -->
                     <a href="https://www.facebook.com/MFCYouthTarlac" target="_blank" rel="noopener noreferrer"
@@ -2629,12 +2608,12 @@
     <div class="toast-container" id="toast-container"></div>
 
     <!-- Application Javascript -->
-    <script src="script.js?v=3.3"></script>
+    <script src="script.js?v=3.4"></script>
     <!-- PWA Offline Service Worker Registration -->
     <script>
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
-                navigator.serviceWorker.register('./sw.js?v=3.2')
+                navigator.serviceWorker.register('./sw.js?v=3.4')
                     .then(reg => {
                         console.log('[PWA] Service Worker registered successfully:', reg.scope);
                         reg.onupdatefound = () => {

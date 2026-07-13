@@ -4836,40 +4836,14 @@ function updateSecurityStatusUI() {
     }
 }
 
-let activeLoginRole = 'Admin';
-
-function selectLoginRole(role, btnEl) {
-    activeLoginRole = role;
-    const btns = document.querySelectorAll('.rbac-role-btn');
-    btns.forEach(b => {
-        b.style.background = 'rgba(15,23,42,0.8)';
-        b.style.color = '#94A3B8';
-        b.style.borderColor = 'rgba(255,255,255,0.15)';
-    });
-    if (btnEl) {
-        btnEl.style.background = 'linear-gradient(135deg, #0284C7, #3B82F6)';
-        btnEl.style.color = '#FFF';
-        btnEl.style.borderColor = 'rgba(56,189,248,0.5)';
-    }
-}
-
 async function loginUser(event) {
     if (event) event.preventDefault();
 
     const passEl = document.getElementById('auth-login-password');
-    const passVal = (passEl && passEl.value) ? passEl.value.trim().toLowerCase() : '';
+    const passVal = (passEl && passEl.value) ? passEl.value.trim() : '';
 
-    let matchedRole = null;
-    if (passVal === 'mfcyouthtarlac') {
-        matchedRole = 'Admin';
-    } else if (passVal === 'hhhead2026') {
-        matchedRole = 'Leader';
-    } else if (passVal === 'treasury2026') {
-        matchedRole = 'Finance';
-    }
-
-    if (!matchedRole) {
-        showToast('🚫 Incorrect passcode. Valid passcodes: mfcyouthtarlac (Admin), hhhead2026 (Leader), treasury2026 (Finance)', 'error');
+    if (passVal.toLowerCase() !== 'mfcyouthtarlac') {
+        showToast('🚫 Incorrect password. Please check your password or ask your coordinator.', 'error');
         if (passEl) {
             passEl.value = '';
             passEl.focus();
@@ -4877,34 +4851,21 @@ async function loginUser(event) {
         return;
     }
 
-    // Unlock Portal with specific role permissions
+    // Unlock Portal cleanly
     state.failedLoginAttempts = 0;
-    state.currentUserRole = matchedRole;
-    state.currentAdminEmail = matchedRole === 'Admin' ? 'chapter.head@mfcyouthtarlac.com' : (matchedRole === 'Leader' ? 'household.head@mfcyouthtarlac.com' : 'treasury@mfcyouthtarlac.com');
-    state.currentAdminRole = matchedRole === 'Admin' ? 'CHAPTER ADMIN' : (matchedRole === 'Leader' ? 'HOUSEHOLD HEAD' : 'FINANCE OFFICER');
+    state.currentAdminEmail = 'reyesbarney38@gmail.com';
+    state.currentAdminRole = 'SUPER ADMIN';
 
     localStorage.setItem('ps_logged_in', 'true');
-    localStorage.setItem('ps_user_role', matchedRole);
-
     const overlay = document.getElementById('auth-login-overlay');
     if (overlay) overlay.style.display = 'none';
     if (passEl) passEl.value = '';
 
-    applyRBACRoleUI();
-
-    const roleNames = { 'Admin': '👑 Chapter Admin', 'Leader': '🏛️ Household Head', 'Finance': '💰 Finance Officer' };
-    showToast(`🔓 Portal unlocked as ${roleNames[matchedRole]}! Access granted.`, 'success');
+    showToast('🔓 Chapter records & files unlocked successfully! Welcome back.', 'success');
     renderAll();
 }
 
-function applyRBACRoleUI() {
-    const role = state.currentUserRole || localStorage.getItem('ps_user_role') || 'Admin';
-    const rolePill = document.getElementById('top-bar-role-pill');
-    const roleNames = { 'Admin': '👑 Chapter Admin', 'Leader': '🏛️ Household Head', 'Finance': '💰 Finance Officer' };
-    if (rolePill) {
-        rolePill.innerHTML = `<span>${roleNames[role] || '👑 Chapter Admin'}</span>`;
-    }
-}
+function applyRBACRoleUI() {}
 
 function resendAdmin2FACode() {
     if (!state.pending2FAAccount) return;
