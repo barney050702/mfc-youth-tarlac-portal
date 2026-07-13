@@ -424,12 +424,26 @@ function setupEventListeners() {
     if (catFilter) catFilter.addEventListener('change', filterFunds);
 }
 
+function toggleMobileSidebar() {
+    const sidebar = document.getElementById('sidebar');
+    const backdrop = document.getElementById('sidebar-backdrop');
+    if (sidebar && sidebar.classList.contains('open')) {
+        closeMobileSidebar();
+    } else {
+        if (sidebar) sidebar.classList.add('open');
+        if (backdrop) backdrop.classList.add('active');
+        if (typeof triggerHapticFeedback === 'function') triggerHapticFeedback(15);
+    }
+}
+window.toggleMobileSidebar = toggleMobileSidebar;
+
 function closeMobileSidebar() {
     const sidebar = document.getElementById('sidebar');
     const backdrop = document.getElementById('sidebar-backdrop');
     if (sidebar) sidebar.classList.remove('open');
     if (backdrop) backdrop.classList.remove('active');
 }
+window.closeMobileSidebar = closeMobileSidebar;
 
 function switchView(viewId) {
     closeMobileSidebar();
