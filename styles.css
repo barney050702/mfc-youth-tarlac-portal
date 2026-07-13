@@ -3694,4 +3694,118 @@ body.light-theme .nav-item:hover {
     }
 }
 
+/* ==========================================================================
+   NATIVE MOBILE USER EXPERIENCE SUITE (v4.5)
+   Fixed Bottom Navigation Bar, Touch Target Ergonomics & Floating Action Button
+   ========================================================================== */
+
+/* Mobile Bottom Navigation Bar - Hidden on Desktop */
+.mobile-bottom-nav {
+    display: none;
+}
+
+/* Mobile Quick Action Floating Button (FAB) - Hidden on Desktop */
+.mobile-fab-container {
+    display: none;
+}
+
+@media (max-width: 768px) {
+    /* Main Content Bottom Space to prevent Bottom Nav overlapping */
+    .main-content {
+        padding-bottom: calc(85px + env(safe-area-inset-bottom, 0px)) !important;
+    }
+
+    /* Fixed Glass Bottom Navigation Bar */
+    .mobile-bottom-nav {
+        display: flex;
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: calc(64px + env(safe-area-inset-bottom, 0px));
+        padding-bottom: env(safe-area-inset-bottom, 0px);
+        background: rgba(15, 23, 42, 0.94);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border-top: 1px solid rgba(255, 255, 255, 0.12);
+        z-index: 9999;
+        justify-content: space-around;
+        align-items: center;
+        box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.6);
+    }
+
+    .mobile-nav-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 4px;
+        color: #94A3B8;
+        text-decoration: none;
+        flex: 1;
+        height: 100%;
+        font-size: 0.68rem;
+        font-weight: 700;
+        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        user-select: none;
+        -webkit-tap-highlight-color: transparent;
+    }
+
+    .mobile-nav-item svg {
+        width: 22px;
+        height: 22px;
+        stroke: currentColor;
+        transition: transform 0.2s;
+    }
+
+    .mobile-nav-item.active {
+        color: #38BDF8;
+    }
+
+    .mobile-nav-item.active svg {
+        transform: translateY(-2px);
+        filter: drop-shadow(0 0 6px rgba(56, 189, 248, 0.6));
+    }
+
+    /* Floating Action Button (FAB) for Mobile Quick-Add */
+    .mobile-fab-container {
+        display: flex;
+        position: fixed;
+        bottom: calc(76px + env(safe-area-inset-bottom, 0px));
+        right: 18px;
+        z-index: 10000;
+    }
+
+    .mobile-fab-btn {
+        width: 54px;
+        height: 54px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #0284C7, #38BDF8);
+        border: 2px solid rgba(255, 255, 255, 0.25);
+        color: #FFF;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 6px 20px rgba(2, 132, 199, 0.6);
+        cursor: pointer;
+        transition: transform 0.2s, box-shadow 0.2s;
+        -webkit-tap-highlight-color: transparent;
+    }
+
+    .mobile-fab-btn:active {
+        transform: scale(0.92);
+    }
+
+    /* Touch Target & Ergonomics Enhancements */
+    button, .btn-primary, .btn-secondary {
+        min-height: 42px;
+    }
+
+    /* Smooth Swipe Table Indicators */
+    .table-container {
+        -webkit-overflow-scrolling: touch;
+        scroll-behavior: smooth;
+    }
+}
+
 
