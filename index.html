@@ -751,6 +751,17 @@
                                     </svg>
                                     Pastoral Follow-Up Report
                                 </button>
+                                <button class="btn-secondary btn-sm" onclick="openAttendanceMatrixModal()"
+                                    style="color: #38BDF8; border-color: rgba(56, 189, 248, 0.45);">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                        style="width: 14px; height: 14px;">
+                                        <rect width="18" height="18" x="3" y="3" rx="2" />
+                                        <path d="M3 9h18" />
+                                        <path d="M3 15h18" />
+                                        <path d="M9 3v18" />
+                                    </svg>
+                                    Attendance Matrix Sheet
+                                </button>
                                 <button class="btn-secondary btn-sm text-red" id="btn-reset-attendance">
                                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                                         style="width: 14px; height: 14px;">
@@ -2720,6 +2731,12 @@
                         ❌ Copy Absentees List Only
                     </button>
                 </div>
+                <div style="margin-top: 20px; border-top: 1px solid rgba(255,255,255,0.08); padding-top: 16px;">
+                    <div style="font-size: 0.78rem; font-weight: 700; color: #A855F7; text-transform: uppercase; margin-bottom: 10px;">💬 1-Click Pastoral Check-In Messages for Absentees</div>
+                    <div id="pastoral-absentees-quick-list" style="display: flex; flex-direction: column; gap: 10px; max-height: 220px; overflow-y: auto;">
+                        <!-- Populated dynamically -->
+                    </div>
+                </div>
             </div>
             <div style="padding: 16px 24px; border-top: 1px solid rgba(255,255,255,0.08); display: flex; justify-content: flex-end;">
                 <button type="button" onclick="closePastoralFollowUpModal()" class="btn-secondary btn-sm">Close</button>
@@ -2808,16 +2825,91 @@
         </div>
     </div>
 
+    <!-- Full Attendance Matrix Grid Modal -->
+    <div id="attendance-matrix-backdrop"
+        style="display: none; position: fixed; inset: 0; background: rgba(3, 7, 18, 0.88); backdrop-filter: blur(10px); z-index: 9999; align-items: center; justify-content: center; padding: 20px;">
+        <div class="modal-content"
+            style="background: #090E1E; border: 1px solid rgba(56, 189, 248, 0.4); border-radius: 20px; width: 100%; max-width: 960px; max-height: 92vh; display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 25px 60px rgba(0,0,0,0.8);">
+            <div
+                style="padding: 18px 24px; border-bottom: 1px solid rgba(255,255,255,0.08); display: flex; align-items: center; justify-content: space-between; background: linear-gradient(135deg, rgba(56,189,248,0.18), rgba(14,165,233,0.08));">
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <span style="font-size: 1.4rem;">📊</span>
+                    <div>
+                        <h3 style="margin: 0; color: #FFF; font-size: 1.05rem; font-weight: 800;">Cross-Tabulated Attendance Matrix</h3>
+                        <div style="color: #38BDF8; font-size: 0.75rem; font-weight: 600;">Chapter Members × All Activities Attendance Record</div>
+                    </div>
+                </div>
+                <button onclick="closeAttendanceMatrixModal()"
+                    style="background: transparent; border: none; color: #94A3B8; font-size: 1.4rem; cursor: pointer;">&times;</button>
+            </div>
+            <div style="padding: 20px; overflow: auto; flex: 1;" id="attendance-matrix-printable-area">
+                <div style="margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center;">
+                    <span style="font-size: 0.8rem; color: #94A3B8;">Legend: <strong style="color: #22C55E;">✓</strong> Present | <strong style="color: #F59E0B;">L</strong> Late | <strong style="color: #EF4444;">✗</strong> Absent</span>
+                </div>
+                <table class="data-table w-full" id="attendance-matrix-table" style="width: 100%; border-collapse: collapse; font-size: 0.82rem;">
+                    <thead id="attendance-matrix-thead"></thead>
+                    <tbody id="attendance-matrix-tbody"></tbody>
+                </table>
+            </div>
+            <div style="padding: 16px 24px; border-top: 1px solid rgba(255,255,255,0.08); display: flex; justify-content: flex-end; gap: 12px; background: rgba(15,23,42,0.95);">
+                <button type="button" onclick="closeAttendanceMatrixModal()" class="btn-secondary btn-sm">Close</button>
+                <button type="button" onclick="exportAttendanceMatrixCSV()" class="btn-primary btn-sm glow-button" style="background: linear-gradient(135deg, #10B981, #059669); border: none;">
+                    📥 Export Matrix CSV
+                </button>
+                <button type="button" onclick="window.print()" class="btn-primary btn-sm glow-button" style="background: linear-gradient(135deg, #38BDF8, #0284C7); border: none;">
+                    🖨️ Print Matrix Sheet
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Digital Birthday / Celebration Greeting Card Modal -->
+    <div id="birthday-card-backdrop"
+        style="display: none; position: fixed; inset: 0; background: rgba(3, 7, 18, 0.88); backdrop-filter: blur(10px); z-index: 9999; align-items: center; justify-content: center; padding: 20px;">
+        <div class="modal-content"
+            style="background: #090E1E; border: 1px solid rgba(236, 72, 153, 0.4); border-radius: 20px; width: 100%; max-width: 520px; display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 25px 60px rgba(0,0,0,0.8);">
+            <div
+                style="padding: 16px 24px; border-bottom: 1px solid rgba(255,255,255,0.08); display: flex; align-items: center; justify-content: space-between; background: linear-gradient(135deg, rgba(236,72,153,0.18), rgba(190,24,93,0.08));">
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <span style="font-size: 1.4rem;">🎂</span>
+                    <h3 style="margin: 0; color: #FFF; font-size: 1.05rem; font-weight: 800;">Digital Celebration Card</h3>
+                </div>
+                <button onclick="closeBirthdayCardModal()"
+                    style="background: transparent; border: none; color: #94A3B8; font-size: 1.4rem; cursor: pointer;">&times;</button>
+            </div>
+
+            <!-- Festive Card Frame -->
+            <div style="padding: 32px 24px; background: linear-gradient(135deg, #1E1B4B, #311042); border-radius: 16px; margin: 18px; text-align: center; border: 2px solid rgba(236,72,153,0.35); position: relative; overflow: hidden;">
+                <div style="font-size: 2.8rem; margin-bottom: 12px; filter: drop-shadow(0 0 10px rgba(236,72,153,0.8));">🎉 🎂 ✨</div>
+                <div style="text-transform: uppercase; font-size: 0.72rem; letter-spacing: 2.5px; color: #F472B6; font-weight: 800; margin-bottom: 8px;">MISSIONARY FAMILIES OF CHRIST — YOUTH TARLAC</div>
+                <h3 style="color: #FFF; font-size: 1.6rem; font-weight: 900; margin: 0 0 14px 0;" id="bday-card-name">Happy Birthday!</h3>
+                <p style="color: #E2E8F0; font-size: 0.92rem; line-height: 1.6; margin: 0 auto 20px; max-width: 380px;">
+                    May the Lord bless you with wisdom, joy, and unfailing love as you continue to serve and inspire our Catholic community. We thank God for the gift of your life!
+                </p>
+                <div style="display: inline-block; padding: 6px 16px; border-radius: 20px; background: rgba(236,72,153,0.2); border: 1px solid #EC4899; color: #F9A8D4; font-size: 0.78rem; font-weight: 700;">
+                    🙏 Prayed a special birthday blessing for you
+                </div>
+            </div>
+
+            <div style="padding: 16px 24px; border-top: 1px solid rgba(255,255,255,0.08); display: flex; justify-content: flex-end; gap: 12px; background: rgba(15,23,42,0.95);">
+                <button type="button" onclick="closeBirthdayCardModal()" class="btn-secondary btn-sm">Close</button>
+                <button type="button" onclick="copyBirthdayCardMessage()" class="btn-primary btn-sm glow-button" style="background: linear-gradient(135deg, #EC4899, #BE185D); border: none;">
+                    📋 Copy Greeting Message
+                </button>
+            </div>
+        </div>
+    </div>
+
     <!-- Toast Notification Container -->
     <div class="toast-container" id="toast-container"></div>
 
     <!-- Application Javascript -->
-    <script src="script.js?v=3.7"></script>
+    <script src="script.js?v=3.8"></script>
     <!-- PWA Offline Service Worker Registration -->
     <script>
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
-                navigator.serviceWorker.register('./sw.js?v=3.7')
+                navigator.serviceWorker.register('./sw.js?v=3.8')
                     .then(reg => {
                         console.log('[PWA] Service Worker registered successfully:', reg.scope);
                         reg.onupdatefound = () => {

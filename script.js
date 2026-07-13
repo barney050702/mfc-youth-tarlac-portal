@@ -613,9 +613,47 @@ function openPastoralFollowUpModal() {
     const textarea = document.getElementById('pastoral-report-textarea');
     if (textarea) textarea.value = reportText;
 
+    const quickList = document.getElementById('pastoral-absentees-quick-list');
+    if (quickList) {
+        if (absentMems.length === 0) {
+            quickList.innerHTML = `<div style="text-align: center; color: #22C55E; padding: 14px; font-weight: 700;">🎉 Perfect Attendance! No absentees to follow up.</div>`;
+        } else {
+            quickList.innerHTML = absentMems.map(m => {
+                const msgTemplate = `Hi Kuya/Ate ${m.name}! We missed you at "${act.title}" today. Hope you're doing well! Praying for you 🙏 - MFC Youth Tarlac`;
+                const encodedMsg = encodeURIComponent(msgTemplate);
+                const phoneStr = m.contactNum || m.phone || '';
+                const cleanPhone = phoneStr.replace(/[^0-9+]/g, '');
+                const waUrl = cleanPhone ? `https://wa.me/${cleanPhone}?text=${encodedMsg}` : `https://wa.me/?text=${encodedMsg}`;
+
+                return `
+                    <div style="display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; background: rgba(15,23,42,0.85); border: 1px solid rgba(168,85,247,0.25); border-radius: 12px; gap: 10px;">
+                        <div style="min-width: 0;">
+                            <div style="color: #FFF; font-weight: 700; font-size: 0.88rem;">${m.name}</div>
+                            <div style="color: #94A3B8; font-size: 0.75rem;">${m.role || 'Member'} • ${m.chapter || 'Tarlac'}</div>
+                        </div>
+                        <div style="display: flex; gap: 6px; flex-shrink: 0;">
+                            <a href="${waUrl}" target="_blank" style="text-decoration: none; background: rgba(34,197,94,0.2); color: #4ADE80; border: 1px solid rgba(34,197,94,0.4); border-radius: 8px; padding: 5px 10px; font-size: 0.75rem; font-weight: 700; display: inline-flex; align-items: center; gap: 4px;">
+                                <span>💬 WhatsApp</span>
+                            </a>
+                            <button onclick="copyToClipboardText('${msgTemplate.replace(/'/g, "\\'")}')" class="btn-secondary btn-sm" style="padding: 5px 10px; font-size: 0.75rem;">
+                                📋 Copy Text
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+    }
+
     const modal = document.getElementById('pastoral-followup-backdrop');
     if (modal) modal.style.display = 'flex';
     logAuditAction(`Generated Pastoral Follow-up Report for ${act.title}`, 'attendance');
+}
+
+function copyToClipboardText(text) {
+    navigator.clipboard.writeText(text).then(() => {
+        showToast('📋 Message template copied to clipboard ready to paste!', 'success');
+    });
 }
 
 function closePastoralFollowUpModal() {
@@ -896,7 +934,11 @@ function renderCelebrationsWidget() {
 }
 
 function sendCelebrationGreeting(name) {
-    showToast(`🎉 Sent a birthday/milestone greeting to ${name}!`, 'success');
+    const elName = document.getElementById('bday-card-name');
+    if (elName) elName.textContent = `Happy Birthday, ${name}!`;
+    const modal = document.getElementById('birthday-card-backdrop');
+    if (modal) modal.style.display = 'flex';
+    showToast(`🎉 Opened digital birthday card for ${name}!`, 'success');
 }
 
 // PWA Native App Install Logic
@@ -6468,6 +6510,115 @@ function handlePrayerIntentionSubmit(e) {
     showToast('🙏 Pastoral prayer intention posted to the Chapter Prayer Wall!', 'success');
     titleEl.value = '';
     targetEl.value = '';
+}
+
+// ==========================================
+// CROSS-TABULATED ATTENDANCE MATRIX SYSTEM
+// ==========================================
+function openAttendanceMatrixModal() {
+    renderAttendanceMatrixSheet();
+    const modal = document.getElementById('attendance-matrix-backdrop');
+    if (modal) modal.style.display = 'flex';
+}
+
+function closeAttendanceMatrixModal() {
+    const modal = document.getElementById('attendance-matrix-backdrop');
+    if (modal) modal.style.display = 'none';
+}
+
+function renderAttendanceMatrixSheet() {
+    const thead = document.getElementById('attendance-matrix-thead');
+    const tbody = document.getElementById('attendance-matrix-tbody');
+    if (!thead || !tbody || !state.members || !state.activities) return;
+
+    const sortedActs = [...state.activities].sort((a, b) => new Date(a.date) - new Date(b.date));
+
+    // Header row
+    thead.innerHTML = `
+        <tr style="background: rgba(15,23,42,0.9); border-bottom: 2px solid rgba(255,255,255,0.15);">
+            <th style="padding: 10px 12px; text-align: left; color: #FFF; position: sticky; left: 0; background: #0F172A; z-index: 2;">Member Name</th>
+            <th style="padding: 10px 12px; text-align: left; color: #94A3B8;">Chapter</th>
+            ${sortedActs.map(a => {
+                const shortDate = a.date ? a.date.slice(5) : 'Date';
+                return `<th style="padding: 10px 8px; text-align: center; color: #38BDF8; font-size: 0.74rem; min-width: 70px;" title="${a.title}">${shortDate}<br><span style="font-size: 0.68rem; color: #94A3B8;">${a.title.slice(0, 10)}</span></th>`;
+            }).join('')}
+            <th style="padding: 10px 12px; text-align: center; color: #22C55E;">Rate</th>
+        </tr>
+    `;
+
+    tbody.innerHTML = state.members.map(m => {
+        let presentCount = 0;
+        const cells = sortedActs.map(a => {
+            const attObj = state.attendance[a.id] || {};
+            const st = attObj[m.id]?.status;
+            if (st === 'present') {
+                presentCount++;
+                return `<td style="text-align: center; font-weight: 800; color: #22C55E; background: rgba(34,197,94,0.08);">✓</td>`;
+            } else if (st === 'late') {
+                presentCount++;
+                return `<td style="text-align: center; font-weight: 800; color: #F59E0B; background: rgba(245,158,11,0.08);">L</td>`;
+            } else {
+                return `<td style="text-align: center; color: #EF4444; opacity: 0.7;">✗</td>`;
+            }
+        });
+
+        const rate = sortedActs.length > 0 ? Math.round((presentCount / sortedActs.length) * 100) : 0;
+
+        return `
+            <tr style="border-bottom: 1px solid rgba(255,255,255,0.06);">
+                <td style="padding: 10px 12px; font-weight: 700; color: #FFF; position: sticky; left: 0; background: #0F172A; z-index: 1;">${m.name}</td>
+                <td style="padding: 10px 12px; color: #94A3B8; font-size: 0.75rem;">${m.chapter || 'Central'}</td>
+                ${cells.join('')}
+                <td style="padding: 10px 12px; text-align: center; font-weight: 800; color: #38BDF8;">${rate}% (${presentCount}/${sortedActs.length})</td>
+            </tr>
+        `;
+    }).join('');
+}
+
+function exportAttendanceMatrixCSV() {
+    if (!state.members || !state.activities) return;
+    const sortedActs = [...state.activities].sort((a, b) => new Date(a.date) - new Date(b.date));
+    const headers = ['Member Name', 'Chapter', ...sortedActs.map(a => `${a.title} (${a.date})`), 'Attendance Rate'];
+
+    const rows = state.members.map(m => {
+        let presentCount = 0;
+        const actCells = sortedActs.map(a => {
+            const attObj = state.attendance[a.id] || {};
+            const st = attObj[m.id]?.status;
+            if (st === 'present') { presentCount++; return 'Present'; }
+            if (st === 'late') { presentCount++; return 'Late'; }
+            return 'Absent';
+        });
+        const rate = sortedActs.length > 0 ? `${Math.round((presentCount / sortedActs.length) * 100)}%` : '0%';
+        return [`"${m.name}"`, `"${m.chapter || 'Central'}"`, ...actCells, `"${rate}"`];
+    });
+
+    const csvContent = "data:text/csv;charset=utf-8," + [headers.join(','), ...rows.map(e => e.join(','))].join('\n');
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement('a');
+    link.setAttribute('href', encodedUri);
+    link.setAttribute('download', `MFC_Youth_Tarlac_Attendance_Matrix_${new Date().toISOString().slice(0, 10)}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    showToast('📥 Attendance Matrix Sheet exported as CSV successfully!', 'success');
+}
+
+// ==========================================
+// DIGITAL BIRTHDAY CARD MODAL
+// ==========================================
+function closeBirthdayCardModal() {
+    const modal = document.getElementById('birthday-card-backdrop');
+    if (modal) modal.style.display = 'none';
+}
+
+function copyBirthdayCardMessage() {
+    const elName = document.getElementById('bday-card-name');
+    const nameText = elName ? elName.textContent : 'Happy Birthday!';
+    const msg = `🎉 🎂 ${nameText}\n\nMay the Lord bless you with wisdom, joy, and unfailing love as you continue to serve and inspire our Catholic community. We thank God for the gift of your life!\n\n🙏 Praying a special birthday blessing for you today! — Missionary Families of Christ (MFC Youth Tarlac)`;
+    navigator.clipboard.writeText(msg).then(() => {
+        showToast('📋 Festive birthday greeting copied ready to share on chat or story!', 'success');
+    });
 }
 
 // Initialize on DOM ready
