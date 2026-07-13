@@ -7121,6 +7121,166 @@ function renderFundsChart() {
     `;
 }
 
+/* ==========================================================================
+   NATIVE MOBILE GESTURES & ABSENTEE SWIPER (v4.6)
+   Pull-to-Refresh, Org Chart Touch Pan, and Fullscreen Card Swiper
+   ========================================================================== */
+
+function initMobileNativeGestures() {
+    initPullToRefresh();
+    initOrgChartTouchPan();
+}
+
+function initPullToRefresh() {
+    let startY = 0;
+    let pulling = false;
+    const ptrEl = document.getElementById('pull-to-refresh-indicator');
+
+    window.addEventListener('touchstart', (e) => {
+        if (window.scrollY === 0 && window.innerWidth <= 768) {
+            startY = e.touches[0].clientY;
+            pulling = true;
+        }
+    }, { passive: true });
+
+    window.addEventListener('touchmove', (e) => {
+        if (!pulling || !ptrEl) return;
+        const currentY = e.touches[0].clientY;
+        const diff = currentY - startY;
+        if (diff > 30 && window.scrollY === 0) {
+            ptrEl.style.top = Math.min(20, -60 + diff * 0.5) + 'px';
+        }
+    }, { passive: true });
+
+    window.addEventListener('touchend', (e) => {
+        if (!pulling || !ptrEl) return;
+        pulling = false;
+        const currentTop = parseInt(ptrEl.style.top || '-60', 10);
+        if (currentTop >= 10) {
+            ptrEl.style.top = '16px';
+            const textEl = document.getElementById('ptr-text');
+            if (textEl) textEl.textContent = 'Refreshing chapter records...';
+            setTimeout(() => {
+                renderAll();
+                ptrEl.style.top = '-60px';
+                if (textEl) textEl.textContent = 'Pull down to refresh';
+                showToast('🔄 Chapter data refreshed successfully!', 'success');
+            }, 700);
+        } else {
+            ptrEl.style.top = '-60px';
+        }
+    }, { passive: true });
+}
+
+function initOrgChartTouchPan() {
+    const treeEl = document.getElementById('orgchart-tree-container');
+    if (!treeEl) return;
+    let isDown = false;
+    let startX, scrollLeft;
+
+    treeEl.addEventListener('mousedown', (e) => {
+        isDown = true;
+        treeEl.style.cursor = 'grabbing';
+        startX = e.pageX - treeEl.offsetLeft;
+        scrollLeft = treeEl.scrollLeft;
+    });
+
+    treeEl.addEventListener('mouseleave', () => {
+        isDown = false;
+        treeEl.style.cursor = 'grab';
+    });
+
+    treeEl.addEventListener('mouseup', () => {
+        isDown = false;
+        treeEl.style.cursor = 'grab';
+    });
+
+    treeEl.addEventListener('mousemove', (e) => {
+        if (!isDown) return;
+        e.preventDefault();
+        const x = e.pageX - treeEl.offsetLeft;
+        const walk = (x - startX) * 1.5;
+        treeEl.scrollLeft = scrollLeft - walk;
+    });
+}
+
+// Mobile Absentee Swiper State
+let absenteeSwiperList = [];
+let absenteeSwiperIndex = 0;
+
+function openAbsenteeSwiperModal() {
+    // Gather all members who were absent or late in recent activities
+    absenteeSwiperList = state.members.filter(m => {
+        const rate = calculateMemberAttendanceRate(m.id);
+        return rate < 75; // Focus on members needing pastoral care (< 75%)
+    });
+
+    if (absenteeSwiperList.length === 0) {
+        absenteeSwiperList = state.members.slice(0, 5); // Fallback if all rates high
+    }
+
+    absenteeSwiperIndex = 0;
+    renderAbsenteeSlide();
+    const modal = document.getElementById('absentee-swiper-backdrop');
+    if (modal) modal.classList.add('active');
+}
+
+function closeAbsenteeSwiperModal() {
+    const modal = document.getElementById('absentee-swiper-backdrop');
+    if (modal) modal.classList.remove('active');
+}
+
+function renderAbsenteeSlide() {
+    const content = document.getElementById('absentee-swiper-content');
+    const counter = document.getElementById('swiper-counter');
+    const prevBtn = document.getElementById('swiper-prev-btn');
+    const nextBtn = document.getElementById('swiper-next-btn');
+    if (!content || absenteeSwiperList.length === 0) return;
+
+    const member = absenteeSwiperList[absenteeSwiperIndex];
+    const rate = calculateMemberAttendanceRate(member.id);
+    if (counter) counter.textContent = `Card ${absenteeSwiperIndex + 1} of ${absenteeSwiperList.length}`;
+
+    if (prevBtn) prevBtn.disabled = absenteeSwiperIndex === 0;
+    if (nextBtn) nextBtn.disabled = absenteeSwiperIndex === absenteeSwiperList.length - 1;
+
+    const phoneClean = (member.phone || '').replace(/\D/g, '');
+    const waLink = phoneClean ? `https://wa.me/63${phoneClean.replace(/^0/, '').replace(/^63/, '')}` : '#';
+
+    content.innerHTML = `
+        <div style="padding: 16px; background: rgba(15,23,42,0.8); border-radius: 18px; border: 1px solid rgba(255,255,255,0.08);">
+            <div style="font-size: 3rem; margin-bottom: 8px;">👤</div>
+            <h4 style="color: #F8FAFC; font-size: 1.35rem; font-weight: 800; margin: 0 0 4px 0;">${escapeHTML(member.name)}</h4>
+            <span class="badge badge-purple" style="margin-bottom: 14px; display: inline-block;">Household: ${escapeHTML(member.household)}</span>
+            <div style="margin: 16px 0; padding: 12px; background: rgba(30,41,59,0.5); border-radius: 12px; border: 1px solid rgba(255,255,255,0.05);">
+                <div style="font-size: 0.78rem; color: #94A3B8;">Attendance Health Rate</div>
+                <div style="font-size: 1.6rem; font-weight: 800; color: ${rate >= 75 ? '#34D399' : '#F59E0B'};">${rate}%</div>
+            </div>
+            ${phoneClean ? `
+                <a href="${waLink}" target="_blank" class="btn-primary glow-button" style="width: 100%; justify-content: center; padding: 14px; background: linear-gradient(135deg, #10B981, #059669); text-decoration: none;">
+                    <span>💬 WhatsApp Pastoral Check-In</span>
+                </a>
+            ` : `
+                <div style="color: #64748B; font-size: 0.82rem; padding: 10px;">No phone number recorded</div>
+            `}
+        </div>
+    `;
+}
+
+function prevAbsenteeSlide() {
+    if (absenteeSwiperIndex > 0) {
+        absenteeSwiperIndex--;
+        renderAbsenteeSlide();
+    }
+}
+
+function nextAbsenteeSlide() {
+    if (absenteeSwiperIndex < absenteeSwiperList.length - 1) {
+        absenteeSwiperIndex++;
+        renderAbsenteeSlide();
+    }
+}
+
 // Initialize on DOM ready
 document.addEventListener('DOMContentLoaded', () => {
     initApp();

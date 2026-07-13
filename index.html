@@ -545,6 +545,22 @@
                                     <span>📑 Generate Executive PDF Report</span>
                                 </button>
                             </div>
+
+                            <!-- Mobile Absentee Follow-Up Swiper Card -->
+                            <div class="glass-panel" style="padding: 24px; background: linear-gradient(135deg, rgba(245, 158, 11, 0.12), rgba(15, 23, 42, 0.9)); border: 1px solid rgba(245, 158, 11, 0.35);">
+                                <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 10px;">
+                                    <div style="background: rgba(245, 158, 11, 0.2); width: 42px; height: 42px; border-radius: 12px; display: flex; align-items: center; justify-content: center; border: 1px solid rgba(245, 158, 11, 0.4);">
+                                        <span style="font-size: 1.3rem;">📲</span>
+                                    </div>
+                                    <div>
+                                        <h4 style="color: #F8FAFC; font-size: 1.02rem; font-weight: 800; margin: 0;">Mobile Absentee Swiper</h4>
+                                        <div style="font-size: 0.78rem; color: #FBBF24;">Card-by-card WhatsApp outreach</div>
+                                    </div>
+                                </div>
+                                <button onclick="openAbsenteeSwiperModal()" class="btn-primary w-full mt-3" style="width: 100%; justify-content: center; padding: 12px; background: linear-gradient(135deg, #D97706, #F59E0B); font-weight: 700; border: none;">
+                                    <span>📲 Swipe Through Absentees</span>
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -2970,6 +2986,34 @@
                 </button>
             </div>
         </div>
+    <!-- Mobile Pull-to-Refresh Indicator -->
+    <div id="pull-to-refresh-indicator" style="position: fixed; top: -60px; left: 50%; transform: translateX(-50%); z-index: 100000; transition: top 0.25s cubic-bezier(0.4, 0, 0.2, 1); background: rgba(15, 23, 42, 0.95); border: 1px solid rgba(56, 189, 248, 0.4); padding: 8px 18px; border-radius: 30px; box-shadow: 0 8px 25px rgba(0,0,0,0.6); display: flex; align-items: center; gap: 8px; color: #38BDF8; font-size: 0.82rem; font-weight: 700; pointer-events: none;">
+        <span id="ptr-spinner">🔄</span>
+        <span id="ptr-text">Pull down to refresh</span>
+    </div>
+
+    <!-- Mobile Absentee Fullscreen Card Swiper Modal -->
+    <div class="modal-backdrop" id="absentee-swiper-backdrop">
+        <div class="modal-card" style="max-width: 440px; border-color: rgba(245, 158, 11, 0.4);">
+            <div class="modal-header" style="background: linear-gradient(135deg, rgba(245, 158, 11, 0.15), rgba(15, 23, 42, 0.95)); border-bottom: 1px solid rgba(245, 158, 11, 0.3);">
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <span style="font-size: 1.4rem;">📲</span>
+                    <div>
+                        <h3 class="modal-title" style="color: #FBBF24;">Mobile Absentee Follow-Up Swiper</h3>
+                        <span style="font-size: 0.78rem; color: #FDE68A;" id="swiper-counter">Card 1 of 1</span>
+                    </div>
+                </div>
+                <button type="button" class="modal-close" onclick="closeAbsenteeSwiperModal()">&times;</button>
+            </div>
+            <div class="modal-body" style="padding: 24px; text-align: center;" id="absentee-swiper-content">
+                <!-- Dynamically rendered absentee card -->
+            </div>
+            <div class="modal-footer" style="display: flex; justify-content: space-between; align-items: center; background: rgba(15,23,42,0.95);">
+                <button type="button" class="btn-secondary" id="swiper-prev-btn" onclick="prevAbsenteeSlide()">◀ Previous</button>
+                <button type="button" class="btn-secondary" onclick="closeAbsenteeSwiperModal()">Close</button>
+                <button type="button" class="btn-primary" id="swiper-next-btn" onclick="nextAbsenteeSlide()">Next ▶</button>
+            </div>
+        </div>
     </div>
 
     <!-- Hidden Printable Member Semester Report Card Container -->
@@ -3034,12 +3078,12 @@
     <div class="toast-container" id="toast-container"></div>
 
     <!-- Application Javascript -->
-    <script src="script.js?v=4.5"></script>
+    <script src="script.js?v=4.6"></script>
     <!-- PWA Offline Service Worker Registration -->
     <script>
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
-                navigator.serviceWorker.register('./sw.js?v=4.5')
+                navigator.serviceWorker.register('./sw.js?v=4.6')
                     .then(reg => {
                         console.log('[PWA] Service Worker registered successfully:', reg.scope);
                         reg.onupdatefound = () => {
