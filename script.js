@@ -574,6 +574,116 @@ function copyAttendanceSummaryForChat() {
     }
 }
 
+function openPastoralFollowUpModal() {
+    const actId = state.selectedActivityId;
+    const act = state.activities.find(a => a.id === actId);
+    if (!act) {
+        showToast('Please select an activity from the dropdown first!', 'warning');
+        return;
+    }
+    const attObj = state.attendance[actId] || {};
+    const presentMems = [];
+    const absentMems = [];
+
+    state.members.forEach(m => {
+        const st = attObj[m.id]?.status;
+        if (st === 'present' || st === 'late') presentMems.push(m);
+        else absentMems.push(m);
+    });
+
+    const reportText = `📋 *MFC YOUTH TARLAC — PASTORAL FOLLOW-UP REPORT*\n` +
+        `🗓 *Activity:* ${act.title} (${act.date})\n` +
+        `👥 *Attendance Rate:* ${presentMems.length}/${state.members.length} (${Math.round((presentMems.length/Math.max(1, state.members.length))*100)}%)\n` +
+        `===================================\n\n` +
+        `✅ *PRESENT MEMBERS (${presentMems.length}):*\n` +
+        (presentMems.length > 0 ? presentMems.map(m => `  • ${m.name} [${m.chapter || 'Central'}]`).join('\n') : '  None recorded') + `\n\n` +
+        `💛 *PASTORAL REACH-OUT / ABSENTEES (${absentMems.length}):*\n` +
+        (absentMems.length > 0 ? absentMems.map(m => `  • ${m.name} (${m.phone || 'No contact on file'}) - ${m.chapter || 'Central'}`).join('\n') : '  All members present! 🎉') + `\n\n` +
+        `🙏 *RECOMMENDED LEADER ACTION:*\n` +
+        `1. Reach out personally to absent members via chat/call.\n` +
+        `2. Check on their well-being and invite to next Household meeting.\n\n` +
+        `_Generated via MFC Youth Tarlac Portal_`;
+
+    const textarea = document.getElementById('pastoral-report-textarea');
+    if (textarea) textarea.value = reportText;
+
+    const modal = document.getElementById('pastoral-followup-backdrop');
+    if (modal) modal.style.display = 'flex';
+    logAuditAction(`Generated Pastoral Follow-up Report for ${act.title}`, 'attendance');
+}
+
+function closePastoralFollowUpModal() {
+    const modal = document.getElementById('pastoral-followup-backdrop');
+    if (modal) modal.style.display = 'none';
+}
+
+function copyPastoralReportText() {
+    const textarea = document.getElementById('pastoral-report-textarea');
+    if (!textarea || !textarea.value) return;
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(textarea.value).then(() => {
+            showToast('📋 Full Pastoral Follow-Up Report copied to clipboard!', 'success');
+        });
+    }
+}
+
+function sharePastoralReportWhatsApp() {
+    const textarea = document.getElementById('pastoral-report-textarea');
+    if (!textarea || !textarea.value) return;
+    const url = `https://wa.me/?text=${encodeURIComponent(textarea.value)}`;
+    window.open(url, '_blank');
+}
+
+function copyAbsenteesOnlyList() {
+    const actId = state.selectedActivityId;
+    const act = state.activities.find(a => a.id === actId);
+    if (!act) return;
+    const attObj = state.attendance[actId] || {};
+    const absentMems = state.members.filter(m => attObj[m.id]?.status !== 'present' && attObj[m.id]?.status !== 'late');
+
+    const absText = `💛 *MFC YOUTH TARLAC — ABSENTEES FOLLOW-UP LIST (${act.title})*\n\n` +
+        absentMems.map(m => `• ${m.name} (${m.phone || 'No phone'}) [${m.chapter || 'Central'}]`).join('\n');
+
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(absText).then(() => {
+            showToast(`💛 Copied ${absentMems.length} absentees for pastoral follow-up!`, 'success');
+        });
+    }
+}
+
+function togglePortalTheme() {
+    const currentTheme = document.body.getAttribute('data-theme') || 'dark';
+    const nextTheme = currentTheme === 'dark' ? 'light' : 'dark';
+    document.body.setAttribute('data-theme', nextTheme);
+    localStorage.setItem('ps_portal_theme', nextTheme);
+
+    const iconEl = document.getElementById('theme-icon');
+    const labelEl = document.getElementById('theme-label');
+    if (nextTheme === 'light') {
+        if (iconEl) iconEl.textContent = '🌙';
+        if (labelEl) labelEl.textContent = 'Dark Mode';
+        showToast('☀️ Executive Clean Light Mode activated!', 'info');
+    } else {
+        if (iconEl) iconEl.textContent = '☀️';
+        if (labelEl) labelEl.textContent = 'Light Mode';
+        showToast('🌙 Glassmorphic Dark Mode activated!', 'info');
+    }
+}
+
+function applySavedTheme() {
+    const saved = localStorage.getItem('ps_portal_theme') || 'dark';
+    document.body.setAttribute('data-theme', saved);
+    const iconEl = document.getElementById('theme-icon');
+    const labelEl = document.getElementById('theme-label');
+    if (saved === 'light') {
+        if (iconEl) iconEl.textContent = '🌙';
+        if (labelEl) labelEl.textContent = 'Dark Mode';
+    } else {
+        if (iconEl) iconEl.textContent = '☀️';
+        if (labelEl) labelEl.textContent = 'Light Mode';
+    }
+}
+
 function renderDashboard() {
 
     const totalActs = state.activities.length;
@@ -4660,6 +4770,24 @@ function stopLiveCameraQRScanner() {
     if (placeholderEl) placeholderEl.style.display = 'block';
 }
 
+function playCheckInBeep() {
+    try {
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(880, audioCtx.currentTime); // A5 high beep
+        osc.frequency.exponentialRampToValueAtTime(1760, audioCtx.currentTime + 0.15); // Slide up to A6
+        gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.18);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + 0.2);
+    } catch (e) {}
+    if (navigator.vibrate) navigator.vibrate([100, 50, 100]);
+}
+
 function handleDecodedQRText(decodedText) {
     const actId = state.selectedActivityId;
     if (!actId) return;
@@ -4687,8 +4815,9 @@ function handleDecodedQRText(decodedText) {
 
     saveToStorage();
     renderAttendanceRoster();
+    playCheckInBeep();
     logAuditAction(`Live Camera QR verified check-in for ${member.name}`, 'attendance');
-    showToast(`📷 Verified Check-In: ${member.name} marked Present at ${currentTime}!`, 'success');
+    showToast(`🔊 Verified Check-In: ${member.name} marked Present at ${currentTime}!`, 'success');
     stopLiveCameraQRScanner();
     closeQRScannerModal();
 }
@@ -6134,6 +6263,7 @@ function importFullBackupJSON(inputEl) {
 
 // Initialize on DOM ready
 document.addEventListener('DOMContentLoaded', () => {
+    applySavedTheme();
     initApp();
     initMobileNativeGestures();
 });

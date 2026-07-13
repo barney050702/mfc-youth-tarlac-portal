@@ -267,6 +267,13 @@
                         <span>📲 Install App</span>
                     </button>
 
+                    <!-- Theme Switcher Button -->
+                    <button id="theme-toggle-btn" onclick="togglePortalTheme()" title="Toggle Dark/Light Clean Theme"
+                        style="display: flex; align-items: center; gap: 6px; padding: 6px 14px; background: rgba(30,41,59,0.8); border: 1px solid rgba(255,255,255,0.2); border-radius: 20px; color: #E2E8F0; font-size: 0.75rem; font-weight: 700; cursor: pointer; transition: all 0.2s;">
+                        <span id="theme-icon">☀️</span>
+                        <span id="theme-label">Light Mode</span>
+                    </button>
+
                     <!-- Social / Web Links -->
                     <a href="https://www.facebook.com/MFCYouthTarlac" target="_blank" rel="noopener noreferrer"
                         class="top-bar-icon-link text-blue" title="MFC Youth Tarlac Official Facebook Page">
@@ -714,6 +721,14 @@
                                         <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2" />
                                     </svg>
                                     Copy Summary for Chat
+                                </button>
+                                <button class="btn-secondary btn-sm" onclick="openPastoralFollowUpModal()"
+                                    style="color: #A855F7; border-color: rgba(168, 85, 247, 0.45);">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                        style="width: 14px; height: 14px;">
+                                        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+                                    </svg>
+                                    Pastoral Follow-Up Report
                                 </button>
                                 <button class="btn-secondary btn-sm text-red" id="btn-reset-attendance">
                                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
@@ -2604,16 +2619,54 @@
         </div>
     </div>
 
+    <!-- Pastoral Follow-Up Report Modal -->
+    <div id="pastoral-followup-backdrop"
+        style="display: none; position: fixed; inset: 0; background: rgba(3, 7, 18, 0.88); backdrop-filter: blur(10px); z-index: 9999; align-items: center; justify-content: center; padding: 20px;">
+        <div
+            style="background: #090E1E; border: 1px solid rgba(168, 85, 247, 0.4); border-radius: 20px; width: 100%; max-width: 620px; max-height: 90vh; display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 25px 60px rgba(0,0,0,0.8);">
+            <div
+                style="padding: 20px 24px; border-bottom: 1px solid rgba(255,255,255,0.08); display: flex; align-items: center; justify-content: space-between; background: linear-gradient(135deg, rgba(168,85,247,0.18), rgba(139,92,246,0.08));">
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <span style="font-size: 1.4rem;">📋</span>
+                    <div>
+                        <h3 style="margin: 0; color: #FFF; font-size: 1.05rem; font-weight: 800;">Pastoral Follow-Up Report</h3>
+                        <div style="color: #A855F7; font-size: 0.75rem; font-weight: 600;">Attendance & Absentees Summary for Leaders</div>
+                    </div>
+                </div>
+                <button onclick="closePastoralFollowUpModal()"
+                    style="background: transparent; border: none; color: #94A3B8; font-size: 1.4rem; cursor: pointer;">&times;</button>
+            </div>
+            <div style="padding: 24px; overflow-y: auto; flex: 1;">
+                <textarea id="pastoral-report-textarea" readonly
+                    style="width: 100%; height: 260px; background: rgba(15,23,42,0.9); border: 1px solid rgba(255,255,255,0.15); border-radius: 12px; color: #E2E8F0; padding: 14px; font-family: 'Courier New', monospace; font-size: 0.82rem; line-height: 1.5; resize: vertical; outline: none;"></textarea>
+                <div style="margin-top: 14px; display: flex; gap: 10px; flex-wrap: wrap;">
+                    <button onclick="copyPastoralReportText()" class="btn-primary btn-sm glow-button" style="background: linear-gradient(135deg, #A855F7, #7C3AED); border: none;">
+                        📋 Copy Report Text
+                    </button>
+                    <button onclick="sharePastoralReportWhatsApp()" class="btn-secondary btn-sm" style="color: #22C55E; border-color: rgba(34,197,94,0.4);">
+                        💬 Share on WhatsApp
+                    </button>
+                    <button onclick="copyAbsenteesOnlyList()" class="btn-secondary btn-sm" style="color: #F87171; border-color: rgba(248,113,113,0.4);">
+                        ❌ Copy Absentees List Only
+                    </button>
+                </div>
+            </div>
+            <div style="padding: 16px 24px; border-top: 1px solid rgba(255,255,255,0.08); display: flex; justify-content: flex-end;">
+                <button type="button" onclick="closePastoralFollowUpModal()" class="btn-secondary btn-sm">Close</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Toast Notification Container -->
     <div class="toast-container" id="toast-container"></div>
 
     <!-- Application Javascript -->
-    <script src="script.js?v=3.4"></script>
+    <script src="script.js?v=3.5"></script>
     <!-- PWA Offline Service Worker Registration -->
     <script>
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
-                navigator.serviceWorker.register('./sw.js?v=3.4')
+                navigator.serviceWorker.register('./sw.js?v=3.5')
                     .then(reg => {
                         console.log('[PWA] Service Worker registered successfully:', reg.scope);
                         reg.onupdatefound = () => {

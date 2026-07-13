@@ -3650,4 +3650,79 @@ body.light-theme .nav-item:hover {
     color: #94A3B8;
 }
 
+/* ==========================================================================
+   CLEAN LIGHT MODE THEME & EXECUTIVE HIGH-CONTRAST STYLES
+   ========================================================================== */
+
+body[data-theme="light"] {
+    background: #F8FAFC !important;
+    color: #0F172A !important;
+}
+
+body[data-theme="light"] .main-container,
+body[data-theme="light"] .sidebar,
+body[data-theme="light"] .top-bar {
+    background: #FFFFFF !important;
+    border-color: #E2E8F0 !important;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+}
+
+body[data-theme="light"] .sidebar-nav-link {
+    color: #334155 !important;
+}
+
+body[data-theme="light"] .sidebar-nav-link.active,
+body[data-theme="light"] .sidebar-nav-link:hover {
+    background: #EFF6FF !important;
+    color: #2563EB !important;
+}
+
+body[data-theme="light"] .content-card,
+body[data-theme="light"] .dashboard-card,
+body[data-theme="light"] .kpi-card {
+    background: #FFFFFF !important;
+    border-color: #E2E8F0 !important;
+    box-shadow: 0 6px 16px rgba(15, 23, 42, 0.04) !important;
+    color: #0F172A !important;
+}
+
+body[data-theme="light"] table.data-table th {
+    background: #F1F5F9 !important;
+    color: #1E293B !important;
+    border-bottom: 2px solid #CBD5E1 !important;
+}
+
+body[data-theme="light"] table.data-table td {
+    color: #0F172A !important;
+    border-bottom: 1px solid #E2E8F0 !important;
+}
+
+body[data-theme="light"] table.data-table tr:hover {
+    background: #F8FAFC !important;
+}
+
+/* ==========================================================================
+   HIGH-CONTRAST INK-SAVING FORMAL PRINT PROFILES
+   ========================================================================== */
+@media print {
+    body, .main-container, .content-card, table.data-table {
+        background: #FFFFFF !important;
+        color: #000000 !important;
+        box-shadow: none !important;
+        text-shadow: none !important;
+    }
+    table.data-table th {
+        background: #F1F5F9 !important;
+        color: #000000 !important;
+        border: 1px solid #000000 !important;
+    }
+    table.data-table td {
+        border: 1px solid #999999 !important;
+        color: #000000 !important;
+    }
+    .sidebar, .top-bar, .attendance-toolbar, .members-toolbar, #toast-container, button {
+        display: none !important;
+    }
+}
+
 
