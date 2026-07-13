@@ -3452,6 +3452,22 @@ function openMemberProfile(memberId) {
             </div>
         </div>
 
+        <!-- Quick Pastoral Contact Toolbar -->
+        <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 16px; background: rgba(15,23,42,0.6); padding: 10px 14px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.06); align-items: center; justify-content: space-between;">
+            <span style="color: #94A3B8; font-size: 0.78rem; font-weight: 700;">📲 QUICK REACH-OUT:</span>
+            <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                <a href="${member.contactNum ? `https://wa.me/${member.contactNum.replace(/[^0-9+]/g, '')}?text=${encodeURIComponent('Hi Kuya/Ate ' + member.name + '! Peace of Christ! Checking in from MFC Youth Tarlac 🙏')}` : '#'}" target="_blank" style="text-decoration: none; background: rgba(34,197,94,0.2); color: #4ADE80; border: 1px solid rgba(34,197,94,0.4); border-radius: 8px; padding: 5px 12px; font-size: 0.78rem; font-weight: 700;">
+                    💬 WhatsApp
+                </a>
+                <a href="${member.contactNum ? `tel:${member.contactNum}` : '#'}" style="text-decoration: none; background: rgba(56,189,248,0.2); color: #38BDF8; border: 1px solid rgba(56,189,248,0.4); border-radius: 8px; padding: 5px 12px; font-size: 0.78rem; font-weight: 700;">
+                    📞 Call
+                </a>
+                <button type="button" onclick="sendCelebrationGreeting('${(member.name || '').replace(/'/g, "\\'")}')" style="background: rgba(236,72,153,0.2); color: #F472B6; border: 1px solid rgba(236,72,153,0.4); border-radius: 8px; padding: 5px 12px; font-size: 0.78rem; font-weight: 700; cursor: pointer;">
+                    💌 Birthday Card
+                </button>
+            </div>
+        </div>
+
         <!-- Recognition Badges Row -->
         <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px;">
             ${rate >= 80 ? '<span style="background: rgba(16, 185, 129, 0.2); border: 1px solid rgba(16, 185, 129, 0.4); color: #34D399; padding: 4px 12px; border-radius: 12px; font-size: 0.78rem; font-weight: 700;">🔥 Faithful Attendance Award</span>' : ''}
@@ -6642,6 +6658,163 @@ function copyBirthdayCardMessage() {
     navigator.clipboard.writeText(msg).then(() => {
         showToast('📋 Festive birthday greeting copied ready to share on chat or story!', 'success');
     });
+}
+
+// ==========================================
+// PRINT PERSONAL SEMESTER REPORT CARD
+// ==========================================
+function printMemberReportCardFromModal() {
+    const memberId = window.currentProfileMemberId;
+    const mem = state.members.find(m => m.id === memberId);
+    if (!mem) {
+        showToast('Please open a member profile first.', 'warning');
+        return;
+    }
+
+    let presentCount = 0;
+    let lateCount = 0;
+    let absentCount = 0;
+    const actRows = state.activities.map(a => {
+        const rec = state.attendance[a.id]?.[memberId];
+        let st = 'Absent';
+        if (rec) {
+            if (rec.status === 'present') { st = 'Present'; presentCount++; }
+            else if (rec.status === 'late') { st = 'Late'; lateCount++; }
+            else absentCount++;
+        } else {
+            absentCount++;
+        }
+        return `
+            <tr>
+                <td style="padding: 8px; border: 1px solid #94A3B8;">${a.title}</td>
+                <td style="padding: 8px; border: 1px solid #94A3B8;">${a.date}</td>
+                <td style="padding: 8px; border: 1px solid #94A3B8; font-weight: bold;">${st}</td>
+            </tr>
+        `;
+    }).join('');
+
+    const totalActs = state.activities.length;
+    const rate = totalActs > 0 ? Math.round(((presentCount + lateCount) / totalActs) * 100) : 0;
+
+    const printableContainer = document.getElementById('printable-member-report-card');
+    if (!printableContainer) return;
+
+    printableContainer.innerHTML = `
+        <div style="font-family: 'Inter', sans-serif; color: #000; padding: 30px; border: 4px double #0284C7; background: #FFF;">
+            <div style="text-align: center; border-bottom: 2px solid #0284C7; padding-bottom: 16px; margin-bottom: 20px;">
+                <h1 style="font-size: 1.6rem; margin: 0; color: #0284C7;">MISSIONARY FAMILIES OF CHRIST — YOUTH TARLAC</h1>
+                <h2 style="font-size: 1.2rem; margin: 6px 0 0; color: #333;">Official Semester Service & Attendance Report Card</h2>
+            </div>
+
+            <div style="display: flex; justify-content: space-between; margin-bottom: 24px;">
+                <div>
+                    <p style="margin: 4px 0;"><strong>Member Name:</strong> ${mem.name}</p>
+                    <p style="margin: 4px 0;"><strong>Chapter Area:</strong> ${mem.chapter || 'MFC Youth Tarlac'}</p>
+                    <p style="margin: 4px 0;"><strong>Designation / Role:</strong> ${mem.role || 'Member'}</p>
+                </div>
+                <div>
+                    <p style="margin: 4px 0;"><strong>Attendance Rate:</strong> <span style="font-size: 1.1rem; color: #0284C7;">${rate}%</span></p>
+                    <p style="margin: 4px 0;"><strong>Events Attended:</strong> ${presentCount + lateCount} / ${totalActs}</p>
+                    <p style="margin: 4px 0;"><strong>Report Date:</strong> ${new Date().toLocaleDateString()}</p>
+                </div>
+            </div>
+
+            <h3 style="font-size: 1.1rem; border-bottom: 1px solid #CCC; padding-bottom: 6px;">Activity Check-In Log</h3>
+            <table style="width: 100%; border-collapse: collapse; margin-bottom: 24px; text-align: left;">
+                <thead>
+                    <tr style="background: #F1F5F9;">
+                        <th style="padding: 8px; border: 1px solid #94A3B8;">Activity Name</th>
+                        <th style="padding: 8px; border: 1px solid #94A3B8;">Date</th>
+                        <th style="padding: 8px; border: 1px solid #94A3B8;">Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${actRows}
+                </tbody>
+            </table>
+
+            <div style="margin-top: 40px; display: flex; justify-content: space-between;">
+                <div style="text-align: center; width: 220px;">
+                    <div style="border-bottom: 1px solid #000; height: 30px;"></div>
+                    <p style="margin: 6px 0 0; font-size: 0.85rem;">Chapter Pastoral Head</p>
+                </div>
+                <div style="text-align: center; width: 220px;">
+                    <div style="border-bottom: 1px solid #000; height: 30px;"></div>
+                    <p style="margin: 6px 0 0; font-size: 0.85rem;">Member Signature</p>
+                </div>
+            </div>
+        </div>
+    `;
+
+    window.print();
+    showToast(`🖨️ Printing Semester Report Card for ${mem.name}...`, 'info');
+}
+
+// ==========================================
+// BULK CSV MEMBER IMPORT WIZARD
+// ==========================================
+function openImportCSVModal() {
+    const modal = document.getElementById('import-csv-backdrop');
+    if (modal) modal.style.display = 'flex';
+}
+
+function closeImportCSVModal() {
+    const modal = document.getElementById('import-csv-backdrop');
+    if (modal) modal.style.display = 'none';
+}
+
+function handleCSVFileUpload(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        const textarea = document.getElementById('import-csv-text');
+        if (textarea) textarea.value = e.target.result;
+    };
+    reader.readAsText(file);
+}
+
+function processCSVImport() {
+    const textarea = document.getElementById('import-csv-text');
+    if (!textarea || !textarea.value.trim()) {
+        showToast('Please upload a CSV file or paste formatted rows first.', 'warning');
+        return;
+    }
+
+    const lines = textarea.value.trim().split(/\r?\n/);
+    let importedCount = 0;
+
+    lines.forEach((line, idx) => {
+        if (idx === 0 && line.toLowerCase().includes('name')) return; // Skip header row if present
+        const parts = line.split(',').map(p => p.trim());
+        if (parts.length < 1 || !parts[0]) return;
+
+        const name = parts[0];
+        const chapter = parts[1] || 'EAST CHAPTER';
+        const department = parts[2] || 'Youth';
+        const role = parts[3] || 'Member';
+        const phone = parts[4] || '';
+        const email = parts[5] || '';
+
+        state.members.push({
+            id: 'mem-' + Date.now() + '-' + Math.random().toString(36).substr(2, 5),
+            name: name,
+            chapter: chapter,
+            department: department,
+            role: role,
+            contactNum: phone,
+            email: email,
+            status: 'Active'
+        });
+        importedCount++;
+    });
+
+    saveToStorage();
+    renderMembersTable();
+    updateBadgeCount();
+    closeImportCSVModal();
+    textarea.value = '';
+    showToast(`🎉 Successfully imported ${importedCount} member(s) into the portal!`, 'success');
 }
 
 // Initialize on DOM ready

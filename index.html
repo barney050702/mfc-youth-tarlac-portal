@@ -2008,6 +2008,10 @@
                     </svg>
                     <span>Printable QR ID Badge</span>
                 </button>
+                <button type="button" class="btn-secondary" onclick="printMemberReportCardFromModal()"
+                    style="padding: 9px 16px; border-color: rgba(245,158,11,0.5); color: #F59E0B; display: inline-flex; align-items: center; gap: 6px;">
+                    <span>🎓 Print Semester Report Card</span>
+                </button>
                 <button type="button" class="btn-secondary" onclick="closeMemberModal()">Close Profile</button>
             </div>
         </div>
@@ -2894,16 +2898,19 @@
         </div>
     </div>
 
+    <!-- Hidden Printable Member Semester Report Card Container -->
+    <div id="printable-member-report-card" style="display: none;"></div>
+
     <!-- Toast Notification Container -->
     <div class="toast-container" id="toast-container"></div>
 
     <!-- Application Javascript -->
-    <script src="script.js?v=3.9"></script>
+    <script src="script.js?v=4.0"></script>
     <!-- PWA Offline Service Worker Registration -->
     <script>
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
-                navigator.serviceWorker.register('./sw.js?v=3.9')
+                navigator.serviceWorker.register('./sw.js?v=4.0')
                     .then(reg => {
                         console.log('[PWA] Service Worker registered successfully:', reg.scope);
                         reg.onupdatefound = () => {
