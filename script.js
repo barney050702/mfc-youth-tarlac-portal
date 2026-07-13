@@ -500,6 +500,7 @@ function switchView(viewId) {
         if (titleEl) titleEl.textContent = 'Funds & Expenses Management';
         if (subEl) subEl.textContent = 'Financial ledger, budget allocations, and chapter expense reporting';
         renderFundsTable();
+        renderFundsChart();
     } else if (viewId === 'servants') {
         if (titleEl) titleEl.textContent = 'Servant Leaders Directory';
         if (subEl) subEl.textContent = 'Executive leadership, chapter servants, and ministry coordinators';
@@ -545,6 +546,7 @@ function renderAll() {
         renderMembersTable();
     } else if (cur === 'funds') {
         renderFundsTable();
+        renderFundsChart();
     } else if (cur === 'account') {
         renderAccountsTable();
     } else if (cur === 'calendar') {
@@ -6949,6 +6951,180 @@ function openHouseholdTreeViewModal() {
 function closeHouseholdTreeViewModal() {
     const modal = document.getElementById('household-tree-backdrop');
     if (modal) modal.style.display = 'none';
+}
+
+// ==========================================
+// 1-CLICK AUTO-AWARD CERTIFICATE GENERATOR
+// ==========================================
+function triggerMemberAutoAwardFromModal() {
+    const memberId = window.currentProfileMemberId;
+    const mem = state.members.find(m => m.id === memberId);
+    if (!mem) {
+        showToast('Please open a member profile first.', 'warning');
+        return;
+    }
+
+    let presentCount = 0;
+    let lateCount = 0;
+    state.activities.forEach(a => {
+        const rec = state.attendance[a.id]?.[memberId];
+        if (rec && (rec.status === 'present' || rec.status === 'late')) presentCount++;
+    });
+
+    const totalActs = state.activities.length;
+    const rate = totalActs > 0 ? Math.round((presentCount / totalActs) * 100) : 100;
+
+    closeMemberModal();
+    autoAwardCertificate(mem.name, rate);
+}
+
+function autoAwardCertificate(memberName, rate = 100) {
+    const certModal = document.getElementById('cert-modal-backdrop');
+    if (certModal) certModal.style.display = 'flex';
+
+    const recipientInput = document.getElementById('cert-recipient');
+    const courseInput = document.getElementById('cert-course');
+    const issuerInput = document.getElementById('cert-issuer');
+    const dateInput = document.getElementById('cert-date');
+
+    if (recipientInput) recipientInput.value = memberName;
+    if (courseInput) courseInput.value = `Excellence in Pastoral Service & Attendance (${rate}% Rate)`;
+    if (issuerInput) issuerInput.value = `Chapter Pastoral Council • MFC Youth Tarlac`;
+    if (dateInput) dateInput.value = new Date().toISOString().split('T')[0];
+
+    if (typeof updateCertificateLivePreview === 'function') {
+        updateCertificateLivePreview();
+    }
+    showToast(`🏆 Certificate of Recognition pre-filled for ${memberName}!`, 'success');
+}
+
+// ==========================================
+// INTERACTIVE CHAPTER PRAYER & INTERCESSION BOARD
+// ==========================================
+function initPrayerIntentions() {
+    if (!state.prayers || state.prayers.length === 0) {
+        state.prayers = [
+            { id: 'p1', author: 'Chapter Council', text: 'For chapter leaders\' spiritual strength, wisdom, and pastoral joy', prayedCount: 14, date: '2026-07-01' },
+            { id: 'p2', author: 'Youth Ministry', text: 'For the success, safety, and spiritual fruitfulness of upcoming Youth Camps', prayedCount: 28, date: '2026-07-05' },
+            { id: 'p3', author: 'Community Member', text: 'For guidance in academics, board exams, and career paths of youth members', prayedCount: 19, date: '2026-07-10' }
+        ];
+    }
+}
+
+function openPrayerBoardModal() {
+    initPrayerIntentions();
+    const modal = document.getElementById('prayer-board-backdrop');
+    if (modal) modal.style.display = 'flex';
+    renderPrayerBoard();
+}
+
+function closePrayerBoardModal() {
+    const modal = document.getElementById('prayer-board-backdrop');
+    if (modal) modal.style.display = 'none';
+}
+
+function renderPrayerBoard() {
+    initPrayerIntentions();
+    const container = document.getElementById('prayer-intentions-list');
+    if (!container) return;
+
+    const badgeEl = document.getElementById('prayer-board-badge');
+    if (badgeEl) badgeEl.textContent = state.prayers.length;
+
+    container.innerHTML = state.prayers.map(p => `
+        <div style="background: rgba(15,23,42,0.85); border: 1px solid rgba(168,85,247,0.3); border-radius: 14px; padding: 14px 18px; display: flex; align-items: center; justify-content: space-between; gap: 14px;">
+            <div style="flex: 1; min-width: 0;">
+                <p style="color: #F8FAFC; font-size: 0.92rem; font-weight: 600; margin: 0 0 6px 0; line-height: 1.4;">"${p.text}"</p>
+                <div style="display: flex; align-items: center; gap: 10px; font-size: 0.75rem; color: #94A3B8;">
+                    <span>🙏 Shared by: <strong style="color: #D8B4FE;">${p.author || 'Member'}</strong></span>
+                    <span>•</span>
+                    <span>${p.date || 'Today'}</span>
+                </div>
+            </div>
+            <button onclick="prayForIntention('${p.id}')"
+                style="display: flex; align-items: center; gap: 6px; background: linear-gradient(135deg, rgba(168,85,247,0.25), rgba(147,51,234,0.15)); border: 1px solid rgba(168,85,247,0.5); color: #C084FC; padding: 8px 14px; border-radius: 20px; font-weight: 700; font-size: 0.8rem; cursor: pointer; transition: all 0.2s; white-space: nowrap;">
+                <span>🙏 Praying</span>
+                <span style="background: #9333EA; color: #FFF; border-radius: 10px; padding: 1px 7px; font-size: 0.72rem;">+${p.prayedCount || 1}</span>
+            </button>
+        </div>
+    `).join('');
+}
+
+function addPrayerIntention(event) {
+    event.preventDefault();
+    const input = document.getElementById('new-prayer-input');
+    if (!input || !input.value.trim()) return;
+
+    initPrayerIntentions();
+    state.prayers.unshift({
+        id: 'p-' + Date.now(),
+        author: 'Chapter Servant',
+        text: input.value.trim(),
+        prayedCount: 1,
+        date: new Date().toISOString().split('T')[0]
+    });
+
+    input.value = '';
+    saveToStorage();
+    renderPrayerBoard();
+    showToast('🙏 Your prayer intention has been shared with the community!', 'success');
+}
+
+function prayForIntention(id) {
+    initPrayerIntentions();
+    const p = state.prayers.find(item => item.id === id);
+    if (p) {
+        p.prayedCount = (p.prayedCount || 1) + 1;
+        saveToStorage();
+        renderPrayerBoard();
+        showToast(`🙏 Thank you for standing in prayer for this intention!`, 'success');
+    }
+}
+
+// ==========================================
+// VISUAL FINANCIAL HEALTH & FUND BREAKDOWN CHART
+// ==========================================
+function renderFundsChart() {
+    const container = document.getElementById('funds-visual-chart');
+    if (!container) return;
+
+    let totalInc = 0;
+    let totalExp = 0;
+    state.funds.forEach(f => {
+        const val = parseFloat(f.amount) || 0;
+        if (f.type === 'Income') totalInc += val;
+        else totalExp += val;
+    });
+
+    const net = totalInc - totalExp;
+    const totalVolume = totalInc + totalExp;
+    const incRatio = totalVolume > 0 ? Math.round((totalInc / totalVolume) * 100) : 100;
+    const expRatio = totalVolume > 0 ? Math.round((totalExp / totalVolume) * 100) : 0;
+
+    const badge = document.getElementById('funds-net-ratio-badge');
+    if (badge) {
+        badge.textContent = net >= 0 ? `+₱${net.toLocaleString()} Net Surplus` : `-₱${Math.abs(net).toLocaleString()} Deficit`;
+        badge.className = net >= 0 ? 'badge badge-green' : 'badge badge-rose';
+    }
+
+    container.innerHTML = `
+        <div style="display: flex; flex-direction: column; gap: 14px;">
+            <div>
+                <div style="display: flex; justify-content: space-between; font-size: 0.82rem; font-weight: 700; margin-bottom: 6px;">
+                    <span style="color: #34D399;">Inflow (Income): ₱${totalInc.toLocaleString()} (${incRatio}%)</span>
+                    <span style="color: #FB7185;">Outflow (Expenses): ₱${totalExp.toLocaleString()} (${expRatio}%)</span>
+                </div>
+                <div style="height: 14px; border-radius: 8px; background: rgba(15,23,42,0.8); overflow: hidden; display: flex; border: 1px solid rgba(255,255,255,0.1);">
+                    <div style="width: ${incRatio}%; background: linear-gradient(90deg, #10B981, #34D399); transition: width 0.4s;"></div>
+                    <div style="width: ${expRatio}%; background: linear-gradient(90deg, #F43F5E, #FB7185); transition: width 0.4s;"></div>
+                </div>
+            </div>
+            <div style="display: flex; justify-content: space-between; align-items: center; font-size: 0.78rem; color: #94A3B8;">
+                <span>💡 Healthy Chapter Treasury Standard: Maintain at least 65% net retention ratio</span>
+                <span style="font-weight: 700; color: #E2E8F0;">Total Transaction Volume: ₱${totalVolume.toLocaleString()}</span>
+            </div>
+        </div>
+    `;
 }
 
 // Initialize on DOM ready
