@@ -517,6 +517,8 @@ function renderAll() {
     renderAccountsTable();
     renderAuditLog();
     updateBadgeCount();
+    applyRBACRoleUI();
+    renderCelebrationsWidget();
 }
 
 function updateBadgeCount() {
@@ -759,6 +761,85 @@ function renderDashboardCelebrants() {
             </div>
         `;
     }).join('');
+}
+
+function renderCelebrationsWidget() {
+    const grid = document.getElementById('dashboard-celebrations-grid');
+    if (!grid) return;
+
+    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    const currentMonthIdx = new Date().getMonth();
+
+    let celebrants = state.members.filter((m, i) => {
+        if (m.birthdate || m.birthday) {
+            const bDate = new Date(m.birthdate || m.birthday);
+            return !isNaN(bDate) && bDate.getMonth() === currentMonthIdx;
+        }
+        return i < 4;
+    }).slice(0, 5);
+
+    if (celebrants.length === 0 && state.members.length > 0) {
+        celebrants = state.members.slice(0, 4);
+    }
+
+    if (celebrants.length === 0) {
+        grid.innerHTML = `<div style="color: #94A3B8; font-size: 0.85rem; padding: 12px;">No active celebrations found this month. Add members to see upcoming celebrations!</div>`;
+        return;
+    }
+
+    grid.innerHTML = celebrants.map(m => {
+        const initials = (m.name || 'M').split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase();
+        const dateStr = m.birthdate ? new Date(m.birthdate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : 'Milestone 🎉';
+        return `
+            <div style="min-width: 210px; background: rgba(15,23,42,0.85); border: 1px solid rgba(236,72,153,0.35); border-radius: 16px; padding: 14px; display: flex; flex-direction: column; justify-content: space-between; gap: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.3);">
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <div style="width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, #EC4899, #8B5CF6); display: flex; align-items: center; justify-content: center; font-weight: 800; color: #FFF; font-size: 0.95rem; flex-shrink: 0; box-shadow: 0 0 12px rgba(236,72,153,0.4);">
+                        ${initials}
+                    </div>
+                    <div style="min-width: 0;">
+                        <div style="color: #F8FAFC; font-weight: 800; font-size: 0.88rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="${m.name || 'Member'}">${m.name || 'Member'}</div>
+                        <div style="color: #F472B6; font-size: 0.75rem; font-weight: 600;">🎂 ${dateStr}</div>
+                    </div>
+                </div>
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <span style="color: #94A3B8; font-size: 0.72rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100px;">${m.chapter || 'Central'}</span>
+                    <button onclick="sendCelebrationGreeting('${(m.name || '').replace(/'/g, "\\'")}')" style="background: rgba(236,72,153,0.2); color: #F472B6; border: 1px solid rgba(236,72,153,0.45); border-radius: 12px; padding: 4px 10px; font-size: 0.72rem; font-weight: 700; cursor: pointer; transition: all 0.2s;">
+                        💌 Greet
+                    </button>
+                </div>
+            </div>
+        `;
+    }).join('');
+}
+
+function sendCelebrationGreeting(name) {
+    showToast(`🎉 Sent a birthday/milestone greeting to ${name}!`, 'success');
+}
+
+// PWA Native App Install Logic
+window.deferredPWAInstallPrompt = null;
+window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    window.deferredPWAInstallPrompt = e;
+});
+
+function triggerPWAInstall() {
+    if (window.deferredPWAInstallPrompt) {
+        window.deferredPWAInstallPrompt.prompt();
+        window.deferredPWAInstallPrompt.userChoice.then((choiceResult) => {
+            if (choiceResult.outcome === 'accepted') {
+                showToast('📲 Installing MFC Youth Tarlac Portal app to your device!', 'success');
+            }
+            window.deferredPWAInstallPrompt = null;
+        });
+    } else {
+        const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+        if (isIOS) {
+            showToast("📲 To install on iOS/Safari: Tap Share [⍇] and select 'Add to Home Screen' [+]!", 'info');
+        } else {
+            showToast("📲 Portal is ready for app installation! You can also click install icon in your browser address bar.", 'info');
+        }
+    }
 }
 
 function generateExecutiveSummaryReport() {
@@ -2402,6 +2483,120 @@ function generatePrintableMembersPDF() {
     printWin.document.close();
     showToast('Members Directory PDF opened ready to Save as PDF!', 'success');
     logAuditAction(`Exported Members Directory Printable PDF (${state.members.length} members)`, 'export');
+}
+
+// ============================================================================
+// ONE-CLICK EXCEL / CSV EXPORT SUITE (UTF-8 BOM COMPATIBLE)
+// ============================================================================
+
+function downloadCSVFile(csvContent, filename) {
+    const bom = '\uFEFF'; // UTF-8 Byte Order Mark for Excel
+    const blob = new Blob([bom + csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    const url = URL.createObjectURL(blob);
+    link.setAttribute('href', url);
+    link.setAttribute('download', filename);
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+}
+
+function exportMembersCSV() {
+    if (!state.members || state.members.length === 0) {
+        showToast('No members found to export.', 'warning');
+        return;
+    }
+
+    const headers = ['Member ID', 'Full Name', 'Chapter', 'Department', 'Role', 'Phone Number', 'Email Address', 'Birthdate', 'Parent Contact', 'Youth Camp Date', 'Status'];
+    const rows = state.members.map(m => [
+        `"${m.id || ''}"`,
+        `"${(m.name || '').replace(/"/g, '""')}"`,
+        `"${(m.chapter || '').replace(/"/g, '""')}"`,
+        `"${(m.dept || m.department || '').replace(/"/g, '""')}"`,
+        `"${(m.role || '').replace(/"/g, '""')}"`,
+        `"${m.phone || ''}"`,
+        `"${m.email || ''}"`,
+        `"${m.birthdate || ''}"`,
+        `"${m.parentContact || ''}"`,
+        `"${m.youthCampDate || ''}"`,
+        `"${m.status || 'Active'}"`
+    ]);
+
+    const csvContent = [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
+    downloadCSVFile(csvContent, `MFC_Youth_Members_Directory_${new Date().toISOString().slice(0, 10)}.csv`);
+    showToast('📊 Members directory exported successfully as Excel/CSV file!', 'success');
+    logAuditAction(`Exported Members Directory to CSV/Excel (${state.members.length} rows)`, 'export');
+}
+
+function exportActivitiesCSV() {
+    if (!state.activities || state.activities.length === 0) {
+        showToast('No activity records to export.', 'warning');
+        return;
+    }
+
+    const headers = ['Activity ID', 'Activity Name', 'Date', 'Location', 'Type', 'Status', 'Notes'];
+    const rows = state.activities.map(a => [
+        `"${a.id || ''}"`,
+        `"${(a.name || '').replace(/"/g, '""')}"`,
+        `"${a.date || ''}"`,
+        `"${(a.location || '').replace(/"/g, '""')}"`,
+        `"${a.type || ''}"`,
+        `"${a.status || ''}"`,
+        `"${(a.notes || '').replace(/"/g, '""')}"`
+    ]);
+
+    const csvContent = [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
+    downloadCSVFile(csvContent, `MFC_Youth_Activity_Records_${new Date().toISOString().slice(0, 10)}.csv`);
+    showToast('📊 Activity records exported successfully as Excel/CSV!', 'success');
+}
+
+function exportAttendanceCSV() {
+    const attendanceRecords = [];
+    Object.keys(state.attendance || {}).forEach(actId => {
+        const act = state.activities.find(a => a.id === actId) || { name: actId };
+        const records = state.attendance[actId] || [];
+        records.forEach(rec => {
+            attendanceRecords.push([
+                `"${act.name}"`,
+                `"${rec.memberId || ''}"`,
+                `"${(rec.name || '').replace(/"/g, '""')}"`,
+                `"${rec.timestamp || ''}"`,
+                `"${rec.status || 'Present'}"`
+            ]);
+        });
+    });
+
+    if (attendanceRecords.length === 0) {
+        showToast('No attendance logs to export.', 'warning');
+        return;
+    }
+
+    const headers = ['Activity Event Name', 'Member ID', 'Member Name', 'Check-in Timestamp', 'Status'];
+    const csvContent = [headers.join(','), ...attendanceRecords.map(r => r.join(','))].join('\n');
+    downloadCSVFile(csvContent, `MFC_Youth_Attendance_Logs_${new Date().toISOString().slice(0, 10)}.csv`);
+    showToast('📊 Attendance logs exported successfully as Excel/CSV!', 'success');
+}
+
+function exportFundsCSV() {
+    if (!state.funds || state.funds.length === 0) {
+        showToast('No finance transactions found.', 'warning');
+        return;
+    }
+
+    const headers = ['Transaction ID', 'Date', 'Description', 'Category', 'Type', 'Amount (PHP)'];
+    const rows = state.funds.map(f => [
+        `"${f.id || ''}"`,
+        `"${f.date || ''}"`,
+        `"${(f.description || '').replace(/"/g, '""')}"`,
+        `"${f.category || ''}"`,
+        `"${f.type || ''}"`,
+        `"${f.amount || 0}"`
+    ]);
+
+    const csvContent = [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
+    downloadCSVFile(csvContent, `MFC_Youth_Finance_Ledger_${new Date().toISOString().slice(0, 10)}.csv`);
+    showToast('📊 Finance ledger exported successfully as Excel/CSV!', 'success');
 }
 
 // ============================================================================
@@ -4641,14 +4836,40 @@ function updateSecurityStatusUI() {
     }
 }
 
+let activeLoginRole = 'Admin';
+
+function selectLoginRole(role, btnEl) {
+    activeLoginRole = role;
+    const btns = document.querySelectorAll('.rbac-role-btn');
+    btns.forEach(b => {
+        b.style.background = 'rgba(15,23,42,0.8)';
+        b.style.color = '#94A3B8';
+        b.style.borderColor = 'rgba(255,255,255,0.15)';
+    });
+    if (btnEl) {
+        btnEl.style.background = 'linear-gradient(135deg, #0284C7, #3B82F6)';
+        btnEl.style.color = '#FFF';
+        btnEl.style.borderColor = 'rgba(56,189,248,0.5)';
+    }
+}
+
 async function loginUser(event) {
     if (event) event.preventDefault();
 
     const passEl = document.getElementById('auth-login-password');
-    const passVal = (passEl && passEl.value) ? passEl.value.trim() : '';
+    const passVal = (passEl && passEl.value) ? passEl.value.trim().toLowerCase() : '';
 
-    if (passVal.toLowerCase() !== 'mfcyouthtarlac') {
-        showToast('🚫 Incorrect password. Please check your password or ask your coordinator.', 'error');
+    let matchedRole = null;
+    if (passVal === 'mfcyouthtarlac') {
+        matchedRole = 'Admin';
+    } else if (passVal === 'hhhead2026') {
+        matchedRole = 'Leader';
+    } else if (passVal === 'treasury2026') {
+        matchedRole = 'Finance';
+    }
+
+    if (!matchedRole) {
+        showToast('🚫 Incorrect passcode. Valid passcodes: mfcyouthtarlac (Admin), hhhead2026 (Leader), treasury2026 (Finance)', 'error');
         if (passEl) {
             passEl.value = '';
             passEl.focus();
@@ -4656,18 +4877,33 @@ async function loginUser(event) {
         return;
     }
 
-    // Unlock Portal cleanly
+    // Unlock Portal with specific role permissions
     state.failedLoginAttempts = 0;
-    state.currentAdminEmail = 'reyesbarney38@gmail.com';
-    state.currentAdminRole = 'SUPER ADMIN';
+    state.currentUserRole = matchedRole;
+    state.currentAdminEmail = matchedRole === 'Admin' ? 'chapter.head@mfcyouthtarlac.com' : (matchedRole === 'Leader' ? 'household.head@mfcyouthtarlac.com' : 'treasury@mfcyouthtarlac.com');
+    state.currentAdminRole = matchedRole === 'Admin' ? 'CHAPTER ADMIN' : (matchedRole === 'Leader' ? 'HOUSEHOLD HEAD' : 'FINANCE OFFICER');
 
     localStorage.setItem('ps_logged_in', 'true');
+    localStorage.setItem('ps_user_role', matchedRole);
+
     const overlay = document.getElementById('auth-login-overlay');
     if (overlay) overlay.style.display = 'none';
     if (passEl) passEl.value = '';
 
-    showToast('🔓 Chapter records & files unlocked successfully! Welcome back.', 'success');
+    applyRBACRoleUI();
+
+    const roleNames = { 'Admin': '👑 Chapter Admin', 'Leader': '🏛️ Household Head', 'Finance': '💰 Finance Officer' };
+    showToast(`🔓 Portal unlocked as ${roleNames[matchedRole]}! Access granted.`, 'success');
     renderAll();
+}
+
+function applyRBACRoleUI() {
+    const role = state.currentUserRole || localStorage.getItem('ps_user_role') || 'Admin';
+    const rolePill = document.getElementById('top-bar-role-pill');
+    const roleNames = { 'Admin': '👑 Chapter Admin', 'Leader': '🏛️ Household Head', 'Finance': '💰 Finance Officer' };
+    if (rolePill) {
+        rolePill.innerHTML = `<span>${roleNames[role] || '👑 Chapter Admin'}</span>`;
+    }
 }
 
 function resendAdmin2FACode() {

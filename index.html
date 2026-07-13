@@ -61,18 +61,34 @@
                 <div
                     style="background: rgba(7, 13, 28, 0.85); border: 1px solid rgba(56, 189, 248, 0.3); border-radius: 20px; padding: 28px 24px; text-align: center; box-shadow: 0 20px 50px rgba(0,0,0,0.6);">
 
-                    <p style="color: #E2E8F0; font-size: 0.95rem; line-height: 1.5; font-weight: 600; margin: 0 0 22px 0;">
-                        This page is locked to protect documents, please input the password below to access all the files:
+                    <p style="color: #E2E8F0; font-size: 0.9rem; line-height: 1.5; font-weight: 600; margin: 0 0 16px 0;">
+                        Select your access role and input your passcode to unlock the portal:
                     </p>
+
+                    <!-- Role Selector Tabs -->
+                    <div style="display: flex; gap: 8px; justify-content: center; margin-bottom: 18px; flex-wrap: wrap;">
+                        <button type="button" class="rbac-role-btn active" data-role="Admin" onclick="selectLoginRole('Admin', this)"
+                            style="background: linear-gradient(135deg, #0284C7, #3B82F6); color: #FFF; border: 1px solid rgba(56,189,248,0.5); border-radius: 18px; padding: 6px 14px; font-size: 0.78rem; font-weight: 800; cursor: pointer; transition: all 0.2s;">
+                            👑 Chapter Admin
+                        </button>
+                        <button type="button" class="rbac-role-btn" data-role="Leader" onclick="selectLoginRole('Leader', this)"
+                            style="background: rgba(15,23,42,0.8); color: #94A3B8; border: 1px solid rgba(255,255,255,0.15); border-radius: 18px; padding: 6px 14px; font-size: 0.78rem; font-weight: 700; cursor: pointer; transition: all 0.2s;">
+                            🏛️ Household Head
+                        </button>
+                        <button type="button" class="rbac-role-btn" data-role="Finance" onclick="selectLoginRole('Finance', this)"
+                            style="background: rgba(15,23,42,0.8); color: #94A3B8; border: 1px solid rgba(255,255,255,0.15); border-radius: 18px; padding: 6px 14px; font-size: 0.78rem; font-weight: 700; cursor: pointer; transition: all 0.2s;">
+                            💰 Finance Officer
+                        </button>
+                    </div>
 
                     <form id="auth-login-form" onsubmit="loginUser(event)">
                         <div
                             style="display: flex; align-items: stretch; border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 12px; overflow: hidden; background: #060B18;">
                             <span
                                 style="display: flex; align-items: center; padding: 0 12px; color: #94A3B8; font-weight: 700; font-size: 0.82rem; border-right: 1px solid rgba(255, 255, 255, 0.1); flex-shrink: 0; white-space: nowrap;">
-                                Password:
+                                Passcode:
                             </span>
-                            <input type="password" id="auth-login-password" required placeholder="Enter chapter password..." value=""
+                            <input type="password" id="auth-login-password" required placeholder="Enter passcode (e.g. mfcyouthtarlac)..." value=""
                                 style="flex: 1; min-width: 0; background: transparent; border: none; color: #FFF; padding: 13px 10px; font-size: 0.9rem; outline: none;">
                             <button type="submit"
                                 style="flex-shrink: 0; white-space: nowrap; background: linear-gradient(135deg, #0284C7, #3B82F6); color: #FFF; font-weight: 800; font-size: 0.82rem; letter-spacing: 0.06em; text-transform: uppercase; padding: 0 18px; border: none; cursor: pointer; transition: opacity 0.2s;">
@@ -84,7 +100,7 @@
 
                 <div
                     style="margin-top: 18px; color: #94A3B8; font-size: 0.82rem; font-weight: 500; line-height: 1.5; text-align: center;">
-                    <span>*If you don't know the password, you may ask your couple coordinator or your area servant.</span>
+                    <span>Passcodes: Admin (<code>mfcyouthtarlac</code>) • Household Head (<code>hhhead2026</code>) • Finance (<code>treasury2026</code>)</span>
                 </div>
 
             </div>
@@ -261,6 +277,17 @@
                         <span id="firebase-status-label">🔥 Firebase: Connected</span>
                     </button>
 
+                    <!-- PWA Native App Install Button -->
+                    <button id="pwa-install-top-btn" onclick="triggerPWAInstall()" title="Install MFC Youth Tarlac Portal to your device"
+                        style="display: flex; align-items: center; gap: 6px; padding: 6px 14px; background: linear-gradient(135deg, rgba(14,165,233,0.25), rgba(2,132,199,0.15)); border: 1px solid rgba(56,189,248,0.5); border-radius: 20px; color: #38BDF8; font-size: 0.75rem; font-weight: 700; cursor: pointer; transition: all 0.2s; box-shadow: 0 0 12px rgba(14,165,233,0.2);">
+                        <span>📲 Install App</span>
+                    </button>
+
+                    <!-- User RBAC Role Badge -->
+                    <div id="top-bar-role-pill" style="display: flex; align-items: center; gap: 6px; padding: 6px 14px; background: rgba(245,158,11,0.15); border: 1px solid rgba(245,158,11,0.4); border-radius: 20px; color: #F59E0B; font-size: 0.75rem; font-weight: 800;">
+                        <span>👑 Chapter Admin</span>
+                    </div>
+
                     <!-- Social / Web Links -->
                     <a href="https://www.facebook.com/MFCYouthTarlac" target="_blank" rel="noopener noreferrer"
                         class="top-bar-icon-link text-blue" title="MFC Youth Tarlac Official Facebook Page">
@@ -340,6 +367,23 @@
                                 <span>📂 Restore Backup</span>
                                 <input type="file" accept=".json" onchange="importFullBackupJSON(this)" style="display: none;">
                             </label>
+                        </div>
+                    </div>
+
+                    <!-- Celebrations & Upcoming Birthdays Widget -->
+                    <div class="glass-panel" style="padding: 18px 22px; margin-bottom: 24px; border: 1px solid rgba(236,72,153,0.35); background: linear-gradient(135deg, rgba(236,72,153,0.08), rgba(15,23,42,0.95)); border-radius: 20px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; flex-wrap: wrap; gap: 8px;">
+                            <div style="display: flex; align-items: center; gap: 10px;">
+                                <span style="font-size: 1.5rem; filter: drop-shadow(0 0 8px rgba(236,72,153,0.6));">🎂</span>
+                                <div>
+                                    <h4 style="color: #FFF; font-size: 0.95rem; font-weight: 800; margin: 0;">Celebrations & Upcoming Birthdays</h4>
+                                    <span style="color: #F472B6; font-size: 0.75rem;">Celebrate your members' birthdays & pastoral anniversaries this month</span>
+                                </div>
+                            </div>
+                            <span class="badge" style="background: rgba(236,72,153,0.2); color: #F472B6; border: 1px solid rgba(236,72,153,0.4);">🎉 Chapter Celebrations Hub</span>
+                        </div>
+                        <div id="dashboard-celebrations-grid" style="display: flex; gap: 12px; overflow-x: auto; padding-bottom: 6px;">
+                            <!-- Dynamically rendered birthday & milestone cards -->
                         </div>
                     </div>
 
@@ -869,6 +913,18 @@
                                         <path d="M10 8h1" />
                                     </svg>
                                     <span>Export PDF</span>
+                                </button>
+                                <button class="btn-secondary" onclick="exportMembersCSV()"
+                                    title="Export Members Directory to Excel / CSV"
+                                    style="padding: 10px 16px; border-color: rgba(34, 197, 94, 0.45); color: #4ADE80; display: flex; align-items: center;">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                        style="width: 16px; height: 16px; margin-right: 6px;">
+                                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                                        <polyline points="14 2 14 8 20 8" />
+                                        <line x1="8" y1="13" x2="16" y2="13" />
+                                        <line x1="8" y1="17" x2="16" y2="17" />
+                                    </svg>
+                                    <span>Export Excel/CSV</span>
                                 </button>
                                 <button class="btn-secondary" onclick="openImportCSVModal()"
                                     title="Bulk Import Members from CSV"
@@ -2573,7 +2629,7 @@
     <div class="toast-container" id="toast-container"></div>
 
     <!-- Application Javascript -->
-    <script src="script.js?v=3.2"></script>
+    <script src="script.js?v=3.3"></script>
     <!-- PWA Offline Service Worker Registration -->
     <script>
         if ('serviceWorker' in navigator) {
