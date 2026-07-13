@@ -28,16 +28,24 @@ When accessing the portal, authentication is enforced against registered executi
 
 ---
 
-## 📱 PWA Mobile App & Desktop Installation
-Because this portal is built with full Progressive Web App (`manifest.json` + service worker capabilities), leaders can install it directly onto their devices:
+## 📱 PWA Mobile App & 100% Offline Service Worker (`sw.js`)
+Because this portal is built with a full Progressive Web App architecture (`manifest.json` + `sw.js` Service Worker), leaders can install it directly onto their devices and use it offline at remote youth camps:
 
-1. **Android / PC (Chrome / Edge):**
+1. **Service Worker Offline Caching (`sw.js`):**
+   - Automatically precaches core static files and CDN libraries (`chart.js`, `jspdf`, `html5-qrcode`).
+   - Even when Wi-Fi or cellular signal drops at camp, the portal loads instantly from cache.
+2. **Android / PC (Chrome / Edge):**
    - Visit **https://barney050702.github.io/mfc-youth-tarlac-portal/**.
    - Click/tap the **Install App** prompt or select menu **⋮ → Install MFC Youth Tarlac Portal**.
-2. **iOS / iPhone (Safari):**
+3. **iOS / iPhone (Safari):**
    - Open the site in Safari.
    - Tap the **Share** button at the bottom and select **Add to Home Screen**.
-   - It will appear as an app with your official bouncy **MFC Youth Logo**!
+
+---
+
+## 📷 Live Camera QR Code Scanner (`html5-qrcode`)
+- Officers can open the **Live QR / ID Scanner** modal and tap **📷 Start Live Camera Scan** to use their mobile phone or laptop camera to scan member QR ID badges at the door.
+- Scanned QR codes are automatically verified against the member roster and checked in with instant timestamp recording.
 
 > **Edge-to-Edge Mobile Aspect Ratio & Safe-Area Notch Support:**  
 > All modals, tables, login cards, and bottom navigation bars adapt automatically (`viewport-fit=cover` + `env(safe-area-inset-*)`) to render cleanly across iPhones, iPads, and Android devices without white screen borders or cropped content.

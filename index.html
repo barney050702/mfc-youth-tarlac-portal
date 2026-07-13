@@ -29,30 +29,25 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
 </head>
 
 <body>
     <!-- Ambient Background Cyber Glows -->
     <div class="ambient-glow glow-1"></div>
     <div class="ambient-glow glow-2"></div>
-    <div class="ambient-glow glow-3"></div>
-
-    <!-- ==========================================================================
-         AUTHENTICATION / LOGIN OVERLAY (ADMIN AUTHENTICATION)
-         ========================================================================== -->
+    <!-- Authentication / Login Overlay -->
     <div id="auth-login-overlay"
-        style="display: flex; flex-direction: column; justify-content: space-between; position: fixed; inset: 0; z-index: 99999; background: radial-gradient(circle at 50% 30%, #0c1836 0%, #060b18 75%, #02050c 100%); align-items: center; padding: 40px 0 0 0; animation: fadeIn 0.3s ease; overflow-y: auto;">
+        style="display: none; flex-direction: column; justify-content: space-between; position: fixed; inset: 0; z-index: 99999; background: radial-gradient(circle at 50% 30%, #0c1836 0%, #060b18 75%, #02050c 100%); align-items: center; padding: 40px 0 0 0; animation: fadeIn 0.3s ease; overflow-y: auto;">
         <div style="flex: 1; display: flex; align-items: center; justify-content: center; width: 100%; padding: 20px;">
             <div class="auth-login-card"
                 style="background: rgba(13, 22, 45, 0.96); border: 1px solid rgba(56, 189, 248, 0.25); border-radius: 28px; padding: 38px 34px; width: 100%; max-width: 430px; box-shadow: 0 35px 90px rgba(0,0,0,0.9), 0 0 40px rgba(14, 165, 233, 0.15); backdrop-filter: blur(25px); text-align: center;">
 
-                <!-- MFC Youth Logo -->
                 <div style="display: flex; align-items: center; justify-content: center; margin: 0 auto 18px;">
                     <img src="mfc-logo.png" alt="MFC Youth Logo" class="bouncy-logo"
                         style="width: 86px; height: 86px; object-fit: contain;">
                 </div>
 
-                <!-- Title & Tagline -->
                 <h1
                     style="color: #FFF; font-size: 1.5rem; font-weight: 900; letter-spacing: 0.04em; margin: 0; text-transform: uppercase;">
                     MFC YOUTH TARLAC</h1>
@@ -60,7 +55,6 @@
                     style="color: #38BDF8; font-weight: 800; font-size: 0.78rem; letter-spacing: 0.12em; text-transform: uppercase; margin-top: 5px; margin-bottom: 26px;">
                     MAKE ALL YOUTH KNOW CHRIST</div>
 
-                <!-- Simplified Document Lock Card (Password Only) -->
                 <div
                     style="background: rgba(7, 13, 28, 0.85); border: 1px solid rgba(56, 189, 248, 0.3); border-radius: 20px; padding: 28px 24px; text-align: center; box-shadow: 0 20px 50px rgba(0,0,0,0.6);">
 
@@ -75,17 +69,16 @@
                                 style="display: flex; align-items: center; padding: 0 12px; color: #94A3B8; font-weight: 700; font-size: 0.82rem; border-right: 1px solid rgba(255, 255, 255, 0.1); flex-shrink: 0; white-space: nowrap;">
                                 Password:
                             </span>
-                            <input type="password" id="auth-login-password" required placeholder="Enter password..." value=""
+                            <input type="password" id="auth-login-password" required placeholder="Enter chapter password..." value=""
                                 style="flex: 1; min-width: 0; background: transparent; border: none; color: #FFF; padding: 13px 10px; font-size: 0.9rem; outline: none;">
                             <button type="submit"
                                 style="flex-shrink: 0; white-space: nowrap; background: linear-gradient(135deg, #0284C7, #3B82F6); color: #FFF; font-weight: 800; font-size: 0.82rem; letter-spacing: 0.06em; text-transform: uppercase; padding: 0 18px; border: none; cursor: pointer; transition: opacity 0.2s;">
-                                SUBMIT
+                                UNLOCK
                             </button>
                         </div>
                     </form>
                 </div>
 
-                <!-- Footer Password Hint Note -->
                 <div
                     style="margin-top: 18px; color: #94A3B8; font-size: 0.82rem; font-weight: 500; line-height: 1.5; text-align: center;">
                     <span>*If you don't know the password, you may ask your couple coordinator or your area servant.</span>
@@ -94,7 +87,6 @@
             </div>
         </div>
 
-        <!-- Global Copyright Footer Bar (Matching User Screenshot) -->
         <footer
             style="background: #18181B; border-top: 1px solid rgba(255, 255, 255, 0.08); padding: 18px 24px; text-align: center; font-size: 0.88rem; color: #E2E8F0; font-weight: 500; letter-spacing: 0.02em; width: 100%;">
             <span>Copyright All Rights Reserved &copy; 2026. Designed and developed by: <strong
@@ -220,18 +212,6 @@
                         </svg>
                     </span>
                     <span class="nav-label">Org Chart</span>
-                </a>
-                <a href="javascript:void(0)" class="nav-item" data-view="analytics">
-                    <span class="nav-icon">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                            stroke-linecap="round" stroke-linejoin="round">
-                            <path
-                                d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" />
-                            <polyline points="3.27 6.96 12 12.01 20.73 6.96" />
-                            <line x1="12" y1="22.08" x2="12" y2="12" />
-                        </svg>
-                    </span>
-                    <span class="nav-label">Reports & Analytics</span>
                 </a>
             </nav>
         </aside>
@@ -424,65 +404,12 @@
                         </div>
                     </div>
 
-                    <!-- Pastoral Milestones Widget (Birthdays & CLC Anniversaries) -->
-                    <div class="glass-card" id="pastoral-milestones-widget"
-                        style="margin-bottom: 24px; padding: 20px 24px; background: linear-gradient(135deg, rgba(236, 72, 153, 0.12) 0%, rgba(139, 92, 246, 0.12) 100%); border: 1px solid rgba(236, 72, 153, 0.3); border-radius: 16px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px; box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);">
-                        <div style="display: flex; align-items: center; gap: 14px;">
-                            <div
-                                style="width: 44px; height: 44px; border-radius: 12px; background: rgba(236, 72, 153, 0.2); display: flex; align-items: center; justify-content: center; font-size: 1.5rem;">
-                                🎂</div>
-                            <div>
-                                <h4 style="margin: 0; font-size: 1.08rem; font-weight: 800; color: #F8FAFC;">Pastoral
-                                    Milestones This Month</h4>
-                                <p id="milestones-subtitle"
-                                    style="margin: 3px 0 0; font-size: 0.83rem; color: #F472B6;">Celebrate MFC Youth
-                                    Tarlac birthdays this month</p>
-                            </div>
-                        </div>
-                        <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;"
-                            id="milestones-actions">
-                            <button type="button" class="btn-secondary btn-sm" onclick="sendMilestoneGreetingsGmail()"
-                                style="background: rgba(236, 72, 153, 0.15); color: #F472B6; border-color: rgba(236, 72, 153, 0.4); padding: 8px 16px; font-weight: 700; display: flex; align-items: center; gap: 6px;">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                                    style="width: 14px; height: 14px;">
-                                    <path
-                                        d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
-                                    <polyline points="22,6 12,13 2,6" />
-                                </svg>
-                                <span>📧 Email Celebrants (Gmail)</span>
-                            </button>
-                            <button type="button" class="btn-secondary btn-sm" onclick="switchView('members');"
-                                style="padding: 8px 14px; font-weight: 600;">
-                                <span>👥 View All Members</span>
-                            </button>
-                        </div>
-                    </div>
-
-                    <!-- Pastoral Care & Follow-Up Alert Widget (< 60% attendance) -->
-                    <div class="glass-card" id="pastoral-care-widget"
-                        style="margin-bottom: 24px; padding: 20px 24px; background: linear-gradient(135deg, rgba(244, 63, 94, 0.12) 0%, rgba(245, 158, 11, 0.12) 100%); border: 1px solid rgba(244, 63, 94, 0.35); border-radius: 16px; display: flex; flex-direction: column; gap: 16px; box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);">
-                        <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;">
-                            <div style="display: flex; align-items: center; gap: 14px;">
-                                <div style="width: 44px; height: 44px; border-radius: 12px; background: rgba(244, 63, 94, 0.2); display: flex; align-items: center; justify-content: center; font-size: 1.4rem;">🛡️</div>
-                                <div>
-                                    <h4 style="margin: 0; font-size: 1.08rem; font-weight: 800; color: #F8FAFC;">Pastoral Care & Member Follow-Up Alert</h4>
-                                    <p id="pastoral-care-subtitle" style="margin: 3px 0 0; font-size: 0.83rem; color: #FDA4AF;">Youth members needing pastoral check-in or assembly encouragement</p>
-                                </div>
-                            </div>
-                            <span class="badge-red" id="pastoral-care-count-badge" style="font-weight: 700; padding: 6px 14px; border-radius: 20px; font-size: 0.78rem;">0 Members Flagged</span>
-                        </div>
-                        <div id="pastoral-care-list" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 12px;">
-                            <!-- Populated via script.js -->
-                        </div>
-                    </div>
-
-
                     <!-- Dashboard Content Section -->
-                    <div class="dashboard-split-grid" style="grid-template-columns: 1fr;">
-                        <!-- Full-width Agenda Panel -->
-                        <div class="glass-panel" style="padding: 28px;">
+                    <div style="display: flex; gap: 20px; flex-wrap: wrap; margin-top: 20px;">
+                        <!-- Left Panel: Agenda -->
+                        <div class="glass-panel" style="flex: 2; min-width: 320px; padding: 28px;">
                             <div class="panel-header"
-                                style="margin-bottom: 20px; border-bottom: 1px solid rgba(255, 255, 255, 0.08); padding-bottom: 16px;">
+                                style="margin-bottom: 20px; border-bottom: 1px solid rgba(255, 255, 255, 0.08); padding-bottom: 16px; display: flex; justify-content: space-between; align-items: center;">
                                 <div class="panel-title-box" style="display: flex; align-items: center; gap: 12px;">
                                     <svg viewBox="0 0 24 24" fill="none" stroke="#F8FAFC" stroke-width="2"
                                         style="width: 24px; height: 24px;">
@@ -491,12 +418,51 @@
                                         <line x1="8" y1="2" x2="8" y2="6" />
                                         <line x1="3" y1="10" x2="21" y2="10" />
                                     </svg>
-                                    <h3 style="color: #F8FAFC; font-size: 1.3rem; font-weight: 800; margin: 0;">Agenda
-                                    </h3>
+                                    <h3 style="color: #F8FAFC; font-size: 1.3rem; font-weight: 800; margin: 0;">Agenda</h3>
+                                </div>
+                                <span class="badge badge-purple" id="agenda-count-badge">Upcoming</span>
+                            </div>
+                            <div id="dashboard-upcoming-list" style="display: flex; flex-direction: column; gap: 12px;">
+                                <!-- Populated via script.js -->
+                            </div>
+                        </div>
+
+                        <!-- Right Panel: Celebrants & Executive Reports -->
+                        <div style="flex: 1; min-width: 280px; display: flex; flex-direction: column; gap: 20px;">
+                            <!-- Birthday Celebrants Widget -->
+                            <div class="glass-panel" style="padding: 24px;">
+                                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 12px;">
+                                    <div style="display: flex; align-items: center; gap: 10px;">
+                                        <span style="font-size: 1.4rem;">🎂</span>
+                                        <h4 style="color: #F8FAFC; font-size: 1.05rem; font-weight: 800; margin: 0;">Birthday Celebrants</h4>
+                                    </div>
+                                    <span class="badge badge-green" id="celebrants-month-badge">This Month</span>
+                                </div>
+                                <div id="dashboard-celebrants-list" style="display: flex; flex-direction: column; gap: 10px;">
+                                    <!-- Populated via script.js -->
                                 </div>
                             </div>
-                            <div id="dashboard-upcoming-list" style="display: flex; flex-direction: column;">
-                                <!-- Populated via script.js -->
+
+                            <!-- Executive Summary Report Card -->
+                            <div class="glass-panel" style="padding: 24px; background: linear-gradient(135deg, rgba(30, 41, 59, 0.7), rgba(15, 23, 42, 0.9)); border: 1px solid rgba(139, 92, 246, 0.3);">
+                                <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 10px;">
+                                    <div style="background: rgba(139, 92, 246, 0.2); width: 42px; height: 42px; border-radius: 12px; display: flex; align-items: center; justify-content: center; border: 1px solid rgba(139, 92, 246, 0.4);">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="#A78BFA" stroke-width="2" style="width: 22px; height: 22px;">
+                                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                                            <polyline points="14 2 14 8 20 8" />
+                                            <line x1="16" y1="13" x2="8" y2="13" />
+                                            <line x1="16" y1="17" x2="8" y2="17" />
+                                            <polyline points="10 9 9 9 8 9" />
+                                        </svg>
+                                    </div>
+                                    <div>
+                                        <h4 style="color: #F8FAFC; font-size: 1.02rem; font-weight: 800; margin: 0;">Executive Chapter Summary</h4>
+                                        <div style="font-size: 0.78rem; color: #94A3B8;">Full printable overview report</div>
+                                    </div>
+                                </div>
+                                <button onclick="generateExecutiveSummaryReport()" class="btn-primary glow-button w-full mt-3" style="width: 100%; justify-content: center; padding: 12px; background: linear-gradient(135deg, #8B5CF6, #6366F1); font-weight: 700;">
+                                    <span>📑 Generate Executive PDF Report</span>
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -707,6 +673,15 @@
                                     </svg>
                                     Export as PDF
                                 </button>
+                                <button class="btn-secondary btn-sm" onclick="copyAttendanceSummaryForChat()"
+                                    style="color: #34D399; border-color: rgba(52, 211, 153, 0.4);">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                        style="width: 14px; height: 14px;">
+                                        <rect width="14" height="14" x="8" y="8" rx="2" ry="2" />
+                                        <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2" />
+                                    </svg>
+                                    Copy Summary for Chat
+                                </button>
                                 <button class="btn-secondary btn-sm text-red" id="btn-reset-attendance">
                                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                                         style="width: 14px; height: 14px;">
@@ -858,7 +833,7 @@
                             </button>
                         </div>
 
-                        <div class="toolbar">
+                        <div class="toolbar" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;">
                             <div class="toolbar-left">
                                 <div class="search-box" style="width: 280px;">
                                     <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
@@ -868,9 +843,10 @@
                                     </svg>
                                     <input type="text" id="members-search-input"
                                         placeholder="Search members by name, role..." aria-label="Search members">
+                                </div>
                             </div>
-                            <div class="toolbar-right"
-                                style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+
+                            <div class="toolbar-right" style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
                                 <button class="btn-secondary" onclick="exportMembersToPDF()"
                                     title="Export Members Directory to PDF"
                                     style="padding: 10px 16px; border-color: rgba(248, 113, 113, 0.4); color: #F87171; display: flex; align-items: center;">
@@ -1157,7 +1133,19 @@
                                     </svg>
                                     <span>Grid View</span>
                                 </button>
+                                <button class="btn-toggle" id="btn-org-household" onclick="setOrgViewMode('household')"
+                                    title="Household Mentoring Groups">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                        style="width: 16px; height: 16px;">
+                                        <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+                                        <polyline points="9 22 9 12 15 12 15 22" />
+                                    </svg>
+                                    <span>Household View</span>
+                                </button>
                             </div>
+                            <button class="btn-secondary btn-sm" onclick="openBatchIDPrintModal()" style="color: #38BDF8; border-color: rgba(56, 189, 248, 0.4);">
+                                <span>🖨️ Print Batch IDs (A4)</span>
+                            </button>
                             <button class="btn-primary glow-button btn-sm" onclick="openAddMemberModal()">
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                                     style="width: 16px; height: 16px;">
@@ -1180,130 +1168,104 @@
                      ========================================== -->
                 <div id="view-funds" class="view-panel">
                     <!-- Top 4 Summary Metric Cards Grid -->
-                    <div class="metrics-grid"
-                        style="grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 20px;">
-                        <div class="metric-card glass-card"
-                            style="padding: 20px; display: flex; align-items: center; justify-content: space-between; background: rgba(15, 23, 42, 0.7); border: 1px solid rgba(255,255,255,0.08); border-radius: 16px;">
-                            <div>
-                                <div style="font-size: 1.5rem; font-weight: 800; color: #F8FAFC; margin-bottom: 4px;"
-                                    id="stat-total-income">₱0.00</div>
-                                <div
-                                    style="font-size: 0.72rem; font-weight: 700; color: #94A3B8; letter-spacing: 0.05em; text-transform: uppercase;">
-                                    TOTAL INCOME</div>
+                    <div class="metrics-grid">
+                        <!-- Total Income -->
+                        <div class="metric-card glass-card">
+                            <div class="metric-header">
+                                <span class="metric-label">Total Income</span>
+                                <div class="metric-icon-box" style="background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.3);">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2.5">
+                                        <polyline points="23 6 13.5 15.5 8.5 10.5 1 18" />
+                                        <polyline points="17 6 23 6 23 12" />
+                                    </svg>
+                                </div>
                             </div>
-                            <div
-                                style="background: rgba(16, 185, 129, 0.15); width: 44px; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; border: 1px solid rgba(16, 185, 129, 0.3);">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2.5"
-                                    style="width: 22px; height: 22px;">
-                                    <polyline points="23 6 13.5 15.5 8.5 10.5 1 18" />
-                                    <polyline points="17 6 23 6 23 12" />
-                                </svg>
+                            <div class="metric-value" id="stat-total-income" style="color: #10B981;">₱0.00</div>
+                            <div class="metric-footer">
+                                <span class="badge badge-green">Inflow</span>
+                                <span class="metric-subtext">Total chapter receipts</span>
                             </div>
                         </div>
 
-                        <div class="metric-card glass-card"
-                            style="padding: 20px; display: flex; align-items: center; justify-content: space-between; background: rgba(15, 23, 42, 0.7); border: 1px solid rgba(255,255,255,0.08); border-radius: 16px;">
-                            <div>
-                                <div style="font-size: 1.5rem; font-weight: 800; color: #F8FAFC; margin-bottom: 4px;"
-                                    id="stat-total-expenses">₱0.00</div>
-                                <div
-                                    style="font-size: 0.72rem; font-weight: 700; color: #94A3B8; letter-spacing: 0.05em; text-transform: uppercase;">
-                                    TOTAL EXPENSES</div>
+                        <!-- Total Expenses -->
+                        <div class="metric-card glass-card">
+                            <div class="metric-header">
+                                <span class="metric-label">Total Expenses</span>
+                                <div class="metric-icon-box" style="background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.3);">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="#EF4444" stroke-width="2.5">
+                                        <polyline points="23 18 13.5 8.5 8.5 13.5 1 6" />
+                                        <polyline points="17 18 23 18 23 12" />
+                                    </svg>
+                                </div>
                             </div>
-                            <div
-                                style="background: rgba(239, 68, 68, 0.15); width: 44px; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; border: 1px solid rgba(239, 68, 68, 0.3);">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="#EF4444" stroke-width="2.5"
-                                    style="width: 22px; height: 22px;">
-                                    <polyline points="23 18 13.5 8.5 8.5 13.5 1 6" />
-                                    <polyline points="17 18 23 18 23 12" />
-                                </svg>
-                            </div>
-                        </div>
-
-                        <div class="metric-card glass-card"
-                            style="padding: 20px; display: flex; align-items: center; justify-content: space-between; background: rgba(15, 23, 42, 0.7); border: 1px solid rgba(255,255,255,0.08); border-radius: 16px;">
-                            <div>
-                                <div style="font-size: 1.5rem; font-weight: 800; color: #10B981; margin-bottom: 4px;"
-                                    id="stat-current-balance">₱0.00</div>
-                                <div
-                                    style="font-size: 0.72rem; font-weight: 700; color: #94A3B8; letter-spacing: 0.05em; text-transform: uppercase;">
-                                    CURRENT BALANCE</div>
-                            </div>
-                            <div
-                                style="background: rgba(139, 92, 246, 0.15); width: 44px; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; border: 1px solid rgba(139, 92, 246, 0.3);">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="#8B5CF6" stroke-width="2"
-                                    style="width: 22px; height: 22px;">
-                                    <path
-                                        d="M19 5c-1.5 0-2.8 1.4-3 2-3.5-1.5-11-.3-11 5 0 1.8 0 3 2 4.5V20h4v-2h3v2h4v-4c1-.5 1.7-1 2-2h2v-4h-2c0-1-.5-1.5-1-2h0V5z" />
-                                    <circle cx="14" cy="11" r="1" />
-                                </svg>
+                            <div class="metric-value" id="stat-total-expenses" style="color: #EF4444;">₱0.00</div>
+                            <div class="metric-footer">
+                                <span class="badge badge-purple" style="background: rgba(239, 68, 68, 0.15); color: #EF4444;">Outflow</span>
+                                <span class="metric-subtext">Total disbursements</span>
                             </div>
                         </div>
 
-                        <div class="metric-card glass-card"
-                            style="padding: 20px; display: flex; align-items: center; justify-content: space-between; background: rgba(15, 23, 42, 0.7); border: 1px solid rgba(255,255,255,0.08); border-radius: 16px;">
-                            <div>
-                                <div style="font-size: 1.5rem; font-weight: 800; color: #F8FAFC; margin-bottom: 4px;"
-                                    id="stat-total-records">0</div>
-                                <div
-                                    style="font-size: 0.72rem; font-weight: 700; color: #94A3B8; letter-spacing: 0.05em; text-transform: uppercase;">
-                                    TOTAL RECORDS</div>
+                        <!-- Current Balance -->
+                        <div class="metric-card glass-card">
+                            <div class="metric-header">
+                                <span class="metric-label">Current Balance</span>
+                                <div class="metric-icon-box" style="background: rgba(139, 92, 246, 0.15); border: 1px solid rgba(139, 92, 246, 0.3);">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="#8B5CF6" stroke-width="2">
+                                        <path
+                                            d="M19 5c-1.5 0-2.8 1.4-3 2-3.5-1.5-11-.3-11 5 0 1.8 0 3 2 4.5V20h4v-2h3v2h4v-4c1-.5 1.7-1 2-2h2v-4h-2c0-1-.5-1.5-1-2h0V5z" />
+                                        <circle cx="14" cy="11" r="1" />
+                                    </svg>
+                                </div>
                             </div>
-                            <div
-                                style="background: rgba(56, 189, 248, 0.15); width: 44px; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; border: 1px solid rgba(56, 189, 248, 0.3);">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="#38BDF8" stroke-width="2"
-                                    style="width: 22px; height: 22px;">
-                                    <path
-                                        d="M4 2v20l2-1 2 1 2-1 2 1 2-1 2 1 2-1 2 1V2l-2 1-2-1-2 1-2-1-2 1-2-1-2 1-2-1Z" />
-                                    <path d="M14 8H8" />
-                                    <path d="M16 12H8" />
-                                    <path d="M13 16H8" />
-                                </svg>
+                            <div class="metric-value" id="stat-current-balance" style="color: #38BDF8;">₱0.00</div>
+                            <div class="metric-footer">
+                                <span class="badge badge-blue">Net Funds</span>
+                                <span class="metric-subtext">Available cash balance</span>
                             </div>
                         </div>
-                    </div>
 
-                    <!-- Budget Target Progress Banner -->
-                    <div class="glass-panel"
-                        style="padding: 18px 20px; margin-bottom: 24px; border-left: 4px solid #8B5CF6;">
-                        <div
-                            style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; flex-wrap: wrap; gap: 8px;">
-                            <div style="font-weight: 700; color: #F8FAFC; font-size: 0.95rem;">🎯 Annual Budget &
-                                Target Progress</div>
-                            <div style="font-size: 0.85rem; color: #A5B4FC;">Target: ₱50,000.00 | Achieved: <strong
-                                    id="budget-achieved-text">0%</strong></div>
-                        </div>
-                        <div class="mini-progress-bar"
-                            style="height: 10px; background: rgba(255,255,255,0.08); border-radius: 6px; overflow: hidden;">
-                            <div class="mini-fill" id="budget-progress-fill"
-                                style="width: 0%; background: linear-gradient(90deg, #6366F1, #10B981); height: 100%; transition: width 0.5s ease;">
+                        <!-- Total Records -->
+                        <div class="metric-card glass-card">
+                            <div class="metric-header">
+                                <span class="metric-label">Total Records</span>
+                                <div class="metric-icon-box" style="background: rgba(56, 189, 248, 0.15); border: 1px solid rgba(56, 189, 248, 0.3);">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="#38BDF8" stroke-width="2">
+                                        <path
+                                            d="M4 2v20l2-1 2 1 2-1 2 1 2-1 2 1 2-1 2 1V2l-2 1-2-1-2 1-2-1-2 1-2-1-2 1-2-1Z" />
+                                        <path d="M14 8H8" />
+                                        <path d="M16 12H8" />
+                                        <path d="M13 16H8" />
+                                    </svg>
+                                </div>
+                            </div>
+                            <div class="metric-value" id="stat-total-records">0</div>
+                            <div class="metric-footer">
+                                <span class="badge badge-green">Ledger</span>
+                                <span class="metric-subtext">Logged transactions</span>
                             </div>
                         </div>
                     </div>
 
                     <!-- Action Bar / Search & Filter -->
-                    <div class="glass-panel"
-                        style="padding: 16px 20px; margin-bottom: 20px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px;">
-                        <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap; flex: 1;">
-                            <div class="search-box"
-                                style="flex: 1; min-width: 260px; max-width: 400px; display: flex; align-items: center; background: rgba(15, 23, 42, 0.8); border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; padding: 0 14px;">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="#64748B" stroke-width="2"
-                                    style="width: 18px; height: 18px; margin-right: 10px;">
+                    <div class="toolbar" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;">
+                        <div class="toolbar-left" style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
+                            <div class="search-box" style="width: 260px;">
+                                <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                     <circle cx="11" cy="11" r="8" />
-                                    <line x1="21" y1="21" x2="16.65" y2="16.65" />
+                                    <path d="m21 21-4.35-4.35" />
                                 </svg>
                                 <input type="text" id="funds-search-input"
                                     placeholder="Search description or category..." oninput="filterFunds()"
-                                    style="background: transparent; border: none; color: #FFF; padding: 10px 0; width: 100%; outline: none; font-size: 0.88rem;">
+                                    aria-label="Search ledger">
                             </div>
                             <select id="funds-type-filter" onchange="filterFunds()"
-                                style="background: rgba(15, 23, 42, 0.8); border: 1px solid rgba(255,255,255,0.1); color: #E2E8F0; padding: 9px 16px; border-radius: 10px; outline: none; font-size: 0.88rem; cursor: pointer;">
+                                style="background: rgba(15, 23, 42, 0.8); border: 1px solid rgba(255,255,255,0.1); color: #E2E8F0; padding: 10px 16px; border-radius: 10px; outline: none; font-size: 0.88rem; cursor: pointer;">
                                 <option value="ALL">All Types</option>
                                 <option value="Income">Income</option>
                                 <option value="Expense">Expense</option>
                             </select>
                             <select id="funds-category-filter" onchange="filterFunds()"
-                                style="background: rgba(15, 23, 42, 0.8); border: 1px solid rgba(255,255,255,0.1); color: #E2E8F0; padding: 9px 16px; border-radius: 10px; outline: none; font-size: 0.88rem; cursor: pointer;">
+                                style="background: rgba(15, 23, 42, 0.8); border: 1px solid rgba(255,255,255,0.1); color: #E2E8F0; padding: 10px 16px; border-radius: 10px; outline: none; font-size: 0.88rem; cursor: pointer;">
                                 <option value="ALL">All Categories</option>
                                 <optgroup label="Income Categories">
                                     <option value="Tithe & Offering">Tithe & Offering</option>
@@ -1321,11 +1283,8 @@
                                     <option value="Other Expense">Other Expense</option>
                                 </optgroup>
                             </select>
-                            <button onclick="resetFundsFilter()"
-                                style="background: rgba(15, 23, 42, 0.8); border: 1px solid rgba(255,255,255,0.1); color: #94A3B8; width: 38px; height: 38px; border-radius: 10px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s;"
-                                title="Reset Filters">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                                    style="width: 18px; height: 18px;">
+                            <button class="btn-secondary" onclick="resetFundsFilter()" title="Reset Filters" style="padding: 10px 14px;">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 16px; height: 16px;">
                                     <path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
                                     <path d="M3 3v5h5" />
                                     <path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16" />
@@ -1333,14 +1292,34 @@
                                 </svg>
                             </button>
                         </div>
-                        <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
-                            <button class="btn-secondary" onclick="exportFinancialStatementPDF()"
-                                style="padding: 10px 18px; border-color: rgba(16, 185, 129, 0.4); color: #34D399; font-weight: 600; display: inline-flex; align-items: center; gap: 8px;">
-                                <span>📄 Official Financial Ledger PDF</span>
-                            </button>
-                            <button class="btn-primary glow-button" onclick="openAddFundModal()"
-                                style="background: linear-gradient(135deg, #6366F1, #3B82F6); color: #FFF; font-weight: 600; padding: 10px 20px; border-radius: 10px; border: none; display: inline-flex; align-items: center; gap: 8px; cursor: pointer; box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4);">
+
+                        <div class="toolbar-right" style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+                            <button class="btn-secondary" onclick="exportFinancialLedgerCSV()"
+                                title="Export CSV Spreadsheet"
+                                style="padding: 10px 16px; border-color: rgba(56, 189, 248, 0.4); color: #38BDF8; display: flex; align-items: center;">
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                    style="width: 16px; height: 16px; margin-right: 6px;">
+                                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                                    <polyline points="17 8 12 3 7 8" />
+                                    <line x1="12" y1="3" x2="12" y2="15" />
+                                </svg>
+                                <span>Export CSV</span>
+                            </button>
+                            <button class="btn-secondary" onclick="exportFinancialStatementPDF()"
+                                title="Export Official Financial Ledger PDF"
+                                style="padding: 10px 16px; border-color: rgba(16, 185, 129, 0.4); color: #34D399; display: flex; align-items: center;">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                    style="width: 16px; height: 16px; margin-right: 6px;">
+                                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                                    <polyline points="14 2 14 8 20 8" />
+                                    <path d="M10 12h4" />
+                                    <path d="M10 16h4" />
+                                    <path d="M10 8h1" />
+                                </svg>
+                                <span>Official Ledger PDF</span>
+                            </button>
+                            <button class="btn-primary glow-button" onclick="openAddFundModal()">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
                                     style="width: 18px; height: 18px;">
                                     <line x1="12" y1="5" x2="12" y2="19" />
                                     <line x1="5" y1="12" x2="19" y2="12" />
@@ -1350,42 +1329,24 @@
                         </div>
                     </div>
 
-                    <!-- Funds Ledger Table Panel -->
-                    <div class="glass-panel"
-                        style="overflow: hidden; border-radius: 16px; border: 1px solid rgba(255,255,255,0.08);">
-                        <div class="table-container" style="max-height: 520px; overflow-y: auto;">
-                            <table class="roster-table w-full" style="width: 100%; border-collapse: collapse;">
-                                <thead>
-                                    <tr
-                                        style="background: rgba(15, 23, 42, 0.9); border-bottom: 1px solid rgba(255,255,255,0.08); text-align: left;">
-                                        <th
-                                            style="padding: 16px 20px; color: #94A3B8; font-size: 0.75rem; font-weight: 800; letter-spacing: 0.08em;">
-                                            DATE</th>
-                                        <th
-                                            style="padding: 16px 20px; color: #94A3B8; font-size: 0.75rem; font-weight: 800; letter-spacing: 0.08em;">
-                                            TYPE</th>
-                                        <th
-                                            style="padding: 16px 20px; color: #94A3B8; font-size: 0.75rem; font-weight: 800; letter-spacing: 0.08em;">
-                                            CATEGORY</th>
-                                        <th
-                                            style="padding: 16px 20px; color: #94A3B8; font-size: 0.75rem; font-weight: 800; letter-spacing: 0.08em;">
-                                            DESCRIPTION</th>
-                                        <th
-                                            style="padding: 16px 20px; color: #94A3B8; font-size: 0.75rem; font-weight: 800; letter-spacing: 0.08em;">
-                                            AMOUNT</th>
-                                        <th
-                                            style="padding: 16px 20px; color: #94A3B8; font-size: 0.75rem; font-weight: 800; letter-spacing: 0.08em;">
-                                            RECEIPT</th>
-                                        <th
-                                            style="padding: 16px 20px; color: #94A3B8; font-size: 0.75rem; font-weight: 800; letter-spacing: 0.08em; text-align: right;">
-                                            ACTIONS</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="funds-table-body">
-                                    <!-- Populated dynamically -->
-                                </tbody>
-                            </table>
-                        </div>
+                    <!-- Funds Ledger Table Container -->
+                    <div class="table-container mt-4">
+                        <table class="data-table hover-table">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Type</th>
+                                    <th>Category</th>
+                                    <th>Description</th>
+                                    <th>Amount</th>
+                                    <th>Receipt</th>
+                                    <th style="text-align: right;">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="funds-table-body">
+                                <!-- Populated dynamically -->
+                            </tbody>
+                        </table>
                     </div>
 
                     <!-- Footer note -->
@@ -1883,7 +1844,7 @@
          ========================================================================== -->
     <div class="modal-backdrop" id="member-modal-backdrop" style="display: none;">
         <div class="modal-card glass-card member-profile-modal" role="dialog" aria-labelledby="member-profile-name">
-            <div class="modal-header">
+            <div class="modal-header" style="flex-shrink: 0; position: sticky; top: 0; z-index: 10;">
                 <h3>Member Profile & Stats</h3>
                 <button class="modal-close-btn" onclick="closeMemberModal()" aria-label="Close modal">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -1891,13 +1852,15 @@
                     </svg>
                 </button>
             </div>
-            <div class="member-profile-body" id="member-profile-content">
-                <!-- Populated via script.js -->
+            <div class="member-profile-scroll-area" style="overflow-y: auto; flex: 1; min-height: 0;">
+                <div class="member-profile-body" id="member-profile-content">
+                    <!-- Populated via script.js -->
+                </div>
+                <div id="member-timeline-container"
+                    style="padding: 12px 24px; border-top: 1px solid rgba(255,255,255,0.08);"></div>
             </div>
-            <div id="member-timeline-container"
-                style="padding: 12px 24px; border-top: 1px solid rgba(255,255,255,0.08);"></div>
             <div class="modal-footer"
-                style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
+                style="flex-shrink: 0; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; border-top: 1px solid rgba(255,255,255,0.08); padding: 14px 24px; background: rgba(15, 23, 42, 0.95);">
                 <button type="button" class="btn-primary glow-button" onclick="openMemberQRBadgeModal()"
                     style="background: linear-gradient(135deg, #0284C7, #38BDF8); padding: 9px 16px; font-size: 0.88rem; display: inline-flex; align-items: center; gap: 6px;">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
@@ -2387,13 +2350,15 @@
             </div>
             <p style="color: #94A3B8; font-size: 0.88rem; margin-bottom: 16px;">Position the member's digital QR ID or
                 barcode within the scanning frame.</p>
-            <div class="qr-video-frame"
-                style="width: 100%; height: 220px; background: #0F172A; border: 2px dashed #38BDF8; border-radius: 12px; position: relative; display: flex; align-items: center; justify-content: center; overflow: hidden; margin-bottom: 16px;">
-                <div class="qr-laser-line"
-                    style="position: absolute; width: 100%; height: 2px; background: #38BDF8; box-shadow: 0 0 10px #38BDF8; top: 50%; animation: scanMove 2s infinite ease-in-out;">
+            <div class="qr-video-frame" id="qr-reader"
+                style="width: 100%; min-height: 240px; background: #0F172A; border: 2px dashed #38BDF8; border-radius: 12px; position: relative; display: flex; align-items: center; justify-content: center; overflow: hidden; margin-bottom: 16px;">
+                <div id="qr-camera-placeholder" style="width: 100%; text-align: center; padding: 20px;">
+                    <div class="qr-laser-line"
+                        style="position: absolute; width: 100%; height: 2px; background: #38BDF8; box-shadow: 0 0 10px #38BDF8; top: 50%; animation: scanMove 2s infinite ease-in-out;">
+                    </div>
+                    <span style="color: #64748B; font-size: 0.85rem; z-index: 2; display: block; margin-bottom: 12px;">[ Camera Stream Standby / Ready ]</span>
+                    <button type="button" class="btn-primary btn-sm glow-button" onclick="startLiveCameraQRScanner()" style="font-size: 0.82rem; padding: 8px 16px;">📷 Start Live Camera Scan</button>
                 </div>
-                <span style="color: #64748B; font-size: 0.85rem; z-index: 2;">[ Camera Stream Active - Seeking QR
-                    ]</span>
             </div>
             <div
                 style="background: rgba(56, 189, 248, 0.1); border: 1px solid rgba(56, 189, 248, 0.3); border-radius: 8px; padding: 12px; margin-bottom: 16px; text-align: left;">
@@ -2462,13 +2427,13 @@
 
     <!-- Member Service Profile & Engagement Modal -->
     <div class="modal-backdrop" id="modal-member-profile" style="display: none; z-index: 11400;">
-        <div class="modal-card glass-card" style="max-width: 520px; width: 92%; padding: 24px;">
-            <div class="modal-header" style="margin-bottom: 16px;">
-                <h3 id="profile-modal-title" style="color: #F8FAFC; font-size: 1.3rem; font-weight: 800; margin: 0;">
+        <div class="modal-card glass-card" style="max-width: 600px; width: 94%; max-height: 86vh; display: flex; flex-direction: column; padding: 0; overflow: hidden;">
+            <div class="modal-header" style="padding: 18px 24px; margin: 0; border-bottom: 1px solid rgba(255, 255, 255, 0.08); flex-shrink: 0; display: flex; align-items: center; justify-content: space-between; background: rgba(15, 23, 42, 0.98); z-index: 10;">
+                <h3 id="profile-modal-title" style="color: #F8FAFC; font-size: 1.25rem; font-weight: 800; margin: 0;">
                     Member Service Profile</h3>
-                <button class="btn-close" onclick="closeMemberProfileModal()">×</button>
+                <button class="btn-close" onclick="closeMemberProfileModal()" style="font-size: 1.6rem; line-height: 1; cursor: pointer; background: transparent; border: none; color: #94A3B8;">×</button>
             </div>
-            <div id="profile-modal-content">
+            <div id="profile-modal-content" style="padding: 20px 24px; overflow-y: auto; flex: 1; min-height: 0;">
                 <!-- Populated dynamically via script.js -->
             </div>
         </div>
@@ -2542,6 +2507,30 @@
 
     <!-- Application Javascript -->
     <script src="script.js"></script>
+    <!-- PWA Offline Service Worker Registration -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./sw.js')
+                    .then(reg => {
+                        console.log('[PWA] Service Worker registered successfully:', reg.scope);
+                        reg.onupdatefound = () => {
+                            const installingWorker = reg.installing;
+                            if (installingWorker) {
+                                installingWorker.onstatechange = () => {
+                                    if (installingWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                                        if (typeof showToast === 'function') {
+                                            showToast('🚀 New portal update ready! Refresh page to activate.', 'info');
+                                        }
+                                    }
+                                };
+                            }
+                        };
+                    })
+                    .catch(err => console.warn('[PWA] Service Worker registration failed:', err));
+            });
+        }
+    </script>
 </body>
 
 </html>

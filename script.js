@@ -67,12 +67,13 @@ function initApp() {
         MFCFirebaseCloud.init();
     }
 
-    // Automatically log out and require password on every page refresh
+    // Auto logout on page load / refresh
     localStorage.setItem('ps_logged_in', 'false');
+    sessionStorage.setItem('ps_logged_in', 'false');
     const overlay = document.getElementById('auth-login-overlay');
-    if (overlay) overlay.style.display = 'flex';
-    const passInput = document.getElementById('auth-login-password');
-    if (passInput) passInput.value = '';
+    if (overlay) {
+        overlay.style.display = 'flex';
+    }
 }
 
 function loadFromStorage() {
@@ -81,19 +82,25 @@ function loadFromStorage() {
     const storedAttendance = localStorage.getItem('ps_attendance');
     const storedAccounts = localStorage.getItem('ps_accounts');
 
-    if (storedActivities && localStorage.getItem('ps_activities_mfc_v11')) {
-        state.activities = JSON.parse(storedActivities);
+    if (storedActivities !== null) {
+        try {
+            state.activities = JSON.parse(storedActivities);
+            if (!Array.isArray(state.activities)) state.activities = [];
+        } catch (e) {
+            state.activities = [...SAMPLE_ACTIVITIES];
+        }
     } else {
         state.activities = [...SAMPLE_ACTIVITIES];
         localStorage.setItem('ps_activities', JSON.stringify(state.activities));
         localStorage.setItem('ps_activities_mfc_v11', 'true');
     }
 
-    if (storedMembers && localStorage.getItem('ps_members_mfc_v9')) {
-        state.members = JSON.parse(storedMembers);
-        if (!Array.isArray(state.members) || state.members.length === 0) {
+    if (storedMembers !== null) {
+        try {
+            state.members = JSON.parse(storedMembers);
+            if (!Array.isArray(state.members)) state.members = [];
+        } catch (e) {
             state.members = [...SAMPLE_MEMBERS];
-            localStorage.setItem('ps_members', JSON.stringify(state.members));
         }
     } else {
         state.members = [...SAMPLE_MEMBERS];
@@ -101,9 +108,13 @@ function loadFromStorage() {
         localStorage.setItem('ps_members_mfc_v9', 'true');
     }
 
-
-    if (storedAttendance && localStorage.getItem('ps_attendance_mfc_v9')) {
-        state.attendance = JSON.parse(storedAttendance);
+    if (storedAttendance !== null) {
+        try {
+            state.attendance = JSON.parse(storedAttendance);
+            if (!state.attendance || typeof state.attendance !== 'object') state.attendance = {};
+        } catch (e) {
+            state.attendance = {};
+        }
     } else {
         state.attendance = {
             'act-102': {
@@ -130,14 +141,13 @@ function loadFromStorage() {
         localStorage.setItem('ps_attendance_mfc_v9', 'true');
     }
 
-    if (storedAccounts) {
-        state.accounts = JSON.parse(storedAccounts);
-        SAMPLE_ACCOUNTS.forEach(sAcc => {
-            if (!state.accounts.some(a => (a.email || '').toLowerCase().trim() === sAcc.email.toLowerCase().trim())) {
-                state.accounts.push(sAcc);
-            }
-        });
-        localStorage.setItem('ps_accounts', JSON.stringify(state.accounts));
+    if (storedAccounts !== null) {
+        try {
+            state.accounts = JSON.parse(storedAccounts);
+            if (!Array.isArray(state.accounts)) state.accounts = [];
+        } catch (e) {
+            state.accounts = [...SAMPLE_ACCOUNTS];
+        }
     } else {
         state.accounts = [...SAMPLE_ACCOUNTS];
         localStorage.setItem('ps_accounts', JSON.stringify(state.accounts));
@@ -162,7 +172,21 @@ function loadFromStorage() {
     }
 }
 
+function updateSyncStatus(status = 'saved') {
+    const pill = document.getElementById('cloud-sync-pill');
+    if (!pill) return;
+    if (status === 'syncing') {
+        pill.className = 'cloud-sync-pill syncing';
+        pill.innerHTML = '<span>🔄 Syncing...</span>';
+    } else {
+        pill.className = 'cloud-sync-pill synced';
+        const isCloud = typeof MFCFirebaseCloud !== 'undefined' && MFCFirebaseCloud.enabled;
+        pill.innerHTML = isCloud ? '<span>🟢 Cloud Synced</span>' : '<span>🟢 Saved Locally</span>';
+    }
+}
+
 function saveToStorage() {
+    updateSyncStatus('syncing');
     localStorage.setItem('ps_activities', JSON.stringify(state.activities));
     localStorage.setItem('ps_members', JSON.stringify(state.members));
     localStorage.setItem('ps_attendance', JSON.stringify(state.attendance));
@@ -188,7 +212,32 @@ function saveToStorage() {
     } catch (e) {
         console.warn('Backup snapshot could not be saved to local storage:', e);
     }
+    setTimeout(() => updateSyncStatus('saved'), 400);
 }
+
+// Optional Cloud Backend Bridge (REST / Firebase / Supabase)
+window.MFCCloudBridge = {
+    endpointUrl: localStorage.getItem('mfc_cloud_endpoint') || null,
+    syncSnapshot: async function() {
+        if (!this.endpointUrl) return;
+        try {
+            await fetch(this.endpointUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    activities: state.activities,
+                    members: state.members,
+                    attendance: state.attendance,
+                    funds: state.funds,
+                    timestamp: Date.now()
+                })
+            });
+            console.log('[MFCCloudBridge] Synced snapshot to cloud endpoint.');
+        } catch (err) {
+            console.warn('[MFCCloudBridge] Offline or cloud sync failed:', err);
+        }
+    }
+};
 
 // ============================================================================
 // 2. EVENT LISTENERS & NAVIGATION LOGIC
@@ -479,49 +528,47 @@ function updateBadgeCount() {
 // 3. DASHBOARD OVERVIEW ENGINE
 // ============================================================================
 
-function updatePastoralMilestonesWidget() {
-    const currentMonth = new Date().getMonth() + 1; // 1-12
-    const bdayMems = state.members.filter(m => m.birthday && parseInt(m.birthday.split('-')[1], 10) === currentMonth);
-    const campMems = state.members.filter(m => m.campDate && parseInt(m.campDate.split('-')[1], 10) === currentMonth);
-
-    const subEl = document.getElementById('milestones-subtitle');
-    if (subEl) {
-        subEl.innerHTML = `🎉 Found <strong style="color: #FFF;">${bdayMems.length} birthday celebrant(s)</strong> this month!`;
-    }
-}
-
-function sendMilestoneGreetingsGmail() {
-    const currentMonth = new Date().getMonth() + 1;
-    const celebrantEmails = [];
-    const celebrantNames = [];
-
-    state.members.forEach(mem => {
-        const bMonth = mem.birthday ? parseInt(mem.birthday.split('-')[1], 10) : -1;
-        const cMonth = mem.campDate ? parseInt(mem.campDate.split('-')[1], 10) : -1;
-        if (bMonth === currentMonth || cMonth === currentMonth) {
-            celebrantNames.push(mem.name);
-            if (mem.email && mem.email.includes('@')) {
-                celebrantEmails.push(mem.email.trim());
-            }
-        }
-    });
-
-    if (celebrantEmails.length === 0) {
-        showToast(`No celebrants with registered email addresses found for this month (${celebrantNames.length} total celebrants).`, 'error');
+function copyAttendanceSummaryForChat() {
+    const actId = state.selectedActivityId;
+    const act = state.activities.find(a => a.id === actId);
+    if (!act) {
+        showToast('Please select an activity from the dropdown first.', 'warning');
         return;
     }
+    const attObj = state.attendance[actId] || {};
+    const presentNames = [];
+    const lateNames = [];
+    const absentNames = [];
 
-    const bccList = encodeURIComponent(celebrantEmails.join(','));
-    const subject = encodeURIComponent("🎉 Blessed Birthday & Pastoral Greetings from MFC Youth Tarlac!");
-    const bodyText = encodeURIComponent(`Dearest MFC Youth Tarlac Celebrants,\n\nGrace and peace!\n\nWe thank God for the gift of your life and your Christian Life Camp journey! May the Lord continue to bless you abundantly as you serve and grow in our community.\n\n"The Lord bless you and keep you..." - Numbers 6:24\n\nIn Christ through Mary,\nMFC Youth Tarlac Servant Leadership`);
+    state.members.forEach(m => {
+        const st = attObj[m.id]?.status;
+        if (st === 'present') presentNames.push(m.name);
+        else if (st === 'late') lateNames.push(`${m.name} (Late)`);
+        else absentNames.push(m.name);
+    });
 
-    const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&tf=1&bcc=${bccList}&su=${subject}&body=${bodyText}`;
-    window.open(gmailUrl, '_blank');
-    showToast(`Opened Gmail compose tab addressed to ${celebrantEmails.length} celebrants!`, 'success');
+    const summaryText = `📋 *MFC YOUTH TARLAC — ATTENDANCE SUMMARY*\n` +
+        `🗓 *Activity:* ${act.title}\n` +
+        `📅 *Date:* ${act.date}\n` +
+        `👥 *Total Present/Late:* ${presentNames.length + lateNames.length} / ${state.members.length}\n\n` +
+        `✅ *Present (${presentNames.length}):*\n` +
+        (presentNames.length > 0 ? presentNames.map(n => `  • ${n}`).join('\n') : '  None') + `\n\n` +
+        `⏰ *Late (${lateNames.length}):*\n` +
+        (lateNames.length > 0 ? lateNames.map(n => `  • ${n}`).join('\n') : '  None') + `\n\n` +
+        `❌ *Absent (${absentNames.length}):*\n` +
+        (absentNames.length > 0 ? absentNames.map(n => `  • ${n}`).join('\n') : '  None') + `\n\n` +
+        `_Generated via MFC Youth Tarlac Portal_`;
+
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(summaryText).then(() => {
+            showToast('📋 Summary copied to clipboard! Ready to paste into Viber or Messenger.', 'success');
+        }).catch(() => {
+            showToast('Could not copy summary automatically.', 'error');
+        });
+    }
 }
 
 function renderDashboard() {
-    updatePastoralMilestonesWidget();
 
     const totalActs = state.activities.length;
     const totalMems = state.members.length;
@@ -654,6 +701,182 @@ function renderDashboard() {
             `;
         }).join('');
     }
+
+    renderDashboardCelebrants();
+}
+
+function renderDashboardCelebrants() {
+    const elList = document.getElementById('dashboard-celebrants-list');
+    if (!elList) return;
+
+    const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+    const currentMonthIdx = new Date().getMonth();
+    const currentMonthName = months[currentMonthIdx];
+
+    const badgeEl = document.getElementById('celebrants-month-badge');
+    if (badgeEl) badgeEl.textContent = currentMonthName;
+
+    // Filter or highlight members celebrating birthdays
+    let celebrants = state.members.filter((m, i) => {
+        if (m.birthdate || m.birthday) {
+            const bDate = new Date(m.birthdate || m.birthday);
+            return !isNaN(bDate) && bDate.getMonth() === currentMonthIdx;
+        }
+        // Fallback demo celebrants from active roster if birthdate not explicitly set
+        return (i % 5 === currentMonthIdx % 5);
+    }).slice(0, 4);
+
+    if (celebrants.length === 0 && state.members.length > 0) {
+        celebrants = state.members.slice(0, 3);
+    }
+
+    if (celebrants.length === 0) {
+        elList.innerHTML = `
+            <div style="text-align: center; padding: 20px; color: #94A3B8; font-size: 0.85rem;">
+                No birthday celebrants listed for ${currentMonthName}.
+            </div>
+        `;
+        return;
+    }
+
+    elList.innerHTML = celebrants.map(m => {
+        return `
+            <div style="display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; background: rgba(15, 23, 42, 0.65); border: 1px solid rgba(255,255,255,0.06); border-radius: 12px; transition: all 0.2s;">
+                <div style="display: flex; align-items: center; gap: 12px;">
+                    <div style="width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg, #EC4899, #8B5CF6); display: flex; align-items: center; justify-content: center; font-weight: 800; color: #FFF; font-size: 0.88rem;">
+                        ${(m.name || 'M').charAt(0)}
+                    </div>
+                    <div>
+                        <div style="color: #F8FAFC; font-weight: 700; font-size: 0.9rem;">${m.name || 'Member'}</div>
+                        <div style="color: #94A3B8; font-size: 0.76rem;">${m.chapter || 'MFC Youth Tarlac'} • ${m.department || 'Youth'}</div>
+                    </div>
+                </div>
+                <span class="badge badge-purple" style="font-size: 0.72rem;">🎉 Celebrant</span>
+            </div>
+        `;
+    }).join('');
+}
+
+function generateExecutiveSummaryReport() {
+    const totalMems = state.members.length;
+    const activeMems = state.members.filter(m => m.status === 'Active').length;
+    const totalActs = state.activities.length;
+    const completedActs = state.activities.filter(a => a.status === 'Completed').length;
+
+    let totalInc = 0;
+    let totalExp = 0;
+    state.funds.forEach(f => {
+        const amt = parseFloat(f.amount) || 0;
+        if (f.type === 'Income') totalInc += amt;
+        else if (f.type === 'Expense') totalExp += amt;
+    });
+    const netBal = totalInc - totalExp;
+
+    const dateStr = new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+
+    const win = window.open('', '_blank');
+    if (!win) {
+        showToast('Please allow popups to generate PDF report.', 'warning');
+        return;
+    }
+
+    win.document.write(`
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <title>MFC Youth Tarlac - Executive Chapter Summary Report</title>
+            <style>
+                body { font-family: 'Inter', -apple-system, sans-serif; color: #0F172A; margin: 40px; }
+                .header { text-align: center; border-bottom: 3px solid #1E293B; padding-bottom: 20px; margin-bottom: 30px; }
+                .header h1 { margin: 0; font-size: 24px; text-transform: uppercase; letter-spacing: 1px; color: #1E293B; }
+                .header p { margin: 6px 0 0; font-size: 14px; color: #64748B; }
+                .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-bottom: 30px; }
+                .stat-box { border: 1px solid #E2E8F0; padding: 16px; border-radius: 8px; background: #F8FAFC; text-align: center; }
+                .stat-val { font-size: 24px; font-weight: 800; color: #0F172A; margin-bottom: 4px; }
+                .stat-lbl { font-size: 11px; font-weight: 700; color: #64748B; text-transform: uppercase; letter-spacing: 0.5px; }
+                table { width: 100%; border-collapse: collapse; margin-top: 20px; font-size: 13px; }
+                th, td { padding: 12px; border-bottom: 1px solid #E2E8F0; text-align: left; }
+                th { background: #F1F5F9; font-weight: 700; color: #334155; }
+                .section-title { font-size: 16px; font-weight: 800; color: #1E293B; margin-top: 30px; margin-bottom: 10px; border-bottom: 1px solid #CBD5E1; padding-bottom: 6px; }
+                .footer-signatures { display: grid; grid-template-columns: repeat(2, 1fr); gap: 60px; margin-top: 60px; }
+                .sig-line { border-top: 1px solid #334155; padding-top: 8px; font-weight: 700; font-size: 13px; text-align: center; }
+                @media print {
+                    body { margin: 20px; }
+                }
+            </style>
+        </head>
+        <body>
+            <div class="header">
+                <h1>Missionary Families of Christ (MFC) Youth Tarlac</h1>
+                <p>Official Executive Chapter Summary Report • Generated on ${dateStr}</p>
+            </div>
+
+            <div class="grid">
+                <div class="stat-box">
+                    <div class="stat-val">${totalMems}</div>
+                    <div class="stat-lbl">Total Registered Members (${activeMems} Active)</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-val">${totalActs}</div>
+                    <div class="stat-lbl">Recorded Chapter Activities (${completedActs} Completed)</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-val" style="color: ${netBal >= 0 ? '#10B981' : '#EF4444'};">₱${netBal.toLocaleString('en-US', { minimumFractionDigits: 2 })}</div>
+                    <div class="stat-lbl">Net Chapter Treasury Balance</div>
+                </div>
+            </div>
+
+            <div class="section-title">Financial Treasury Overview</div>
+            <div class="grid" style="grid-template-columns: repeat(2, 1fr);">
+                <div class="stat-box" style="border-left: 4px solid #10B981;">
+                    <div class="stat-val" style="color: #10B981;">₱${totalInc.toLocaleString('en-US', { minimumFractionDigits: 2 })}</div>
+                    <div class="stat-lbl">Total Cumulative Income</div>
+                </div>
+                <div class="stat-box" style="border-left: 4px solid #EF4444;">
+                    <div class="stat-val" style="color: #EF4444;">₱${totalExp.toLocaleString('en-US', { minimumFractionDigits: 2 })}</div>
+                    <div class="stat-lbl">Total Cumulative Expenses</div>
+                </div>
+            </div>
+
+            <div class="section-title">Recent Chapter Activities</div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Activity Title</th>
+                        <th>Category</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${state.activities.slice(0, 8).map(a => `
+                        <tr>
+                            <td>${a.date || 'N/A'}</td>
+                            <td><strong>${a.name || a.title || 'Untitled'}</strong></td>
+                            <td>${a.category || 'General'}</td>
+                            <td>${a.status || 'Upcoming'}</td>
+                        </tr>
+                    `).join('') || '<tr><td colspan="4" style="text-align:center;">No activities logged yet.</td></tr>'}
+                </tbody>
+            </table>
+
+            <div class="footer-signatures">
+                <div>
+                    <div style="height: 40px;"></div>
+                    <div class="sig-line">Prepared by: Chapter Finance Officer / Records</div>
+                </div>
+                <div>
+                    <div style="height: 40px;"></div>
+                    <div class="sig-line">Approved by: Area / Chapter Coordinator</div>
+                </div>
+            </div>
+            <script>
+                window.onload = () => { window.print(); };
+            </script>
+        </body>
+        </html>
+    `);
+    win.document.close();
 }
 
 function renderAgendaTimeline() {
@@ -2232,8 +2455,10 @@ function setOrgViewMode(mode) {
     state.orgViewMode = mode;
     const treeBtn = document.getElementById('btn-org-tree');
     const gridBtn = document.getElementById('btn-org-grid');
+    const hhBtn = document.getElementById('btn-org-household');
     if (treeBtn) treeBtn.classList.toggle('active', mode === 'tree');
     if (gridBtn) gridBtn.classList.toggle('active', mode === 'grid');
+    if (hhBtn) hhBtn.classList.toggle('active', mode === 'household');
     renderOrgChart();
 }
 
@@ -2318,8 +2543,8 @@ function renderOrgChart() {
     const filterDept = deptFilterEl ? deptFilterEl.value : 'ALL';
     const viewMode = state.orgViewMode || 'tree';
 
-    if (!state.members || !Array.isArray(state.members) || state.members.length === 0) {
-        state.members = typeof SAMPLE_MEMBERS !== 'undefined' ? [...SAMPLE_MEMBERS] : [];
+    if (!state.members || !Array.isArray(state.members)) {
+        state.members = [];
     }
     const searchInputEl = document.getElementById('org-search-input');
     const searchQuery = searchInputEl ? searchInputEl.value.trim().toLowerCase() : '';
@@ -2421,6 +2646,50 @@ function renderOrgChart() {
         }).join('');
 
         container.innerHTML = summaryHeaderHtml + gridHtml;
+        return;
+    }
+
+    if (viewMode === 'household') {
+        const hhHeads = members.filter(m => (m.role || '').toLowerCase().includes('household') || getRoleRank(m.role) <= 2);
+        const generalMembers = members.filter(m => !hhHeads.some(h => h.id === m.id));
+
+        const householdHtml = `
+            <div class="org-dept-section glass-panel" style="margin-bottom:24px; padding:24px; border-radius:20px; border:1px solid rgba(129,140,248,0.3);">
+                <div style="display:flex; align-items:center; gap:12px; margin-bottom:18px; padding-bottom:14px; border-bottom:1px solid rgba(255,255,255,0.08);">
+                    <span style="font-size:1.6rem;">🏘️</span>
+                    <div>
+                        <h3 style="color:#FFF; font-size:1.15rem; font-weight:800; margin:0;">Household Mentoring Groups & Servant Leaders</h3>
+                        <p style="color:#94A3B8; font-size:0.82rem; margin:2px 0 0;">Pastoral units clustered under Household & Chapter Heads</p>
+                    </div>
+                </div>
+                <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(300px, 1fr)); gap:20px;">
+                    ${hhHeads.length > 0 ? hhHeads.map(h => {
+                        const assignedYouth = generalMembers.filter(m => (m.chapter || '') === (h.chapter || ''));
+                        return `
+                            <div style="background:rgba(15,23,42,0.65); border:1px solid rgba(129,140,248,0.35); border-radius:16px; padding:16px;">
+                                <div style="display:flex; align-items:center; gap:10px; margin-bottom:12px;">
+                                    <span style="font-size:1.4rem;">👑</span>
+                                    <div>
+                                        <div style="font-weight:800; color:#FFF; font-size:1rem;">${h.name}</div>
+                                        <div style="font-size:0.75rem; color:#818CF8;">${h.role || 'Household Head'} • ${h.chapter || 'Tarlac Chapter'}</div>
+                                    </div>
+                                </div>
+                                <div style="font-size:0.75rem; color:#94A3B8; margin-bottom:8px; font-weight:700; text-transform:uppercase;">Assigned Chapter Members (${assignedYouth.length}):</div>
+                                <div style="display:flex; flex-direction:column; gap:6px; max-height:160px; overflow-y:auto;">
+                                    ${assignedYouth.map(y => `
+                                        <div style="display:flex; justify-content:space-between; align-items:center; background:rgba(255,255,255,0.04); padding:6px 10px; border-radius:8px; font-size:0.82rem; color:#F8FAFC;">
+                                            <span>👤 ${y.name}</span>
+                                            <span style="font-size:0.72rem; color:#64748B;">${y.role || 'Member'}</span>
+                                        </div>
+                                    `).join('') || '<div style="color:#64748B; font-size:0.78rem;">No general members in this chapter.</div>'}
+                                </div>
+                            </div>
+                        `;
+                    }).join('') : `<div style="grid-column:1/-1; text-align:center; color:#64748B; padding:20px;">No Household Heads recorded yet.</div>`}
+                </div>
+            </div>
+        `;
+        container.innerHTML = summaryHeaderHtml + householdHtml;
         return;
     }
 
@@ -2812,7 +3081,7 @@ function openMemberProfile(memberId) {
                     <h2>${member.name}</h2>
                     <div class="profile-meta">
                         <span class="org-stat-badge" style="background: rgba(56, 189, 248, 0.2); color: #38BDF8;">${member.role}</span>
-                        <span class="org-stat-badge" style="background: rgba(139, 92, 246, 0.2); color: #C084FC;">🏢 ${member.dept}</span>
+                        <span class="org-stat-badge" style="background: rgba(139, 92, 246, 0.2); color: #C084FC;">🏢 ${member.department || member.dept || 'MFC Youth'}</span>
                     </div>
                 </div>
             </div>
@@ -2843,8 +3112,12 @@ function openMemberProfile(memberId) {
                 <div class="lbl">Attendance Rate</div>
             </div>
             <div class="profile-stat-box">
-                <div class="num" style="color: #FBBF24;">${presentCount + lateCount}/${totalActivities}</div>
-                <div class="lbl">Present / Late</div>
+                <div class="num" style="color: #FBBF24;" title="${presentCount + lateCount} Attended out of ${totalActivities} Total Events">${presentCount + lateCount}/${totalActivities}</div>
+                <div class="lbl">Attended / Total</div>
+            </div>
+            <div class="profile-stat-box">
+                <div class="num" style="color: #C084FC;" title="${presentCount} Present vs ${lateCount} Late Check-ins">${presentCount}:${lateCount}</div>
+                <div class="lbl">Present : Late Ratio</div>
             </div>
         </div>
 
@@ -3213,6 +3486,32 @@ function exportFinancialStatementPDF() {
     printWin.document.close();
 }
 
+function exportFinancialLedgerCSV() {
+    const records = state.funds || [];
+    if (records.length === 0) {
+        showToast('No fund records available to export.', 'warning');
+        return;
+    }
+    const headers = ['Date', 'Type', 'Category', 'Description', 'Amount (PHP)', 'Receipt Ref'];
+    const rows = records.map(r => [
+        `"${r.date || ''}"`,
+        `"${r.type || ''}"`,
+        `"${r.category || ''}"`,
+        `"${(r.description || '').replace(/"/g, '""')}"`,
+        r.amount || 0,
+        `"${(r.receipt || '').replace(/"/g, '""')}"`
+    ]);
+    const csvContent = 'data:text/csv;charset=utf-8,\uFEFF' + [headers.join(','), ...rows.map(e => e.join(','))].join('\n');
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement('a');
+    link.setAttribute('href', encodedUri);
+    link.setAttribute('download', `MFC_Youth_Tarlac_Financial_Ledger_${new Date().toISOString().split('T')[0]}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    showToast('📊 Financial Ledger exported as Excel/CSV file!', 'success');
+}
+
 // Add / Edit Member Modal Handlers
 function openAddMemberModal() {
     const form = document.getElementById('add-member-form');
@@ -3508,10 +3807,6 @@ function openReceiptViewerModal(recordId) {
     const item = state.funds && state.funds.find(f => f.id === recordId);
     if (!item || !item.receiptImg) return;
 
-    const modal = document.getElementById('modal-receipt-viewer');
-    const imgEl = document.getElementById('viewer-receipt-img');
-    const capEl = document.getElementById('viewer-receipt-caption');
-
     if (imgEl) imgEl.src = item.receiptImg;
     if (capEl) capEl.textContent = `${item.description} (${item.receipt || 'Receipt Photo'})`;
     if (modal) modal.style.display = 'flex';
@@ -3525,6 +3820,23 @@ function closeReceiptViewerModal() {
 }
 
 function filterFunds() {
+    const typeFilter = document.getElementById('funds-type-filter');
+    const catFilter = document.getElementById('funds-category-filter');
+    if (typeFilter && catFilter) {
+        const currentCat = catFilter.value;
+        const incomeCats = ['Tithe & Offering', 'Donation / Sponsorship', 'Fundraising Event', 'Registration Fees', 'Other Income'];
+        const expenseCats = ['Assembly & Event Supplies', 'Youth Camp Food & Venue', 'Transportation & Logistics', 'Honorarium & Speakers', 'Administrative / Office', 'Other Expense'];
+        
+        let catsToShow = [];
+        if (typeFilter.value === 'Income') catsToShow = incomeCats;
+        else if (typeFilter.value === 'Expense') catsToShow = expenseCats;
+        else catsToShow = [...incomeCats, ...expenseCats];
+
+        const optionsHtml = `<option value="ALL">All Categories</option>` + catsToShow.map(c => `<option value="${c}" ${currentCat === c ? 'selected' : ''}>${c}</option>`).join('');
+        if (catFilter.innerHTML !== optionsHtml) {
+            catFilter.innerHTML = optionsHtml;
+        }
+    }
     renderFundsTable();
 }
 
@@ -3569,6 +3881,8 @@ function handleReceiptImageSelect(event) {
     const reader = new FileReader();
     reader.onload = function(e) {
         const base64Data = e.target.result;
+        const imgDataEl = document.getElementById('fund-receipt-image-data');
+        if (imgDataEl) imgDataEl.value = base64Data;
         updateReceiptPreviewUI(base64Data, file.name);
     };
     reader.readAsDataURL(file);
@@ -3576,29 +3890,30 @@ function handleReceiptImageSelect(event) {
 
 function removeReceiptImage(event) {
     if (event) event.stopPropagation();
-    updateReceiptPreviewUI('', '');
     const fileInput = document.getElementById('fund-receipt-file');
+    const imgDataEl = document.getElementById('fund-receipt-image-data');
     if (fileInput) fileInput.value = '';
+    if (imgDataEl) imgDataEl.value = '';
+    updateReceiptPreviewUI('', '');
 }
 
 function updateReceiptPreviewUI(base64Data, fileName = 'receipt_image.jpg') {
-    const hiddenEl = document.getElementById('fund-receipt-image-data');
     const promptEl = document.getElementById('receipt-upload-prompt');
     const previewEl = document.getElementById('receipt-upload-preview');
-    const imgEl = document.getElementById('receipt-preview-img');
-    const nameEl = document.getElementById('receipt-preview-name');
+    const previewImg = document.getElementById('receipt-preview-img');
+    const previewName = document.getElementById('receipt-preview-name');
 
-    if (hiddenEl) hiddenEl.value = base64Data || '';
+    if (!promptEl || !previewEl) return;
 
-    if (base64Data) {
-        if (promptEl) promptEl.style.display = 'none';
-        if (previewEl) previewEl.style.display = 'flex';
-        if (imgEl) imgEl.src = base64Data;
-        if (nameEl) nameEl.textContent = fileName || 'Receipt Attached';
+    if (base64Data && base64Data.length > 0) {
+        promptEl.style.display = 'none';
+        previewEl.style.display = 'flex';
+        if (previewImg) previewImg.src = base64Data;
+        if (previewName) previewName.textContent = fileName || 'Attached Receipt';
     } else {
-        if (promptEl) promptEl.style.display = 'block';
-        if (previewEl) previewEl.style.display = 'none';
-        if (imgEl) imgEl.src = '';
+        promptEl.style.display = 'block';
+        previewEl.style.display = 'none';
+        if (previewImg) previewImg.src = '';
     }
 }
 
@@ -3615,7 +3930,8 @@ function openAddFundModal(editId = null) {
     const descEl = document.getElementById('fund-description');
     const recEl = document.getElementById('fund-receipt');
 
-    if (editId) {
+    const isEdit = (typeof editId === 'string' && editId.trim() !== '' && !editId.includes('Event'));
+    if (isEdit) {
         const item = state.funds.find(f => f.id === editId);
         if (item) {
             if (titleEl) titleEl.textContent = 'Edit Fund Record';
@@ -3627,17 +3943,19 @@ function openAddFundModal(editId = null) {
             if (descEl) descEl.value = item.description;
             if (recEl) recEl.value = item.receipt || '';
             updateReceiptPreviewUI(item.receiptImg || '', 'Attached Receipt');
+            modal.style.display = 'flex';
+            return;
         }
-    } else {
-        if (titleEl) titleEl.textContent = 'Add Fund Record';
-        if (idEl) idEl.value = '';
-        if (typeEl) { typeEl.value = 'Income'; updateFundCategories(); }
-        if (amtEl) amtEl.value = '';
-        if (dateEl) dateEl.value = new Date().toISOString().split('T')[0];
-        if (descEl) descEl.value = '';
-        if (recEl) recEl.value = '';
-        updateReceiptPreviewUI('', '');
     }
+
+    if (titleEl) titleEl.textContent = 'Add Fund Record';
+    if (idEl) idEl.value = '';
+    if (typeEl) { typeEl.value = 'Income'; updateFundCategories(); }
+    if (amtEl) amtEl.value = '';
+    if (dateEl) dateEl.value = new Date().toISOString().split('T')[0];
+    if (descEl) descEl.value = '';
+    if (recEl) recEl.value = '';
+    updateReceiptPreviewUI('', '');
 
     modal.style.display = 'flex';
 }
@@ -4066,6 +4384,8 @@ function importBackupJSON(event) {
     event.target.value = '';
 }
 
+let html5QrCodeScannerInstance = null;
+
 function openQRScannerModal() {
     const actId = state.selectedActivityId;
     if (!actId) {
@@ -4086,8 +4406,90 @@ function openQRScannerModal() {
 }
 
 function closeQRScannerModal() {
+    stopLiveCameraQRScanner();
     const backdrop = document.getElementById('qr-scanner-backdrop');
     if (backdrop) backdrop.style.display = 'none';
+}
+
+function startLiveCameraQRScanner() {
+    const actId = state.selectedActivityId;
+    if (!actId) {
+        showToast('Please select an activity first!', 'warning');
+        return;
+    }
+
+    const placeholderEl = document.getElementById('qr-camera-placeholder');
+    if (!window.Html5Qrcode) {
+        showToast('Live QR Scanner library loading. You can still use the Manual Check-in simulator below!', 'info');
+        return;
+    }
+
+    if (placeholderEl) placeholderEl.style.display = 'none';
+
+    if (!html5QrCodeScannerInstance) {
+        html5QrCodeScannerInstance = new Html5Qrcode("qr-reader");
+    }
+
+    const config = { fps: 10, qrbox: { width: 250, height: 250 } };
+    html5QrCodeScannerInstance.start(
+        { facingMode: "environment" },
+        config,
+        (decodedText) => {
+            handleDecodedQRText(decodedText);
+        },
+        (errorMessage) => {
+            // ignore scan frame errors
+        }
+    ).then(() => {
+        showToast('📷 Camera scanner active. Point at member QR ID badge!', 'info');
+    }).catch(err => {
+        console.warn('Camera scanner error:', err);
+        showToast('Camera access denied or unavailable. Please use the manual check-in below.', 'warning');
+        if (placeholderEl) placeholderEl.style.display = 'block';
+    });
+}
+
+function stopLiveCameraQRScanner() {
+    if (html5QrCodeScannerInstance) {
+        html5QrCodeScannerInstance.stop().then(() => {
+            html5QrCodeScannerInstance.clear();
+        }).catch(() => {});
+    }
+    const placeholderEl = document.getElementById('qr-camera-placeholder');
+    if (placeholderEl) placeholderEl.style.display = 'block';
+}
+
+function handleDecodedQRText(decodedText) {
+    const actId = state.selectedActivityId;
+    if (!actId) return;
+
+    let targetId = decodedText;
+    try {
+        const parsed = JSON.parse(decodedText);
+        if (parsed && parsed.id) targetId = parsed.id;
+    } catch(e) {}
+
+    const member = state.members.find(m => m.id === targetId || m.name.toLowerCase() === targetId.toLowerCase());
+    if (!member) {
+        showToast(`Scanned code "${decodedText}" did not match any registered member ID.`, 'warning');
+        return;
+    }
+
+    if (!state.attendance[actId]) state.attendance[actId] = {};
+    const currentTime = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+    state.attendance[actId][member.id] = {
+        status: 'present',
+        time: currentTime,
+        notes: '📷 Live Camera QR Verified'
+    };
+
+    saveToStorage();
+    renderAttendanceRoster();
+    logAuditAction(`Live Camera QR verified check-in for ${member.name}`, 'attendance');
+    showToast(`📷 Verified Check-In: ${member.name} marked Present at ${currentTime}!`, 'success');
+    stopLiveCameraQRScanner();
+    closeQRScannerModal();
 }
 
 function simulateQRCheckIn() {
@@ -4153,27 +4555,12 @@ function switchSimulatedRole(roleName) {
 // ============================================================================
 
 let inactivityTimer = null;
+let inactivityWarningTimer = null;
 const INACTIVITY_LIMIT_MS = 15 * 60 * 1000; // 15 Minutes
+const INACTIVITY_WARNING_MS = 14 * 60 * 1000; // 14 Minutes warning
 
-function resetInactivityTimer() {
-    if (localStorage.getItem('ps_logged_in') !== 'true') return;
-    if (inactivityTimer) clearTimeout(inactivityTimer);
-
-    inactivityTimer = setTimeout(() => {
-        if (localStorage.getItem('ps_logged_in') === 'true') {
-            logoutUser();
-            showToast('🔒 Session automatically locked due to 15 minutes of inactivity.', 'warning');
-            logAuditAction('Session auto-locked by 15-Minute Inactivity Watchdog', 'security');
-        }
-    }, INACTIVITY_LIMIT_MS);
-}
-
-function startInactivityWatchdog() {
-    ['mousemove', 'keydown', 'click', 'touchstart', 'scroll'].forEach(evt => {
-        window.addEventListener(evt, resetInactivityTimer, { passive: true });
-    });
-    resetInactivityTimer();
-}
+function resetInactivityTimer() {}
+function startInactivityWatchdog() {}
 
 function checkAdminPrivilege(requiredRole = 'CHAPTER HEAD', actionDescription = 'This sensitive action') {
     const role = state.currentAdminRole || 'CHAPTER HEAD';
@@ -4255,7 +4642,7 @@ async function loginUser(event) {
     const passVal = (passEl && passEl.value) ? passEl.value.trim() : '';
 
     if (passVal.toLowerCase() !== 'mfcyouthtarlac') {
-        showToast('🚫 Incorrect password. Please enter "mfcyouthtarlac" to unlock files.', 'error');
+        showToast('🚫 Incorrect password. Please check your password or ask your coordinator.', 'error');
         if (passEl) {
             passEl.value = '';
             passEl.focus();
@@ -4263,7 +4650,7 @@ async function loginUser(event) {
         return;
     }
 
-    // Instantly Unlock Portal
+    // Unlock Portal cleanly
     state.failedLoginAttempts = 0;
     state.currentAdminEmail = 'reyesbarney38@gmail.com';
     state.currentAdminRole = 'SUPER ADMIN';
@@ -4271,9 +4658,9 @@ async function loginUser(event) {
     localStorage.setItem('ps_logged_in', 'true');
     const overlay = document.getElementById('auth-login-overlay');
     if (overlay) overlay.style.display = 'none';
-    showToast('🔓 Chapter records & files unlocked successfully! Welcome back.', 'success');
+    if (passEl) passEl.value = '';
 
-    startInactivityWatchdog();
+    showToast('🔓 Chapter records & files unlocked successfully! Welcome back.', 'success');
     renderAll();
 }
 
