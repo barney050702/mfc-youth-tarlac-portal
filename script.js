@@ -512,10 +512,6 @@ function switchView(viewId) {
         if (titleEl) titleEl.textContent = 'Account Management';
         if (subEl) subEl.textContent = 'Manage Super Admins and Chapter Heads';
         renderAccountsTable();
-    } else if (viewId === 'calendar') {
-        if (titleEl) titleEl.textContent = 'Chapter Ministry Calendar & Prayer Wall';
-        if (subEl) subEl.textContent = 'Coordinate monthly events and intercede for chapter members\' pastoral intentions';
-        renderCalendarAndPrayerWall();
     }
 
     closeMobileSidebar();
@@ -549,8 +545,6 @@ function renderAll() {
         renderFundsChart();
     } else if (cur === 'account') {
         renderAccountsTable();
-    } else if (cur === 'calendar') {
-        renderCalendarAndPrayerWall();
     }
 }
 
