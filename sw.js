@@ -1,4 +1,4 @@
-const CACHE_NAME = 'mfc-youth-tarlac-portal-v2.6';
+const CACHE_NAME = 'mfc-youth-tarlac-portal-v3.0';
 const ASSETS_TO_CACHE = [
     './',
     './index.html',
@@ -41,28 +41,21 @@ self.addEventListener('activate', (event) => {
     );
 });
 
-// Fetch Event - Stale-while-revalidate / Network first fallback
+// Fetch Event - Network first with cache fallback
 self.addEventListener('fetch', (event) => {
-    // Only handle GET requests
     if (event.request.method !== 'GET') return;
 
     event.respondWith(
-        caches.match(event.request).then((cachedResponse) => {
-            const fetchPromise = fetch(event.request).then((networkResponse) => {
-                // Update cache with fresh response if valid
-                if (networkResponse && networkResponse.status === 200 && networkResponse.type === 'basic') {
-                    const responseClone = networkResponse.clone();
-                    caches.open(CACHE_NAME).then((cache) => {
-                        cache.put(event.request, responseClone);
-                    });
-                }
-                return networkResponse;
-            }).catch(() => {
-                // Offline fallback
-                return cachedResponse;
-            });
-
-            return cachedResponse || fetchPromise;
+        fetch(event.request).then((networkResponse) => {
+            if (networkResponse && networkResponse.status === 200 && networkResponse.type === 'basic') {
+                const responseClone = networkResponse.clone();
+                caches.open(CACHE_NAME).then((cache) => {
+                    cache.put(event.request, responseClone);
+                });
+            }
+            return networkResponse;
+        }).catch(() => {
+            return caches.match(event.request);
         })
     );
 });

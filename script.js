@@ -95,18 +95,19 @@ function loadFromStorage() {
         localStorage.setItem('ps_activities_mfc_v11', 'true');
     }
 
+    const isMemInitialized = localStorage.getItem('ps_members_initialized') === 'true';
     if (storedMembers !== null) {
         try {
             state.members = JSON.parse(storedMembers);
             if (!Array.isArray(state.members)) state.members = [];
         } catch (e) {
-            state.members = [...SAMPLE_MEMBERS];
+            state.members = isMemInitialized ? [] : [...SAMPLE_MEMBERS];
         }
     } else {
-        state.members = [...SAMPLE_MEMBERS];
+        state.members = isMemInitialized ? [] : [...SAMPLE_MEMBERS];
         localStorage.setItem('ps_members', JSON.stringify(state.members));
-        localStorage.setItem('ps_members_mfc_v9', 'true');
     }
+    localStorage.setItem('ps_members_initialized', 'true');
 
     if (storedAttendance !== null) {
         try {
