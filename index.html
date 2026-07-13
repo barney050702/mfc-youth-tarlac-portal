@@ -70,7 +70,7 @@
                                 style="flex: 1; min-width: 0; background: transparent; border: none; color: #FFF; padding: 13px 10px; font-size: 0.9rem; outline: none;">
                             <button type="submit"
                                 style="flex-shrink: 0; white-space: nowrap; background: linear-gradient(135deg, #0284C7, #3B82F6); color: #FFF; font-weight: 800; font-size: 0.82rem; letter-spacing: 0.06em; text-transform: uppercase; padding: 0 18px; border: none; cursor: pointer; transition: opacity 0.2s;">
-                                UNLOCK
+                                ENTER
                             </button>
                         </div>
                     </form>
@@ -2979,12 +2979,12 @@
     <div class="toast-container" id="toast-container"></div>
 
     <!-- Application Javascript -->
-    <script src="script.js?v=4.3"></script>
+    <script src="script.js?v=4.4"></script>
     <!-- PWA Offline Service Worker Registration -->
     <script>
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
-                navigator.serviceWorker.register('./sw.js?v=4.3')
+                navigator.serviceWorker.register('./sw.js?v=4.4')
                     .then(reg => {
                         console.log('[PWA] Service Worker registered successfully:', reg.scope);
                         reg.onupdatefound = () => {
