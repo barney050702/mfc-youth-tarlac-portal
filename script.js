@@ -95,7 +95,9 @@ function loadFromStorage() {
         localStorage.setItem('ps_activities_mfc_v11', 'true');
     }
 
-    const isMemInitialized = localStorage.getItem('ps_members_initialized') === 'true';
+    const isMemInitialized = localStorage.getItem('ps_members_initialized') === 'true' ||
+                             localStorage.getItem('ps_activities') !== null ||
+                             localStorage.getItem('ps_accounts') !== null;
     if (storedMembers !== null) {
         try {
             state.members = JSON.parse(storedMembers);
@@ -108,6 +110,7 @@ function loadFromStorage() {
         localStorage.setItem('ps_members', JSON.stringify(state.members));
     }
     localStorage.setItem('ps_members_initialized', 'true');
+
 
     if (storedAttendance !== null) {
         try {
@@ -2997,6 +3000,7 @@ function deleteMember(id) {
     if (confirm(`Are you sure you want to remove "${mem.name}" from the organization?`)) {
         const deletedCopy = { ...mem };
         state.members = state.members.filter(m => m.id !== id);
+        localStorage.setItem('ps_members_initialized', 'true');
         saveToStorage();
         renderAll();
         showToast(`Member "${mem.name}" removed successfully.`, 'info', () => {
@@ -3016,6 +3020,7 @@ function clearAllMembers() {
     }
     if (confirm('Are you sure you want to clear all members? This action cannot be undone.')) {
         state.members = [];
+        localStorage.setItem('ps_members_initialized', 'true');
         saveToStorage();
         renderAll();
         showToast('All members have been cleared successfully.', 'info');
