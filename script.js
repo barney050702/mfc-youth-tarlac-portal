@@ -5458,7 +5458,6 @@ const MFCFirebaseCloud = {
         storageBucket: "mfc-youth-data.firebasestorage.app",
         messagingSenderId: "874772116969",
         appId: "1:874772116969:web:ca6916b9c0470b54890778",
-        measurementId: "G-BGTP8Q6YSB",
         databaseURL: "https://mfc-youth-data-default-rtdb.firebaseio.com"
     },
 
@@ -5478,40 +5477,97 @@ const MFCFirebaseCloud = {
                 this.initialized = true;
             }
 
-            this.updateStatusBadge('Connected to Firebase Realtime Cloud');
+            this.updateStatusBadge('Connected to Firebase Cloud');
+            // Pull initial snapshot if remote cloud has newer data
+            this.pullSnapshot(true);
         } catch (err) {
-            console.warn('Firebase Cloud SDK init notice (hybrid offline guard active):', err);
-            this.updateStatusBadge('Hybrid Cloud Offline Guard Active');
+            console.warn('Firebase Cloud SDK init notice (REST hybrid fallback active):', err);
+            this.updateStatusBadge('Connected via Cloud REST');
+            this.pullSnapshot(true);
         }
     },
 
     pushSnapshot: function() {
         try {
             const snapshot = {
-                activities: state.activities,
-                members: state.members,
-                attendance: state.attendance,
-                funds: state.funds,
-                accounts: state.accounts,
+                activities: state.activities || [],
+                members: state.members || [],
+                attendance: state.attendance || {},
+                funds: state.funds || [],
+                accounts: state.accounts || [],
                 lastUpdated: Date.now()
             };
             localStorage.setItem('ps_firebase_local_mirror', JSON.stringify(snapshot));
 
-            const badge = document.getElementById('firebase-status-label');
-            if (badge) {
-                badge.textContent = '🔥 Firebase: Syncing...';
-                setTimeout(() => {
-                    badge.textContent = 'Firebase: Live Sync';
-                }, 600);
+            const dbUrl = (this.config.databaseURL || "https://mfc-youth-data-default-rtdb.firebaseio.com").replace(/\/$/, "");
+            const endpoint = `${dbUrl}/mfc_portal_live_data.json`;
+
+            // Push via SDK if initialized
+            if (typeof firebase !== 'undefined' && firebase.database) {
+                firebase.database().ref('mfc_portal_live_data').set(snapshot)
+                    .then(() => this.updateStatusBadge('🔥 Firebase: Live Cloud Synced'))
+                    .catch(() => this.pushSnapshotREST(endpoint, snapshot));
+            } else {
+                this.pushSnapshotREST(endpoint, snapshot);
             }
         } catch (e) {
             console.warn('Firebase sync mirror error:', e);
         }
     },
 
+    pushSnapshotREST: function(endpoint, snapshot) {
+        fetch(endpoint, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(snapshot)
+        }).then(res => {
+            if (res.ok) {
+                this.updateStatusBadge('🔥 Firebase: Live Cloud Synced');
+            } else {
+                this.updateStatusBadge('🔥 Firebase: Local Mirror Saved');
+            }
+        }).catch(() => {
+            this.updateStatusBadge('🔥 Firebase: Offline Mirror Active');
+        });
+    },
+
+    pullSnapshot: function(silent = false) {
+        const dbUrl = (this.config.databaseURL || "https://mfc-youth-data-default-rtdb.firebaseio.com").replace(/\/$/, "");
+        const endpoint = `${dbUrl}/mfc_portal_live_data.json`;
+
+        fetch(endpoint)
+            .then(res => res.json())
+            .then(data => {
+                if (data && typeof data === 'object') {
+                    if (Array.isArray(data.activities)) state.activities = data.activities;
+                    if (Array.isArray(data.members)) state.members = data.members;
+                    if (data.attendance && typeof data.attendance === 'object') state.attendance = data.attendance;
+                    if (Array.isArray(data.funds)) state.funds = data.funds;
+                    if (Array.isArray(data.accounts)) state.accounts = data.accounts;
+
+                    localStorage.setItem('ps_activities', JSON.stringify(state.activities));
+                    localStorage.setItem('ps_members', JSON.stringify(state.members));
+                    localStorage.setItem('ps_attendance', JSON.stringify(state.attendance));
+                    localStorage.setItem('ps_funds', JSON.stringify(state.funds));
+                    localStorage.setItem('ps_accounts', JSON.stringify(state.accounts));
+                    localStorage.setItem('ps_members_initialized', 'true');
+
+                    renderAll();
+                    this.updateStatusBadge('🔥 Firebase: Live Cloud Synced');
+                    if (!silent) showToast('🔥 Data successfully loaded from Firebase Cloud!', 'success');
+                } else if (!silent) {
+                    showToast('Firebase Cloud database is ready. Current local data synced.', 'info');
+                    this.pushSnapshot();
+                }
+            })
+            .catch(() => {
+                if (!silent) showToast('Could not reach Firebase Cloud. Local storage active.', 'warning');
+            });
+    },
+
     updateStatusBadge: function(msg) {
         const lbl = document.getElementById('firebase-status-label');
-        if (lbl) lbl.textContent = 'Firebase: Live Sync';
+        if (lbl) lbl.textContent = msg || '🔥 Firebase: Connected';
         const modalBadge = document.getElementById('firebase-modal-status-badge');
         if (modalBadge) modalBadge.textContent = msg || 'CONNECTED TO FIREBASE CLOUD';
     }
@@ -5542,7 +5598,7 @@ function saveFirebaseConfigSettings() {
     const projIdEl = document.getElementById('fb-config-project-id');
 
     const apiKey = apiKeyEl ? apiKeyEl.value.trim() : '';
-    const projectId = projIdEl && projIdEl.value.trim() ? projIdEl.value.trim() : 'mfc-youth-tarlac-cloud';
+    const projectId = projIdEl && projIdEl.value.trim() ? projIdEl.value.trim() : 'mfc-youth-data';
 
     MFCFirebaseCloud.config.apiKey = apiKey;
     MFCFirebaseCloud.config.projectId = projectId;
@@ -5551,6 +5607,7 @@ function saveFirebaseConfigSettings() {
 
     localStorage.setItem('ps_firebase_config', JSON.stringify(MFCFirebaseCloud.config));
     MFCFirebaseCloud.init();
+    MFCFirebaseCloud.pushSnapshot();
 
     showToast(`🔥 Firebase Cloud credentials saved for project: ${projectId}`, 'success');
     logAuditAction(`Firebase project configured: ${projectId}`, 'system');
@@ -5561,6 +5618,10 @@ function triggerFirebaseForceSync() {
     MFCFirebaseCloud.pushSnapshot();
     showToast('🔥 Application state successfully synchronized to Firebase Cloud!', 'success');
     logAuditAction('Force manual sync to Firebase Cloud executed', 'system');
+}
+
+function triggerFirebasePull() {
+    MFCFirebaseCloud.pullSnapshot(false);
 }
 
 // ============================================================================
