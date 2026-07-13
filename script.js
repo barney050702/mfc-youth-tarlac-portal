@@ -499,6 +499,10 @@ function switchView(viewId) {
         if (titleEl) titleEl.textContent = 'Account Management';
         if (subEl) subEl.textContent = 'Manage Super Admins and Chapter Heads';
         renderAccountsTable();
+    } else if (viewId === 'calendar') {
+        if (titleEl) titleEl.textContent = 'Chapter Ministry Calendar & Prayer Wall';
+        if (subEl) subEl.textContent = 'Coordinate monthly events and intercede for chapter members\' pastoral intentions';
+        renderCalendarAndPrayerWall();
     }
 
     closeMobileSidebar();
@@ -519,6 +523,8 @@ function renderAll() {
     updateBadgeCount();
     applyRBACRoleUI();
     renderCelebrationsWidget();
+    renderHonorRollWidget();
+    renderCalendarAndPrayerWall();
 }
 
 function updateBadgeCount() {
@@ -3199,6 +3205,8 @@ function renderMembersTable() {
             `);
         }
 
+        const badgesHtml = getMemberBadgesHtml(mem);
+
         rowsHtml.push(`
             <tr class="activity-row" style="border-bottom: 1px solid rgba(255, 255, 255, 0.05); transition: background 0.2s ease;">
                 <td style="font-weight: 700; color: #F8FAFC; font-size: 0.92rem; white-space: nowrap; padding: 16px 20px;">
@@ -3206,6 +3214,9 @@ function renderMembersTable() {
                         <span>${mem.name}</span>
                         <span style="font-size: 0.72rem; color: #38BDF8; opacity: 0.8;">↗ Dossier</span>
                     </a>
+                    <div style="margin-top: 5px; display: flex; gap: 4px; flex-wrap: wrap;">
+                        ${badgesHtml}
+                    </div>
                 </td>
                 <td style="padding: 16px 20px;">
                     <span style="background: var(--grad-emerald); color: white; padding: 4px 14px; border-radius: 20px; font-weight: 700; font-size: 0.75rem; display: inline-block; box-shadow: 0 2px 10px rgba(16, 185, 129, 0.25); text-transform: uppercase;">
@@ -3231,8 +3242,11 @@ function renderMembersTable() {
                     ${formatDateClean(mem.campDate)}
                 </td>
                 <td style="text-align: right; white-space: nowrap; padding: 16px 20px;">
-                    <button class="btn-secondary" style="padding: 5px 12px; font-size: 0.78rem; margin-right: 6px;" onclick="openMemberProfile('${mem.id}')">
+                    <button class="btn-secondary" style="padding: 5px 12px; font-size: 0.78rem; margin-right: 4px;" onclick="openMemberProfile('${mem.id}')">
                         Profile
+                    </button>
+                    <button class="top-bar-icon-btn" title="Generate Official Certificate" style="width: 30px; height: 30px; display: inline-flex; color: #F59E0B; margin-right: 4px;" onclick="openCertificateModal('${mem.id}')">
+                        <span>📜</span>
                     </button>
                     <button class="top-bar-icon-btn" title="View Digital QR Badge" style="width: 30px; height: 30px; display: inline-flex; color: #38BDF8; margin-right: 4px;" onclick="openMemberQRBadgeModal('${mem.id}')">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 15px; height: 15px;"><rect width="5" height="5" x="3" y="3" rx="1"/><rect width="5" height="5" x="16" y="3" rx="1"/><rect width="5" height="5" x="3" y="16" rx="1"/><path d="M21 16h-3a2 2 0 0 0-2 2v3"/><path d="M21 21v.01"/><path d="M12 7v3a2 2 0 0 1-2 2H7"/><path d="M3 12h.01"/><path d="M12 3h.01"/><path d="M12 16v.01"/><path d="M16 12h1"/><path d="M21 12v.01"/><path d="M12 21v-1"/></svg>
@@ -6226,6 +6240,234 @@ function importFullBackupJSON(inputEl) {
         inputEl.value = '';
     };
     reader.readAsText(file);
+}
+
+// ==========================================
+// MILESTONE BADGES SYSTEM
+// ==========================================
+function getMemberBadgesHtml(mem) {
+    if (!mem) return '';
+    const badges = [];
+
+    // Calculate total attendance
+    let presentCount = 0;
+    if (state.attendance) {
+        Object.values(state.attendance).forEach(attObj => {
+            const st = attObj[mem.id]?.status;
+            if (st === 'present' || st === 'late') presentCount++;
+        });
+    }
+
+    if (presentCount >= 5) {
+        badges.push({ icon: '🏆', label: '100% Faithful', color: '#F59E0B', bg: 'rgba(245, 158, 11, 0.15)', border: 'rgba(245, 158, 11, 0.35)' });
+    } else if (presentCount >= 3) {
+        badges.push({ icon: '🔥', label: 'Active Servant', color: '#EC4899', bg: 'rgba(236, 72, 153, 0.15)', border: 'rgba(236, 72, 153, 0.35)' });
+    }
+
+    if (mem.role && (mem.role.includes('Head') || mem.role.includes('Coordinator') || mem.role.includes('Couple'))) {
+        badges.push({ icon: '👑', label: 'Chapter Leadership', color: '#8B5CF6', bg: 'rgba(139, 92, 246, 0.15)', border: 'rgba(139, 92, 246, 0.35)' });
+    }
+
+    if (mem.campDate && mem.campDate !== '-') {
+        badges.push({ icon: '⛺', label: 'Youth Camp Grad', color: '#10B981', bg: 'rgba(16, 185, 129, 0.15)', border: 'rgba(16, 185, 129, 0.35)' });
+    }
+
+    return badges.map(b => `
+        <span style="display: inline-flex; align-items: center; gap: 4px; padding: 2px 8px; border-radius: 10px; font-size: 0.68rem; font-weight: 700; color: ${b.color}; background: ${b.bg}; border: 1px solid ${b.border};">
+            <span>${b.icon}</span>
+            <span>${b.label}</span>
+        </span>
+    `).join('');
+}
+
+// ==========================================
+// TOP 5 ACTIVE SERVANTS (HONOR ROLL WIDGET)
+// ==========================================
+function renderHonorRollWidget() {
+    const grid = document.getElementById('dashboard-honor-roll-grid');
+    if (!grid || !state.members) return;
+
+    // Calculate attendance count per member
+    const scoredMembers = state.members.map(m => {
+        let count = 0;
+        if (state.attendance) {
+            Object.values(state.attendance).forEach(attObj => {
+                const st = attObj[m.id]?.status;
+                if (st === 'present' || st === 'late') count++;
+            });
+        }
+        return { ...m, attendanceCount: count };
+    });
+
+    scoredMembers.sort((a, b) => b.attendanceCount - a.attendanceCount);
+    const topServants = scoredMembers.slice(0, 5);
+
+    if (topServants.length === 0) {
+        grid.innerHTML = `<div style="text-align: center; padding: 20px; color: #94A3B8; font-size: 0.85rem;">No attendance data yet.</div>`;
+        return;
+    }
+
+    const rankMedals = ['🥇', '🥈', '🥉', '🏅', '🏅'];
+    const rankColors = ['#F59E0B', '#94A3B8', '#D97706', '#38BDF8', '#8B5CF6'];
+
+    grid.innerHTML = topServants.map((m, idx) => {
+        const medal = rankMedals[idx] || '🏅';
+        const color = rankColors[idx] || '#38BDF8';
+        return `
+            <div style="display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; background: rgba(15, 23, 42, 0.65); border: 1px solid rgba(255,255,255,0.06); border-radius: 12px; transition: all 0.2s;">
+                <div style="display: flex; align-items: center; gap: 12px; min-width: 0;">
+                    <div style="width: 34px; height: 34px; border-radius: 10px; background: rgba(255,255,255,0.06); border: 1px solid ${color}; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; flex-shrink: 0;">
+                        ${medal}
+                    </div>
+                    <div style="min-width: 0;">
+                        <div style="color: #F8FAFC; font-weight: 800; font-size: 0.88rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${m.name}</div>
+                        <div style="color: #94A3B8; font-size: 0.74rem;">${m.role} • ${m.chapter || 'EAST'}</div>
+                    </div>
+                </div>
+                <div style="text-align: right; flex-shrink: 0;">
+                    <span style="font-weight: 800; color: ${color}; font-size: 0.92rem;">${m.attendanceCount}</span>
+                    <span style="font-size: 0.7rem; color: #64748B; display: block;">Check-ins</span>
+                </div>
+            </div>
+        `;
+    }).join('');
+}
+
+// ==========================================
+// OFFICIAL CERTIFICATE GENERATOR MODAL
+// ==========================================
+function openCertificateModal(memberId) {
+    const mem = state.members ? state.members.find(m => m.id === memberId) : null;
+    const elName = document.getElementById('cert-member-name');
+    const elDate = document.getElementById('cert-date-issued');
+    const elCitation = document.getElementById('cert-citation-text');
+
+    if (elName) elName.textContent = mem ? mem.name : 'EXEMPLARY YOUTH MEMBER';
+    if (elDate) elDate.textContent = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+    if (elCitation && mem) {
+        elCitation.textContent = `In recognition of active participation, faithful attendance, and selfless leadership as ${mem.role} in the building of the Catholic community under MFC Youth ${mem.chapter || 'Tarlac'} Chapter.`;
+    }
+
+    const modal = document.getElementById('certificate-modal-backdrop');
+    if (modal) modal.style.display = 'flex';
+}
+
+function closeCertificateModal() {
+    const modal = document.getElementById('certificate-modal-backdrop');
+    if (modal) modal.style.display = 'none';
+}
+
+function printOfficialCertificate() {
+    window.print();
+}
+
+// ==========================================
+// CHAPTER CALENDAR & PRAYER WALL SYSTEM
+// ==========================================
+if (!state.prayers) {
+    state.prayers = [
+        { title: 'Board Exam Guidance & Wisdom', target: 'Kuya Marcus (Chapter Servant)', count: 18 },
+        { title: 'Safe Travel & Protection on Provincial Mission Trip', target: 'MFC Youth Tarlac Mission Team', count: 24 },
+        { title: 'Healing & Speedy Recovery', target: 'Tita Ana (Couple Coordinator)', count: 31 },
+        { title: 'Grace & Success in Midterm Examinations', target: 'All High School & Campus Unit Members', count: 15 }
+    ];
+}
+
+function renderCalendarAndPrayerWall() {
+    const elEvents = document.getElementById('calendar-events-list');
+    const elPrayers = document.getElementById('prayer-wall-list');
+
+    if (elEvents && state.activities) {
+        if (state.activities.length === 0) {
+            elEvents.innerHTML = `<div style="text-align: center; padding: 30px; color: #94A3B8;">No scheduled events listed.</div>`;
+        } else {
+            const sortedActs = [...state.activities].sort((a, b) => new Date(a.date) - new Date(b.date));
+            elEvents.innerHTML = sortedActs.map(act => {
+                const dateObj = new Date(act.date);
+                const monthStr = !isNaN(dateObj) ? dateObj.toLocaleString('en-US', { month: 'short' }).toUpperCase() : 'EVENT';
+                const dayStr = !isNaN(dateObj) ? dateObj.getDate() : '📅';
+
+                return `
+                    <div style="display: flex; align-items: center; justify-content: space-between; padding: 14px 16px; background: rgba(15, 23, 42, 0.75); border: 1px solid rgba(255,255,255,0.08); border-radius: 16px; gap: 14px;">
+                        <div style="display: flex; align-items: center; gap: 14px; min-width: 0;">
+                            <div style="width: 48px; height: 52px; border-radius: 12px; background: linear-gradient(135deg, #38BDF8, #6366F1); display: flex; flex-direction: column; align-items: center; justify-content: center; color: #FFF; flex-shrink: 0; box-shadow: 0 4px 12px rgba(56,189,248,0.25);">
+                                <span style="font-size: 0.65rem; font-weight: 800; letter-spacing: 1px;">${monthStr}</span>
+                                <span style="font-size: 1.25rem; font-weight: 900; line-height: 1;">${dayStr}</span>
+                            </div>
+                            <div style="min-width: 0;">
+                                <div style="color: #FFF; font-weight: 800; font-size: 0.95rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${act.title}</div>
+                                <div style="color: #94A3B8; font-size: 0.78rem;">📍 ${act.location || 'Tarlac Chapter Hall'} • ⏰ ${act.time || '1:00 PM'}</div>
+                            </div>
+                        </div>
+                        <button class="btn-secondary btn-sm" onclick="openAttendanceModal('${act.id}')" style="flex-shrink: 0; padding: 6px 14px;">
+                            Attendance
+                        </button>
+                    </div>
+                `;
+            }).join('');
+        }
+    }
+
+    if (elPrayers && state.prayers) {
+        elPrayers.innerHTML = state.prayers.map((pr, idx) => {
+            return `
+                <div style="padding: 16px; background: rgba(15, 23, 42, 0.75); border: 1px solid rgba(236,72,153,0.2); border-radius: 16px; display: flex; flex-direction: column; gap: 10px;">
+                    <div style="display: flex; align-items: flex-start; justify-content: space-between; gap: 10px;">
+                        <div>
+                            <div style="color: #FFF; font-weight: 800; font-size: 0.95rem;">🙏 ${pr.title}</div>
+                            <div style="color: #F472B6; font-size: 0.78rem; font-weight: 600;">For: ${pr.target}</div>
+                        </div>
+                        <span class="badge" style="background: rgba(236,72,153,0.15); color: #F472B6; border: 1px solid rgba(236,72,153,0.35); flex-shrink: 0;">Intention</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid rgba(255,255,255,0.06); padding-top: 10px;">
+                        <span style="font-size: 0.78rem; color: #94A3B8;">Joined by <strong style="color: #FFF;">${pr.count}</strong> servants</span>
+                        <button onclick="incrementPrayerCount(${idx})" class="btn-primary glow-button" style="padding: 6px 14px; font-size: 0.76rem; background: linear-gradient(135deg, #EC4899, #BE185D); border: none; display: inline-flex; align-items: center; gap: 6px;">
+                            <span>🙏 Prayed (+1)</span>
+                        </button>
+                    </div>
+                </div>
+            `;
+        }).join('');
+    }
+}
+
+function incrementPrayerCount(idx) {
+    if (state.prayers && state.prayers[idx]) {
+        state.prayers[idx].count++;
+        saveToStorage();
+        renderCalendarAndPrayerWall();
+        showToast(`🙏 Thank you for interceding! Prayer count recorded.`, 'success');
+    }
+}
+
+function openAddPrayerIntentionModal() {
+    const modal = document.getElementById('prayer-intention-modal-backdrop');
+    if (modal) modal.style.display = 'flex';
+}
+
+function closePrayerIntentionModal() {
+    const modal = document.getElementById('prayer-intention-modal-backdrop');
+    if (modal) modal.style.display = 'none';
+}
+
+function handlePrayerIntentionSubmit(e) {
+    e.preventDefault();
+    const titleEl = document.getElementById('prayer-title-input');
+    const targetEl = document.getElementById('prayer-target-input');
+    if (!titleEl || !targetEl) return;
+
+    state.prayers.unshift({
+        title: titleEl.value.trim(),
+        target: targetEl.value.trim(),
+        count: 1
+    });
+
+    saveToStorage();
+    renderCalendarAndPrayerWall();
+    closePrayerIntentionModal();
+    showToast('🙏 Pastoral prayer intention posted to the Chapter Prayer Wall!', 'success');
+    titleEl.value = '';
+    targetEl.value = '';
 }
 
 // Initialize on DOM ready

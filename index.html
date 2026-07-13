@@ -216,6 +216,19 @@
                     </span>
                     <span class="nav-label">Org Chart</span>
                 </a>
+                <a href="javascript:void(0)" class="nav-item" data-view="calendar">
+                    <span class="nav-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <rect width="18" height="18" x="3" y="4" rx="2" ry="2" />
+                            <line x1="16" x2="16" y1="2" y2="6" />
+                            <line x1="8" x2="8" y1="2" y2="6" />
+                            <line x1="3" x2="21" y1="10" y2="10" />
+                            <path d="m9 16 2 2 4-4" />
+                        </svg>
+                    </span>
+                    <span class="nav-label">Calendar & Prayer Wall</span>
+                </a>
             </nav>
         </aside>
 
@@ -361,6 +374,23 @@
                         </div>
                         <div id="dashboard-celebrations-grid" style="display: flex; gap: 12px; overflow-x: auto; padding-bottom: 6px;">
                             <!-- Dynamically rendered birthday & milestone cards -->
+                        </div>
+                    </div>
+
+                    <!-- Chapter Honor Roll / Top Active Servants Leaderboard -->
+                    <div class="glass-panel" style="padding: 18px 22px; margin-bottom: 24px; border: 1px solid rgba(245,158,11,0.35); background: linear-gradient(135deg, rgba(245,158,11,0.08), rgba(15,23,42,0.95)); border-radius: 20px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; flex-wrap: wrap; gap: 8px;">
+                            <div style="display: flex; align-items: center; gap: 10px;">
+                                <span style="font-size: 1.5rem; filter: drop-shadow(0 0 8px rgba(245,158,11,0.6));">🏆</span>
+                                <div>
+                                    <h4 style="color: #FFF; font-size: 0.95rem; font-weight: 800; margin: 0;">Chapter Honor Roll & Active Servants</h4>
+                                    <span style="color: #FBBF24; font-size: 0.75rem;">Celebrating top attendance & faithful servant leadership across Tarlac</span>
+                                </div>
+                            </div>
+                            <span class="badge" style="background: rgba(245,158,11,0.2); color: #FBBF24; border: 1px solid rgba(245,158,11,0.4);">👑 Servant Leaders</span>
+                        </div>
+                        <div id="dashboard-honor-roll-grid" style="display: flex; gap: 14px; overflow-x: auto; padding-bottom: 6px;">
+                            <!-- Dynamically rendered top servant cards -->
                         </div>
                     </div>
 
@@ -1682,6 +1712,55 @@
                     </div>
                 </div>
 
+                    <!-- VIEW 6: CALENDAR & PRAYER WALL -->
+                    <div id="view-calendar" class="view-panel">
+                        <div class="glass-panel" style="padding: 18px 24px; margin-bottom: 24px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; border: 1px solid rgba(99,102,241,0.35); background: linear-gradient(135deg, rgba(99,102,241,0.08), rgba(15,23,42,0.95)); border-radius: 20px;">
+                            <div style="display: flex; align-items: center; gap: 12px;">
+                                <span style="font-size: 1.8rem;">📅</span>
+                                <div>
+                                    <h3 style="color: #FFF; font-size: 1.15rem; font-weight: 800; margin: 0;">Chapter Ministry Calendar & Prayer Wall</h3>
+                                    <span style="color: #A5B4FC; font-size: 0.8rem;">Coordinate monthly events and intercede for chapter members' pastoral intentions</span>
+                                </div>
+                            </div>
+                            <div style="display: flex; gap: 10px;">
+                                <button class="btn-primary glow-button" onclick="openAddActivityModal()" style="padding: 8px 16px; font-size: 0.82rem; display: inline-flex; align-items: center; gap: 6px;">
+                                    <span>+ Schedule Event</span>
+                                </button>
+                                <button class="btn-secondary" onclick="openAddPrayerIntentionModal()" style="padding: 8px 16px; font-size: 0.82rem; display: inline-flex; align-items: center; gap: 6px; border-color: rgba(236,72,153,0.4); color: #F472B6;">
+                                    <span>🙏 + Submit Prayer Intention</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(360px, 1fr)); gap: 24px;">
+                            <!-- Left Column: Chapter Calendar & Upcoming Events -->
+                            <div class="glass-panel" style="padding: 22px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.08);">
+                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 12px;">
+                                    <h4 style="color: #FFF; font-size: 1.05rem; font-weight: 800; margin: 0; display: flex; align-items: center; gap: 8px;">
+                                        <span>🗓️ Upcoming Activity Schedule</span>
+                                    </h4>
+                                    <span class="badge badge-blue">Active Semester</span>
+                                </div>
+                                <div id="calendar-events-list" style="display: flex; flex-direction: column; gap: 14px;">
+                                    <!-- Populated dynamically by script.js -->
+                                </div>
+                            </div>
+
+                            <!-- Right Column: Pastoral Prayer Wall -->
+                            <div class="glass-panel" style="padding: 22px; border-radius: 20px; border: 1px solid rgba(236,72,153,0.25);">
+                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 12px;">
+                                    <h4 style="color: #FFF; font-size: 1.05rem; font-weight: 800; margin: 0; display: flex; align-items: center; gap: 8px;">
+                                        <span>🙏 Pastoral Prayer Intercession Wall</span>
+                                    </h4>
+                                    <span class="badge" style="background: rgba(236,72,153,0.2); color: #F472B6; border: 1px solid rgba(236,72,153,0.4);">MFC Youth Intercession</span>
+                                </div>
+                                <div id="prayer-wall-list" style="display: flex; flex-direction: column; gap: 14px;">
+                                    <!-- Populated dynamically by script.js -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
             </div> <!-- /views-container -->
 
             <!-- Global Copyright Footer Bar (Matching User Screenshot) -->
@@ -2648,16 +2727,97 @@
         </div>
     </div>
 
+    <!-- Official Certificate of Participation Modal -->
+    <div id="certificate-modal-backdrop"
+        style="display: none; position: fixed; inset: 0; background: rgba(3, 7, 18, 0.88); backdrop-filter: blur(10px); z-index: 9999; align-items: center; justify-content: center; padding: 20px;">
+        <div class="modal-content"
+            style="background: #090E1E; border: 1px solid rgba(245, 158, 11, 0.4); border-radius: 20px; width: 100%; max-width: 720px; max-height: 95vh; display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 25px 60px rgba(0,0,0,0.8);">
+            <div
+                style="padding: 18px 24px; border-bottom: 1px solid rgba(255,255,255,0.08); display: flex; align-items: center; justify-content: space-between; background: linear-gradient(135deg, rgba(245,158,11,0.18), rgba(180,83,9,0.08));">
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <span style="font-size: 1.4rem;">📜</span>
+                    <div>
+                        <h3 style="margin: 0; color: #FFF; font-size: 1.05rem; font-weight: 800;">MFC Youth Tarlac Official Certificate</h3>
+                        <div style="color: #FBBF24; font-size: 0.75rem; font-weight: 600;">Certificate of Recognition & Faithful Participation</div>
+                    </div>
+                </div>
+                <button onclick="closeCertificateModal()"
+                    style="background: transparent; border: none; color: #94A3B8; font-size: 1.4rem; cursor: pointer;">&times;</button>
+            </div>
+
+            <!-- Printable Certificate Document Frame -->
+            <div id="printable-certificate-frame" style="padding: 36px 32px; background: #FFF9ED; color: #1E293B; border: 8px double #B45309; margin: 20px; border-radius: 12px; text-align: center; font-family: 'Times New Roman', serif;">
+                <div style="text-transform: uppercase; letter-spacing: 3px; font-size: 0.85rem; color: #92400E; font-weight: 700; margin-bottom: 6px;">MISSIONARY FAMILIES OF CHRIST — YOUTH TARLAC</div>
+                <h2 style="font-size: 1.85rem; font-weight: 900; color: #78350F; margin: 0 0 16px 0; letter-spacing: 1px;">CERTIFICATE OF PARTICIPATION</h2>
+                <div style="font-style: italic; color: #475569; font-size: 0.95rem; margin-bottom: 14px;">This official certificate is proudly awarded to</div>
+                <div id="cert-member-name" style="font-size: 2.1rem; font-weight: 900; color: #1E293B; border-bottom: 2px solid #D97706; display: inline-block; padding: 0 24px 6px; margin-bottom: 16px;">MEMBER FULL NAME</div>
+                <p id="cert-citation-text" style="max-width: 540px; margin: 0 auto 28px; font-size: 0.95rem; line-height: 1.6; color: #334155;">
+                    In recognition of active participation, faithful attendance, and selfless service in the building of the Catholic community under MFC Youth Tarlac Chapter.
+                </p>
+                <div style="display: flex; justify-content: space-around; align-items: flex-end; margin-top: 30px; padding-top: 20px;">
+                    <div>
+                        <div style="border-top: 1px solid #475569; width: 180px; margin: 0 auto; padding-top: 6px; font-weight: 700; font-size: 0.85rem; color: #1E293B;">Bro. / Sis. Coordinator</div>
+                        <div style="font-size: 0.72rem; color: #64748B;">MFC Youth Tarlac Chapter Head</div>
+                    </div>
+                    <div>
+                        <div id="cert-date-issued" style="border-top: 1px solid #475569; width: 180px; margin: 0 auto; padding-top: 6px; font-weight: 700; font-size: 0.85rem; color: #1E293B;">July 13, 2026</div>
+                        <div style="font-size: 0.72rem; color: #64748B;">Date Issued</div>
+                    </div>
+                </div>
+            </div>
+
+            <div style="padding: 16px 24px; border-top: 1px solid rgba(255,255,255,0.08); display: flex; justify-content: flex-end; gap: 12px; background: rgba(15,23,42,0.95);">
+                <button type="button" onclick="closeCertificateModal()" class="btn-secondary btn-sm">Close</button>
+                <button type="button" onclick="printOfficialCertificate()" class="btn-primary btn-sm glow-button" style="background: linear-gradient(135deg, #F59E0B, #D97706); border: none;">
+                    🖨️ Print Certificate
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Submit Prayer Intention Modal -->
+    <div id="prayer-intention-modal-backdrop"
+        style="display: none; position: fixed; inset: 0; background: rgba(3, 7, 18, 0.88); backdrop-filter: blur(10px); z-index: 9999; align-items: center; justify-content: center; padding: 20px;">
+        <div
+            style="background: #090E1E; border: 1px solid rgba(236,72,153,0.4); border-radius: 20px; width: 100%; max-width: 480px; display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 25px 60px rgba(0,0,0,0.8);">
+            <div
+                style="padding: 18px 24px; border-bottom: 1px solid rgba(255,255,255,0.08); display: flex; align-items: center; justify-content: space-between; background: linear-gradient(135deg, rgba(236,72,153,0.18), rgba(190,24,93,0.08));">
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <span style="font-size: 1.4rem;">🙏</span>
+                    <h3 style="margin: 0; color: #FFF; font-size: 1.05rem; font-weight: 800;">Submit Pastoral Prayer Intention</h3>
+                </div>
+                <button onclick="closePrayerIntentionModal()"
+                    style="background: transparent; border: none; color: #94A3B8; font-size: 1.4rem; cursor: pointer;">&times;</button>
+            </div>
+            <form onsubmit="handlePrayerIntentionSubmit(event)" style="padding: 24px; display: flex; flex-direction: column; gap: 16px;">
+                <div>
+                    <label style="display: block; font-size: 0.8rem; font-weight: 700; color: #CBD5E1; margin-bottom: 6px;">Intention Title / Topic</label>
+                    <input type="text" id="prayer-title-input" required placeholder="e.g. Board Exam Guidance & Peace of Mind"
+                        style="width: 100%; padding: 10px 14px; border-radius: 10px; background: rgba(15,23,42,0.8); border: 1px solid rgba(255,255,255,0.15); color: #FFF; font-size: 0.88rem;">
+                </div>
+                <div>
+                    <label style="display: block; font-size: 0.8rem; font-weight: 700; color: #CBD5E1; margin-bottom: 6px;">For Who (Member / Household)</label>
+                    <input type="text" id="prayer-target-input" required placeholder="e.g. Kuya Marcus / Tarlac High School Unit"
+                        style="width: 100%; padding: 10px 14px; border-radius: 10px; background: rgba(15,23,42,0.8); border: 1px solid rgba(255,255,255,0.15); color: #FFF; font-size: 0.88rem;">
+                </div>
+                <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 8px;">
+                    <button type="button" onclick="closePrayerIntentionModal()" class="btn-secondary btn-sm">Cancel</button>
+                    <button type="submit" class="btn-primary btn-sm glow-button" style="background: linear-gradient(135deg, #EC4899, #BE185D); border: none;">Post to Prayer Wall</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <!-- Toast Notification Container -->
     <div class="toast-container" id="toast-container"></div>
 
     <!-- Application Javascript -->
-    <script src="script.js?v=3.6"></script>
+    <script src="script.js?v=3.7"></script>
     <!-- PWA Offline Service Worker Registration -->
     <script>
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
-                navigator.serviceWorker.register('./sw.js?v=3.6')
+                navigator.serviceWorker.register('./sw.js?v=3.7')
                     .then(reg => {
                         console.log('[PWA] Service Worker registered successfully:', reg.scope);
                         reg.onupdatefound = () => {

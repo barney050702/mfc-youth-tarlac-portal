@@ -3672,6 +3672,14 @@ body.light-theme .nav-item:hover {
     .sidebar, .top-bar, .attendance-toolbar, .members-toolbar, #toast-container, button {
         display: none !important;
     }
+    #printable-certificate-frame {
+        display: block !important;
+        background: #FFFFFF !important;
+        border: 8px double #B45309 !important;
+        width: 100% !important;
+        margin: 0 !important;
+        padding: 40px !important;
+    }
 }
 
 
