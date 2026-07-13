@@ -342,6 +342,15 @@ function setupEventListeners() {
         });
     }
 
+    // Utility: Performance Debounce Wrapper for Smooth Keystroke Filtering
+    const debounceInput = (fn, delay = 160) => {
+        let timeoutId;
+        return (...args) => {
+            clearTimeout(timeoutId);
+            timeoutId = setTimeout(() => fn(...args), delay);
+        };
+    };
+
     // Activity Management Filters & Search
     const filterCat = document.getElementById('filter-category');
     const filterStat = document.getElementById('filter-status');
@@ -349,12 +358,12 @@ function setupEventListeners() {
 
     if (filterCat) filterCat.addEventListener('change', (e) => { state.filterCategory = e.target.value; renderActivitiesTable(); });
     if (filterStat) filterStat.addEventListener('change', (e) => { state.filterStatus = e.target.value; renderActivitiesTable(); });
-    if (actSearch) actSearch.addEventListener('input', (e) => { state.searchQuery = e.target.value.toLowerCase(); renderActivitiesTable(); });
+    if (actSearch) actSearch.addEventListener('input', debounceInput((e) => { state.searchQuery = e.target.value.toLowerCase(); renderActivitiesTable(); }));
 
     const agendaCat = document.getElementById('agenda-filter-category');
     const agendaSearch = document.getElementById('agenda-search-input');
     if (agendaCat) agendaCat.addEventListener('change', (e) => { state.filterCategory = e.target.value; renderActivitiesTable(); });
-    if (agendaSearch) agendaSearch.addEventListener('input', (e) => { state.searchQuery = e.target.value.toLowerCase(); renderActivitiesTable(); });
+    if (agendaSearch) agendaSearch.addEventListener('input', debounceInput((e) => { state.searchQuery = e.target.value.toLowerCase(); renderActivitiesTable(); }));
 
     // Open Add Activity Modal Button
     const btnOpenModal = document.getElementById('btn-open-add-modal');
@@ -366,7 +375,7 @@ function setupEventListeners() {
     const memChapter = document.getElementById('members-filter-chapter');
     const btnAddMemList = document.getElementById('btn-open-add-member-list');
 
-    if (memSearch) memSearch.addEventListener('input', renderMembersTable);
+    if (memSearch) memSearch.addEventListener('input', debounceInput(renderMembersTable));
     if (memDept) memDept.addEventListener('change', renderMembersTable);
     if (memChapter) memChapter.addEventListener('change', renderMembersTable);
     if (btnAddMemList) btnAddMemList.addEventListener('click', openAddMemberModal);
@@ -458,6 +467,8 @@ function switchView(viewId) {
         if (titleEl) titleEl.textContent = 'Dashboard Overview';
         if (subEl) subEl.textContent = 'Real-time attendance metrics and active event logs';
         renderDashboard();
+        renderCelebrationsWidget();
+        renderHonorRollWidget();
     } else if (viewId === 'activities') {
         if (titleEl) titleEl.textContent = 'Activities Record & Semester Cards';
         if (subEl) subEl.textContent = 'Accomplished activities, semester roadmap, and downloadable PDF reports';
@@ -510,21 +521,33 @@ function switchView(viewId) {
 }
 
 function renderAll() {
-    renderDashboard();
-    renderActivitiesTable();
-    renderAgendaTimeline();
-    populateAttendanceDropdown();
-    renderAnalytics();
-    renderOrgChart();
-    renderMembersTable();
-    renderFundsTable();
-    renderAccountsTable();
-    renderAuditLog();
     updateBadgeCount();
     applyRBACRoleUI();
-    renderCelebrationsWidget();
-    renderHonorRollWidget();
-    renderCalendarAndPrayerWall();
+    populateAttendanceDropdown();
+
+    const cur = state.currentView || 'dashboard';
+    if (cur === 'dashboard') {
+        renderDashboard();
+        renderCelebrationsWidget();
+        renderHonorRollWidget();
+    } else if (cur === 'activities' || cur === 'agenda') {
+        renderActivitiesTable();
+        renderAgendaTimeline();
+    } else if (cur === 'attendance') {
+        renderAttendanceRoster();
+    } else if (cur === 'analytics') {
+        renderAnalytics();
+    } else if (cur === 'orgchart') {
+        renderOrgChart();
+    } else if (cur === 'members' || cur === 'servants') {
+        renderMembersTable();
+    } else if (cur === 'funds') {
+        renderFundsTable();
+    } else if (cur === 'account') {
+        renderAccountsTable();
+    } else if (cur === 'calendar') {
+        renderCalendarAndPrayerWall();
+    }
 }
 
 function updateBadgeCount() {
