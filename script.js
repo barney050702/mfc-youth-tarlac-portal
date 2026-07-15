@@ -38,78 +38,78 @@ const SAMPLE_MEMBERS = [
     { id: 'm-007', name: 'Christian Dave Tolentino', chapter: 'East Chapter', dept: 'Logistics & Tech', role: 'Youth Member', contactNum: '0923-555-0107', email: 'christian@mfcyouthtarlac.com', birthday: '2006-12-01', parentsContact: '0923-555-0100', campDate: '2022-08-15', status: 'Active' },
 
     // EAST CHAPTER - USBONG YOUTHCAMP MEMBERS
-    { id: 'm-e01', name: 'Mark Allen S. Nosaves', chapter: 'East Chapter', dept: 'Programs & Events', role: 'Youth Member', contactNum: '09923937559', email: 'markallen@mfcyouthtarlac.com', birthday: '2013-03-23', parentsContact: '09919235478', address: 'Matatalaib, Tarlac', campDate: '2024-05-15', status: 'Active' },
-    { id: 'm-e02', name: 'Precious Diane Z. Samson', chapter: 'East Chapter', dept: 'Programs & Events', role: 'Youth Member', contactNum: '09919235478', email: 'preciousdiane@mfcyouthtarlac.com', birthday: '2013-03-20', parentsContact: '09919235478', address: 'San Manuel, Tarlac', campDate: '2024-05-15', status: 'Active' },
-    { id: 'm-e03', name: 'Clark Kent Z. Samson', chapter: 'East Chapter', dept: 'Programs & Events', role: 'Youth Member', contactNum: '09936843376', email: 'clarkkent@mfcyouthtarlac.com', birthday: '2016-08-24', parentsContact: '09919235478', address: 'San Manuel, Tarlac', campDate: '2024-05-15', status: 'Active' },
-    { id: 'm-e04', name: 'Cedrick Jewel G. Puyawan', chapter: 'East Chapter', dept: 'Logistics & Tech', role: 'Youth Member', contactNum: '09455002513', email: 'cedrick@mfcyouthtarlac.com', birthday: '2011-09-12', parentsContact: '09954626428', address: 'San Manuel, Tarlac', campDate: '2024-05-15', status: 'Active' },
-    { id: 'm-e05', name: 'Jhozhua L. Corpuz', chapter: 'East Chapter', dept: 'Music & Worship', role: 'Youth Member', contactNum: '09108330947', email: 'jhozhua@mfcyouthtarlac.com', birthday: '2012-12-29', parentsContact: '09108330947', address: 'San Manuel, Tarlac', campDate: '2024-05-15', status: 'Active' },
-    { id: 'm-e06', name: 'Enzo Luis A. Labon', chapter: 'East Chapter', dept: 'Logistics & Tech', role: 'Youth Member', contactNum: '', email: 'enzo@mfcyouthtarlac.com', birthday: '2011-10-28', parentsContact: '', address: 'San Manuel, Tarlac', campDate: '2024-05-15', status: 'Active' },
-    { id: 'm-e07', name: 'Jhaztin Carl Corpuz', chapter: 'East Chapter', dept: 'Outreach & Fellowship', role: 'Youth Member', contactNum: '09108330973', email: 'jhaztin@mfcyouthtarlac.com', birthday: '2010-02-28', parentsContact: '09108330973', address: 'San Manuel, Tarlac', campDate: '2024-05-15', status: 'Active' },
-    { id: 'm-e08', name: 'John Marion Sigua', chapter: 'East Chapter', dept: 'Programs & Events', role: 'Youth Member', contactNum: '09122712254', email: 'johnmarion@mfcyouthtarlac.com', birthday: '2013-09-08', parentsContact: '09456885921', address: 'Maliwalo Tarlac', campDate: '2024-05-15', status: 'Active' },
-    { id: 'm-e09', name: 'Carmelo Anthony G. Sigua', chapter: 'East Chapter', dept: 'Programs & Events', role: 'Youth Member', contactNum: '09153025737', email: 'carmelo@mfcyouthtarlac.com', birthday: '2009-09-28', parentsContact: '09456885921', address: 'Maliwalo Tarlac', campDate: '2024-05-15', status: 'Active' },
-    { id: 'm-e10', name: 'Jovel D. Garcia', chapter: 'East Chapter', dept: 'Creative & Media', role: 'Youth Member', contactNum: '09038360124', email: 'jovel@mfcyouthtarlac.com', birthday: '2011-07-19', parentsContact: '09386956160', address: 'Maliwalo Tarlac', campDate: '2024-05-15', status: 'Active' },
-    { id: 'm-e11', name: 'Jeanette Mary Salazar', chapter: 'East Chapter', dept: 'Programs & Events', role: 'Household Head', contactNum: '09101368805', email: 'jeanette@mfcyouthtarlac.com', birthday: '2007-09-08', parentsContact: '09094708294', address: 'Sitio Buni Bura', campDate: '2024-05-15', status: 'Active' },
-    { id: 'm-e12', name: 'Jeonard Francis Catap', chapter: 'East Chapter', dept: 'Logistics & Tech', role: 'Household Head', contactNum: '09701807117', email: 'jeonard@mfcyouthtarlac.com', birthday: '2007-08-29', parentsContact: '09121256554', address: 'Culipat, Tarlac City', campDate: '2024-05-15', status: 'Active' },
-    { id: 'm-e13', name: 'Miguel Antonio Tañedo', chapter: 'East Chapter', dept: 'Logistics & Tech', role: 'Youth Member', contactNum: '09919791125', email: 'miguel@mfcyouthtarlac.com', birthday: '2011-10-18', parentsContact: '09584867998', address: 'San Sebastian, Tarlac City', campDate: '2024-05-15', status: 'Active' },
-    { id: 'm-e14', name: 'Gabriel R. Magat', chapter: 'East Chapter', dept: 'Music & Worship', role: 'Youth Member', contactNum: '09604136208', email: 'gabriel@mfcyouthtarlac.com', birthday: '2012-01-16', parentsContact: '09634409663', address: 'Sito Calevo Tibag, Tarlac City', campDate: '2024-05-15', status: 'Active' },
-    { id: 'm-e15', name: 'Rajh Bernardo', chapter: 'East Chapter', dept: 'Outreach & Fellowship', role: 'Youth Member', contactNum: '09482145691', email: 'rajh@mfcyouthtarlac.com', birthday: '2014-11-21', parentsContact: '09482145691', address: 'San Manuel, Tarlac', campDate: '2024-05-15', status: 'Active' },
-    { id: 'm-e16', name: 'Jaycee Antonio', chapter: 'East Chapter', dept: 'Programs & Events', role: 'Youth Member', contactNum: '09202031881', email: 'jaycee@mfcyouthtarlac.com', birthday: '2011-11-23', parentsContact: '09389293791', address: 'Batang Batang Tarlac City', campDate: '2024-05-15', status: 'Active' },
-    { id: 'm-e17', name: 'Aljune Lagmay', chapter: 'East Chapter', dept: 'Creative & Media', role: 'Youth Member', contactNum: '09564393473', email: 'aljune@mfcyouthtarlac.com', birthday: '2012-11-07', parentsContact: '09564393473', address: 'Batang Batang Tarlac City', campDate: '2024-05-15', status: 'Active' },
-    { id: 'm-e18', name: 'Jilian Baquerto', chapter: 'East Chapter', dept: 'Programs & Events', role: 'Youth Member', contactNum: '0965617117', email: 'jilian@mfcyouthtarlac.com', birthday: '2010-05-05', parentsContact: '0965617117', address: 'Lalapac Victoria Tarlac', campDate: '2024-05-15', status: 'Active' },
-    { id: 'm-e19', name: 'Rocel Yusi', chapter: 'East Chapter', dept: 'Programs & Events', role: 'Youth Member', contactNum: '0965617117', email: 'rocel@mfcyouthtarlac.com', birthday: '2011-07-31', parentsContact: '0965617117', address: 'Lalapac Victoria Tarlac', campDate: '2024-05-15', status: 'Active' },
-    { id: 'm-e20', name: 'Justine A. Officiar', chapter: 'East Chapter', dept: 'Logistics & Tech', role: 'Youth Member', contactNum: '09092069693', email: 'justine@mfcyouthtarlac.com', birthday: '2010-12-05', parentsContact: '09092069693', address: 'Batang Batang Tarlac City', campDate: '2024-05-15', status: 'Active' },
-    { id: 'm-e21', name: 'Darlina Kathe Seaismundo', chapter: 'East Chapter', dept: 'Creative & Media', role: 'Youth Member', contactNum: '09670072185', email: 'darlina@mfcyouthtarlac.com', birthday: '2011-05-05', parentsContact: '09670072185', address: 'Batang Batang Tarlac City', campDate: '2024-05-15', status: 'Active' },
-    { id: 'm-e22', name: 'Karl Andrei Nunag', chapter: 'East Chapter', dept: 'Programs & Events', role: 'Youth Member', contactNum: '0951429950', email: 'karl@mfcyouthtarlac.com', birthday: '2011-04-11', parentsContact: '0951429950', address: 'Batang Batang Tarlac City', campDate: '2024-05-15', status: 'Active' },
-    { id: 'm-e23', name: 'Johnny P. Eugenio', chapter: 'East Chapter', dept: 'Logistics & Tech', role: 'Youth Member', contactNum: '09928788142', email: 'johnny@mfcyouthtarlac.com', birthday: '2012-01-16', parentsContact: '09928788142', address: 'Batang Batang Tarlac City', campDate: '2024-05-15', status: 'Active' },
-    { id: 'm-e24', name: 'Reeza Manthas L. Peralta', chapter: 'East Chapter', dept: 'Outreach & Fellowship', role: 'Youth Member', contactNum: '09772332580', email: 'reeza@mfcyouthtarlac.com', birthday: '2010-03-08', parentsContact: '09772332580', address: 'Batang Batang Tarlac City', campDate: '2024-05-15', status: 'Active' },
-    { id: 'm-e25', name: 'Rishelyne S. Balansag', chapter: 'East Chapter', dept: 'Programs & Events', role: 'Youth Member', contactNum: '09919857944', email: 'rishelyne@mfcyouthtarlac.com', birthday: '2010-04-23', parentsContact: '09919857944', address: 'Batang Batang Tarlac City', campDate: '2024-05-15', status: 'Active' },
-    { id: 'm-e26', name: 'Ceana Ghail R. Benson', chapter: 'East Chapter', dept: 'Creative & Media', role: 'Household Head', contactNum: '09658796230', email: 'ceana@mfcyouthtarlac.com', birthday: '2009-02-14', parentsContact: '09910958897', address: 'Lapaz', campDate: '2024-05-15', status: 'Active' },
-    { id: 'm-e27', name: 'Matt Christian L. Pascua', chapter: 'East Chapter', dept: 'Music & Worship', role: 'Youth Member', contactNum: '09943765091', email: 'matt@mfcyouthtarlac.com', birthday: '2010-02-07', parentsContact: '09943765091', address: 'Batang Batang Tarlac City', campDate: '2024-05-15', status: 'Active' },
-    { id: 'm-e28', name: 'John Carlo S. Daguro', chapter: 'East Chapter', dept: 'Logistics & Tech', role: 'Youth Member', contactNum: '09942527797', email: 'johncarlo@mfcyouthtarlac.com', birthday: '2009-12-10', parentsContact: '09942527797', address: 'Batang Batang Tarlac City', campDate: '2024-05-15', status: 'Active' },
-    { id: 'm-e29', name: 'Ella Tolentino', chapter: 'East Chapter', dept: 'Programs & Events', role: 'Household Head', contactNum: '09641514850', email: 'ella@mfcyouthtarlac.com', birthday: '2009-05-23', parentsContact: '09101715799', address: 'San Pascual, Tarlac City', campDate: '2024-05-15', status: 'Active' },
-    { id: 'm-e30', name: 'Rona Tacutaco', chapter: 'East Chapter', dept: 'Outreach & Fellowship', role: 'Youth Member', contactNum: '09851636519', email: 'rona@mfcyouthtarlac.com', birthday: '2009-08-09', parentsContact: '09569470391', address: 'San Pascual, Tarlac City', campDate: '2024-05-15', status: 'Active' },
-    { id: 'm-e31', name: 'Aira Landingin', chapter: 'East Chapter', dept: 'Creative & Media', role: 'Youth Member', contactNum: '09706718879', email: 'aira@mfcyouthtarlac.com', birthday: '2009-07-07', parentsContact: '09758435309', address: 'San Pascual, Tarlac City', campDate: '2024-05-15', status: 'Active' },
-    { id: 'm-e32', name: 'Ayesha B. Gadiana', chapter: 'East Chapter', dept: 'Programs & Events', role: 'Youth Member', contactNum: '09305555256', email: 'ayesha@mfcyouthtarlac.com', birthday: '2016-06-02', parentsContact: '09305555256', address: 'San Isidro, Tarlac City', campDate: '2024-05-15', status: 'Active' },
-    { id: 'm-e33', name: 'Sean Ilagan', chapter: 'East Chapter', dept: 'Logistics & Tech', role: 'Youth Member', contactNum: '09457716246', email: 'sean@mfcyouthtarlac.com', birthday: '2011-10-14', parentsContact: '09457716246', address: 'Paniqui Tarlac', campDate: '2024-05-15', status: 'Active' },
-    { id: 'm-e34', name: 'Louis Ilagan', chapter: 'East Chapter', dept: 'Logistics & Tech', role: 'Youth Member', contactNum: '09457716246', email: 'louis@mfcyouthtarlac.com', birthday: '2013-12-26', parentsContact: '09457716246', address: 'Paniqui Tarlac', campDate: '2024-05-15', status: 'Active' },
-    { id: 'm-e35', name: 'Andrean Jade Bravana', chapter: 'East Chapter', dept: 'Programs & Events', role: 'Youth Member', contactNum: '', email: 'andrean@mfcyouthtarlac.com', birthday: '2014-08-01', parentsContact: '', address: 'San Isidro, Tarlac City', campDate: '2024-05-15', status: 'Active' },
-    { id: 'm-e36', name: 'Prince John B. Gadiana', chapter: 'East Chapter', dept: 'Logistics & Tech', role: 'Youth Member', contactNum: '', email: 'princejohn@mfcyouthtarlac.com', birthday: '2014-03-26', parentsContact: '', address: 'San Isidro, Tarlac City', campDate: '2024-05-15', status: 'Active' },
+    { id: 'm-e01', name: 'Mark Allen S. Nosaves', firstName: 'Mark Allen', middleName: 'S.', lastName: 'Nosaves', age: 13, chapter: 'East Chapter', dept: 'Programs & Events', role: 'Youth Member', contactNum: '09923937559', email: 'markallen@mfcyouthtarlac.com', birthday: '2013-03-23', parentsContact: '09919235478', address: 'Matatalaib, Tarlac', campDate: '2024-05-15', campTitle: 'USBONG Encounter Camp', covenantDate: '2024-05-15', status: 'Active' },
+    { id: 'm-e02', name: 'Precious Diane Z. Samson', firstName: 'Precious Diane', middleName: 'Z.', lastName: 'Samson', age: 13, chapter: 'East Chapter', dept: 'Programs & Events', role: 'Youth Member', contactNum: '09919235478', email: 'preciousdiane@mfcyouthtarlac.com', birthday: '2013-03-20', parentsContact: '09919235478', address: 'San Manuel, Tarlac', campDate: '2024-05-15', campTitle: 'USBONG Encounter Camp', covenantDate: '2024-05-15', status: 'Active' },
+    { id: 'm-e03', name: 'Clark Kent Z. Samson', firstName: 'Clark Kent', middleName: 'Z.', lastName: 'Samson', age: 10, chapter: 'East Chapter', dept: 'Programs & Events', role: 'Youth Member', contactNum: '09936843376', email: 'clarkkent@mfcyouthtarlac.com', birthday: '2016-08-24', parentsContact: '09919235478', address: 'San Manuel, Tarlac', campDate: '2024-05-15', campTitle: 'USBONG Encounter Camp', covenantDate: '2024-05-15', status: 'Active' },
+    { id: 'm-e04', name: 'Cedrick Jewel G. Puyawan', firstName: 'Cedrick Jewel', middleName: 'G.', lastName: 'Puyawan', age: 14, chapter: 'East Chapter', dept: 'Logistics & Tech', role: 'Youth Member', contactNum: '09455002513', email: 'cedrick@mfcyouthtarlac.com', birthday: '2011-09-12', parentsContact: '09954626428', address: 'San Manuel, Tarlac', campDate: '2024-05-15', campTitle: 'USBONG Encounter Camp', covenantDate: '2024-05-15', status: 'Active' },
+    { id: 'm-e05', name: 'Jhozhua L. Corpuz', firstName: 'Jhozhua', middleName: 'L.', lastName: 'Corpuz', age: 13, chapter: 'East Chapter', dept: 'Music & Worship', role: 'Youth Member', contactNum: '09108330947', email: 'jhozhua@mfcyouthtarlac.com', birthday: '2012-12-29', parentsContact: '09108330947', address: 'San Manuel, Tarlac', campDate: '2024-05-15', campTitle: 'USBONG Encounter Camp', covenantDate: '2024-05-15', status: 'Active' },
+    { id: 'm-e06', name: 'Enzo Luis A. Labon', firstName: 'Enzo Luis', middleName: 'A.', lastName: 'Labon', age: 14, chapter: 'East Chapter', dept: 'Logistics & Tech', role: 'Youth Member', contactNum: '', email: 'enzo@mfcyouthtarlac.com', birthday: '2011-10-28', parentsContact: '', address: 'San Manuel, Tarlac', campDate: '2024-05-15', campTitle: 'USBONG Encounter Camp', covenantDate: '2024-05-15', status: 'Active' },
+    { id: 'm-e07', name: 'Jhaztin Carl Corpuz', firstName: 'Jhaztin Carl', middleName: '', lastName: 'Corpuz', age: 16, chapter: 'East Chapter', dept: 'Outreach & Fellowship', role: 'Youth Member', contactNum: '09108330973', email: 'jhaztin@mfcyouthtarlac.com', birthday: '2010-02-28', parentsContact: '09108330973', address: 'San Manuel, Tarlac', campDate: '2024-05-15', campTitle: 'USBONG Encounter Camp', covenantDate: '2024-05-15', status: 'Active' },
+    { id: 'm-e08', name: 'John Marion Sigua', firstName: 'John Marion', middleName: '', lastName: 'Sigua', age: 12, chapter: 'East Chapter', dept: 'Programs & Events', role: 'Youth Member', contactNum: '09122712254', email: 'johnmarion@mfcyouthtarlac.com', birthday: '2013-09-08', parentsContact: '09456885921', address: 'Maliwalo Tarlac', campDate: '2024-05-15', campTitle: 'USBONG Encounter Camp', covenantDate: '2024-05-15', status: 'Active' },
+    { id: 'm-e09', name: 'Carmelo Anthony G. Sigua', firstName: 'Carmelo Anthony', middleName: 'G.', lastName: 'Sigua', age: 16, chapter: 'East Chapter', dept: 'Programs & Events', role: 'Youth Member', contactNum: '09153025737', email: 'carmelo@mfcyouthtarlac.com', birthday: '2009-09-28', parentsContact: '09456885921', address: 'Maliwalo Tarlac', campDate: '2024-05-15', campTitle: 'USBONG Encounter Camp', covenantDate: '2024-05-15', status: 'Active' },
+    { id: 'm-e10', name: 'Jovel D. Garcia', firstName: 'Jovel', middleName: 'D.', lastName: 'Garcia', age: 14, chapter: 'East Chapter', dept: 'Creative & Media', role: 'Youth Member', contactNum: '09038360124', email: 'jovel@mfcyouthtarlac.com', birthday: '2011-07-19', parentsContact: '09386956160', address: 'Maliwalo Tarlac', campDate: '2024-05-15', campTitle: 'USBONG Encounter Camp', covenantDate: '2024-05-15', status: 'Active' },
+    { id: 'm-e11', name: 'Jeanette Mary Salazar', firstName: 'Jeanette Mary', middleName: '', lastName: 'Salazar', age: 18, chapter: 'East Chapter', dept: 'Programs & Events', role: 'Household Head', contactNum: '09101368805', email: 'jeanette@mfcyouthtarlac.com', birthday: '2007-09-08', parentsContact: '09094708294', address: 'Sitio Buni Bura', campDate: '2024-05-15', campTitle: 'USBONG Encounter Camp', covenantDate: '2024-05-15', status: 'Active' },
+    { id: 'm-e12', name: 'Jeonard Francis Catap', firstName: 'Jeonard Francis', middleName: '', lastName: 'Catap', age: 18, chapter: 'East Chapter', dept: 'Logistics & Tech', role: 'Household Head', contactNum: '09701807117', email: 'jeonard@mfcyouthtarlac.com', birthday: '2007-08-29', parentsContact: '09121256554', address: 'Culipat, Tarlac City', campDate: '2024-05-15', campTitle: 'USBONG Encounter Camp', covenantDate: '2024-05-15', status: 'Active' },
+    { id: 'm-e13', name: 'Miguel Antonio Tañedo', firstName: 'Miguel Antonio', middleName: '', lastName: 'Tañedo', age: 18, chapter: 'East Chapter', dept: 'Logistics & Tech', role: 'Youth Member', contactNum: '09919791125', email: 'miguel@mfcyouthtarlac.com', birthday: '2011-10-18', parentsContact: '09584867998', address: 'San Sebastian, Tarlac City', campDate: '2024-05-15', campTitle: 'USBONG Encounter Camp', covenantDate: '2024-05-15', status: 'Active' },
+    { id: 'm-e14', name: 'Gabriel R. Magat', firstName: 'Gabriel', middleName: 'R.', lastName: 'Magat', age: 14, chapter: 'East Chapter', dept: 'Music & Worship', role: 'Youth Member', contactNum: '09604136208', email: 'gabriel@mfcyouthtarlac.com', birthday: '2012-01-16', parentsContact: '09634409663', address: 'Sito Calevo Tibag, Tarlac City', campDate: '2024-05-15', campTitle: 'USBONG Encounter Camp', covenantDate: '2024-05-15', status: 'Active' },
+    { id: 'm-e15', name: 'Rajh Bernardo', firstName: 'Rajh', middleName: '', lastName: 'Bernardo', age: 14, chapter: 'East Chapter', dept: 'Outreach & Fellowship', role: 'Youth Member', contactNum: '09482145691', email: 'rajh@mfcyouthtarlac.com', birthday: '2014-11-21', parentsContact: '09482145691', address: 'San Manuel, Tarlac', campDate: '2024-05-15', campTitle: 'USBONG Encounter Camp', covenantDate: '2024-05-15', status: 'Active' },
+    { id: 'm-e16', name: 'Jaycee Antonio', firstName: 'Jaycee', middleName: '', lastName: 'Antonio', age: 14, chapter: 'East Chapter', dept: 'Programs & Events', role: 'Youth Member', contactNum: '09202031881', email: 'jaycee@mfcyouthtarlac.com', birthday: '2011-11-23', parentsContact: '09389293791', address: 'Batang Batang Tarlac City', campDate: '2024-05-15', campTitle: 'USBONG Encounter Camp', covenantDate: '2024-05-15', status: 'Active' },
+    { id: 'm-e17', name: 'Aljune Lagmay', firstName: 'Aljune', middleName: '', lastName: 'Lagmay', age: 16, chapter: 'East Chapter', dept: 'Creative & Media', role: 'Youth Member', contactNum: '09564393473', email: 'aljune@mfcyouthtarlac.com', birthday: '2012-11-07', parentsContact: '09564393473', address: 'Batang Batang Tarlac City', campDate: '2024-05-15', campTitle: 'USBONG Encounter Camp', covenantDate: '2024-05-15', status: 'Active' },
+    { id: 'm-e18', name: 'Jilian Baquerto', firstName: 'Jilian', middleName: '', lastName: 'Baquerto', age: 14, chapter: 'East Chapter', dept: 'Programs & Events', role: 'Youth Member', contactNum: '0965617117', email: 'jilian@mfcyouthtarlac.com', birthday: '2010-05-05', parentsContact: '0965617117', address: 'Lalapac Victoria Tarlac', campDate: '2024-05-15', campTitle: 'USBONG Encounter Camp', covenantDate: '2024-05-15', status: 'Active' },
+    { id: 'm-e19', name: 'Rocel Yusi', firstName: 'Rocel', middleName: '', lastName: 'Yusi', age: 15, chapter: 'East Chapter', dept: 'Programs & Events', role: 'Youth Member', contactNum: '0965617117', email: 'rocel@mfcyouthtarlac.com', birthday: '2011-07-31', parentsContact: '0965617117', address: 'Lalapac Victoria Tarlac', campDate: '2024-05-15', campTitle: 'USBONG Encounter Camp', covenantDate: '2024-05-15', status: 'Active' },
+    { id: 'm-e20', name: 'Justine A. Officiar', firstName: 'Justine', middleName: 'A.', lastName: 'Officiar', age: 15, chapter: 'East Chapter', dept: 'Logistics & Tech', role: 'Youth Member', contactNum: '09092069693', email: 'justine@mfcyouthtarlac.com', birthday: '2010-12-05', parentsContact: '09092069693', address: 'Batang Batang Tarlac City', campDate: '2024-05-15', campTitle: 'USBONG Encounter Camp', covenantDate: '2024-05-15', status: 'Active' },
+    { id: 'm-e21', name: 'Darlina Kathe Seaismundo', firstName: 'Darlina Kathe', middleName: '', lastName: 'Seaismundo', age: 16, chapter: 'East Chapter', dept: 'Creative & Media', role: 'Youth Member', contactNum: '09670072185', email: 'darlina@mfcyouthtarlac.com', birthday: '2011-05-05', parentsContact: '09670072185', address: 'Batang Batang Tarlac City', campDate: '2024-05-15', campTitle: 'USBONG Encounter Camp', covenantDate: '2024-05-15', status: 'Active' },
+    { id: 'm-e22', name: 'Karl Andrei Nunag', firstName: 'Karl Andrei', middleName: '', lastName: 'Nunag', age: 14, chapter: 'East Chapter', dept: 'Programs & Events', role: 'Youth Member', contactNum: '0951429950', email: 'karl@mfcyouthtarlac.com', birthday: '2011-04-11', parentsContact: '0951429950', address: 'Batang Batang Tarlac City', campDate: '2024-05-15', campTitle: 'USBONG Encounter Camp', covenantDate: '2024-05-15', status: 'Active' },
+    { id: 'm-e23', name: 'Johnny P. Eugenio', firstName: 'Johnny', middleName: 'P.', lastName: 'Eugenio', age: 14, chapter: 'East Chapter', dept: 'Logistics & Tech', role: 'Youth Member', contactNum: '09928788142', email: 'johnny@mfcyouthtarlac.com', birthday: '2012-01-16', parentsContact: '09928788142', address: 'Batang Batang Tarlac City', campDate: '2024-05-15', campTitle: 'USBONG Encounter Camp', covenantDate: '2024-05-15', status: 'Active' },
+    { id: 'm-e24', name: 'Reeza Manthas L. Peralta', firstName: 'Reeza Manthas', middleName: 'L.', lastName: 'Peralta', age: 16, chapter: 'East Chapter', dept: 'Outreach & Fellowship', role: 'Youth Member', contactNum: '09772332580', email: 'reeza@mfcyouthtarlac.com', birthday: '2010-03-08', parentsContact: '09772332580', address: 'Batang Batang Tarlac City', campDate: '2024-05-15', campTitle: 'USBONG Encounter Camp', covenantDate: '2024-05-15', status: 'Active' },
+    { id: 'm-e25', name: 'Rishelyne S. Balansag', firstName: 'Rishelyne', middleName: 'S.', lastName: 'Balansag', age: 16, chapter: 'East Chapter', dept: 'Programs & Events', role: 'Youth Member', contactNum: '09919857944', email: 'rishelyne@mfcyouthtarlac.com', birthday: '2010-04-23', parentsContact: '09919857944', address: 'Batang Batang Tarlac City', campDate: '2024-05-15', campTitle: 'USBONG Encounter Camp', covenantDate: '2024-05-15', status: 'Active' },
+    { id: 'm-e26', name: 'Ceana Ghail R. Benson', firstName: 'Ceana Ghail', middleName: 'R.', lastName: 'Benson', age: 17, chapter: 'East Chapter', dept: 'Creative & Media', role: 'Household Head', contactNum: '09658796230', email: 'ceana@mfcyouthtarlac.com', birthday: '2009-02-14', parentsContact: '09910958897', address: 'Lapaz', campDate: '2024-05-15', campTitle: 'USBONG Encounter Camp', covenantDate: '2024-05-15', status: 'Active' },
+    { id: 'm-e27', name: 'Matt Christian L. Pascua', firstName: 'Matt Christian', middleName: 'L.', lastName: 'Pascua', age: 16, chapter: 'East Chapter', dept: 'Music & Worship', role: 'Youth Member', contactNum: '09943765091', email: 'matt@mfcyouthtarlac.com', birthday: '2010-02-07', parentsContact: '09943765091', address: 'Batang Batang Tarlac City', campDate: '2024-05-15', campTitle: 'USBONG Encounter Camp', covenantDate: '2024-05-15', status: 'Active' },
+    { id: 'm-e28', name: 'John Carlo S. Daguro', firstName: 'John Carlo', middleName: 'S.', lastName: 'Daguro', age: 16, chapter: 'East Chapter', dept: 'Logistics & Tech', role: 'Youth Member', contactNum: '09942527797', email: 'johncarlo@mfcyouthtarlac.com', birthday: '2009-12-10', parentsContact: '09942527797', address: 'Batang Batang Tarlac City', campDate: '2024-05-15', campTitle: 'USBONG Encounter Camp', covenantDate: '2024-05-15', status: 'Active' },
+    { id: 'm-e29', name: 'Ella Tolentino', firstName: 'Ella', middleName: '', lastName: 'Tolentino', age: 17, chapter: 'East Chapter', dept: 'Programs & Events', role: 'Household Head', contactNum: '09641514850', email: 'ella@mfcyouthtarlac.com', birthday: '2009-05-23', parentsContact: '09101715799', address: 'San Pascual, Tarlac City', campDate: '2024-05-15', campTitle: 'USBONG Encounter Camp', covenantDate: '2024-05-15', status: 'Active' },
+    { id: 'm-e30', name: 'Rona Tacutaco', firstName: 'Rona', middleName: '', lastName: 'Tacutaco', age: 16, chapter: 'East Chapter', dept: 'Outreach & Fellowship', role: 'Youth Member', contactNum: '09851636519', email: 'rona@mfcyouthtarlac.com', birthday: '2009-08-09', parentsContact: '09569470391', address: 'San Pascual, Tarlac City', campDate: '2024-05-15', campTitle: 'USBONG Encounter Camp', covenantDate: '2024-05-15', status: 'Active' },
+    { id: 'm-e31', name: 'Aira Landingin', firstName: 'Aira', middleName: '', lastName: 'Landingin', age: 16, chapter: 'East Chapter', dept: 'Creative & Media', role: 'Youth Member', contactNum: '09706718879', email: 'aira@mfcyouthtarlac.com', birthday: '2009-07-07', parentsContact: '09758435309', address: 'San Pascual, Tarlac City', campDate: '2024-05-15', campTitle: 'USBONG Encounter Camp', covenantDate: '2024-05-15', status: 'Active' },
+    { id: 'm-e32', name: 'Ayesha B. Gadiana', firstName: 'Ayesha', middleName: 'B.', lastName: 'Gadiana', age: 9, chapter: 'East Chapter', dept: 'Programs & Events', role: 'Youth Member', contactNum: '09305555256', email: 'ayesha@mfcyouthtarlac.com', birthday: '2016-06-02', parentsContact: '09305555256', address: 'San Isidro, Tarlac City', campDate: '2024-05-15', campTitle: 'USBONG Encounter Camp', covenantDate: '2024-05-15', status: 'Active' },
+    { id: 'm-e33', name: 'Sean Ilagan', firstName: 'Sean', middleName: '', lastName: 'Ilagan', age: 14, chapter: 'East Chapter', dept: 'Logistics & Tech', role: 'Youth Member', contactNum: '09457716246', email: 'sean@mfcyouthtarlac.com', birthday: '2011-10-14', parentsContact: '09457716246', address: 'Paniqui Tarlac', campDate: '2024-05-15', campTitle: 'USBONG Encounter Camp', covenantDate: '2024-05-15', status: 'Active' },
+    { id: 'm-e34', name: 'Louis Ilagan', firstName: 'Louis', middleName: '', lastName: 'Ilagan', age: 12, chapter: 'East Chapter', dept: 'Logistics & Tech', role: 'Youth Member', contactNum: '09457716246', email: 'louis@mfcyouthtarlac.com', birthday: '2013-12-26', parentsContact: '09457716246', address: 'Paniqui Tarlac', campDate: '2024-05-15', campTitle: 'USBONG Encounter Camp', covenantDate: '2024-05-15', status: 'Active' },
+    { id: 'm-e35', name: 'Andrean Jade Bravana', firstName: 'Andrean Jade', middleName: '', lastName: 'Bravana', age: 11, chapter: 'East Chapter', dept: 'Programs & Events', role: 'Youth Member', contactNum: '', email: 'andrean@mfcyouthtarlac.com', birthday: '2014-08-01', parentsContact: '', address: 'San Isidro, Tarlac City', campDate: '2024-05-15', campTitle: 'USBONG Encounter Camp', covenantDate: '2024-05-15', status: 'Active' },
+    { id: 'm-e36', name: 'Prince John B. Gadiana', firstName: 'Prince John', middleName: 'B.', lastName: 'Gadiana', age: 12, chapter: 'East Chapter', dept: 'Logistics & Tech', role: 'Youth Member', contactNum: '', email: 'princejohn@mfcyouthtarlac.com', birthday: '2014-03-26', parentsContact: '', address: 'San Isidro, Tarlac City', campDate: '2024-05-15', campTitle: 'USBONG Encounter Camp', covenantDate: '2024-05-15', status: 'Active' },
 
     // NORTH CHAPTER - USBONG YOUTHCAMP MEMBERS
-    { id: 'm-n01', name: 'Kiann Sev B. Tejada', chapter: 'North Chapter', dept: 'Music & Worship', role: 'Youth Member', contactNum: '09560933949', email: 'kiann@mfcyouthtarlac.com', birthday: '2010-12-07', parentsContact: '09560933949', address: 'Burgos, Paniqui Tarlac', campDate: '2024-05-15', status: 'Active' },
-    { id: 'm-n02', name: 'Lysander Uriel Ventura', chapter: 'North Chapter', dept: 'Logistics & Tech', role: 'Youth Member', contactNum: '09395128453', email: 'lysander@mfcyouthtarlac.com', birthday: '2011-01-22', parentsContact: '09395128453', address: 'Paniqui Tarlac', campDate: '2024-05-15', status: 'Active' },
-    { id: 'm-n03', name: 'Raj Gabriel Pathak', chapter: 'North Chapter', dept: 'Outreach & Fellowship', role: 'Youth Member', contactNum: '09544973975', email: 'rajgabriel@mfcyouthtarlac.com', birthday: '2011-03-25', parentsContact: '09544973975', address: 'Pob. South Ramos', campDate: '2024-05-15', status: 'Active' },
-    { id: 'm-n04', name: 'Aljihin B. Caronongan', chapter: 'North Chapter', dept: 'Programs & Events', role: 'Youth Member', contactNum: '09276031736', email: 'aljihin@mfcyouthtarlac.com', birthday: '2010-12-12', parentsContact: '09276031736', address: 'Coral Paniqui Tarlac', campDate: '2024-05-15', status: 'Active' },
+    { id: 'm-n01', name: 'Kiann Sev B. Tejada', firstName: 'Kiann Sev', middleName: 'B.', lastName: 'Tejada', age: 15, chapter: 'North Chapter', dept: 'Music & Worship', role: 'Youth Member', contactNum: '09560933949', email: 'kiann@mfcyouthtarlac.com', birthday: '2010-12-07', parentsContact: '09560933949', address: 'Burgos, Paniqui Tarlac', campDate: '2024-05-15', campTitle: 'USBONG Encounter Camp', covenantDate: '2024-05-15', status: 'Active' },
+    { id: 'm-n02', name: 'Lysander Uriel Ventura', firstName: 'Lysander Uriel', middleName: '', lastName: 'Ventura', age: 15, chapter: 'North Chapter', dept: 'Logistics & Tech', role: 'Youth Member', contactNum: '09395128453', email: 'lysander@mfcyouthtarlac.com', birthday: '2011-01-22', parentsContact: '09395128453', address: 'Paniqui Tarlac', campDate: '2024-05-15', campTitle: 'USBONG Encounter Camp', covenantDate: '2024-05-15', status: 'Active' },
+    { id: 'm-n03', name: 'Raj Gabriel Pathak', firstName: 'Raj Gabriel', middleName: '', lastName: 'Pathak', age: 15, chapter: 'North Chapter', dept: 'Outreach & Fellowship', role: 'Youth Member', contactNum: '09544973975', email: 'rajgabriel@mfcyouthtarlac.com', birthday: '2011-03-25', parentsContact: '09544973975', address: 'Pob. South Ramos', campDate: '2024-05-15', campTitle: 'USBONG Encounter Camp', covenantDate: '2024-05-15', status: 'Active' },
+    { id: 'm-n04', name: 'Aljihin B. Caronongan', firstName: 'Aljihin', middleName: 'B.', lastName: 'Caronongan', age: 15, chapter: 'North Chapter', dept: 'Programs & Events', role: 'Youth Member', contactNum: '09276031736', email: 'aljihin@mfcyouthtarlac.com', birthday: '2010-12-12', parentsContact: '09276031736', address: 'Coral Paniqui Tarlac', campDate: '2024-05-15', campTitle: 'USBONG Encounter Camp', covenantDate: '2024-05-15', status: 'Active' },
 
     // WEST CHAPTER - USBONG YOUTHCAMP MEMBERS
-    { id: 'm-w01', name: 'April Jane DelaCruz', chapter: 'West Chapter', dept: 'Creative & Media', role: 'Youth Member', contactNum: '09926539259', email: 'apriljane@mfcyouthtarlac.com', birthday: '2011-04-30', parentsContact: '09770490513', address: 'abaruan, Purok 2 Sta. Ignacia, Tarlac', campDate: '2024-05-15', status: 'Active' },
-    { id: 'm-w02', name: 'Sharina Bona', chapter: 'West Chapter', dept: 'Programs & Events', role: 'Youth Member', contactNum: '09635901351', email: 'sharina@mfcyouthtarlac.com', birthday: '2010-10-30', parentsContact: '09635901351', address: 'San Francisco, Sta. Ignacia Tarlac', campDate: '2024-05-15', status: 'Active' },
-    { id: 'm-w03', name: 'Raphael Carl P Rivera', chapter: 'West Chapter', dept: 'Logistics & Tech', role: 'Youth Member', contactNum: '09562477438', email: 'raphaelcarl@mfcyouthtarlac.com', birthday: '2010-12-02', parentsContact: '09275324596', address: 'Pob. West Sta. Ignacia Tarlac', campDate: '2024-05-15', status: 'Active' },
-    { id: 'm-w04', name: 'Jerecho P. Rivera', chapter: 'West Chapter', dept: 'Music & Worship', role: 'Household Head', contactNum: '09685851155', email: 'jerecho@mfcyouthtarlac.com', birthday: '2008-10-19', parentsContact: '09203408895', address: 'Pob. West Sta. Ignacia Tarlac', campDate: '2024-05-15', status: 'Active' },
+    { id: 'm-w01', name: 'April Jane DelaCruz', firstName: 'April Jane', middleName: '', lastName: 'DelaCruz', age: 15, chapter: 'West Chapter', dept: 'Creative & Media', role: 'Youth Member', contactNum: '09926539259', email: 'apriljane@mfcyouthtarlac.com', birthday: '2011-04-30', parentsContact: '09770490513', address: 'abaruan, Purok 2 Sta. Ignacia, Tarlac', campDate: '2024-05-15', campTitle: 'USBONG Encounter Camp', covenantDate: '2024-05-15', status: 'Active' },
+    { id: 'm-w02', name: 'Sharina Bona', firstName: 'Sharina', middleName: '', lastName: 'Bona', age: 15, chapter: 'West Chapter', dept: 'Programs & Events', role: 'Youth Member', contactNum: '09635901351', email: 'sharina@mfcyouthtarlac.com', birthday: '2010-10-30', parentsContact: '09635901351', address: 'San Francisco, Sta. Ignacia Tarlac', campDate: '2024-05-15', campTitle: 'USBONG Encounter Camp', covenantDate: '2024-05-15', status: 'Active' },
+    { id: 'm-w03', name: 'Raphael Carl P Rivera', firstName: 'Raphael Carl', middleName: 'P.', lastName: 'Rivera', age: 15, chapter: 'West Chapter', dept: 'Logistics & Tech', role: 'Youth Member', contactNum: '09562477438', email: 'raphaelcarl@mfcyouthtarlac.com', birthday: '2010-12-02', parentsContact: '09275324596', address: 'Pob. West Sta. Ignacia Tarlac', campDate: '2024-05-15', campTitle: 'USBONG Encounter Camp', covenantDate: '2024-05-15', status: 'Active' },
+    { id: 'm-w04', name: 'Jerecho P. Rivera', firstName: 'Jerecho', middleName: 'P.', lastName: 'Rivera', age: 17, chapter: 'West Chapter', dept: 'Music & Worship', role: 'Household Head', contactNum: '09685851155', email: 'jerecho@mfcyouthtarlac.com', birthday: '2008-10-19', parentsContact: '09203408895', address: 'Pob. West Sta. Ignacia Tarlac', campDate: '2024-05-15', campTitle: 'USBONG Encounter Camp', covenantDate: '2024-05-15', status: 'Active' },
 
     // ADDITIONAL EAST CHAPTER - USBONG YOUTHCAMP MEMBERS
-    { id: 'm-e37', name: 'Jay Aldrin A. Marticio', chapter: 'East Chapter', dept: 'Logistics & Tech', role: 'Household Head', contactNum: '09163282336', email: 'jayaldrin@mfcyouthtarlac.com', birthday: '2009-04-29', parentsContact: '09203408895', address: 'Pob. West Sta. Ignacia Tarlac', campDate: '2024-05-15', status: 'Active' },
-    { id: 'm-e38', name: 'Cyril John Roque', chapter: 'East Chapter', dept: 'Programs & Events', role: 'Youth Member', contactNum: '09519893272', email: 'cyriljohn@mfcyouthtarlac.com', birthday: '2012-02-14', parentsContact: '09519893272', address: 'Batang Batang Tarlac City', campDate: '2024-05-15', status: 'Active' },
-    { id: 'm-e39', name: 'Chena Mae Matias', chapter: 'East Chapter', dept: 'Outreach & Fellowship', role: 'Household Head', contactNum: '09670072185', email: 'chenamae@mfcyouthtarlac.com', birthday: '2010-04-14', parentsContact: '09670072185', address: 'Batang Batang Tarlac City', campDate: '2024-05-15', status: 'Active' },
-    { id: 'm-e40', name: 'Kian L. Notarlz', chapter: 'East Chapter', dept: 'Logistics & Tech', role: 'Youth Member', contactNum: '09072536395', email: 'kiannotarlz@mfcyouthtarlac.com', birthday: '2010-12-09', parentsContact: '09457784480', address: 'Batang Batang Tarlac City', campDate: '2024-05-15', status: 'Active' },
-    { id: 'm-e41', name: 'Fredierick R. Antalan', chapter: 'East Chapter', dept: 'Music & Worship', role: 'Youth Member', contactNum: '', email: 'fredierick@mfcyouthtarlac.com', birthday: '2011-11-09', parentsContact: '', address: 'Batang Batang Tarlac City', campDate: '2024-05-15', status: 'Active' },
+    { id: 'm-e37', name: 'Jay Aldrin A. Marticio', firstName: 'Jay Aldrin', middleName: 'A.', lastName: 'Marticio', age: 17, chapter: 'East Chapter', dept: 'Logistics & Tech', role: 'Household Head', contactNum: '09163282336', email: 'jayaldrin@mfcyouthtarlac.com', birthday: '2009-04-29', parentsContact: '09203408895', address: 'Pob. West Sta. Ignacia Tarlac', campDate: '2024-05-15', campTitle: 'USBONG Encounter Camp', covenantDate: '2024-05-15', status: 'Active' },
+    { id: 'm-e38', name: 'Cyril John Roque', firstName: 'Cyril John', middleName: '', lastName: 'Roque', age: 14, chapter: 'East Chapter', dept: 'Programs & Events', role: 'Youth Member', contactNum: '09519893272', email: 'cyriljohn@mfcyouthtarlac.com', birthday: '2012-02-14', parentsContact: '09519893272', address: 'Batang Batang Tarlac City', campDate: '2024-05-15', campTitle: 'USBONG Encounter Camp', covenantDate: '2024-05-15', status: 'Active' },
+    { id: 'm-e39', name: 'Chena Mae Matias', firstName: 'Chena Mae', middleName: '', lastName: 'Matias', age: 17, chapter: 'East Chapter', dept: 'Outreach & Fellowship', role: 'Household Head', contactNum: '09670072185', email: 'chenamae@mfcyouthtarlac.com', birthday: '2010-04-14', parentsContact: '09670072185', address: 'Batang Batang Tarlac City', campDate: '2024-05-15', campTitle: 'USBONG Encounter Camp', covenantDate: '2024-05-15', status: 'Active' },
+    { id: 'm-e40', name: 'Kian L. Notarlz', firstName: 'Kian', middleName: 'L.', lastName: 'Notarlz', age: 15, chapter: 'East Chapter', dept: 'Logistics & Tech', role: 'Youth Member', contactNum: '09072536395', email: 'kiannotarlz@mfcyouthtarlac.com', birthday: '2010-12-09', parentsContact: '09457784480', address: 'Batang Batang Tarlac City', campDate: '2024-05-15', campTitle: 'USBONG Encounter Camp', covenantDate: '2024-05-15', status: 'Active' },
+    { id: 'm-e41', name: 'Fredierick R. Antalan', firstName: 'Fredierick', middleName: 'R.', lastName: 'Antalan', age: 14, chapter: 'East Chapter', dept: 'Music & Worship', role: 'Youth Member', contactNum: '', email: 'fredierick@mfcyouthtarlac.com', birthday: '2011-11-09', parentsContact: '', address: 'Batang Batang Tarlac City', campDate: '2024-05-15', campTitle: 'USBONG Encounter Camp', covenantDate: '2024-05-15', status: 'Active' },
 
     // ADDITIONAL NORTH CHAPTER - USBONG YOUTHCAMP MEMBERS
-    { id: 'm-n05', name: 'Harrieth C. Valdez', chapter: 'North Chapter', dept: 'Creative & Media', role: 'Household Head', contactNum: '09091990427', email: 'harrieth@mfcyouthtarlac.com', birthday: '2009-09-24', parentsContact: '09272328857', address: 'Moncada, Tarlac', campDate: '2024-05-15', status: 'Active' },
-    { id: 'm-n06', name: 'Evangeline M. Obilio', chapter: 'North Chapter', dept: 'Programs & Events', role: 'Youth Member', contactNum: '09648210825', email: 'evangeline@mfcyouthtarlac.com', birthday: '2012-03-23', parentsContact: '09301028385', address: 'Moncada, Tarlac', campDate: '2024-05-15', status: 'Active' },
-    { id: 'm-n07', name: 'Jona Mariz A. De Venecia', chapter: 'North Chapter', dept: 'Outreach & Fellowship', role: 'Youth Member', contactNum: '09058860626', email: 'jonamariz@mfcyouthtarlac.com', birthday: '2010-06-06', parentsContact: '09550847346', address: 'Moncada, Tarlac', campDate: '2024-05-15', status: 'Active' },
-    { id: 'm-n08', name: 'Joevelyn Rhixzy G. Espejo', chapter: 'North Chapter', dept: 'Music & Worship', role: 'Household Head', contactNum: '09639097664', email: 'joevelyn@mfcyouthtarlac.com', birthday: '2008-03-30', parentsContact: '09124661843', address: 'Moncada, Tarlac', campDate: '2024-05-15', status: 'Active' },
-    { id: 'm-n09', name: 'Jhazelle E. Balmorez', chapter: 'North Chapter', dept: 'Programs & Events', role: 'Youth Member', contactNum: '09816860482', email: 'jhazelle@mfcyouthtarlac.com', birthday: '2010-10-20', parentsContact: '09353095870', address: 'Moncada, Tarlac', campDate: '2024-05-15', status: 'Active' },
-    { id: 'm-n10', name: 'Chedz Louise C. Tabilin', chapter: 'North Chapter', dept: 'Logistics & Tech', role: 'Youth Member', contactNum: '09816860482', email: 'chedzlouise@mfcyouthtarlac.com', birthday: '2012-06-07', parentsContact: '09338156014', address: 'Moncada, Tarlac', campDate: '2024-05-15', status: 'Active' },
-    { id: 'm-n11', name: 'Aron Kent G. Salvador', chapter: 'North Chapter', dept: 'Executive', role: 'Household Head', contactNum: '09615832773', email: 'aronkent@mfcyouthtarlac.com', birthday: '2008-03-09', parentsContact: '09300467665', address: 'Salumague, Paniqui Tarlac', campDate: '2024-05-15', status: 'Active' },
-    { id: 'm-n12', name: 'Fernando A. Dar', chapter: 'North Chapter', dept: 'Logistics & Tech', role: 'Household Head', contactNum: '09454878673', email: 'fernando@mfcyouthtarlac.com', birthday: '2008-04-26', parentsContact: '09296699956', address: 'Moncada, Tarlac', campDate: '2024-05-15', status: 'Active' },
-    { id: 'm-n13', name: 'Ma. Yvonne C. Niegos', chapter: 'North Chapter', dept: 'Creative & Media', role: 'Household Head', contactNum: '09289720379', email: 'mayvonne@mfcyouthtarlac.com', birthday: '2008-09-09', parentsContact: '09957240313', address: 'Moncada, Tarlac', campDate: '2024-05-15', status: 'Active' },
-    { id: 'm-n14', name: 'Leah Andrea C. Casica', chapter: 'North Chapter', dept: 'Finance & Treasury', role: 'Household Head', contactNum: '09161583532', email: 'leahandrea@mfcyouthtarlac.com', birthday: '2009-04-05', parentsContact: '09486473102', address: 'acPaco San Manuel Moncada, Tarlac', campDate: '2024-05-15', status: 'Active' },
-    { id: 'm-n15', name: 'Renz Cyruz P. Sapla', chapter: 'North Chapter', dept: 'Logistics & Tech', role: 'Household Head', contactNum: '09685853306', email: 'renzcyruz@mfcyouthtarlac.com', birthday: '2008-10-14', parentsContact: '', address: 'Moncada, Tarlac', campDate: '2024-05-15', status: 'Active' },
-    { id: 'm-n16', name: 'Sophia Reign C. Pujol', chapter: 'North Chapter', dept: 'Programs & Events', role: 'Youth Member', contactNum: '', email: 'sophiareign@mfcyouthtarlac.com', birthday: '2013-07-25', parentsContact: '', address: 'Moncada, Tarlac', campDate: '2024-05-15', status: 'Active' },
-    { id: 'm-n17', name: 'Riley Tiffany B. Egipto', chapter: 'North Chapter', dept: 'Creative & Media', role: 'Youth Member', contactNum: '09278825052', email: 'rileytiffany@mfcyouthtarlac.com', birthday: '2010-03-16', parentsContact: '09278825052', address: 'Magaspac, Gerona Tarlac', campDate: '2024-05-15', status: 'Active' },
-    { id: 'm-n18', name: 'Antonia G. Egipto', chapter: 'North Chapter', dept: 'Outreach & Fellowship', role: 'Youth Member', contactNum: '09672539992', email: 'antonia@mfcyouthtarlac.com', birthday: '2013-06-28', parentsContact: '09672539992', address: 'Magaspac, Gerona Tarlac', campDate: '2024-05-15', status: 'Active' },
-    { id: 'm-n19', name: 'Liselle Ondrea B. Egipto', chapter: 'North Chapter', dept: 'Programs & Events', role: 'Youth Member', contactNum: '09278825652', email: 'liselleondrea@mfcyouthtarlac.com', birthday: '2012-01-09', parentsContact: '09278825652', address: 'Magaspac, Gerona Tarlac', campDate: '2024-05-15', status: 'Active' }
+    { id: 'm-n05', name: 'Harrieth C. Valdez', firstName: 'Harrieth', middleName: 'C.', lastName: 'Valdez', age: 16, chapter: 'North Chapter', dept: 'Creative & Media', role: 'Household Head', contactNum: '09091990427', email: 'harrieth@mfcyouthtarlac.com', birthday: '2009-09-24', parentsContact: '09272328857', address: 'Moncada, Tarlac', campDate: '2024-05-15', campTitle: 'USBONG Encounter Camp', covenantDate: '2024-05-15', status: 'Active' },
+    { id: 'm-n06', name: 'Evangeline M. Obilio', firstName: 'Evangeline', middleName: 'M.', lastName: 'Obilio', age: 14, chapter: 'North Chapter', dept: 'Programs & Events', role: 'Youth Member', contactNum: '09648210825', email: 'evangeline@mfcyouthtarlac.com', birthday: '2012-03-23', parentsContact: '09301028385', address: 'Moncada, Tarlac', campDate: '2024-05-15', campTitle: 'USBONG Encounter Camp', covenantDate: '2024-05-15', status: 'Active' },
+    { id: 'm-n07', name: 'Jona Mariz A. De Venecia', firstName: 'Jona Mariz', middleName: 'A.', lastName: 'De Venecia', age: 15, chapter: 'North Chapter', dept: 'Outreach & Fellowship', role: 'Youth Member', contactNum: '09058860626', email: 'jonamariz@mfcyouthtarlac.com', birthday: '2010-06-06', parentsContact: '09550847346', address: 'Moncada, Tarlac', campDate: '2024-05-15', campTitle: 'USBONG Encounter Camp', covenantDate: '2024-05-15', status: 'Active' },
+    { id: 'm-n08', name: 'Joevelyn Rhixzy G. Espejo', firstName: 'Joevelyn Rhixzy', middleName: 'G.', lastName: 'Espejo', age: 18, chapter: 'North Chapter', dept: 'Music & Worship', role: 'Household Head', contactNum: '09639097664', email: 'joevelyn@mfcyouthtarlac.com', birthday: '2008-03-30', parentsContact: '09124661843', address: 'Moncada, Tarlac', campDate: '2024-05-15', campTitle: 'USBONG Encounter Camp', covenantDate: '2024-05-15', status: 'Active' },
+    { id: 'm-n09', name: 'Jhazelle E. Balmorez', firstName: 'Jhazelle', middleName: 'E.', lastName: 'Balmorez', age: 15, chapter: 'North Chapter', dept: 'Programs & Events', role: 'Youth Member', contactNum: '09816860482', email: 'jhazelle@mfcyouthtarlac.com', birthday: '2010-10-20', parentsContact: '09353095870', address: 'Moncada, Tarlac', campDate: '2024-05-15', campTitle: 'USBONG Encounter Camp', covenantDate: '2024-05-15', status: 'Active' },
+    { id: 'm-n10', name: 'Chedz Louise C. Tabilin', firstName: 'Chedz Louise', middleName: 'C.', lastName: 'Tabilin', age: 13, chapter: 'North Chapter', dept: 'Logistics & Tech', role: 'Youth Member', contactNum: '09816860482', email: 'chedzlouise@mfcyouthtarlac.com', birthday: '2012-06-07', parentsContact: '09338156014', address: 'Moncada, Tarlac', campDate: '2024-05-15', campTitle: 'USBONG Encounter Camp', covenantDate: '2024-05-15', status: 'Active' },
+    { id: 'm-n11', name: 'Aron Kent G. Salvador', firstName: 'Aron Kent', middleName: 'G.', lastName: 'Salvador', age: 18, chapter: 'North Chapter', dept: 'Executive', role: 'Household Head', contactNum: '09615832773', email: 'aronkent@mfcyouthtarlac.com', birthday: '2008-03-09', parentsContact: '09300467665', address: 'Salumague, Paniqui Tarlac', campDate: '2024-05-15', campTitle: 'USBONG Encounter Camp', covenantDate: '2024-05-15', status: 'Active' },
+    { id: 'm-n12', name: 'Fernando A. Dar', firstName: 'Fernando', middleName: 'A.', lastName: 'Dar', age: 18, chapter: 'North Chapter', dept: 'Logistics & Tech', role: 'Household Head', contactNum: '09454878673', email: 'fernando@mfcyouthtarlac.com', birthday: '2008-04-26', parentsContact: '09296699956', address: 'Moncada, Tarlac', campDate: '2024-05-15', campTitle: 'USBONG Encounter Camp', covenantDate: '2024-05-15', status: 'Active' },
+    { id: 'm-n13', name: 'Ma. Yvonne C. Niegos', firstName: 'Ma. Yvonne', middleName: 'C.', lastName: 'Niegos', age: 17, chapter: 'North Chapter', dept: 'Creative & Media', role: 'Household Head', contactNum: '09289720379', email: 'mayvonne@mfcyouthtarlac.com', birthday: '2008-09-09', parentsContact: '09957240313', address: 'Moncada, Tarlac', campDate: '2024-05-15', campTitle: 'USBONG Encounter Camp', covenantDate: '2024-05-15', status: 'Active' },
+    { id: 'm-n14', name: 'Leah Andrea C. Casica', firstName: 'Leah Andrea', middleName: 'C.', lastName: 'Casica', age: 17, chapter: 'North Chapter', dept: 'Finance & Treasury', role: 'Household Head', contactNum: '09161583532', email: 'leahandrea@mfcyouthtarlac.com', birthday: '2009-04-05', parentsContact: '09486473102', address: 'acPaco San Manuel Moncada, Tarlac', campDate: '2024-05-15', campTitle: 'USBONG Encounter Camp', covenantDate: '2024-05-15', status: 'Active' },
+    { id: 'm-n15', name: 'Renz Cyruz P. Sapla', firstName: 'Renz Cyruz', middleName: 'P.', lastName: 'Sapla', age: 17, chapter: 'North Chapter', dept: 'Logistics & Tech', role: 'Household Head', contactNum: '09685853306', email: 'renzcyruz@mfcyouthtarlac.com', birthday: '2008-10-14', parentsContact: '', address: 'Moncada, Tarlac', campDate: '2024-05-15', campTitle: 'USBONG Encounter Camp', covenantDate: '2024-05-15', status: 'Active' },
+    { id: 'm-n16', name: 'Sophia Reign C. Pujol', firstName: 'Sophia Reign', middleName: 'C.', lastName: 'Pujol', age: 12, chapter: 'North Chapter', dept: 'Programs & Events', role: 'Youth Member', contactNum: '', email: 'sophiareign@mfcyouthtarlac.com', birthday: '2013-07-25', parentsContact: '', address: 'Moncada, Tarlac', campDate: '2024-05-15', campTitle: 'USBONG Encounter Camp', covenantDate: '2024-05-15', status: 'Active' },
+    { id: 'm-n17', name: 'Riley Tiffany B. Egipto', firstName: 'Riley Tiffany', middleName: 'B.', lastName: 'Egipto', age: 16, chapter: 'North Chapter', dept: 'Creative & Media', role: 'Youth Member', contactNum: '09278825052', email: 'rileytiffany@mfcyouthtarlac.com', birthday: '2010-03-16', parentsContact: '09278825052', address: 'Magaspac, Gerona Tarlac', campDate: '2024-05-15', campTitle: 'USBONG Encounter Camp', covenantDate: '2024-05-15', status: 'Active' },
+    { id: 'm-n18', name: 'Antonia G. Egipto', firstName: 'Antonia', middleName: 'G.', lastName: 'Egipto', age: 12, chapter: 'North Chapter', dept: 'Outreach & Fellowship', role: 'Youth Member', contactNum: '09672539992', email: 'antonia@mfcyouthtarlac.com', birthday: '2013-06-28', parentsContact: '09672539992', address: 'Magaspac, Gerona Tarlac', campDate: '2024-05-15', campTitle: 'USBONG Encounter Camp', covenantDate: '2024-05-15', status: 'Active' },
+    { id: 'm-n19', name: 'Liselle Ondrea B. Egipto', firstName: 'Liselle Ondrea', middleName: 'B.', lastName: 'Egipto', age: 14, chapter: 'North Chapter', dept: 'Programs & Events', role: 'Youth Member', contactNum: '09278825652', email: 'liselleondrea@mfcyouthtarlac.com', birthday: '2012-01-09', parentsContact: '09278825652', address: 'Magaspac, Gerona Tarlac', campDate: '2024-05-15', campTitle: 'USBONG Encounter Camp', covenantDate: '2024-05-15', status: 'Active' }
 ];
 
 const SAMPLE_ACCOUNTS = [
@@ -202,6 +202,71 @@ function loadFromStorage() {
         if (m.youthCampDate && !m.campDate) { migrated.campDate = m.youthCampDate; }
         if (m.department && !m.dept)        { migrated.dept = m.department; }
         return migrated;
+    });
+
+    // Auto-enrich members with age, name breakdown (firstName, middleName, lastName), address, and camp details
+    state.members = state.members.map(m => {
+        const sampleMatch = SAMPLE_MEMBERS.find(s => s.name.trim().toLowerCase() === (m.name || '').trim().toLowerCase());
+        const enriched = { ...m };
+        if (sampleMatch) {
+            if (!enriched.age && sampleMatch.age) enriched.age = sampleMatch.age;
+            if (!enriched.address && sampleMatch.address) enriched.address = sampleMatch.address;
+            if (!enriched.contactNum && sampleMatch.contactNum) enriched.contactNum = sampleMatch.contactNum;
+            if (!enriched.parentsContact && sampleMatch.parentsContact) enriched.parentsContact = sampleMatch.parentsContact;
+            if (!enriched.campDate && sampleMatch.campDate) enriched.campDate = sampleMatch.campDate;
+            if (!enriched.campTitle && sampleMatch.campTitle) enriched.campTitle = sampleMatch.campTitle;
+            if (!enriched.covenantDate && sampleMatch.covenantDate) enriched.covenantDate = sampleMatch.covenantDate;
+            if (!enriched.firstName && sampleMatch.firstName) enriched.firstName = sampleMatch.firstName;
+            if (!enriched.middleName && sampleMatch.middleName) enriched.middleName = sampleMatch.middleName;
+            if (!enriched.lastName && sampleMatch.lastName) enriched.lastName = sampleMatch.lastName;
+        }
+        // Auto calculate age if still missing but birthday exists
+        if (!enriched.age && enriched.birthday) {
+            try {
+                const bDate = new Date(enriched.birthday);
+                if (!isNaN(bDate.getTime())) {
+                    const today = new Date();
+                    let calcAge = today.getFullYear() - bDate.getFullYear();
+                    const mDiff = today.getMonth() - bDate.getMonth();
+                    if (mDiff < 0 || (mDiff === 0 && today.getDate() < bDate.getDate())) {
+                        calcAge--;
+                    }
+                    if (calcAge >= 0 && calcAge <= 120) enriched.age = calcAge;
+                }
+            } catch(e) {}
+        }
+        // Auto breakdown firstName, middleName, lastName if missing
+        if (!enriched.firstName || !enriched.lastName) {
+            const parts = (enriched.name || '').trim().split(' ');
+            if (parts.length === 1) {
+                enriched.firstName = parts[0];
+                enriched.middleName = '';
+                enriched.lastName = parts[0];
+            } else if (parts.length === 2) {
+                enriched.firstName = parts[0];
+                enriched.middleName = '';
+                enriched.lastName = parts[1];
+            } else if (parts.length >= 3) {
+                enriched.lastName = parts[parts.length - 1];
+                const maybeMiddle = parts[parts.length - 2];
+                if (maybeMiddle.endsWith('.') || maybeMiddle.length <= 2 || ['de', 'del', 'dela', 'san', 'sta', 'p.'].includes(maybeMiddle.toLowerCase())) {
+                    if (['de', 'del', 'dela', 'san', 'sta'].includes(maybeMiddle.toLowerCase()) || (parts.length >= 4 && ['de', 'del', 'dela', 'san', 'sta'].includes(parts[parts.length - 3].toLowerCase()))) {
+                        enriched.firstName = parts.slice(0, -2).join(' ');
+                        enriched.middleName = '';
+                        enriched.lastName = parts.slice(-2).join(' ');
+                    } else {
+                        enriched.firstName = parts.slice(0, -2).join(' ');
+                        enriched.middleName = maybeMiddle;
+                    }
+                } else {
+                    enriched.firstName = parts.slice(0, -1).join(' ');
+                    enriched.middleName = '';
+                }
+            }
+        }
+        if (!enriched.campTitle) enriched.campTitle = 'USBONG Encounter Camp';
+        if (!enriched.covenantDate && enriched.campDate) enriched.covenantDate = enriched.campDate;
+        return enriched;
     });
 
     // Auto-merge all members from SAMPLE_MEMBERS (including the 64 USBONG YOUTHCAMP members) if not present by name
@@ -3393,6 +3458,24 @@ function filterByChapterBullet(chapterValue, clickedBtn) {
     }
 }
 
+function calculateAgeClean(mem) {
+    if (mem.age && mem.age !== '') return mem.age;
+    if (!mem.birthday || mem.birthday === '') return '<span style="color: #64748B;">-</span>';
+    try {
+        const birthDate = new Date(mem.birthday);
+        if (isNaN(birthDate.getTime())) return '<span style="color: #64748B;">-</span>';
+        const today = new Date();
+        let age = today.getFullYear() - birthDate.getFullYear();
+        const m = today.getMonth() - birthDate.getMonth();
+        if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+            age--;
+        }
+        return age >= 0 && age <= 120 ? age : '<span style="color: #64748B;">-</span>';
+    } catch (e) {
+        return '<span style="color: #64748B;">-</span>';
+    }
+}
+
 function renderMembersTable() {
     const tbody = document.getElementById('members-table-body');
     const badge = document.getElementById('badge-members-count');
@@ -3406,21 +3489,21 @@ function renderMembersTable() {
     const chapterSelect = document.getElementById('members-filter-chapter');
     const query = searchInput ? searchInput.value.toLowerCase() : '';
     const deptFilter = deptSelect ? deptSelect.value : 'ALL';
-    const chapterFilter = chapterSelect ? chapterSelect.value : 'ALL';
+    const chapterSelectFilter = chapterSelect ? chapterSelect.value : 'ALL';
 
     const filtered = state.members.filter(mem => {
         const matchesQuery = (mem.name || '').toLowerCase().includes(query) || (mem.role || '').toLowerCase().includes(query);
         const matchesDept = deptFilter === 'ALL' || (mem.dept || mem.department || '') === deptFilter;
         const memChap = (mem.chapter || 'EAST').toLowerCase();
-        const filterChap = chapterFilter.toLowerCase().replace(' chapter', '');
-        const matchesChapter = chapterFilter === 'ALL' || mem.chapter === chapterFilter || memChap.includes(filterChap) || filterChap.includes(memChap);
+        const filterChap = chapterSelectFilter.toLowerCase().replace(' chapter', '');
+        const matchesChapter = chapterSelectFilter === 'ALL' || mem.chapter === chapterSelectFilter || memChap.includes(filterChap) || filterChap.includes(memChap);
         return matchesQuery && matchesDept && matchesChapter;
     });
 
     if (filtered.length === 0) {
         tbody.innerHTML = `
             <tr>
-                <td colspan="9" style="text-align: center; padding: 40px; color: var(--text-muted);">
+                <td colspan="11" style="text-align: center; padding: 40px; color: var(--text-muted);">
                     <div style="font-size: 2.5rem; margin-bottom: 12px;">👥</div>
                     <div style="font-size: 1.1rem; font-weight: 600; color: var(--text-primary);">No Members Found</div>
                     <p>No members currently match or exist in the directory. Add members using the button above.</p>
@@ -3455,7 +3538,7 @@ function renderMembersTable() {
             const chapterCount = filtered.filter(m => (m.chapter || 'EAST CHAPTER').toUpperCase() === cleanChap).length;
             rowsHtml.push(`
                 <tr class="chapter-section-header" style="background: rgba(15, 23, 42, 0.95); border-top: 2px solid rgba(56, 189, 248, 0.4); border-bottom: 1px solid rgba(56, 189, 248, 0.2);">
-                    <td colspan="9" style="padding: 14px 20px;">
+                    <td colspan="11" style="padding: 14px 20px;">
                         <div style="display: flex; align-items: center; justify-content: space-between;">
                             <div style="display: flex; align-items: center; gap: 10px;">
                                 <span style="font-size: 1.1rem;">🏛️</span>
@@ -3500,8 +3583,14 @@ function renderMembersTable() {
                 <td style="color: #E2E8F0; font-size: 0.88rem; white-space: nowrap; padding: 16px 20px;">
                     ${formatDateClean(mem.birthday)}
                 </td>
+                <td style="color: #38BDF8; font-weight: 700; font-size: 0.88rem; white-space: nowrap; padding: 16px 20px;">
+                    ${calculateAgeClean(mem)}
+                </td>
                 <td style="color: #CBD5E1; font-family: 'Roboto Mono', monospace, sans-serif; font-size: 0.88rem; padding: 16px 20px;">
                     ${mem.parentsContact || '<span style="color: #64748B;">-</span>'}
+                </td>
+                <td style="color: #E2E8F0; font-size: 0.88rem; padding: 16px 20px;">
+                    ${mem.address || '<span style="color: #64748B;">-</span>'}
                 </td>
                 <td style="color: #E2E8F0; font-size: 0.88rem; white-space: nowrap; padding: 16px 20px;">
                     ${formatDateClean(mem.campDate)}
@@ -3610,8 +3699,12 @@ function renderMembersMobileCards(filtered) {
                         </span>
                     </div>
                     <div>
-                        <span style="color: #64748B; font-size: 0.7rem; display: block; font-weight: 700; margin-bottom: 3px;">🎂 BIRTHDAY</span>
-                        <span style="color: #CBD5E1;">${formatDateClean(mem.birthday)}</span>
+                        <span style="color: #64748B; font-size: 0.7rem; display: block; font-weight: 700; margin-bottom: 3px;">🎂 BIRTHDAY & AGE</span>
+                        <span style="color: #CBD5E1;">${formatDateClean(mem.birthday)} (${calculateAgeClean(mem)} yrs)</span>
+                    </div>
+                    <div>
+                        <span style="color: #64748B; font-size: 0.7rem; display: block; font-weight: 700; margin-bottom: 3px;">🏠 HOME ADDRESS</span>
+                        <span style="color: #CBD5E1;">${mem.address || '-'}</span>
                     </div>
                     <div>
                         <span style="color: #64748B; font-size: 0.7rem; display: block; font-weight: 700; margin-bottom: 3px;">🏕️ YOUTH CAMP</span>
@@ -3806,6 +3899,45 @@ function openMemberProfile(memberId) {
             <div class="profile-stat-box">
                 <div class="num" style="color: #C084FC;" title="${presentCount} Present vs ${lateCount} Late Check-ins">${presentCount}:${lateCount}</div>
                 <div class="lbl">Present : Late Ratio</div>
+            </div>
+        </div>
+
+        <h4 style="font-size: 0.95rem; color: #38BDF8; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; font-weight: 800;">
+            <span>📋</span> Complete Personal & Youth Camp Dossier
+        </h4>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; background: rgba(15,23,42,0.8); padding: 18px; border-radius: 16px; border: 1px solid rgba(56,189,248,0.25); margin-bottom: 24px; box-shadow: 0 4px 15px rgba(0,0,0,0.3);">
+            <div>
+                <span style="color: #64748B; font-size: 0.72rem; display: block; font-weight: 700; margin-bottom: 3px;">👤 FULL NAME BREAKDOWN</span>
+                <span style="color: #F8FAFC; font-weight: 800; font-size: 0.92rem;">${member.name || '-'}</span>
+                <div style="color: #38BDF8; font-size: 0.78rem; margin-top: 3px;">First: <strong style="color:#FFF;">${member.firstName || member.name.split(' ')[0] || '-'}</strong> | Mid: <strong style="color:#FFF;">${member.middleName || '-'}</strong> | Last: <strong style="color:#FFF;">${member.lastName || member.name.split(' ').slice(-1)[0] || '-'}</strong></div>
+            </div>
+            <div>
+                <span style="color: #64748B; font-size: 0.72rem; display: block; font-weight: 700; margin-bottom: 3px;">🎂 BIRTHDAY & AGE</span>
+                <span style="color: #F8FAFC; font-weight: 700; font-size: 0.9rem;">${formatDateClean(member.birthday)} (${calculateAgeClean(member)} yrs old)</span>
+            </div>
+            <div>
+                <span style="color: #64748B; font-size: 0.72rem; display: block; font-weight: 700; margin-bottom: 3px;">🏠 HOME ADDRESS</span>
+                <span style="color: #E2E8F0; font-weight: 600; font-size: 0.9rem;">${member.address || '-'}</span>
+            </div>
+            <div>
+                <span style="color: #64748B; font-size: 0.72rem; display: block; font-weight: 700; margin-bottom: 3px;">📞 CONTACT NUMBER</span>
+                <span style="color: #38BDF8; font-weight: 700; font-size: 0.9rem; font-family: 'Roboto Mono', monospace;">${member.contactNum || '-'}</span>
+            </div>
+            <div>
+                <span style="color: #64748B; font-size: 0.72rem; display: block; font-weight: 700; margin-bottom: 3px;">📧 EMAIL ADDRESS</span>
+                <span style="color: #60A5FA; font-weight: 600; font-size: 0.88rem;">${member.email || '-'}</span>
+            </div>
+            <div>
+                <span style="color: #64748B; font-size: 0.72rem; display: block; font-weight: 700; margin-bottom: 3px;">👨‍👩‍👧 PARENTS CONTACT #</span>
+                <span style="color: #F8FAFC; font-weight: 700; font-size: 0.9rem; font-family: 'Roboto Mono', monospace;">${member.parentsContact || '-'}</span>
+            </div>
+            <div>
+                <span style="color: #64748B; font-size: 0.72rem; display: block; font-weight: 700; margin-bottom: 3px;">🏕️ YOUTH CAMP TITLE & DATE</span>
+                <span style="color: #F8FAFC; font-weight: 700; font-size: 0.9rem;">${member.campTitle || 'USBONG Encounter Camp'} • ${formatDateClean(member.campDate)}</span>
+            </div>
+            <div>
+                <span style="color: #64748B; font-size: 0.72rem; display: block; font-weight: 700; margin-bottom: 3px;">🙏 COVENANTED DATE</span>
+                <span style="color: #F8FAFC; font-weight: 700; font-size: 0.9rem;">${formatDateClean(member.covenantDate || member.campDate)}</span>
             </div>
         </div>
 
