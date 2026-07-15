@@ -5384,78 +5384,221 @@ function loadRememberedEmail() {
 // ============================================================================
 
 function openImportCSVModal() {
-    const backdrop = document.getElementById('import-csv-backdrop');
-    if (backdrop) backdrop.style.display = 'flex';
+    const modal = document.getElementById('import-csv-backdrop');
+    if (modal) modal.style.display = 'flex';
 }
 
 function closeImportCSVModal() {
-    const backdrop = document.getElementById('import-csv-backdrop');
-    if (backdrop) backdrop.style.display = 'none';
+    const modal = document.getElementById('import-csv-backdrop');
+    if (modal) modal.style.display = 'none';
 }
 
 function handleCSVFileUpload(event) {
     const file = event.target.files?.[0];
     if (!file) return;
-
     const reader = new FileReader();
     reader.onload = function(e) {
-        const text = e.target.result;
         const textarea = document.getElementById('import-csv-text');
-        if (textarea) textarea.value = text;
-        showToast(`Loaded ${file.name} into editor`, 'info');
+        if (textarea) {
+            textarea.value = e.target.result;
+            showToast(`Loaded ${file.name}. Click "⚡ Auto Arrange Columns" to smart-map columns!`, 'info');
+        }
     };
     reader.readAsText(file);
+}
+
+function splitCSVLine(line) {
+    if (line.includes('\t')) {
+        return line.split('\t').map(c => c.trim().replace(/^"+|"+$/g, ''));
+    }
+    const result = [];
+    let cur = '';
+    let inQuote = false;
+    for (let i = 0; i < line.length; i++) {
+        const char = line[i];
+        if (char === '"' && (i === 0 || line[i-1] !== '\\')) {
+            inQuote = !inQuote;
+        } else if (char === ',' && !inQuote) {
+            result.push(cur.trim().replace(/^"+|"+$/g, ''));
+            cur = '';
+        } else {
+            cur += char;
+        }
+    }
+    result.push(cur.trim().replace(/^"+|"+$/g, ''));
+    return result;
+}
+
+function smartParseCSVRows(rawText) {
+    const lines = rawText.trim().split(/\r?\n/);
+    const parsedRows = [];
+    
+    // Default mappings if no header detected
+    let nameCol = 0;
+    let chapterCol = 1;
+    let deptCol = 2;
+    let roleCol = 3;
+    let phoneCol = 4;
+    let emailCol = 5;
+    let birthdayCol = -1;
+    let parentContactCol = -1;
+    let addressCol = -1;
+    
+    let headerRowIndex = -1;
+
+    // Scan for header row
+    for (let i = 0; i < Math.min(lines.length, 15); i++) {
+        const lineStr = lines[i].toLowerCase();
+        if (lineStr.includes('name') || lineStr.includes('chapter') || lineStr.includes('birthday') || lineStr.includes('contact') || lineStr.includes('phone')) {
+            headerRowIndex = i;
+            const headers = splitCSVLine(lines[i]).map(h => h.toLowerCase());
+            headers.forEach((h, idx) => {
+                if (h.includes('name') && !h.includes('parent') && !h.includes('chapter')) nameCol = idx;
+                else if (h.includes('chapter') || h.includes('area')) chapterCol = idx;
+                else if (h.includes('dept') || h.includes('ministry') || h.includes('service')) deptCol = idx;
+                else if (h.includes('role') || h.includes('designation') || h.includes('head') || h.includes('position')) roleCol = idx;
+                else if (h.includes('parent') && (h.includes('contact') || h.includes('phone') || h.includes('#'))) parentContactCol = idx;
+                else if ((h.includes('contact') || h.includes('phone') || h.includes('mobile') || h.includes('cell') || h === 'no' || h === 'num') && !h.includes('parent')) phoneCol = idx;
+                else if (h.includes('email') || h.includes('mail')) emailCol = idx;
+                else if (h.includes('birth') || h.includes('bday') || h.includes('dob')) birthdayCol = idx;
+                else if (h.includes('address') || h.includes('addr') || h.includes('location')) addressCol = idx;
+            });
+            break;
+        }
+    }
+
+    const startRow = headerRowIndex !== -1 ? headerRowIndex + 1 : 0;
+
+    for (let i = startRow; i < lines.length; i++) {
+        const line = lines[i];
+        if (!line || !line.trim()) continue;
+        // Skip obvious title/junk rows
+        if (line.replace(/,/g, '').trim() === '' || line.toLowerCase().includes('usbong youthcamp') || line.toLowerCase().includes('===') || line.toLowerCase().includes('---')) continue;
+
+        const cols = splitCSVLine(line);
+        if (cols.length === 0 || cols.every(c => !c)) continue;
+
+        let name = nameCol >= 0 && cols[nameCol] ? cols[nameCol] : '';
+        // If name is just a sequence number ('1', '2') and we had no header, look for actual name column
+        if (/^\d+$/.test(name) || !name) {
+            for (let c = 0; c < cols.length; c++) {
+                if (c !== chapterCol && c !== phoneCol && c !== birthdayCol && cols[c] && /[a-zA-Z]{3,}/.test(cols[c]) && !['east','west','north','south','central','chapter'].some(x => cols[c].toLowerCase().includes(x))) {
+                    name = cols[c];
+                    break;
+                }
+            }
+        }
+        if (!name || /^\d+$/.test(name)) continue;
+
+        let chapter = chapterCol >= 0 && cols[chapterCol] ? cols[chapterCol] : 'East Chapter';
+        if (chapter.toUpperCase() === 'EAST') chapter = 'East Chapter';
+        else if (chapter.toUpperCase() === 'WEST') chapter = 'West Chapter';
+        else if (chapter.toUpperCase() === 'NORTH') chapter = 'North Chapter';
+        else if (chapter.toUpperCase() === 'SOUTH') chapter = 'South Chapter';
+        else if (chapter.toUpperCase() === 'CENTRAL') chapter = 'Central Chapter';
+
+        let department = deptCol >= 0 && cols[deptCol] ? cols[deptCol] : 'Programs & Events';
+        let role = roleCol >= 0 && cols[roleCol] && !/^\d+$/.test(cols[roleCol]) ? cols[roleCol] : 'Youth Member';
+        let phone = phoneCol >= 0 && cols[phoneCol] ? cols[phoneCol].replace(/[^0-9+]/g, '') : '';
+        if (phone.length === 10 && phone.startsWith('9')) phone = '0' + phone;
+        let email = emailCol >= 0 && cols[emailCol] ? cols[emailCol] : '';
+        let birthday = birthdayCol >= 0 && cols[birthdayCol] ? cols[birthdayCol].replace(/[^0-9/.-]/g, '') : '2008-01-01';
+        let parentContact = parentContactCol >= 0 && cols[parentContactCol] ? cols[parentContactCol].replace(/[^0-9+]/g, '') : '';
+        if (parentContact.length === 10 && parentContact.startsWith('9')) parentContact = '0' + parentContact;
+        let address = addressCol >= 0 && cols[addressCol] ? cols[addressCol] : '';
+
+        parsedRows.push({
+            name: name.trim(),
+            chapter: chapter.trim() || 'East Chapter',
+            department: department.trim() || 'Programs & Events',
+            role: role.trim() || 'Youth Member',
+            phone: phone.trim(),
+            email: email.trim(),
+            birthdate: birthday.trim() || '2008-01-01',
+            parentContact: parentContact.trim(),
+            address: address.trim()
+        });
+    }
+
+    return parsedRows;
+}
+
+function autoArrangeCSVContent() {
+    const textarea = document.getElementById('import-csv-text');
+    if (!textarea || !textarea.value.trim()) {
+        showToast('Please paste or upload CSV rows before clicking Auto Arrange.', 'warning');
+        return;
+    }
+
+    const parsed = smartParseCSVRows(textarea.value);
+    if (parsed.length === 0) {
+        showToast('Could not extract member data rows. Please check if your text contains names.', 'error');
+        return;
+    }
+
+    // Re-format textarea into clean standard CSV structure
+    const header = 'Name, Chapter Area, Ministry/Dept, Designation/Role, Phone, Email, Birthday, Parents Contact, Address';
+    const body = parsed.map(p => {
+        const escape = str => str && (str.includes(',') || str.includes('"')) ? `"${str.replace(/"/g, '""')}"` : (str || '');
+        return [
+            escape(p.name),
+            escape(p.chapter),
+            escape(p.department),
+            escape(p.role),
+            escape(p.phone),
+            escape(p.email),
+            escape(p.birthdate),
+            escape(p.parentContact),
+            escape(p.address)
+        ].join(', ');
+    }).join('\n');
+
+    textarea.value = `${header}\n${body}`;
+    showToast(`⚡ Smartly auto-arranged ${parsed.length} rows! Columns mapped perfectly. Ready to import.`, 'success');
 }
 
 function processCSVImport() {
     const textarea = document.getElementById('import-csv-text');
     if (!textarea || !textarea.value.trim()) {
-        showToast('Please upload a CSV file or paste CSV rows first.', 'error');
+        showToast('Please upload a CSV file or paste formatted rows first.', 'warning');
         return;
     }
 
-    const lines = textarea.value.trim().split(/\r?\n/);
-    let importedCount = 0;
+    const parsed = smartParseCSVRows(textarea.value);
+    if (parsed.length === 0) {
+        showToast('No valid member rows detected. Try clicking Auto Arrange or check formatting.', 'error');
+        return;
+    }
 
     if (!state.members) state.members = [];
 
-    lines.forEach((line, idx) => {
-        if (!line.trim()) return;
-        if (idx === 0 && line.toLowerCase().includes('name') && line.toLowerCase().includes('chapter')) return; // skip header
-
-        const cols = line.split(',').map(c => c.trim());
-        const name = cols[0];
-        if (!name) return;
-
-        const chapter = cols[1] || 'East Chapter';
-        const department = cols[2] || 'Programs & Events';
-        const role = cols[3] || 'Youth Member';
-        const phone = cols[4] || '';
-        const email = cols[5] || '';
-
-        const newMember = {
-            id: 'm-import-' + Date.now() + '-' + importedCount,
-            name: name,
-            chapter: chapter,
-            department: department,
-            role: role,
-            phone: phone,
-            email: email,
-            birthdate: '2008-01-01',
-            parentContact: '',
-            youthCampDate: '2024-05-15'
-        };
-
-        state.members.push(newMember);
+    let importedCount = 0;
+    parsed.forEach(row => {
+        state.members.push({
+            id: 'm-import-' + Date.now() + '-' + Math.random().toString(36).substr(2, 5) + '-' + importedCount,
+            name: row.name,
+            chapter: row.chapter,
+            department: row.department,
+            role: row.role,
+            phone: row.phone,
+            contactNum: row.phone,
+            email: row.email,
+            birthdate: row.birthdate,
+            parentContact: row.parentContact,
+            address: row.address,
+            status: 'Active'
+        });
         importedCount++;
     });
 
     saveToStorage();
-    renderAll();
+    if (typeof renderMembersTable === 'function') renderMembersTable();
+    if (typeof renderAll === 'function') renderAll();
+    if (typeof updateBadgeCount === 'function') updateBadgeCount();
     closeImportCSVModal();
     textarea.value = '';
-    showToast(`Successfully imported ${importedCount} members from CSV!`, 'success');
-    logAuditAction(`Imported ${importedCount} members via CSV`, 'members');
+    showToast(`🎉 Successfully imported & auto-arranged ${importedCount} member(s) into the portal!`, 'success');
+    if (typeof logAuditAction === 'function') logAuditAction(`Imported ${importedCount} members via CSV/Excel`, 'members');
 }
 
 // ============================================================================
@@ -6984,69 +7127,7 @@ function printMemberReportCardFromModal() {
 // ==========================================
 // BULK CSV MEMBER IMPORT WIZARD
 // ==========================================
-function openImportCSVModal() {
-    const modal = document.getElementById('import-csv-backdrop');
-    if (modal) modal.style.display = 'flex';
-}
-
-function closeImportCSVModal() {
-    const modal = document.getElementById('import-csv-backdrop');
-    if (modal) modal.style.display = 'none';
-}
-
-function handleCSVFileUpload(event) {
-    const file = event.target.files[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = function(e) {
-        const textarea = document.getElementById('import-csv-text');
-        if (textarea) textarea.value = e.target.result;
-    };
-    reader.readAsText(file);
-}
-
-function processCSVImport() {
-    const textarea = document.getElementById('import-csv-text');
-    if (!textarea || !textarea.value.trim()) {
-        showToast('Please upload a CSV file or paste formatted rows first.', 'warning');
-        return;
-    }
-
-    const lines = textarea.value.trim().split(/\r?\n/);
-    let importedCount = 0;
-
-    lines.forEach((line, idx) => {
-        if (idx === 0 && line.toLowerCase().includes('name')) return; // Skip header row if present
-        const parts = line.split(',').map(p => p.trim());
-        if (parts.length < 1 || !parts[0]) return;
-
-        const name = parts[0];
-        const chapter = parts[1] || 'EAST CHAPTER';
-        const department = parts[2] || 'Youth';
-        const role = parts[3] || 'Member';
-        const phone = parts[4] || '';
-        const email = parts[5] || '';
-
-        state.members.push({
-            id: 'mem-' + Date.now() + '-' + Math.random().toString(36).substr(2, 5),
-            name: name,
-            chapter: chapter,
-            department: department,
-            role: role,
-            contactNum: phone,
-            email: email,
-            status: 'Active'
-        });
-        importedCount++;
-    });
-
-    saveToStorage();
-    renderMembersTable();
-    updateBadgeCount();
-    closeImportCSVModal();
-    textarea.value = '';
-    showToast(`🎉 Successfully imported ${importedCount} member(s) into the portal!`, 'success');
-}
+// (Consolidated with main CSV import engine at line 5386)
 
 // ==========================================
 // GITHUB-STYLE CHAPTER ACTIVITY HEATMAP

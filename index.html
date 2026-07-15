@@ -17,7 +17,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <link rel="apple-touch-icon" href="mfc-logo.png">
     <!-- Custom Stylesheet -->
-    <link rel="stylesheet" href="styles.css?v=4.18">
+    <link rel="stylesheet" href="styles.css?v=4.19">
     <!-- jsPDF & AutoTable CDNs for PDF Export -->
     <script defer src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script defer src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
@@ -1994,7 +1994,7 @@
                 <code
                     style="color: #38BDF8; background: #0F172A; padding: 2px 6px; border-radius: 4px;">Name, Chapter Area, Ministry/Dept, Designation/Role, Phone, Email</code>
             </p>
-            <div style="margin-bottom: 16px;">
+            <div style="margin-bottom: 16px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px;">
                 <label for="import-csv-file" class="btn-secondary"
                     style="display: inline-flex; align-items: center; gap: 8px; cursor: pointer; background: rgba(56, 189, 248, 0.12); color: #38BDF8; border: 1px solid rgba(56, 189, 248, 0.35); padding: 8px 14px; border-radius: 8px; font-size: 0.88rem;">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
@@ -2007,12 +2007,18 @@
                     <input type="file" id="import-csv-file" accept=".csv" onchange="handleCSVFileUpload(event)"
                         style="display: none;">
                 </label>
+                <button type="button" onclick="autoArrangeCSVContent()" class="btn-secondary"
+                    style="display: inline-flex; align-items: center; gap: 8px; background: linear-gradient(135deg, rgba(168,85,247,0.22), rgba(126,34,206,0.18)); border: 1px solid rgba(168,85,247,0.55); color: #D8B4FE; font-weight: 700; font-size: 0.88rem; padding: 8px 16px; border-radius: 8px; cursor: pointer; transition: all 0.2s; box-shadow: 0 4px 15px rgba(168,85,247,0.15);" title="Smartly auto-arrange and format pasted table rows according to detected headers">
+                    <span>⚡ Auto Arrange Columns</span>
+                </button>
             </div>
             <textarea id="import-csv-text" rows="6"
                 placeholder="Example:&#10;Juan Dela Cruz, East Chapter, Programs & Events, Youth Member, 09171234567, juan@mfcyouth.org&#10;Maria Santos, Central Chapter, Logistics & Tech, Household Head, 09181234567, maria@mfcyouth.org"
                 style="width: 100%; background: #0F172A; color: #E2E8F0; border: 1px solid rgba(255,255,255,0.15); border-radius: 10px; padding: 12px; font-family: monospace; font-size: 0.85rem; outline: none; resize: vertical; margin-bottom: 20px;"></textarea>
-            <div style="display: flex; justify-content: flex-end; gap: 10px;">
+            <div style="display: flex; justify-content: flex-end; gap: 10px; flex-wrap: wrap;">
                 <button type="button" class="btn-secondary" onclick="closeImportCSVModal()">Cancel</button>
+                <button type="button" onclick="autoArrangeCSVContent()" class="btn-secondary"
+                    style="background: rgba(168, 85, 247, 0.15); color: #C084FC; border: 1px solid rgba(168, 85, 247, 0.4); font-weight: 700;">⚡ Auto Arrange</button>
                 <button type="button" class="btn-primary glow-button" onclick="processCSVImport()"
                     style="background: linear-gradient(135deg, #0284C7, #38BDF8);">Import Members</button>
             </div>
@@ -3066,12 +3072,12 @@
     <div class="toast-container" id="toast-container"></div>
 
     <!-- Application Javascript -->
-    <script src="script.js?v=4.18"></script>
+    <script src="script.js?v=4.19"></script>
     <!-- PWA Offline Service Worker Registration -->
     <script>
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
-                navigator.serviceWorker.register('./sw.js?v=4.18')
+                navigator.serviceWorker.register('./sw.js?v=4.19')
                     .then(reg => {
                         console.log('[PWA] Service Worker registered successfully:', reg.scope);
                         reg.onupdatefound = () => {
