@@ -17,7 +17,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <link rel="apple-touch-icon" href="mfc-logo.png">
     <!-- Custom Stylesheet -->
-    <link rel="stylesheet" href="styles.css?v=4.13">
+    <link rel="stylesheet" href="styles.css?v=4.14">
     <!-- jsPDF & AutoTable CDNs for PDF Export -->
     <script defer src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script defer src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
@@ -267,6 +267,11 @@
                         <span>🙏 Prayer Wall</span>
                         <span id="prayer-board-badge" style="background: #9333EA; color: #FFF; border-radius: 10px; padding: 1px 6px; font-size: 0.68rem;">3</span>
                     </button>
+                    <!-- Cinematic Launch Showcase Button -->
+                    <a href="launch.html" title="Watch the Cinematic Launch Showcase"
+                        style="display: flex; align-items: center; gap: 6px; padding: 6px 14px; background: linear-gradient(135deg, rgba(236,72,153,0.25), rgba(192,38,211,0.15)); border: 1px solid rgba(236,72,153,0.5); border-radius: 20px; color: #F472B6; font-size: 0.75rem; font-weight: 700; text-decoration: none; cursor: pointer; transition: all 0.2s; box-shadow: 0 0 12px rgba(236,72,153,0.2);">
+                        <span>🎬 Launch Trailer</span>
+                    </a>
                     <!-- Social / Web Links -->
                     <a href="https://www.facebook.com/MFCYouthTarlac" target="_blank" rel="noopener noreferrer"
                         class="top-bar-icon-link text-blue" title="MFC Youth Tarlac Official Facebook Page">
@@ -3008,12 +3013,12 @@
     <div class="toast-container" id="toast-container"></div>
 
     <!-- Application Javascript -->
-    <script src="script.js?v=4.13"></script>
+    <script src="script.js?v=4.14"></script>
     <!-- PWA Offline Service Worker Registration -->
     <script>
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
-                navigator.serviceWorker.register('./sw.js?v=4.13')
+                navigator.serviceWorker.register('./sw.js?v=4.14')
                     .then(reg => {
                         console.log('[PWA] Service Worker registered successfully:', reg.scope);
                         reg.onupdatefound = () => {
