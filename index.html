@@ -17,7 +17,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <link rel="apple-touch-icon" href="mfc-logo.png">
     <!-- Custom Stylesheet -->
-    <link rel="stylesheet" href="styles.css?v=4.20">
+    <link rel="stylesheet" href="styles.css?v=4.21">
     <!-- jsPDF & AutoTable CDNs for PDF Export -->
     <script defer src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script defer src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
@@ -996,17 +996,6 @@
                                         <line x1="8" y1="17" x2="16" y2="17" />
                                     </svg>
                                     <span>Export Excel/CSV</span>
-                                </button>
-                                <button class="btn-secondary" onclick="openImportCSVModal()"
-                                    title="Bulk Import Members from CSV"
-                                    style="padding: 10px 16px; border-color: rgba(56, 189, 248, 0.4); color: #38BDF8; display: flex; align-items: center;">
-                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                                        style="width: 16px; height: 16px; margin-right: 6px;">
-                                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-                                        <polyline points="17 8 12 3 7 8" />
-                                        <line x1="12" y1="3" x2="12" y2="15" />
-                                    </svg>
-                                    <span>Import CSV</span>
                                 </button>
                                 <button class="btn-secondary" onclick="openHouseholdTreeViewModal()"
                                     title="View Visual Pastoral Household & Leadership Mentoring Tree"
@@ -3072,12 +3061,12 @@
     <div class="toast-container" id="toast-container"></div>
 
     <!-- Application Javascript -->
-    <script src="script.js?v=4.20"></script>
+    <script src="script.js?v=4.21"></script>
     <!-- PWA Offline Service Worker Registration -->
     <script>
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
-                navigator.serviceWorker.register('./sw.js?v=4.20')
+                navigator.serviceWorker.register('./sw.js?v=4.21')
                     .then(reg => {
                         console.log('[PWA] Service Worker registered successfully:', reg.scope);
                         reg.onupdatefound = () => {
