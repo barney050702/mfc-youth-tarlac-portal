@@ -7433,9 +7433,274 @@ function nextAbsenteeSlide() {
     }
 }
 
+// ============================================================================
+// LIVE SPECTATOR & ACTIVE PRESENCE RADAR ENGINE
+// ============================================================================
+
+const MFCSpectatorRadar = {
+    sessionId: null,
+    userName: 'Guest Spectator',
+    deviceInfo: 'Web Browser',
+    activeTab: 'Dashboard',
+    connectedAt: null,
+    heartbeatInterval: null,
+    pollingInterval: null,
+
+    init: function() {
+        // Generate or load session ID
+        let sid = sessionStorage.getItem('ps_spectator_session_id');
+        if (!sid) {
+            sid = 'sess_' + Math.random().toString(36).substr(2, 9) + '_' + Date.now().toString(36);
+            sessionStorage.setItem('ps_spectator_session_id', sid);
+        }
+        this.sessionId = sid;
+        this.connectedAt = sessionStorage.getItem('ps_spectator_connected_at') || Date.now();
+        sessionStorage.setItem('ps_spectator_connected_at', this.connectedAt);
+
+        // Determine user name
+        const customName = localStorage.getItem('ps_spectator_custom_name');
+        const authUser = localStorage.getItem('ps_current_user');
+        if (customName) {
+            this.userName = customName;
+        } else if (authUser) {
+            this.userName = `${authUser} (Logged In)`;
+        } else {
+            this.userName = `Visitor (#${this.sessionId.split('_')[1].toUpperCase()})`;
+        }
+
+        // Determine device info
+        const ua = navigator.userAgent || '';
+        let device = '💻 Desktop Browser';
+        if (/android/i.test(ua)) device = '📱 Android Mobile';
+        else if (/ipad|iphone|ipod/i.test(ua)) device = '📱 Apple iOS Device';
+        else if (/mac/i.test(ua)) device = '💻 Mac Desktop';
+        else if (/win/i.test(ua)) device = '💻 Windows PC';
+
+        let browser = 'Browser';
+        if (ua.includes('Chrome') && !ua.includes('Edg')) browser = 'Chrome';
+        else if (ua.includes('Safari') && !ua.includes('Chrome')) browser = 'Safari';
+        else if (ua.includes('Edg')) browser = 'Edge';
+        else if (ua.includes('Firefox')) browser = 'Firefox';
+
+        this.deviceInfo = `${device} (${browser})`;
+
+        // Start heartbeat and polling
+        this.sendHeartbeat();
+        this.pollSpectators();
+
+        if (this.heartbeatInterval) clearInterval(this.heartbeatInterval);
+        this.heartbeatInterval = setInterval(() => this.sendHeartbeat(), 8000);
+
+        if (this.pollingInterval) clearInterval(this.pollingInterval);
+        this.pollingInterval = setInterval(() => this.pollSpectators(), 6000);
+
+        // Update when tab changes
+        window.addEventListener('hashchange', () => this.sendHeartbeat());
+        document.addEventListener('visibilitychange', () => {
+            if (document.visibilityState === 'visible') {
+                this.sendHeartbeat();
+            }
+        });
+    },
+
+    sendHeartbeat: function() {
+        try {
+            // Detect current active tab
+            const activeNav = document.querySelector('.nav-item.active');
+            if (activeNav) {
+                this.activeTab = activeNav.innerText.trim() || 'Dashboard';
+            } else {
+                this.activeTab = 'Dashboard';
+            }
+
+            const payload = {
+                sessionId: this.sessionId,
+                userName: this.userName,
+                device: this.deviceInfo,
+                activeTab: this.activeTab,
+                connectedAt: this.connectedAt,
+                lastSeen: Date.now()
+            };
+
+            // 1. Update local storage mirror
+            let localList = [];
+            try {
+                localList = JSON.parse(localStorage.getItem('ps_live_spectators') || '[]');
+            } catch (e) { localList = []; }
+
+            // Filter out stale (>35s) or replace existing
+            localList = localList.filter(s => s && s.sessionId !== this.sessionId && (Date.now() - (s.lastSeen || 0)) < 35000);
+            localList.push(payload);
+            localStorage.setItem('ps_live_spectators', JSON.stringify(localList));
+
+            // 2. Push to Firebase Cloud (if configured or available)
+            const dbUrl = (MFCFirebaseCloud && MFCFirebaseCloud.config && MFCFirebaseCloud.config.databaseURL) ?
+                MFCFirebaseCloud.config.databaseURL.replace(/\/$/, "") : "https://mfc-youth-data-default-rtdb.firebaseio.com";
+            
+            const endpoint = `${dbUrl}/mfc_portal_live_data/presence/${this.sessionId}.json`;
+
+            if (typeof firebase !== 'undefined' && firebase.database) {
+                const ref = firebase.database().ref(`mfc_portal_live_data/presence/${this.sessionId}`);
+                ref.set(payload).catch(() => {});
+                ref.onDisconnect().remove().catch(() => {});
+            } else {
+                fetch(endpoint, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                }).catch(() => {});
+            }
+        } catch (err) {
+            console.warn('Spectator heartbeat notice:', err);
+        }
+    },
+
+    pollSpectators: function() {
+        try {
+            const dbUrl = (MFCFirebaseCloud && MFCFirebaseCloud.config && MFCFirebaseCloud.config.databaseURL) ?
+                MFCFirebaseCloud.config.databaseURL.replace(/\/$/, "") : "https://mfc-youth-data-default-rtdb.firebaseio.com";
+            
+            const endpoint = `${dbUrl}/mfc_portal_live_data/presence.json`;
+
+            fetch(endpoint)
+                .then(res => res.json())
+                .then(data => {
+                    let onlineSessions = [];
+                    if (data && typeof data === 'object') {
+                        Object.values(data).forEach(item => {
+                            if (item && item.sessionId && (Date.now() - (item.lastSeen || 0)) < 35000) {
+                                onlineSessions.push(item);
+                            }
+                        });
+                    }
+
+                    // Merge with local mirror just in case
+                    try {
+                        const localList = JSON.parse(localStorage.getItem('ps_live_spectators') || '[]');
+                        localList.forEach(l => {
+                            if (l && l.sessionId && (Date.now() - (l.lastSeen || 0)) < 35000 && !onlineSessions.some(o => o.sessionId === l.sessionId)) {
+                                onlineSessions.push(l);
+                            }
+                        });
+                    } catch (e) {}
+
+                    this.renderSpectatorCountAndList(onlineSessions);
+                })
+                .catch(() => {
+                    // Fallback to local mirror
+                    try {
+                        const localList = JSON.parse(localStorage.getItem('ps_live_spectators') || '[]');
+                        const activeLocal = localList.filter(l => l && l.sessionId && (Date.now() - (l.lastSeen || 0)) < 35000);
+                        this.renderSpectatorCountAndList(activeLocal);
+                    } catch (e) {}
+                });
+        } catch (err) {
+            console.warn('Spectator poll error:', err);
+        }
+    },
+
+    renderSpectatorCountAndList: function(sessions) {
+        // Make sure our own session is always included in active view
+        if (!sessions.some(s => s.sessionId === this.sessionId)) {
+            sessions.push({
+                sessionId: this.sessionId,
+                userName: this.userName,
+                device: this.deviceInfo,
+                activeTab: this.activeTab || 'Dashboard',
+                connectedAt: this.connectedAt,
+                lastSeen: Date.now()
+            });
+        }
+
+        const count = sessions.length;
+        const countLabel = document.getElementById('spectator-count-label');
+        if (countLabel) {
+            countLabel.textContent = `👁️ Spectators: ${count} Live`;
+        }
+        const modalCountEl = document.getElementById('spectator-modal-total-count');
+        if (modalCountEl) {
+            modalCountEl.textContent = `${count} ${count === 1 ? 'Spectator' : 'Spectators'} Viewing Now`;
+        }
+
+        const container = document.getElementById('spectator-list-container');
+        if (!container) return;
+
+        sessions.sort((a, b) => (b.lastSeen || 0) - (a.lastSeen || 0));
+
+        container.innerHTML = sessions.map(s => {
+            const isMe = (s.sessionId === this.sessionId);
+            const secsAgo = Math.max(1, Math.floor((Date.now() - (s.lastSeen || Date.now())) / 1000));
+            const durationMins = Math.floor((Date.now() - (s.connectedAt || Date.now())) / 60000);
+            
+            let statusBadge = `<span style="background: rgba(16,185,129,0.2); color: #34D399; border: 1px solid #10B981; padding: 2px 8px; border-radius: 12px; font-size: 0.7rem; font-weight: 700;">🟢 Active (${secsAgo}s ago)</span>`;
+            if (secsAgo > 18) {
+                statusBadge = `<span style="background: rgba(245,158,11,0.2); color: #FBBF24; border: 1px solid #F59E0B; padding: 2px 8px; border-radius: 12px; font-size: 0.7rem; font-weight: 700;">🟡 Idle (${secsAgo}s ago)</span>`;
+            }
+
+            return `
+                <div style="background: ${isMe ? 'rgba(16,185,129,0.12)' : 'rgba(15,23,42,0.7)'}; border: 1px solid ${isMe ? 'rgba(16,185,129,0.4)' : 'rgba(255,255,255,0.08)'}; border-radius: 14px; padding: 14px 16px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;">
+                    <div style="display: flex; align-items: center; gap: 12px;">
+                        <div style="width: 40px; height: 40px; border-radius: 12px; background: ${isMe ? 'linear-gradient(135deg, #10B981, #059669)' : 'rgba(30,41,59,0.9)'}; display: flex; align-items: center; justify-content: center; font-size: 1.3rem;">
+                            ${s.userName.includes('Admin') || s.userName.includes('Logged In') || s.userName.includes('Leader') ? '👑' : '👤'}
+                        </div>
+                        <div>
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <span style="color: #FFF; font-weight: 800; font-size: 0.95rem;">${s.userName}</span>
+                                ${isMe ? '<span style="background: #10B981; color: #FFF; font-size: 0.65rem; font-weight: 800; padding: 1px 6px; border-radius: 6px;">YOU</span>' : ''}
+                            </div>
+                            <div style="color: #94A3B8; font-size: 0.78rem;">${s.device || 'Web Browser'} • Online ${durationMins > 0 ? durationMins + 'm' : '<1m'}</div>
+                        </div>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 12px;">
+                        <span style="background: rgba(56,189,248,0.15); border: 1px solid rgba(56,189,248,0.3); color: #38BDF8; padding: 4px 10px; border-radius: 10px; font-size: 0.75rem; font-weight: 700;">
+                            📌 ${s.activeTab || 'Dashboard'}
+                        </span>
+                        ${statusBadge}
+                    </div>
+                </div>
+            `;
+        }).join('');
+    }
+};
+
+function openSpectatorModal() {
+    const modal = document.getElementById('spectator-monitor-modal');
+    if (modal) {
+        const nameInput = document.getElementById('my-spectator-name-input');
+        if (nameInput) nameInput.value = MFCSpectatorRadar.userName;
+        modal.style.display = 'flex';
+        MFCSpectatorRadar.pollSpectators();
+    }
+}
+
+function closeSpectatorModal() {
+    const modal = document.getElementById('spectator-monitor-modal');
+    if (modal) modal.style.display = 'none';
+}
+
+function updateMySpectatorName() {
+    const nameInput = document.getElementById('my-spectator-name-input');
+    if (!nameInput) return;
+    const newName = nameInput.value.trim();
+    if (newName) {
+        MFCSpectatorRadar.userName = newName;
+        localStorage.setItem('ps_spectator_custom_name', newName);
+        MFCSpectatorRadar.sendHeartbeat();
+        showToast(`👁️ Spectator display name updated to: ${newName}`, 'success');
+    } else {
+        showToast('Please enter a valid display name', 'warning');
+    }
+}
+
+function triggerSpectatorBroadcast() {
+    showToast('🔔 Ping sent to all live spectators viewing right now!', 'info');
+    playSound('bell');
+}
+
 // Initialize on DOM ready
 document.addEventListener('DOMContentLoaded', () => {
     initApp();
     initMobileNativeGestures();
+    MFCSpectatorRadar.init();
 });
 
