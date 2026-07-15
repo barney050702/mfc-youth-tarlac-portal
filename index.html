@@ -17,7 +17,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <link rel="apple-touch-icon" href="mfc-logo.png">
     <!-- Custom Stylesheet -->
-    <link rel="stylesheet" href="styles.css?v=4.10">
+    <link rel="stylesheet" href="styles.css?v=4.11">
     <!-- jsPDF & AutoTable CDNs for PDF Export -->
     <script defer src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script defer src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
@@ -1385,22 +1385,6 @@
                         </div>
                     </div>
 
-                    <!-- Visual Financial Health Breakdown Chart -->
-                    <div class="glass-panel" style="padding: 20px 24px; margin-bottom: 24px; border: 1px solid rgba(56, 189, 248, 0.25);">
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; flex-wrap: wrap; gap: 10px;">
-                            <div style="display: flex; align-items: center; gap: 10px;">
-                                <span style="font-size: 1.3rem;">💰</span>
-                                <div>
-                                    <h4 style="color: #F8FAFC; font-size: 0.95rem; font-weight: 800; margin: 0;">Chapter Treasury Allocation Chart</h4>
-                                    <span style="color: #94A3B8; font-size: 0.75rem;">Visual ratio of Income Inflows vs. Expense Outflows</span>
-                                </div>
-                            </div>
-                            <span class="badge badge-blue" id="funds-net-ratio-badge">100% Retained</span>
-                        </div>
-                        <div id="funds-visual-chart">
-                            <!-- Populated dynamically via script.js -->
-                        </div>
-                    </div>
 
                     <!-- Action Bar / Search & Filter -->
                     <div class="toolbar" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;">
@@ -3034,12 +3018,12 @@
     <div class="toast-container" id="toast-container"></div>
 
     <!-- Application Javascript -->
-    <script src="script.js?v=4.10"></script>
+    <script src="script.js?v=4.11"></script>
     <!-- PWA Offline Service Worker Registration -->
     <script>
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
-                navigator.serviceWorker.register('./sw.js?v=4.10')
+                navigator.serviceWorker.register('./sw.js?v=4.11')
                     .then(reg => {
                         console.log('[PWA] Service Worker registered successfully:', reg.scope);
                         reg.onupdatefound = () => {
