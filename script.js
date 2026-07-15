@@ -884,6 +884,7 @@ function renderDashboard() {
     }
 
     renderDashboardCelebrants();
+    renderDashboardAgenda();
 }
 
 function renderDashboardCelebrants() {
@@ -933,6 +934,87 @@ function renderDashboardCelebrants() {
                     </div>
                 </div>
                 <span class="badge badge-purple" style="font-size: 0.72rem;">🎉 Celebrant</span>
+            </div>
+        `;
+    }).join('');
+}
+
+function renderDashboardAgenda() {
+    const elList = document.getElementById('dashboard-upcoming-list');
+    if (!elList) return;
+
+    const now = new Date();
+    now.setHours(0, 0, 0, 0);
+
+    // Get upcoming activities first, sorted chronologically
+    let upcomingActs = state.activities.filter(a => {
+        const d = new Date(a.date);
+        return (a.status === 'Upcoming' || (!isNaN(d) && d >= now));
+    }).sort((a, b) => new Date(a.date) - new Date(b.date));
+
+    // If fewer than 5 upcoming, include recent completed ones sorted descending by date so the agenda card is rich and informative
+    if (upcomingActs.length < 5) {
+        const recentCompleted = state.activities.filter(a => !upcomingActs.some(u => u.id === a.id))
+            .sort((a, b) => new Date(b.date) - new Date(a.date))
+            .slice(0, 6 - upcomingActs.length);
+        upcomingActs = [...upcomingActs, ...recentCompleted];
+    }
+
+    const badgeEl = document.getElementById('agenda-count-badge');
+    const upcomingOnlyCount = state.activities.filter(a => a.status === 'Upcoming').length;
+    if (badgeEl) {
+        badgeEl.textContent = upcomingOnlyCount > 0 ? `${upcomingOnlyCount} Upcoming` : `${upcomingActs.length} Activities`;
+    }
+
+    if (upcomingActs.length === 0) {
+        elList.innerHTML = `
+            <div style="text-align: center; padding: 36px 20px; color: #94A3B8; font-size: 0.88rem; background: rgba(15, 23, 42, 0.5); border-radius: 16px; border: 1px dashed rgba(255,255,255,0.12);">
+                <div style="font-size: 2rem; margin-bottom: 8px; opacity: 0.8;">📅</div>
+                <div style="font-weight: 700; color: #E2E8F0; font-size: 0.95rem; margin-bottom: 4px;">No Agenda Activities Yet</div>
+                <div style="font-size: 0.82rem; color: #64748B;">Click "+ New Activity" at the top right to schedule one!</div>
+            </div>
+        `;
+        return;
+    }
+
+    elList.innerHTML = upcomingActs.map(act => {
+        const dateObj = new Date(act.date);
+        const monthStr = !isNaN(dateObj) ? dateObj.toLocaleDateString('en-US', { month: 'short' }).toUpperCase() : 'TBA';
+        const dayStr = !isNaN(dateObj) ? dateObj.toLocaleDateString('en-US', { day: '2-digit' }) : '--';
+        const timeStr = !isNaN(dateObj) ? dateObj.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }) : '';
+        const isUpcoming = act.status === 'Upcoming' || (!isNaN(dateObj) && dateObj >= now);
+
+        const badgeColor = isUpcoming ? '#34D399' : '#38BDF8';
+        const badgeBg = isUpcoming ? 'rgba(16, 185, 129, 0.2)' : 'rgba(14, 165, 233, 0.2)';
+        const badgeBorder = isUpcoming ? 'rgba(16, 185, 129, 0.4)' : 'rgba(56, 189, 248, 0.4)';
+
+        return `
+            <div style="display: flex; align-items: center; justify-content: space-between; padding: 14px 18px; background: rgba(15, 23, 42, 0.75); border: 1px solid rgba(255,255,255,0.08); border-radius: 16px; transition: all 0.2s; box-shadow: 0 4px 12px rgba(0,0,0,0.2); flex-wrap: wrap; gap: 12px;" onmouseover="this.style.background='rgba(30, 41, 59, 0.95)'; this.style.borderColor='rgba(56, 189, 248, 0.4)'" onmouseout="this.style.background='rgba(15, 23, 42, 0.75)'; this.style.borderColor='rgba(255,255,255,0.08)'">
+                <div style="display: flex; align-items: center; gap: 16px;">
+                    <div style="background: linear-gradient(135deg, ${isUpcoming ? '#10B981, #059669' : '#0EA5E9, #0284C7'}); border-radius: 12px; padding: 8px 12px; text-align: center; min-width: 58px; box-shadow: 0 4px 12px ${isUpcoming ? 'rgba(16,185,129,0.35)' : 'rgba(14,165,233,0.35)'}; flex-shrink: 0;">
+                        <div style="color: #FFF; font-size: 0.7rem; font-weight: 800; letter-spacing: 0.5px;">${monthStr}</div>
+                        <div style="color: #FFF; font-size: 1.3rem; font-weight: 900; line-height: 1.1;">${dayStr}</div>
+                    </div>
+                    <div>
+                        <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 4px;">
+                            <span style="color: #F8FAFC; font-weight: 800; font-size: 0.96rem;">${act.name || act.title || 'Untitled Activity'}</span>
+                            <span style="background: rgba(255,255,255,0.06); color: #94A3B8; border: 1px solid rgba(255,255,255,0.12); padding: 1px 8px; border-radius: 8px; font-size: 0.7rem; font-weight: 700;">${act.category || act.type || 'Event'}</span>
+                        </div>
+                        <div style="color: #94A3B8; font-size: 0.78rem; display: flex; align-items: center; gap: 10px;">
+                            <span>📍 ${act.venue || act.location || 'Venue TBA'}</span>
+                            ${timeStr ? `<span>• ⏰ ${timeStr}</span>` : ''}
+                        </div>
+                    </div>
+                </div>
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <span style="background: ${badgeBg}; color: ${badgeColor}; border: 1px solid ${badgeBorder}; padding: 4px 12px; border-radius: 14px; font-weight: 700; font-size: 0.75rem; white-space: nowrap;">
+                        <span style="display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: ${badgeColor}; margin-right: 4px;"></span>
+                        ${act.status || (isUpcoming ? 'Upcoming' : 'Completed')}
+                    </span>
+                    <button onclick="jumpToAttendance('${act.id}')" title="Take or check attendance for this activity" style="background: rgba(30, 41, 59, 0.9); border: 1px solid rgba(255, 255, 255, 0.18); color: #E2E8F0; padding: 6px 14px; border-radius: 10px; font-weight: 700; font-size: 0.78rem; cursor: pointer; transition: all 0.2s; white-space: nowrap;" onmouseover="this.style.background='#38BDF8'; this.style.color='#0F172A'; this.style.borderColor='#38BDF8'" onmouseout="this.style.background='rgba(30, 41, 59, 0.9)'; this.style.color='#E2E8F0'; this.style.borderColor='rgba(255,255,255,0.18)'">
+                        Check-in ➜
+                    </button>
+                </div>
             </div>
         `;
     }).join('');
@@ -1178,8 +1260,7 @@ function renderAgendaTimeline() {
         }).join('');
     }
 
-    const dashboardCont = document.getElementById('dashboard-upcoming-list');
-    if (dashboardCont) dashboardCont.innerHTML = htmlContent;
+    renderDashboardAgenda();
 
     const agendaCont = document.getElementById('agenda-timeline-list');
     if (agendaCont) agendaCont.innerHTML = htmlContent;
