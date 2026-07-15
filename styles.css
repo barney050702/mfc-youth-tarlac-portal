@@ -1186,6 +1186,7 @@ button svg, button span, button i, button path, button polyline, button line {
 .fill-area-assembly { background: linear-gradient(90deg, #38BDF8, #818CF8); }
 .fill-general-assembly { background: var(--grad-amber); }
 .fill-upper-core-household { background: var(--grad-rose); }
+.fill-mfc-conference { background: linear-gradient(90deg, #A855F7, #EC4899); }
 
 .quick-tip-card {
     background: rgba(56, 189, 248, 0.08);

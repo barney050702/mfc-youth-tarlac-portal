@@ -53,7 +53,8 @@ const SAMPLE_ACTIVITIES = [
     { id: 'act-103', name: 'East & Central Household Worship Night', date: '2026-06-20', location: 'St. Michael Parish Function Room', type: 'Household', status: 'Completed', notes: 'Joint chapter household worship' },
     { id: 'act-104', name: 'MFC Youth Tarlac Midyear General Assembly', date: '2026-07-04', location: 'San Sebastian Cathedral Auditorium', type: 'Assembly', status: 'Completed', notes: 'Midyear thanksgiving celebration' },
     { id: 'act-105', name: 'Logistics & Media Production Workshop', date: '2026-07-11', location: 'MFC Center Media Lab', type: 'Training', status: 'Completed', notes: 'Technical training for live production' },
-    { id: 'act-106', name: 'Chapter Fellowship & Sports Fest 2026', date: '2026-07-25', location: 'Tarlac Recreational Complex', type: 'Fellowship', status: 'Upcoming', notes: 'Chapter unity sports fest' }
+    { id: 'act-106', name: 'Chapter Fellowship & Sports Fest 2026', date: '2026-07-25', location: 'Tarlac Recreational Complex', type: 'Fellowship', status: 'Upcoming', notes: 'Chapter unity sports fest' },
+    { id: 'act-107', name: 'MFC Youth Conference 2026', date: '2026-08-15', location: 'Tarlac Convention Center', type: 'MFC Conference', category: 'MFC Conference', status: 'Upcoming', notes: 'Annual chapter and diocesan MFC Youth Conference' }
 ];
 
 function initApp() {
@@ -93,6 +94,14 @@ function loadFromStorage() {
         state.activities = [...SAMPLE_ACTIVITIES];
         localStorage.setItem('ps_activities', JSON.stringify(state.activities));
         localStorage.setItem('ps_activities_mfc_v11', 'true');
+    }
+
+    if (!state.activities.some(a => a.id === 'act-107' || a.category === 'MFC Conference' || a.type === 'MFC Conference')) {
+        const confAct = SAMPLE_ACTIVITIES.find(a => a.id === 'act-107');
+        if (confAct) {
+            state.activities.push(confAct);
+            localStorage.setItem('ps_activities', JSON.stringify(state.activities));
+        }
     }
 
     const isMemInitialized = localStorage.getItem('ps_members_initialized') === 'true' ||
@@ -855,7 +864,7 @@ function renderDashboard() {
     // Render Category Breakdown
     const catContainer = document.getElementById('dashboard-category-breakdown');
     if (catContainer) {
-        const categories = ['Chapter Assembly', 'Chapter Household', 'Area Assembly', 'General Assembly', 'Upper Core Household'];
+        const categories = ['Chapter Assembly', 'Chapter Household', 'Area Assembly', 'General Assembly', 'Upper Core Household', 'MFC Conference'];
         catContainer.innerHTML = categories.map(cat => {
             const count = state.activities.filter(a => a.category === cat).length;
             const pct = totalActs > 0 ? Math.round((count / totalActs) * 100) : 0;
