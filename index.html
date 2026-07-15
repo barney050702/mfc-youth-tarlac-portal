@@ -17,7 +17,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <link rel="apple-touch-icon" href="mfc-logo.png">
     <!-- Custom Stylesheet -->
-    <link rel="stylesheet" href="styles.css?v=4.9">
+    <link rel="stylesheet" href="styles.css?v=4.10">
     <!-- jsPDF & AutoTable CDNs for PDF Export -->
     <script defer src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script defer src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
@@ -963,6 +963,58 @@
                             </div>
 
                             <div class="toolbar-right" style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+                                <button class="btn-secondary" onclick="exportMembersToPDF()"
+                                    title="Export Members Directory to PDF"
+                                    style="padding: 10px 16px; border-color: rgba(248, 113, 113, 0.4); color: #F87171; display: flex; align-items: center;">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                        style="width: 16px; height: 16px; margin-right: 6px;">
+                                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                                        <polyline points="14 2 14 8 20 8" />
+                                        <path d="M10 12h4" />
+                                        <path d="M10 16h4" />
+                                        <path d="M10 8h1" />
+                                    </svg>
+                                    <span>Export PDF</span>
+                                </button>
+                                <button class="btn-secondary" onclick="exportMembersCSV()"
+                                    title="Export Members Directory to Excel / CSV"
+                                    style="padding: 10px 16px; border-color: rgba(34, 197, 94, 0.45); color: #4ADE80; display: flex; align-items: center;">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                        style="width: 16px; height: 16px; margin-right: 6px;">
+                                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                                        <polyline points="14 2 14 8 20 8" />
+                                        <line x1="8" y1="13" x2="16" y2="13" />
+                                        <line x1="8" y1="17" x2="16" y2="17" />
+                                    </svg>
+                                    <span>Export Excel/CSV</span>
+                                </button>
+                                <button class="btn-secondary" onclick="openImportCSVModal()"
+                                    title="Bulk Import Members from CSV"
+                                    style="padding: 10px 16px; border-color: rgba(56, 189, 248, 0.4); color: #38BDF8; display: flex; align-items: center;">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                        style="width: 16px; height: 16px; margin-right: 6px;">
+                                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                                        <polyline points="17 8 12 3 7 8" />
+                                        <line x1="12" y1="3" x2="12" y2="15" />
+                                    </svg>
+                                    <span>Import CSV</span>
+                                </button>
+                                <button class="btn-secondary" onclick="openHouseholdTreeViewModal()"
+                                    title="View Visual Pastoral Household & Leadership Mentoring Tree"
+                                    style="padding: 10px 16px; border-color: rgba(168, 85, 247, 0.45); color: #C084FC; display: flex; align-items: center;">
+                                    <span style="margin-right: 6px; font-size: 1rem;">🌳</span>
+                                    <span>Household Tree</span>
+                                </button>
+                                <button class="btn-secondary" onclick="clearAllMembers()" title="Clear All Members"
+                                    style="padding: 10px 16px; border-color: rgba(244, 63, 94, 0.4); color: #F43F5E; display: flex; align-items: center;">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                        style="width: 16px; height: 16px; margin-right: 6px;">
+                                        <polyline points="3 6 5 6 21 6" />
+                                        <path
+                                            d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+                                    </svg>
+                                    <span>Clear Members</span>
+                                </button>
                                 <button class="btn-primary glow-button" id="btn-open-add-member-list">
                                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
                                         style="width: 18px; height: 18px;">
@@ -2982,12 +3034,12 @@
     <div class="toast-container" id="toast-container"></div>
 
     <!-- Application Javascript -->
-    <script src="script.js?v=4.9"></script>
+    <script src="script.js?v=4.10"></script>
     <!-- PWA Offline Service Worker Registration -->
     <script>
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
-                navigator.serviceWorker.register('./sw.js?v=4.9')
+                navigator.serviceWorker.register('./sw.js?v=4.10')
                     .then(reg => {
                         console.log('[PWA] Service Worker registered successfully:', reg.scope);
                         reg.onupdatefound = () => {
