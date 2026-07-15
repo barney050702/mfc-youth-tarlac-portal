@@ -28,13 +28,13 @@ let state = {
 // ============================================================================
 
 const SAMPLE_MEMBERS = [
-    { id: 'm-001', name: 'Barney Reyes', chapter: 'East Chapter', department: 'Executive', role: 'Chapter Youth Head', phone: '0917-555-0101', email: 'reyesbarney38@gmail.com', birthdate: '2004-03-12', parentContact: '0917-555-0100', youthCampDate: '2019-05-18' },
-    { id: 'm-002', name: 'Tricia Mhey C.', chapter: 'East Chapter', department: 'Programs & Events', role: 'Household Head', phone: '0918-555-0102', email: 'tricia@mfcyouthtarlac.com', birthdate: '2005-08-21', parentContact: '0918-555-0100', youthCampDate: '2020-04-10' },
-    { id: 'm-003', name: 'Angelo Miguel Santos', chapter: 'Central Chapter', department: 'Logistics & Tech', role: 'Music & Worship Coordinator', phone: '0919-555-0103', email: 'angelo@mfcyouthtarlac.com', birthdate: '2005-11-04', parentContact: '0919-555-0100', youthCampDate: '2021-06-12' },
-    { id: 'm-004', name: 'Sophia Marie Cruz', chapter: 'North Chapter', department: 'Creative & Media', role: 'Youth Member', phone: '0920-555-0104', email: 'sophia@mfcyouthtarlac.com', birthdate: '2006-02-14', parentContact: '0920-555-0100', youthCampDate: '2022-07-20' },
-    { id: 'm-005', name: 'Joshua Gabriel Bautista', chapter: 'South Chapter', department: 'Outreach & Fellowship', role: 'Household Head', phone: '0921-555-0105', email: 'joshua@mfcyouthtarlac.com', birthdate: '2005-07-30', parentContact: '0921-555-0100', youthCampDate: '2021-04-15' },
-    { id: 'm-006', name: 'Hannah Beatrice Reyes', chapter: 'West Chapter', department: 'Finance & Treasury', role: 'Youth Member', phone: '0922-555-0106', email: 'hannah@mfcyouthtarlac.com', birthdate: '2007-09-09', parentContact: '0922-555-0100', youthCampDate: '2023-05-14' },
-    { id: 'm-007', name: 'Christian Dave Tolentino', chapter: 'East Chapter', department: 'Logistics & Tech', role: 'Youth Member', phone: '0923-555-0107', email: 'christian@mfcyouthtarlac.com', birthdate: '2006-12-01', parentContact: '0923-555-0100', youthCampDate: '2022-08-15' }
+    { id: 'm-001', name: 'Barney Reyes', chapter: 'East Chapter', dept: 'Executive', role: 'Chapter Youth Head', contactNum: '0917-555-0101', email: 'reyesbarney38@gmail.com', birthday: '2004-03-12', parentsContact: '0917-555-0100', campDate: '2019-05-18', status: 'Active' },
+    { id: 'm-002', name: 'Tricia Mhey C.', chapter: 'East Chapter', dept: 'Programs & Events', role: 'Household Head', contactNum: '0918-555-0102', email: 'tricia@mfcyouthtarlac.com', birthday: '2005-08-21', parentsContact: '0918-555-0100', campDate: '2020-04-10', status: 'Active' },
+    { id: 'm-003', name: 'Angelo Miguel Santos', chapter: 'Central Chapter', dept: 'Logistics & Tech', role: 'Music & Worship Coordinator', contactNum: '0919-555-0103', email: 'angelo@mfcyouthtarlac.com', birthday: '2005-11-04', parentsContact: '0919-555-0100', campDate: '2021-06-12', status: 'Active' },
+    { id: 'm-004', name: 'Sophia Marie Cruz', chapter: 'North Chapter', dept: 'Creative & Media', role: 'Youth Member', contactNum: '0920-555-0104', email: 'sophia@mfcyouthtarlac.com', birthday: '2006-02-14', parentsContact: '0920-555-0100', campDate: '2022-07-20', status: 'Active' },
+    { id: 'm-005', name: 'Joshua Gabriel Bautista', chapter: 'South Chapter', dept: 'Outreach & Fellowship', role: 'Household Head', contactNum: '0921-555-0105', email: 'joshua@mfcyouthtarlac.com', birthday: '2005-07-30', parentsContact: '0921-555-0100', campDate: '2021-04-15', status: 'Active' },
+    { id: 'm-006', name: 'Hannah Beatrice Reyes', chapter: 'West Chapter', dept: 'Finance & Treasury', role: 'Youth Member', contactNum: '0922-555-0106', email: 'hannah@mfcyouthtarlac.com', birthday: '2007-09-09', parentsContact: '0922-555-0100', campDate: '2023-05-14', status: 'Active' },
+    { id: 'm-007', name: 'Christian Dave Tolentino', chapter: 'East Chapter', dept: 'Logistics & Tech', role: 'Youth Member', contactNum: '0923-555-0107', email: 'christian@mfcyouthtarlac.com', birthday: '2006-12-01', parentsContact: '0923-555-0100', campDate: '2022-08-15', status: 'Active' }
 ];
 
 const SAMPLE_ACCOUNTS = [
@@ -109,6 +109,16 @@ function loadFromStorage() {
         state.members = isMemInitialized ? [] : [...SAMPLE_MEMBERS];
         localStorage.setItem('ps_members', JSON.stringify(state.members));
     }
+    // Migrate any members using old field names to the canonical schema
+    state.members = state.members.map(m => {
+        const migrated = { ...m };
+        if (m.phone && !m.contactNum)       { migrated.contactNum = m.phone; }
+        if (m.birthdate && !m.birthday)     { migrated.birthday = m.birthdate; }
+        if (m.parentContact && !m.parentsContact) { migrated.parentsContact = m.parentContact; }
+        if (m.youthCampDate && !m.campDate) { migrated.campDate = m.youthCampDate; }
+        if (m.department && !m.dept)        { migrated.dept = m.department; }
+        return migrated;
+    });
     localStorage.setItem('ps_members_initialized', 'true');
 
 
@@ -3222,8 +3232,8 @@ function renderMembersTable() {
     const chapterFilter = chapterSelect ? chapterSelect.value : 'ALL';
 
     const filtered = state.members.filter(mem => {
-        const matchesQuery = mem.name.toLowerCase().includes(query) || mem.role.toLowerCase().includes(query);
-        const matchesDept = deptFilter === 'ALL' || mem.dept === deptFilter;
+        const matchesQuery = (mem.name || '').toLowerCase().includes(query) || (mem.role || '').toLowerCase().includes(query);
+        const matchesDept = deptFilter === 'ALL' || (mem.dept || mem.department || '') === deptFilter;
         const memChap = (mem.chapter || 'EAST').toLowerCase();
         const filterChap = chapterFilter.toLowerCase().replace(' chapter', '');
         const matchesChapter = chapterFilter === 'ALL' || mem.chapter === chapterFilter || memChap.includes(filterChap) || filterChap.includes(memChap);
@@ -4058,6 +4068,7 @@ function openEditMemberModal(id) {
     setVal('mem-chapter', chapVal);
     setVal('mem-status', mem.status || 'Active');
     setVal('mem-role', mem.role || 'Member');
+    setVal('mem-dept', mem.dept || mem.department || 'Outreach & Fellowship');
     setVal('mem-email', mem.email || '');
     setVal('mem-birthday', mem.birthday || '');
     setVal('mem-age', mem.age || '');
@@ -4103,6 +4114,7 @@ function handleAddMemberSubmit(event) {
     const chapterEl = document.getElementById('mem-chapter');
     const statusEl = document.getElementById('mem-status');
     const roleEl = document.getElementById('mem-role');
+    const deptEl = document.getElementById('mem-dept');
     const emailEl = document.getElementById('mem-email');
     const bdayEl = document.getElementById('mem-birthday');
     const ageEl = document.getElementById('mem-age');
@@ -4146,6 +4158,7 @@ function handleAddMemberSubmit(event) {
         chapter: chapterEl ? chapterEl.value : 'EAST',
         status: statusEl ? statusEl.value : 'Active',
         role: roleEl && roleEl.value.trim() ? roleEl.value.trim() : 'Member',
+        dept: deptEl ? deptEl.value : 'Outreach & Fellowship',
         email: emailEl ? emailEl.value.trim() : '',
         birthday: bdayEl ? bdayEl.value : '',
         age: ageEl ? ageEl.value : '',

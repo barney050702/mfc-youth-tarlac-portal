@@ -861,6 +861,16 @@ body.light-mode .theme-switch-thumb {
     border-radius: 8px;
 }
 
+button, .btn-primary, .btn-secondary, .glow-button, .chapter-bullet-btn {
+    touch-action: manipulation;
+    user-select: none;
+    -webkit-user-select: none;
+}
+
+button svg, button span, button i, button path, button polyline, button line {
+    pointer-events: none;
+}
+
 /* ==========================================================================
    VIEWS CONTAINER & PANELS
    ========================================================================== */
@@ -896,7 +906,7 @@ body.light-mode .theme-switch-thumb {
     box-shadow: var(--glass-shadow);
     transition: all var(--trans-normal);
     position: relative;
-    overflow: hidden;
+    overflow: visible;
 }
 
 .glass-panel {
