@@ -652,7 +652,11 @@ function renderAll() {
         renderFundsChart();
     } else if (cur === 'account') {
         renderAccountsTable();
+    } else if (cur === 'resources') {
+        renderResourceCards();
     }
+    // Always render resource cards so they are ready when switching tabs
+    if (typeof renderResourceCards === 'function') renderResourceCards();
 }
 
 function updateBadgeCount() {
@@ -6336,6 +6340,97 @@ function switchResourceCategory(category) {
     if (targetSec) {
         targetSec.style.display = 'grid';
     }
+
+    // Show dynamic user-added cards for this category
+    ['youthcamp', 'trainings', 'songboard', 'holyrosary'].forEach(cat => {
+        const dynDiv = document.getElementById(`res-dynamic-${cat}`);
+        if (dynDiv) dynDiv.style.display = cat === category ? 'grid' : 'none';
+    });
+}
+
+// ---- ADD FILE / RESOURCE VAULT LOGIC ----
+
+function openAddResourceModal() {
+    const modal = document.getElementById('modal-add-resource');
+    if (modal) modal.style.display = 'flex';
+    // Pre-select the currently active tab
+    const activeBtn = document.querySelector('.resource-tab-btn.active');
+    if (activeBtn) {
+        const catMap = { '\u26fa': 'youthcamp', '\uD83C\uDF93': 'trainings', '\uD83C\uDFB8': 'songboard', '\uD83D\uDCFF': 'holyrosary' };
+        const sel = document.getElementById('res-input-category');
+        if (sel) {
+            const id = activeBtn.id.replace('btn-res-', '');
+            sel.value = id || 'youthcamp';
+        }
+    }
+}
+
+function closeAddResourceModal() {
+    const modal = document.getElementById('modal-add-resource');
+    if (modal) modal.style.display = 'none';
+    const form = document.getElementById('add-resource-form');
+    if (form) form.reset();
+    const emojiEl = document.getElementById('res-input-emoji');
+    if (emojiEl) emojiEl.value = '\uD83D\uDCC4';
+}
+
+function handleAddResourceSubmit(e) {
+    e.preventDefault();
+    const category = document.getElementById('res-input-category').value;
+    const emoji    = (document.getElementById('res-input-emoji').value || '\uD83D\uDCC4').trim();
+    const title    = document.getElementById('res-input-title').value.trim();
+    const desc     = document.getElementById('res-input-desc').value.trim();
+    const url      = document.getElementById('res-input-url').value.trim();
+
+    if (!title) return;
+
+    const resources = JSON.parse(localStorage.getItem('ps_custom_resources') || '[]');
+    const newEntry = {
+        id: 'res-' + Date.now(),
+        category,
+        emoji,
+        title,
+        desc,
+        url,
+        addedAt: Date.now()
+    };
+    resources.push(newEntry);
+    localStorage.setItem('ps_custom_resources', JSON.stringify(resources));
+
+    renderResourceCards();
+    closeAddResourceModal();
+    showToast('\uD83D\uDCCE Resource \"' + title + '\" added to vault!', 'success');
+}
+
+function renderResourceCards() {
+    const resources = JSON.parse(localStorage.getItem('ps_custom_resources') || '[]');
+    const categories = ['youthcamp', 'trainings', 'songboard', 'holyrosary'];
+    categories.forEach(cat => {
+        const container = document.getElementById(`res-dynamic-${cat}`);
+        if (!container) return;
+        const catItems = resources.filter(r => r.category === cat);
+        container.innerHTML = catItems.map(r => `
+            <div class="glass-card" style="padding:22px; border-radius:16px; position:relative;">
+                <button onclick="deleteResourceCard('${r.id}')" title="Remove" style="position:absolute; top:12px; right:12px; background:rgba(239,68,68,0.15); border:1px solid rgba(239,68,68,0.3); color:#F87171; border-radius:8px; width:28px; height:28px; cursor:pointer; font-size:0.85rem; display:flex; align-items:center; justify-content:center;">\u00D7</button>
+                <div style="font-size:1.8rem; margin-bottom:12px;">${r.emoji}</div>
+                <h3 style="color:#F8FAFC; font-size:1.05rem; font-weight:800; margin:0 0 8px; padding-right:32px;">${r.title}</h3>
+                <p style="color:#94A3B8; font-size:0.82rem; line-height:1.5; margin:0 0 16px;">${r.desc || 'No description provided.'}</p>
+                ${r.url
+                    ? `<a href="${r.url}" target="_blank" rel="noopener" class="btn-secondary btn-sm" style="display:block; text-align:center; text-decoration:none;">Open File \u2192</a>`
+                    : `<button class="btn-secondary btn-sm" onclick="showToast('No link attached to this resource.', 'info')" style="width:100%;">No Link</button>`
+                }
+            </div>
+        `).join('');
+    });
+}
+
+function deleteResourceCard(id) {
+    if (!confirm('Remove this resource from the vault?')) return;
+    let resources = JSON.parse(localStorage.getItem('ps_custom_resources') || '[]');
+    resources = resources.filter(r => r.id !== id);
+    localStorage.setItem('ps_custom_resources', JSON.stringify(resources));
+    renderResourceCards();
+    showToast('Resource removed from vault.', 'info');
 }
 
 function openPublishModal() {
