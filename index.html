@@ -1530,6 +1530,11 @@
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width:15px;height:15px;"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
                                 <span>Add File</span>
                             </button>
+                            <button class="btn-secondary" onclick="openRemoveResourceModal()"
+                                style="font-size: 0.82rem; display: flex; align-items: center; gap: 6px; border-color: rgba(239,68,68,0.4); color: #F87171;">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width:15px;height:15px;"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg>
+                                <span>Remove File</span>
+                            </button>
                         </div>
                     </div>
 
@@ -1556,7 +1561,7 @@
                     <!-- TAB 1: YOUTHCAMP -->
                     <div class="resource-section" id="res-section-youthcamp"
                         style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px;">
-                        <div class="glass-card" style="padding: 22px; border-radius: 16px;">
+                        <div class="glass-card" data-static-id="static-clc-manual" style="padding: 22px; border-radius: 16px;">
                             <div style="font-size: 1.8rem; margin-bottom: 12px;">📖</div>
                             <h3 style="color: #F8FAFC; font-size: 1.1rem; font-weight: 800; margin: 0 0 8px 0;">
                                 Christian Life Camp (CLC) Manual</h3>
@@ -1567,7 +1572,7 @@
                                 onclick="showToast('📄 Opened CLC Manual PDF Preview', 'info')"
                                 style="width: 100%;">View PDF Manual →</button>
                         </div>
-                        <div class="glass-card" style="padding: 22px; border-radius: 16px;">
+                        <div class="glass-card" data-static-id="static-service-checklist" style="padding: 22px; border-radius: 16px;">
                             <div style="font-size: 1.8rem; margin-bottom: 12px;">📋</div>
                             <h3 style="color: #F8FAFC; font-size: 1.1rem; font-weight: 800; margin: 0 0 8px 0;">Service
                                 Team Checklist</h3>
@@ -1578,7 +1583,7 @@
                                 onclick="showToast('📄 Opened Service Team Checklist Sheet', 'info')"
                                 style="width: 100%;">Open Checklist →</button>
                         </div>
-                        <div class="glass-card" style="padding: 22px; border-radius: 16px;">
+                        <div class="glass-card" data-static-id="static-speaker-deck" style="padding: 22px; border-radius: 16px;">
                             <div style="font-size: 1.8rem; margin-bottom: 12px;">🎤</div>
                             <h3 style="color: #F8FAFC; font-size: 1.1rem; font-weight: 800; margin: 0 0 8px 0;">Speaker
                                 Slide Deck Template</h3>
@@ -1594,7 +1599,7 @@
                     <!-- TAB 2: TRAININGS -->
                     <div class="resource-section" id="res-section-trainings"
                         style="display: none; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px;">
-                        <div class="glass-card" style="padding: 22px; border-radius: 16px;">
+                        <div class="glass-card" data-static-id="static-clt-module" style="padding: 22px; border-radius: 16px;">
                             <div style="font-size: 1.8rem; margin-bottom: 12px;">🏆</div>
                             <h3 style="color: #F8FAFC; font-size: 1.1rem; font-weight: 800; margin: 0 0 8px 0;">Chapter
                                 Leadership Training (CLT)</h3>
@@ -1605,7 +1610,7 @@
                                 onclick="showToast('📄 Opened CLT Training Module', 'info')" style="width: 100%;">Open
                                 CLT Guide →</button>
                         </div>
-                        <div class="glass-card" style="padding: 22px; border-radius: 16px;">
+                        <div class="glass-card" data-static-id="static-hht-guide" style="padding: 22px; border-radius: 16px;">
                             <div style="font-size: 1.8rem; margin-bottom: 12px;">🤝</div>
                             <h3 style="color: #F8FAFC; font-size: 1.1rem; font-weight: 800; margin: 0 0 8px 0;">
                                 Household Heads Training (HHT)</h3>
@@ -1616,7 +1621,7 @@
                                 onclick="showToast('📄 Opened Household Heads Guide', 'info')" style="width: 100%;">Open
                                 HHT Guide →</button>
                         </div>
-                        <div class="glass-card" style="padding: 22px; border-radius: 16px;">
+                        <div class="glass-card" data-static-id="static-speaker-workshop" style="padding: 22px; border-radius: 16px;">
                             <div style="font-size: 1.8rem; margin-bottom: 12px;">🗣️</div>
                             <h3 style="color: #F8FAFC; font-size: 1.1rem; font-weight: 800; margin: 0 0 8px 0;">
                                 Speaker's Workshop Guide</h3>
@@ -1632,7 +1637,7 @@
                     <!-- TAB 3: SONGBOARD -->
                     <div class="resource-section" id="res-section-songboard"
                         style="display: none; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px;">
-                        <div class="glass-card" style="padding: 22px; border-radius: 16px;">
+                        <div class="glass-card" data-static-id="static-songbook" style="padding: 22px; border-radius: 16px;">
                             <div style="font-size: 1.8rem; margin-bottom: 12px;">🎸</div>
                             <h3 style="color: #F8FAFC; font-size: 1.1rem; font-weight: 800; margin: 0 0 8px 0;">MFC
                                 Youth Official Songbook</h3>
@@ -1642,7 +1647,7 @@
                                 onclick="showToast('🎸 Opened Interactive Chords & Songbook', 'info')"
                                 style="width: 100%;">Open Songbook →</button>
                         </div>
-                        <div class="glass-card" style="padding: 22px; border-radius: 16px;">
+                        <div class="glass-card" data-static-id="static-setlist-planner" style="padding: 22px; border-radius: 16px;">
                             <div style="font-size: 1.8rem; margin-bottom: 12px;">🎹</div>
                             <h3 style="color: #F8FAFC; font-size: 1.1rem; font-weight: 800; margin: 0 0 8px 0;">Worship
                                 Setlist Planner</h3>
@@ -1658,7 +1663,7 @@
                     <!-- TAB 4: HOLY ROSARY -->
                     <div class="resource-section" id="res-section-holyrosary"
                         style="display: none; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px;">
-                        <div class="glass-card" style="padding: 22px; border-radius: 16px;">
+                        <div class="glass-card" data-static-id="static-holy-rosary" style="padding: 22px; border-radius: 16px;">
                             <div style="font-size: 1.8rem; margin-bottom: 12px;">📿</div>
                             <h3 style="color: #F8FAFC; font-size: 1.1rem; font-weight: 800; margin: 0 0 8px 0;">The Holy
                                 Rosary Interactive Guide</h3>
@@ -1669,7 +1674,7 @@
                                 onclick="showToast('📿 Opened Complete Holy Rosary Prayer Guide', 'info')"
                                 style="width: 100%;">Pray Holy Rosary →</button>
                         </div>
-                        <div class="glass-card" style="padding: 22px; border-radius: 16px;">
+                        <div class="glass-card" data-static-id="static-prayer-litany" style="padding: 22px; border-radius: 16px;">
                             <div style="font-size: 1.8rem; margin-bottom: 12px;">🕊️</div>
                             <h3 style="color: #F8FAFC; font-size: 1.1rem; font-weight: 800; margin: 0 0 8px 0;">Chapter
                                 Prayer & Litany Sheet</h3>
@@ -1736,6 +1741,19 @@
                                 </button>
                             </div>
                         </form>
+                    </div>
+                </div>
+
+                <!-- MODAL: REMOVE RESOURCE FILE -->
+                <div id="modal-remove-resource" class="modal-backdrop" style="display:none; z-index:100000; align-items:center; justify-content:center;">
+                    <div class="glass-card" style="width:100%; max-width:560px; max-height:80vh; padding:32px; border-radius:20px; position:relative; display:flex; flex-direction:column;">
+                        <button onclick="closeRemoveResourceModal()" style="position:absolute; top:16px; right:16px; background:none; border:none; color:#94A3B8; font-size:1.4rem; cursor:pointer; line-height:1;">&times;</button>
+                        <h3 style="color:#FFF; font-size:1.2rem; font-weight:800; margin:0 0 4px;">🗑️ Remove Resource File</h3>
+                        <p style="color:#94A3B8; font-size:0.82rem; margin:0 0 20px;">Select any file to permanently remove it from the vault.</p>
+                        <div id="remove-resource-list" style="overflow-y:auto; flex:1; display:flex; flex-direction:column; gap:10px;"></div>
+                        <div style="margin-top:20px; display:flex; justify-content:flex-end;">
+                            <button onclick="closeRemoveResourceModal()" class="btn-secondary btn-sm">Close</button>
+                        </div>
                     </div>
                 </div>
 

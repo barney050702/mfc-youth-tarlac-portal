@@ -657,6 +657,8 @@ function renderAll() {
     }
     // Always render resource cards so they are ready when switching tabs
     if (typeof renderResourceCards === 'function') renderResourceCards();
+    // Apply hidden static resources to keep removed cards hidden
+    if (typeof applyHiddenStaticResources === 'function') applyHiddenStaticResources();
 }
 
 function updateBadgeCount() {
@@ -6425,12 +6427,99 @@ function renderResourceCards() {
 }
 
 function deleteResourceCard(id) {
-    if (!confirm('Remove this resource from the vault?')) return;
     let resources = JSON.parse(localStorage.getItem('ps_custom_resources') || '[]');
     resources = resources.filter(r => r.id !== id);
     localStorage.setItem('ps_custom_resources', JSON.stringify(resources));
     renderResourceCards();
+    renderRemoveList();
     showToast('Resource removed from vault.', 'info');
+}
+
+// ---- REMOVE FILE MODAL LOGIC ----
+
+const STATIC_RESOURCE_LABELS = {
+    'static-clc-manual':        { emoji: '📖', title: 'Christian Life Camp (CLC) Manual',    category: 'Youthcamp' },
+    'static-service-checklist': { emoji: '📋', title: 'Service Team Checklist',              category: 'Youthcamp' },
+    'static-speaker-deck':      { emoji: '🎤', title: 'Speaker Slide Deck Template',         category: 'Youthcamp' },
+    'static-clt-module':        { emoji: '🏆', title: 'Chapter Leadership Training (CLT)',   category: 'Trainings' },
+    'static-hht-guide':         { emoji: '🤝', title: 'Household Heads Training (HHT)',      category: 'Trainings' },
+    'static-speaker-workshop':  { emoji: '🗣️', title: "Speaker's Workshop Guide",            category: 'Trainings' },
+    'static-songbook':          { emoji: '🎸', title: 'MFC Youth Official Songbook',        category: 'Songboard' },
+    'static-setlist-planner':   { emoji: '🎹', title: 'Worship Setlist Planner',            category: 'Songboard' },
+    'static-holy-rosary':       { emoji: '📿', title: 'The Holy Rosary Interactive Guide',  category: 'Holy Rosary' },
+    'static-prayer-litany':     { emoji: '🕊️', title: 'Chapter Prayer & Litany Sheet',      category: 'Holy Rosary' }
+};
+
+function applyHiddenStaticResources() {
+    const hidden = JSON.parse(localStorage.getItem('ps_hidden_static_resources') || '[]');
+    document.querySelectorAll('[data-static-id]').forEach(card => {
+        const id = card.getAttribute('data-static-id');
+        card.style.display = hidden.includes(id) ? 'none' : '';
+    });
+}
+
+function hideStaticResource(staticId) {
+    const hidden = JSON.parse(localStorage.getItem('ps_hidden_static_resources') || '[]');
+    if (!hidden.includes(staticId)) hidden.push(staticId);
+    localStorage.setItem('ps_hidden_static_resources', JSON.stringify(hidden));
+    applyHiddenStaticResources();
+    renderRemoveList();
+    showToast('Resource removed from vault.', 'info');
+}
+
+function openRemoveResourceModal() {
+    const modal = document.getElementById('modal-remove-resource');
+    if (modal) modal.style.display = 'flex';
+    renderRemoveList();
+}
+
+function closeRemoveResourceModal() {
+    const modal = document.getElementById('modal-remove-resource');
+    if (modal) modal.style.display = 'none';
+}
+
+function renderRemoveList() {
+    const container = document.getElementById('remove-resource-list');
+    if (!container) return;
+    const hiddenStatic = JSON.parse(localStorage.getItem('ps_hidden_static_resources') || '[]');
+    const dynamicResources = JSON.parse(localStorage.getItem('ps_custom_resources') || '[]');
+    const rows = [];
+
+    Object.entries(STATIC_RESOURCE_LABELS).forEach(([id, info]) => {
+        if (hiddenStatic.includes(id)) return;
+        rows.push(`
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:rgba(15,23,42,0.5);border:1px solid rgba(255,255,255,0.07);border-radius:12px;gap:12px;">
+                <div style="display:flex;align-items:center;gap:10px;min-width:0;">
+                    <span style="font-size:1.3rem;flex-shrink:0;">${info.emoji}</span>
+                    <div style="min-width:0;">
+                        <div style="color:#F8FAFC;font-size:0.88rem;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${info.title}</div>
+                        <div style="color:#94A3B8;font-size:0.75rem;">${info.category} &bull; Default</div>
+                    </div>
+                </div>
+                <button onclick="hideStaticResource('${id}')" style="flex-shrink:0;background:rgba(239,68,68,0.15);border:1px solid rgba(239,68,68,0.35);color:#F87171;border-radius:8px;padding:5px 12px;font-size:0.78rem;font-weight:700;cursor:pointer;white-space:nowrap;">Remove</button>
+            </div>
+        `);
+    });
+
+    dynamicResources.forEach(r => {
+        const catLabel = { youthcamp:'Youthcamp', trainings:'Trainings', songboard:'Songboard', holyrosary:'Holy Rosary' }[r.category] || r.category;
+        rows.push(`
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:rgba(15,23,42,0.5);border:1px solid rgba(56,189,248,0.12);border-radius:12px;gap:12px;">
+                <div style="display:flex;align-items:center;gap:10px;min-width:0;">
+                    <span style="font-size:1.3rem;flex-shrink:0;">${r.emoji}</span>
+                    <div style="min-width:0;">
+                        <div style="color:#F8FAFC;font-size:0.88rem;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${r.title}</div>
+                        <div style="color:#94A3B8;font-size:0.75rem;">${catLabel} &bull; Added by you</div>
+                    </div>
+                </div>
+                <button onclick="deleteResourceCard('${r.id}')" style="flex-shrink:0;background:rgba(239,68,68,0.15);border:1px solid rgba(239,68,68,0.35);color:#F87171;border-radius:8px;padding:5px 12px;font-size:0.78rem;font-weight:700;cursor:pointer;white-space:nowrap;">Remove</button>
+            </div>
+        `);
+    });
+
+    container.innerHTML = rows.length
+        ? rows.join('')
+        : `<div style="text-align:center;color:#94A3B8;padding:32px;font-size:0.9rem;">No resources currently in the vault.</div>`;
 }
 
 function openPublishModal() {
