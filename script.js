@@ -27,16 +27,7 @@ let state = {
 // 1. INITIALIZATION & SAMPLE DATA PERSISTENCE
 // ============================================================================
 
-const SAMPLE_MEMBERS = [
-    // EXECUTIVE & CHAPTER YOUTH HEADS
-    { id: 'm-001', name: 'Barney Reyes', chapter: 'East Chapter', dept: 'Executive', role: 'Chapter Youth Head', contactNum: '0917-555-0101', email: 'reyesbarney38@gmail.com', birthday: '2004-03-12', parentsContact: '0917-555-0100', campDate: '2019-05-18', status: 'Active' },
-    { id: 'm-002', name: 'Tricia Mhey C.', chapter: 'East Chapter', dept: 'Programs & Events', role: 'Household Head', contactNum: '0918-555-0102', email: 'tricia@mfcyouthtarlac.com', birthday: '2005-08-21', parentsContact: '0918-555-0100', campDate: '2020-04-10', status: 'Active' },
-    { id: 'm-003', name: 'Angelo Miguel Santos', chapter: 'Central Chapter', dept: 'Logistics & Tech', role: 'Music & Worship Coordinator', contactNum: '0919-555-0103', email: 'angelo@mfcyouthtarlac.com', birthday: '2005-11-04', parentsContact: '0919-555-0100', campDate: '2021-06-12', status: 'Active' },
-    { id: 'm-004', name: 'Sophia Marie Cruz', chapter: 'North Chapter', dept: 'Creative & Media', role: 'Youth Member', contactNum: '0920-555-0104', email: 'sophia@mfcyouthtarlac.com', birthday: '2006-02-14', parentsContact: '0920-555-0100', campDate: '2022-07-20', status: 'Active' },
-    { id: 'm-005', name: 'Joshua Gabriel Bautista', chapter: 'South Chapter', dept: 'Outreach & Fellowship', role: 'Household Head', contactNum: '0921-555-0105', email: 'joshua@mfcyouthtarlac.com', birthday: '2005-07-30', parentsContact: '0921-555-0100', campDate: '2021-04-15', status: 'Active' },
-    { id: 'm-006', name: 'Hannah Beatrice Reyes', chapter: 'West Chapter', dept: 'Finance & Treasury', role: 'Youth Member', contactNum: '0922-555-0106', email: 'hannah@mfcyouthtarlac.com', birthday: '2007-09-09', parentsContact: '0922-555-0100', campDate: '2023-05-14', status: 'Active' },
-    { id: 'm-007', name: 'Christian Dave Tolentino', chapter: 'East Chapter', dept: 'Logistics & Tech', role: 'Youth Member', contactNum: '0923-555-0107', email: 'christian@mfcyouthtarlac.com', birthday: '2006-12-01', parentsContact: '0923-555-0100', campDate: '2022-08-15', status: 'Active' }
-];
+const SAMPLE_MEMBERS = [];
 
 const SAMPLE_ACCOUNTS = [
     { id: 'acc-1', email: 'reyesbarney38@gmail.com', role: 'SUPER ADMIN', area: 'All Chapters', password: 'admin123' },
@@ -105,25 +96,22 @@ function loadFromStorage() {
         }
     }
 
-    const isMemInitialized = localStorage.getItem('ps_members_initialized') === 'true' ||
-                             localStorage.getItem('ps_activities') !== null ||
-                             localStorage.getItem('ps_accounts') !== null;
-    if (storedMembers !== null) {
+    // One-time wipe of all stored members (version flag: ps_members_cleared_v1)
+    if (localStorage.getItem('ps_members_cleared_v1') !== 'true') {
+        localStorage.removeItem('ps_members');
+        localStorage.setItem('ps_members_cleared_v1', 'true');
+    }
+
+    const refreshedStoredMembers = localStorage.getItem('ps_members');
+    if (refreshedStoredMembers !== null) {
         try {
-            state.members = JSON.parse(storedMembers);
+            state.members = JSON.parse(refreshedStoredMembers);
             if (!Array.isArray(state.members)) state.members = [];
         } catch (e) {
-            state.members = isMemInitialized ? [] : [...SAMPLE_MEMBERS];
+            state.members = [];
         }
     } else {
-        state.members = isMemInitialized ? [] : [...SAMPLE_MEMBERS];
-        localStorage.setItem('ps_members', JSON.stringify(state.members));
-    }
-    // Filter out any previously stored USBONG Encounter Camp sample members (m-e01..m-e41, m-n01..m-n19, m-w01..m-w04) so directory reverts to clean 7 members
-    const usbongPrefixes = /^m-(e\d+|n\d+|w\d+)$/;
-    const prevCount = state.members.length;
-    state.members = state.members.filter(m => !usbongPrefixes.test(m.id) && m.campTitle !== 'USBONG Encounter Camp');
-    if (state.members.length !== prevCount && storedMembers !== null) {
+        state.members = [];
         localStorage.setItem('ps_members', JSON.stringify(state.members));
     }
 
