@@ -6443,7 +6443,14 @@ const MFCFirebaseCloud = {
             .then(data => {
                 if (data && typeof data === 'object') {
                     if (Array.isArray(data.activities)) state.activities = data.activities;
-                    if (Array.isArray(data.members)) state.members = data.members;
+                    // Never restore members from Firebase if they have been intentionally cleared
+                    if (Array.isArray(data.members) && localStorage.getItem('ps_members_cleared_v1') !== 'true') {
+                        state.members = data.members;
+                    } else if (localStorage.getItem('ps_members_cleared_v1') === 'true') {
+                        // Members were cleared locally — push empty list back to Firebase so cloud is also cleared
+                        state.members = [];
+                        this.pushSnapshot();
+                    }
                     if (data.attendance && typeof data.attendance === 'object') state.attendance = data.attendance;
                     if (Array.isArray(data.funds)) state.funds = data.funds;
                     if (Array.isArray(data.accounts)) state.accounts = data.accounts;
