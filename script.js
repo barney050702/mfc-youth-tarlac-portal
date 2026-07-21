@@ -6426,6 +6426,7 @@ const STATIC_RESOURCE_LABELS = {
     'static-setlist-planner':   { emoji: '🎹', title: 'Worship Setlist Planner',            category: 'Songboard' },
     'static-holy-rosary':       { emoji: '📿', title: 'The Holy Rosary Interactive Guide',  category: 'Holy Rosary' },
     'static-prayer-litany':     { emoji: '🕊️', title: 'Chapter Prayer & Litany Sheet',      category: 'Holy Rosary' },
+    'static-letter-transportation': { emoji: '🚌', title: 'Letter For Transportation (.docx)', category: 'Letters' },
     'static-letter-endorsement':{ emoji: '💌', title: 'Parental Consent & Endorsement Letter', category: 'Letters' },
     'static-letter-invitation': { emoji: '📜', title: 'Pastoral Invitation & School Excuse Letter', category: 'Letters' },
     'static-letter-sponsorship':{ emoji: '🤝', title: 'Sponsorship & Solicitation Appeal',     category: 'Letters' }
