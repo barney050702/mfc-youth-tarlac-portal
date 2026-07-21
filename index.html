@@ -267,18 +267,7 @@
                         <span id="firebase-status-label">🔥 Firebase: Connected</span>
                     </button>
 
-                    <!-- Live Spectators / Active Users Radar Button -->
-                    <button id="spectator-top-btn" onclick="openSpectatorModal()" title="Monitor active users and spectators opening the website"
-                        style="display: flex; align-items: center; gap: 6px; padding: 6px 14px; background: linear-gradient(135deg, rgba(16,185,129,0.2), rgba(5,150,105,0.15)); border: 1px solid rgba(16,185,129,0.45); border-radius: 20px; color: #34D399; font-size: 0.75rem; font-weight: 700; cursor: pointer; transition: all 0.2s; box-shadow: 0 0 12px rgba(16,185,129,0.15);">
-                        <span id="spectator-pulse-dot" style="display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: #10B981; box-shadow: 0 0 8px #10B981;"></span>
-                        <span id="spectator-count-label">👁️ Spectators: 1 Live</span>
-                    </button>
 
-                    <!-- PWA Native App Install Button -->
-                    <button id="pwa-install-top-btn" onclick="triggerPWAInstall()" title="Install MFC Youth Tarlac Portal to your device"
-                        style="display: flex; align-items: center; gap: 6px; padding: 6px 14px; background: linear-gradient(135deg, rgba(14,165,233,0.25), rgba(2,132,199,0.15)); border: 1px solid rgba(56,189,248,0.5); border-radius: 20px; color: #38BDF8; font-size: 0.75rem; font-weight: 700; cursor: pointer; transition: all 0.2s; box-shadow: 0 0 12px rgba(14,165,233,0.2);">
-                        <span>📲 Install App</span>
-                    </button>
 
 
                     <!-- Social / Web Links -->
@@ -2769,56 +2758,7 @@
         </div>
     </div>
 
-    <!-- Live Spectators & Active Presence Radar Modal -->
-    <div id="spectator-monitor-modal" class="modal-backdrop" style="display: none; z-index: 100000; align-items: center; justify-content: center;">
-        <div class="modal-card glass-panel" style="max-width: 680px; width: 94%; max-height: 88vh; display: flex; flex-direction: column; padding: 32px; border-radius: 24px; border: 1px solid rgba(16,185,129,0.4); background: rgba(15,23,42,0.96); box-shadow: 0 25px 60px rgba(0,0,0,0.85); overflow: hidden;">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-                <div style="display: flex; align-items: center; gap: 12px;">
-                    <div style="width: 44px; height: 44px; border-radius: 14px; background: linear-gradient(135deg, #10B981, #059669); display: flex; align-items: center; justify-content: center; font-size: 1.4rem; box-shadow: 0 4px 15px rgba(16,185,129,0.4);">👁️</div>
-                    <div>
-                        <h3 style="color: #FFF; font-size: 1.25rem; font-weight: 800; margin: 0;">Live Spectator Radar</h3>
-                        <p style="color: #94A3B8; font-size: 0.8rem; margin: 0;">Real-time monitoring of users & visitors viewing this portal</p>
-                    </div>
-                </div>
-                <button type="button" onclick="closeSpectatorModal()" style="background: none; border: none; color: #94A3B8; font-size: 1.5rem; cursor: pointer;">&times;</button>
-            </div>
 
-            <div style="background: rgba(16,185,129,0.1); border: 1px solid rgba(16,185,129,0.3); border-radius: 14px; padding: 14px 18px; margin-bottom: 20px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;">
-                <div>
-                    <div style="font-size: 0.72rem; font-weight: 700; color: #34D399; text-transform: uppercase;">Active Sessions Online</div>
-                    <div id="spectator-modal-total-count" style="color: #FFF; font-weight: 800; font-size: 1.1rem;">1 Spectator Viewing Now</div>
-                </div>
-                <div style="display: flex; gap: 8px; align-items: center;">
-                    <span style="display: inline-block; width: 10px; height: 10px; border-radius: 50%; background: #10B981; box-shadow: 0 0 10px #10B981;"></span>
-                    <span id="spectator-sync-status" style="color: #4ADE80; font-size: 0.78rem; font-weight: 700;">Live Firebase / Local Sync</span>
-                </div>
-            </div>
-
-            <div style="background: rgba(30,41,59,0.6); border: 1px solid rgba(255,255,255,0.1); border-radius: 14px; padding: 14px; margin-bottom: 20px; display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap;">
-                <div style="flex: 1; min-width: 220px;">
-                    <label style="display: block; font-size: 0.72rem; color: #94A3B8; margin-bottom: 4px; font-weight: 600;">YOUR DISPLAY NAME TO OTHERS:</label>
-                    <input type="text" id="my-spectator-name-input" placeholder="e.g. Bro. Barney / Chapter Leader" style="width: 100%; padding: 8px 12px; border-radius: 8px; background: rgba(15,23,42,0.9); border: 1px solid rgba(255,255,255,0.2); color: #FFF; font-size: 0.85rem;">
-                </div>
-                <button type="button" onclick="updateMySpectatorName()" class="btn-primary btn-sm" style="background: linear-gradient(135deg, #10B981, #059669); margin-top: 18px;">Update Name</button>
-            </div>
-
-            <div style="font-size: 0.8rem; font-weight: 700; color: #E2E8F0; margin-bottom: 10px; display: flex; justify-content: space-between;">
-                <span>ACTIVE SPECTATORS LIST</span>
-                <span style="color: #94A3B8; font-size: 0.75rem; font-weight: 500;">Auto-refreshes every 5s</span>
-            </div>
-
-            <div style="flex: 1; overflow-y: auto; background: rgba(9,14,30,0.6); border: 1px solid rgba(255,255,255,0.08); border-radius: 14px; padding: 12px; margin-bottom: 20px;">
-                <div id="spectator-list-container" style="display: flex; flex-direction: column; gap: 10px;">
-                    <!-- Spectator cards injected dynamically by script.js -->
-                </div>
-            </div>
-
-            <div style="display: flex; justify-content: space-between; align-items: center;">
-                <button type="button" onclick="triggerSpectatorBroadcast()" class="btn-secondary btn-sm" style="border-color: rgba(56,189,248,0.4); color: #38BDF8;">🔔 Ping All Spectators</button>
-                <button type="button" onclick="closeSpectatorModal()" class="btn-secondary btn-sm">Close Radar</button>
-            </div>
-        </div>
-    </div>
 
     <!-- Pastoral Follow-Up Report Modal -->
     <div id="pastoral-followup-backdrop"
