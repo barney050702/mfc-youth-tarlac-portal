@@ -6415,6 +6415,7 @@ function deleteResourceCard(id) {
 
 const STATIC_RESOURCE_LABELS = {
     'static-youth-camp-manual-2020': { emoji: '⛺', title: 'MFC Youth Youth Camp Manual 2020', category: 'Youthcamp' },
+    'static-road-to-youth-camp-2020': { emoji: '🛣️', title: 'MFC Youth Road to Youth Camp 2020', category: 'Youthcamp' },
     'static-clc-manual':        { emoji: '📖', title: 'Christian Life Camp (CLC) Manual',    category: 'Youthcamp' },
     'static-service-checklist': { emoji: '📋', title: 'Service Team Checklist',              category: 'Youthcamp' },
     'static-speaker-deck':      { emoji: '🎤', title: 'Speaker Slide Deck Template',         category: 'Youthcamp' },
