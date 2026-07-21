@@ -6425,6 +6425,8 @@ const STATIC_RESOURCE_LABELS = {
     'static-songboard-pptx':    { emoji: '🎶', title: 'MFC Youth Songboard (.pptx)',          category: 'Songboard' },
     'static-songbook':          { emoji: '🎸', title: 'MFC Youth Official Songbook',        category: 'Songboard' },
     'static-setlist-planner':   { emoji: '🎹', title: 'Worship Setlist Planner',            category: 'Songboard' },
+    'static-rosary-joyful-pptx':{ emoji: '✨', title: 'The Joyful Mysteries (.pptx)',          category: 'Holy Rosary' },
+    'static-rosary-glorious-pptx':{ emoji: '👑', title: 'The Glorious Mysteries (.pptx)',        category: 'Holy Rosary' },
     'static-holy-rosary':       { emoji: '📿', title: 'The Holy Rosary Interactive Guide',  category: 'Holy Rosary' },
     'static-prayer-litany':     { emoji: '🕊️', title: 'Chapter Prayer & Litany Sheet',      category: 'Holy Rosary' },
     'static-letter-transportation': { emoji: '🚌', title: 'Letter For Transportation (.docx)', category: 'Letters' },
