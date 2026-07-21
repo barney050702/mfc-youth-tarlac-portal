@@ -6422,6 +6422,7 @@ const STATIC_RESOURCE_LABELS = {
     'static-clt-module':        { emoji: '🏆', title: 'Chapter Leadership Training (CLT)',   category: 'Trainings' },
     'static-hht-guide':         { emoji: '🤝', title: 'Household Heads Training (HHT)',      category: 'Trainings' },
     'static-speaker-workshop':  { emoji: '🗣️', title: "Speaker's Workshop Guide",            category: 'Trainings' },
+    'static-songboard-pptx':    { emoji: '🎶', title: 'MFC Youth Songboard (.pptx)',          category: 'Songboard' },
     'static-songbook':          { emoji: '🎸', title: 'MFC Youth Official Songbook',        category: 'Songboard' },
     'static-setlist-planner':   { emoji: '🎹', title: 'Worship Setlist Planner',            category: 'Songboard' },
     'static-holy-rosary':       { emoji: '📿', title: 'The Holy Rosary Interactive Guide',  category: 'Holy Rosary' },
