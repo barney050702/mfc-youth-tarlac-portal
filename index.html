@@ -1504,10 +1504,12 @@
                                 songboards, and chapter prayer guides</p>
                         </div>
                         <div style="display: flex; gap: 8px; flex-wrap: wrap;">
-                            <button class="btn-secondary"
-                                onclick="showToast('📥 Downloading selected resource packet...', 'success')"
-                                style="font-size: 0.82rem;">
-                                <span>📥 Download All Manuals</span>
+                            <button class="btn-primary"
+                                onclick="openDownloadAllModal()"
+                                style="font-size: 0.85rem; display: flex; align-items: center; gap: 6px; background: linear-gradient(135deg, #10B981, #059669); border: none; box-shadow: 0 4px 14px rgba(16, 185, 129, 0.35); padding: 10px 18px; cursor: pointer;">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                                <span style="font-weight: 700;">Download All Manuals</span>
+                            </button>
                         </div>
                     </div>
 
@@ -1811,7 +1813,36 @@
                     <div id="res-dynamic-letters" style="display: none; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; margin-top: 20px;"></div>
                 </div>
 
+                <!-- MODAL: DOWNLOAD ALL MANUALS -->
+                <div id="modal-download-all" class="modal-backdrop" style="display:none; z-index:100000; align-items:center; justify-content:center;">
+                    <div class="glass-card" style="width:100%; max-width:580px; max-height:85vh; padding:32px; border-radius:20px; position:relative; display:flex; flex-direction:column;">
+                        <button onclick="closeDownloadAllModal()" style="position:absolute; top:16px; right:16px; background:none; border:none; color:#94A3B8; font-size:1.4rem; cursor:pointer; line-height:1;">&times;</button>
+                        <div style="display:flex; align-items:center; gap:12px; margin-bottom:12px;">
+                            <div style="font-size:2rem;">📦</div>
+                            <div>
+                                <h3 style="color:#FFF; font-size:1.25rem; font-weight:800; margin:0;">Download All Official Resources</h3>
+                                <p style="color:#94A3B8; font-size:0.82rem; margin:0;">Batch download official chapter manuals, guides, and rosary decks.</p>
+                            </div>
+                        </div>
+                        
+                        <div id="download-all-progress-bar" style="display:none; margin:12px 0; background:rgba(15,23,42,0.8); border-radius:12px; padding:14px; border:1px solid rgba(56,189,248,0.3);">
+                            <div style="display:flex; justify-content:space-between; font-size:0.82rem; font-weight:700; color:#38BDF8; margin-bottom:8px;" id="download-progress-status">Starting batch download...</div>
+                            <div style="width:100%; height:8px; background:rgba(255,255,255,0.1); border-radius:4px; overflow:hidden;">
+                                <div id="download-progress-fill" style="width:0%; height:100%; background:linear-gradient(90deg, #38BDF8, #34D399); transition:width 0.4s ease;"></div>
+                            </div>
+                        </div>
 
+                        <div id="download-all-list" style="overflow-y:auto; flex:1; display:flex; flex-direction:column; gap:10px; margin:12px 0; padding-right:4px;"></div>
+
+                        <div style="display:flex; gap:12px; justify-content:flex-end; margin-top:12px; flex-wrap:wrap;">
+                            <button onclick="closeDownloadAllModal()" class="btn-secondary btn-sm">Close</button>
+                            <button id="btn-start-batch-download" onclick="startBatchDownload()" class="btn-primary btn-sm" style="display:flex; align-items:center; gap:6px; background:linear-gradient(135deg, #10B981, #059669); border:none; cursor:pointer;">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width:15px;height:15px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                                <span>Start Batch Download (6 Files)</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
 
                 <!-- ACCOUNT MANAGEMENT VIEW PANEL -->
                 <div id="view-account" class="view-panel">

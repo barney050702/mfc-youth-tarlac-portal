@@ -6507,6 +6507,115 @@ function renderRemoveList() {
         : `<div style="text-align:center;color:#94A3B8;padding:32px;font-size:0.9rem;">No resources currently in the vault.</div>`;
 }
 
+// ---- DOWNLOAD ALL MANUALS & RESOURCES MODAL LOGIC ----
+const OFFICIAL_DOWNLOADABLE_RESOURCES = [
+    { id: 'dl-camp-manual', title: 'MFC Youth Youth Camp Manual 2020', url: 'resources/MFC Youth Youth Camp Manual 2020.pdf', filename: 'MFC Youth Youth Camp Manual 2020.pdf', emoji: '⛺', size: '970 KB', category: 'Youthcamp' },
+    { id: 'dl-camp-road', title: 'MFC Youth Road to Youth Camp 2020', url: 'resources/MFC Youth Road to Youth Camp 2020.pdf', filename: 'MFC Youth Road to Youth Camp 2020.pdf', emoji: '🛣️', size: '970 KB', category: 'Youthcamp' },
+    { id: 'dl-transportation', title: 'Letter For Transportation (.docx)', url: 'resources/Letter For Transportation.docx', filename: 'Letter For Transportation.docx', emoji: '🚌', size: '80 KB', category: 'Letters' },
+    { id: 'dl-songboard', title: 'MFC Youth Songboard (.pptx)', url: 'resources/MFC Youth Songboard.pptx', filename: 'MFC Youth Songboard.pptx', emoji: '🎶', size: '9.1 MB', category: 'Songboard' },
+    { id: 'dl-rosary-joyful', title: 'The Joyful Mysteries (.pptx)', url: 'resources/The Joyful Mysteries (Monday and Saturday).pptx', filename: 'The Joyful Mysteries (Monday and Saturday).pptx', emoji: '✨', size: '145 MB', category: 'Holy Rosary' },
+    { id: 'dl-rosary-glorious', title: 'The Glorious Mysteries (.pptx)', url: 'resources/The Glorious Mysteries (Wednesday and Sunday).pptx', filename: 'The Glorious Mysteries (Wednesday and Sunday).pptx', emoji: '👑', size: '142 MB', category: 'Holy Rosary' }
+];
+
+function openDownloadAllModal() {
+    const modal = document.getElementById('modal-download-all');
+    if (modal) modal.style.display = 'flex';
+    renderDownloadAllList();
+    const progressEl = document.getElementById('download-all-progress-bar');
+    if (progressEl) progressEl.style.display = 'none';
+    const btn = document.getElementById('btn-start-batch-download');
+    if (btn) {
+        btn.disabled = false;
+        btn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width:15px;height:15px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg><span>Start Batch Download (6 Files)</span>`;
+    }
+}
+
+function closeDownloadAllModal() {
+    const modal = document.getElementById('modal-download-all');
+    if (modal) modal.style.display = 'none';
+}
+
+function renderDownloadAllList() {
+    const container = document.getElementById('download-all-list');
+    if (!container) return;
+    container.innerHTML = OFFICIAL_DOWNLOADABLE_RESOURCES.map(res => `
+        <div style="display:flex; align-items:center; justify-content:space-between; padding:12px 16px; background:rgba(15,23,42,0.65); border:1px solid rgba(56,189,248,0.18); border-radius:14px; gap:12px;" id="dl-row-${res.id}">
+            <div style="display:flex; align-items:center; gap:12px; min-width:0;">
+                <span style="font-size:1.5rem; flex-shrink:0;">${res.emoji}</span>
+                <div style="min-width:0;">
+                    <div style="color:#F8FAFC; font-size:0.92rem; font-weight:700; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${res.title}</div>
+                    <div style="color:#94A3B8; font-size:0.78rem;">${res.category} &bull; ${res.size}</div>
+                </div>
+            </div>
+            <div style="display:flex; align-items:center; gap:10px; flex-shrink:0;">
+                <span id="dl-status-${res.id}" style="font-size:0.75rem; font-weight:700; color:#94A3B8; display:none;">Waiting...</span>
+                <a href="${res.url}" download="${res.filename}" onclick="markFileDownloaded('${res.id}')" class="btn-secondary btn-sm" style="text-decoration:none; display:inline-flex; align-items:center; gap:6px; padding:6px 14px;">
+                    <span>📥 Download</span>
+                </a>
+            </div>
+        </div>
+    `).join('');
+}
+
+function markFileDownloaded(id) {
+    const statusEl = document.getElementById(`dl-status-${id}`);
+    const rowEl = document.getElementById(`dl-row-${id}`);
+    if (statusEl) {
+        statusEl.style.display = 'inline-block';
+        statusEl.style.color = '#34D399';
+        statusEl.textContent = '✔ Downloaded';
+    }
+    if (rowEl) {
+        rowEl.style.borderColor = 'rgba(52,211,153,0.5)';
+        rowEl.style.background = 'rgba(16,185,129,0.08)';
+    }
+}
+
+function startBatchDownload() {
+    const progressEl = document.getElementById('download-all-progress-bar');
+    const statusText = document.getElementById('download-progress-status');
+    const progressFill = document.getElementById('download-progress-fill');
+    const btn = document.getElementById('btn-start-batch-download');
+
+    if (progressEl) progressEl.style.display = 'block';
+    if (btn) {
+        btn.disabled = true;
+        btn.innerHTML = `<span>⏳ Downloading...</span>`;
+    }
+
+    let currentIndex = 0;
+    const total = OFFICIAL_DOWNLOADABLE_RESOURCES.length;
+
+    function downloadNext() {
+        if (currentIndex >= total) {
+            if (statusText) statusText.textContent = '🎉 All 6 official files initiated for download!';
+            if (progressFill) progressFill.style.width = '100%';
+            if (btn) btn.innerHTML = `✔ Batch Completed`;
+            showToast('🎉 All 6 official resource files downloaded successfully!', 'success');
+            return;
+        }
+
+        const res = OFFICIAL_DOWNLOADABLE_RESOURCES[currentIndex];
+        if (statusText) statusText.textContent = `Downloading (${currentIndex + 1}/${total}): ${res.title}...`;
+        if (progressFill) progressFill.style.width = `${((currentIndex) / total) * 100}%`;
+
+        // Trigger individual file download
+        markFileDownloaded(res.id);
+        const link = document.createElement('a');
+        link.href = res.url;
+        link.download = res.filename;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+
+        currentIndex++;
+        // Stagger by 1600ms to allow browser download manager to handle large/multiple files smoothly
+        setTimeout(downloadNext, 1600);
+    }
+
+    downloadNext();
+}
+
 function openPublishModal() {
     const modal = document.getElementById('modal-publish-online');
     if (modal) modal.style.display = 'flex';
