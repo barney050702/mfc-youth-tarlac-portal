@@ -6320,7 +6320,7 @@ function switchResourceCategory(category) {
     }
 
     // Show dynamic user-added cards for this category
-    ['youthcamp', 'trainings', 'songboard', 'holyrosary'].forEach(cat => {
+    ['youthcamp', 'trainings', 'songboard', 'holyrosary', 'letters'].forEach(cat => {
         const dynDiv = document.getElementById(`res-dynamic-${cat}`);
         if (dynDiv) dynDiv.style.display = cat === category ? 'grid' : 'none';
     });
@@ -6334,7 +6334,7 @@ function openAddResourceModal() {
     // Pre-select the currently active tab
     const activeBtn = document.querySelector('.resource-tab-btn.active');
     if (activeBtn) {
-        const catMap = { '\u26fa': 'youthcamp', '\uD83C\uDF93': 'trainings', '\uD83C\uDFB8': 'songboard', '\uD83D\uDCFF': 'holyrosary' };
+        const catMap = { '\u26fa': 'youthcamp', '\uD83C\uDF93': 'trainings', '\uD83C\uDFB8': 'songboard', '\uD83D\uDCFF': 'holyrosary', '\u2709\uFE0F': 'letters', '✉️': 'letters' };
         const sel = document.getElementById('res-input-category');
         if (sel) {
             const id = activeBtn.id.replace('btn-res-', '');
@@ -6382,7 +6382,7 @@ function handleAddResourceSubmit(e) {
 
 function renderResourceCards() {
     const resources = JSON.parse(localStorage.getItem('ps_custom_resources') || '[]');
-    const categories = ['youthcamp', 'trainings', 'songboard', 'holyrosary'];
+    const categories = ['youthcamp', 'trainings', 'songboard', 'holyrosary', 'letters'];
     categories.forEach(cat => {
         const container = document.getElementById(`res-dynamic-${cat}`);
         if (!container) return;
@@ -6423,7 +6423,10 @@ const STATIC_RESOURCE_LABELS = {
     'static-songbook':          { emoji: '🎸', title: 'MFC Youth Official Songbook',        category: 'Songboard' },
     'static-setlist-planner':   { emoji: '🎹', title: 'Worship Setlist Planner',            category: 'Songboard' },
     'static-holy-rosary':       { emoji: '📿', title: 'The Holy Rosary Interactive Guide',  category: 'Holy Rosary' },
-    'static-prayer-litany':     { emoji: '🕊️', title: 'Chapter Prayer & Litany Sheet',      category: 'Holy Rosary' }
+    'static-prayer-litany':     { emoji: '🕊️', title: 'Chapter Prayer & Litany Sheet',      category: 'Holy Rosary' },
+    'static-letter-endorsement':{ emoji: '💌', title: 'Parental Consent & Endorsement Letter', category: 'Letters' },
+    'static-letter-invitation': { emoji: '📜', title: 'Pastoral Invitation & School Excuse Letter', category: 'Letters' },
+    'static-letter-sponsorship':{ emoji: '🤝', title: 'Sponsorship & Solicitation Appeal',     category: 'Letters' }
 };
 
 function applyHiddenStaticResources() {
@@ -6478,7 +6481,7 @@ function renderRemoveList() {
     });
 
     dynamicResources.forEach(r => {
-        const catLabel = { youthcamp:'Youthcamp', trainings:'Trainings', songboard:'Songboard', holyrosary:'Holy Rosary' }[r.category] || r.category;
+        const catLabel = { youthcamp:'Youthcamp', trainings:'Trainings', songboard:'Songboard', holyrosary:'Holy Rosary', letters:'Letters' }[r.category] || r.category;
         rows.push(`
             <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:rgba(15,23,42,0.5);border:1px solid rgba(56,189,248,0.12);border-radius:12px;gap:12px;">
                 <div style="display:flex;align-items:center;gap:10px;min-width:0;">
