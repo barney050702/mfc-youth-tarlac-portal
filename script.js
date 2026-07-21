@@ -7149,20 +7149,10 @@ function printOfficialCertificate() {
 }
 
 // ==========================================
-// CHAPTER CALENDAR & PRAYER WALL SYSTEM
+// CHAPTER CALENDAR EVENTS SYSTEM
 // ==========================================
-if (!state.prayers) {
-    state.prayers = [
-        { title: 'Board Exam Guidance & Wisdom', target: 'Kuya Marcus (Chapter Servant)', count: 18 },
-        { title: 'Safe Travel & Protection on Provincial Mission Trip', target: 'MFC Youth Tarlac Mission Team', count: 24 },
-        { title: 'Healing & Speedy Recovery', target: 'Tita Ana (Couple Coordinator)', count: 31 },
-        { title: 'Grace & Success in Midterm Examinations', target: 'All High School & Campus Unit Members', count: 15 }
-    ];
-}
-
 function renderCalendarAndPrayerWall() {
     const elEvents = document.getElementById('calendar-events-list');
-    const elPrayers = document.getElementById('prayer-wall-list');
 
     if (elEvents && state.activities) {
         if (state.activities.length === 0) {
@@ -7194,67 +7184,6 @@ function renderCalendarAndPrayerWall() {
             }).join('');
         }
     }
-
-    if (elPrayers && state.prayers) {
-        elPrayers.innerHTML = state.prayers.map((pr, idx) => {
-            return `
-                <div style="padding: 16px; background: rgba(15, 23, 42, 0.75); border: 1px solid rgba(236,72,153,0.2); border-radius: 16px; display: flex; flex-direction: column; gap: 10px;">
-                    <div style="display: flex; align-items: flex-start; justify-content: space-between; gap: 10px;">
-                        <div>
-                            <div style="color: #FFF; font-weight: 800; font-size: 0.95rem;">🙏 ${pr.title}</div>
-                            <div style="color: #F472B6; font-size: 0.78rem; font-weight: 600;">For: ${pr.target}</div>
-                        </div>
-                        <span class="badge" style="background: rgba(236,72,153,0.15); color: #F472B6; border: 1px solid rgba(236,72,153,0.35); flex-shrink: 0;">Intention</span>
-                    </div>
-                    <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid rgba(255,255,255,0.06); padding-top: 10px;">
-                        <span style="font-size: 0.78rem; color: #94A3B8;">Joined by <strong style="color: #FFF;">${pr.count}</strong> servants</span>
-                        <button onclick="incrementPrayerCount(${idx})" class="btn-primary glow-button" style="padding: 6px 14px; font-size: 0.76rem; background: linear-gradient(135deg, #EC4899, #BE185D); border: none; display: inline-flex; align-items: center; gap: 6px;">
-                            <span>🙏 Prayed (+1)</span>
-                        </button>
-                    </div>
-                </div>
-            `;
-        }).join('');
-    }
-}
-
-function incrementPrayerCount(idx) {
-    if (state.prayers && state.prayers[idx]) {
-        state.prayers[idx].count++;
-        saveToStorage();
-        renderCalendarAndPrayerWall();
-        showToast(`🙏 Thank you for interceding! Prayer count recorded.`, 'success');
-    }
-}
-
-function openAddPrayerIntentionModal() {
-    const modal = document.getElementById('prayer-intention-modal-backdrop');
-    if (modal) modal.style.display = 'flex';
-}
-
-function closePrayerIntentionModal() {
-    const modal = document.getElementById('prayer-intention-modal-backdrop');
-    if (modal) modal.style.display = 'none';
-}
-
-function handlePrayerIntentionSubmit(e) {
-    e.preventDefault();
-    const titleEl = document.getElementById('prayer-title-input');
-    const targetEl = document.getElementById('prayer-target-input');
-    if (!titleEl || !targetEl) return;
-
-    state.prayers.unshift({
-        title: titleEl.value.trim(),
-        target: targetEl.value.trim(),
-        count: 1
-    });
-
-    saveToStorage();
-    renderCalendarAndPrayerWall();
-    closePrayerIntentionModal();
-    showToast('🙏 Pastoral prayer intention posted to the Chapter Prayer Wall!', 'success');
-    titleEl.value = '';
-    targetEl.value = '';
 }
 
 // ==========================================
@@ -7638,88 +7567,7 @@ function autoAwardCertificate(memberName, rate = 100) {
     showToast(`🏆 Certificate of Recognition pre-filled for ${memberName}!`, 'success');
 }
 
-// ==========================================
-// INTERACTIVE CHAPTER PRAYER & INTERCESSION BOARD
-// ==========================================
-function initPrayerIntentions() {
-    if (!state.prayers || state.prayers.length === 0) {
-        state.prayers = [
-            { id: 'p1', author: 'Chapter Council', text: 'For chapter leaders\' spiritual strength, wisdom, and pastoral joy', prayedCount: 14, date: '2026-07-01' },
-            { id: 'p2', author: 'Youth Ministry', text: 'For the success, safety, and spiritual fruitfulness of upcoming Youth Camps', prayedCount: 28, date: '2026-07-05' },
-            { id: 'p3', author: 'Community Member', text: 'For guidance in academics, board exams, and career paths of youth members', prayedCount: 19, date: '2026-07-10' }
-        ];
-    }
-}
 
-function openPrayerBoardModal() {
-    initPrayerIntentions();
-    const modal = document.getElementById('prayer-board-backdrop');
-    if (modal) modal.style.display = 'flex';
-    renderPrayerBoard();
-}
-
-function closePrayerBoardModal() {
-    const modal = document.getElementById('prayer-board-backdrop');
-    if (modal) modal.style.display = 'none';
-}
-
-function renderPrayerBoard() {
-    initPrayerIntentions();
-    const container = document.getElementById('prayer-intentions-list');
-    if (!container) return;
-
-    const badgeEl = document.getElementById('prayer-board-badge');
-    if (badgeEl) badgeEl.textContent = state.prayers.length;
-
-    container.innerHTML = state.prayers.map(p => `
-        <div style="background: rgba(15,23,42,0.85); border: 1px solid rgba(168,85,247,0.3); border-radius: 14px; padding: 14px 18px; display: flex; align-items: center; justify-content: space-between; gap: 14px;">
-            <div style="flex: 1; min-width: 0;">
-                <p style="color: #F8FAFC; font-size: 0.92rem; font-weight: 600; margin: 0 0 6px 0; line-height: 1.4;">"${p.text}"</p>
-                <div style="display: flex; align-items: center; gap: 10px; font-size: 0.75rem; color: #94A3B8;">
-                    <span>🙏 Shared by: <strong style="color: #D8B4FE;">${p.author || 'Member'}</strong></span>
-                    <span>•</span>
-                    <span>${p.date || 'Today'}</span>
-                </div>
-            </div>
-            <button onclick="prayForIntention('${p.id}')"
-                style="display: flex; align-items: center; gap: 6px; background: linear-gradient(135deg, rgba(168,85,247,0.25), rgba(147,51,234,0.15)); border: 1px solid rgba(168,85,247,0.5); color: #C084FC; padding: 8px 14px; border-radius: 20px; font-weight: 700; font-size: 0.8rem; cursor: pointer; transition: all 0.2s; white-space: nowrap;">
-                <span>🙏 Praying</span>
-                <span style="background: #9333EA; color: #FFF; border-radius: 10px; padding: 1px 7px; font-size: 0.72rem;">+${p.prayedCount || 1}</span>
-            </button>
-        </div>
-    `).join('');
-}
-
-function addPrayerIntention(event) {
-    event.preventDefault();
-    const input = document.getElementById('new-prayer-input');
-    if (!input || !input.value.trim()) return;
-
-    initPrayerIntentions();
-    state.prayers.unshift({
-        id: 'p-' + Date.now(),
-        author: 'Chapter Servant',
-        text: input.value.trim(),
-        prayedCount: 1,
-        date: new Date().toISOString().split('T')[0]
-    });
-
-    input.value = '';
-    saveToStorage();
-    renderPrayerBoard();
-    showToast('🙏 Your prayer intention has been shared with the community!', 'success');
-}
-
-function prayForIntention(id) {
-    initPrayerIntentions();
-    const p = state.prayers.find(item => item.id === id);
-    if (p) {
-        p.prayedCount = (p.prayedCount || 1) + 1;
-        saveToStorage();
-        renderPrayerBoard();
-        showToast(`🙏 Thank you for standing in prayer for this intention!`, 'success');
-    }
-}
 
 // ==========================================
 // VISUAL FINANCIAL HEALTH & FUND BREAKDOWN CHART
