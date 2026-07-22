@@ -20,7 +20,8 @@ let state = {
     agendaSemester: 'all',
     agendaViewMode: 'grid',
     auditLog: [],
-    currentRole: 'Super Admin'
+    currentRole: 'Super Admin',
+    showOnlyDuplicates: false
 };
 
 // ============================================================================
@@ -3526,6 +3527,40 @@ function calculateAgeClean(mem) {
     }
 }
 
+function checkAddMemberDuplicate() {
+    const fn = (document.getElementById('mem-first-name')?.value || '').trim();
+    const ln = (document.getElementById('mem-last-name')?.value || '').trim();
+    const currentId = document.getElementById('form-mem-id')?.value || '';
+    const warningEl = document.getElementById('add-member-duplicate-warning');
+    const textEl = document.getElementById('add-member-duplicate-text');
+    if (!warningEl || !textEl) return;
+
+    if (!fn || !ln) {
+        warningEl.style.display = 'none';
+        return;
+    }
+
+    const fullName = `${fn} ${ln}`.toLowerCase();
+    const duplicate = state.members.find(m => {
+        if (currentId && m.id === currentId) return false;
+        const mName = (m.name || '').trim().toLowerCase();
+        return mName === fullName || mName.includes(fullName) || fullName.includes(mName);
+    });
+
+    if (duplicate) {
+        textEl.innerHTML = `<strong>Exact or Similar Name Detected:</strong> "${duplicate.name}" is already registered in <strong>${duplicate.chapter || 'East Chapter'}</strong> (${duplicate.role || 'Member'}).`;
+        warningEl.style.display = 'flex';
+    } else {
+        warningEl.style.display = 'none';
+    }
+}
+
+function filterDuplicateMembers() {
+    state.showOnlyDuplicates = !state.showOnlyDuplicates;
+    renderMembersTable();
+    showToast(state.showOnlyDuplicates ? 'Filtering table to show duplicate names only ⚠️' : 'Showing all members in directory', 'info');
+}
+
 function renderMembersTable() {
     const tbody = document.getElementById('members-table-body');
     const badge = document.getElementById('badge-members-count');
@@ -3533,6 +3568,41 @@ function renderMembersTable() {
         badge.textContent = state.members.length;
     }
     if (!tbody || !state.members) return;
+
+    // Compute exact normalized name counts across the full directory
+    const nameCounts = {};
+    state.members.forEach(m => {
+        const clean = (m.name || '').trim().toLowerCase();
+        if (clean) {
+            nameCounts[clean] = (nameCounts[clean] || 0) + 1;
+        }
+    });
+
+    const totalDuplicateCount = state.members.filter(m => nameCounts[(m.name || '').trim().toLowerCase()] > 1).length;
+    const dupBanner = document.getElementById('members-duplicate-banner');
+    const dupBannerText = document.getElementById('members-duplicate-banner-text');
+    const btnFilterDup = document.getElementById('btn-filter-duplicates');
+
+    if (dupBanner && dupBannerText) {
+        if (totalDuplicateCount > 0) {
+            dupBanner.style.display = 'flex';
+            dupBannerText.innerHTML = `Found <strong>${totalDuplicateCount} duplicate records</strong> across the directory based on identical full names.`;
+            if (btnFilterDup) {
+                if (state.showOnlyDuplicates) {
+                    btnFilterDup.innerHTML = '<span>❌ Show All Members</span>';
+                    btnFilterDup.style.background = '#EF4444';
+                    btnFilterDup.style.borderColor = '#DC2626';
+                } else {
+                    btnFilterDup.innerHTML = '<span>🔍 Filter Only Duplicates</span>';
+                    btnFilterDup.style.background = 'rgba(245, 158, 11, 0.25)';
+                    btnFilterDup.style.borderColor = '#F59E0B';
+                }
+            }
+        } else {
+            dupBanner.style.display = 'none';
+            if (state.showOnlyDuplicates) state.showOnlyDuplicates = false;
+        }
+    }
 
     const searchInput = document.getElementById('members-search-input');
     const deptSelect = document.getElementById('members-filter-dept');
@@ -3542,6 +3612,9 @@ function renderMembersTable() {
     const chapterSelectFilter = chapterSelect ? chapterSelect.value : 'ALL';
 
     const filtered = state.members.filter(mem => {
+        const cleanN = (mem.name || '').trim().toLowerCase();
+        if (state.showOnlyDuplicates && nameCounts[cleanN] <= 1) return false;
+
         const matchesQuery = (mem.name || '').toLowerCase().includes(query) || (mem.role || '').toLowerCase().includes(query);
         const matchesDept = deptFilter === 'ALL' || (mem.dept || mem.department || '') === deptFilter;
         const memChap = (mem.chapter || 'EAST').toLowerCase();
@@ -3556,11 +3629,11 @@ function renderMembersTable() {
                 <td colspan="11" style="text-align: center; padding: 40px; color: var(--text-muted);">
                     <div style="font-size: 2.5rem; margin-bottom: 12px;">👥</div>
                     <div style="font-size: 1.1rem; font-weight: 600; color: var(--text-primary);">No Members Found</div>
-                    <p>No members currently match or exist in the directory. Add members using the button above.</p>
+                    <p>No members currently match your search or filter criteria.</p>
                 </td>
             </tr>
         `;
-        renderMembersMobileCards(filtered);
+        renderMembersMobileCards(filtered, nameCounts);
         return;
     }
 
@@ -3604,15 +3677,28 @@ function renderMembersTable() {
         }
 
         const badgesHtml = getMemberBadgesHtml(mem);
+        const cleanName = (mem.name || '').trim().toLowerCase();
+        const isDuplicate = nameCounts[cleanName] > 1;
+
+        const rowStyle = isDuplicate 
+            ? `background: rgba(245, 158, 11, 0.12); border-left: 4px solid #F59E0B; border-bottom: 1px solid rgba(245, 158, 11, 0.3); transition: background 0.2s ease;`
+            : `border-bottom: 1px solid rgba(255, 255, 255, 0.05); transition: background 0.2s ease;`;
+
+        const dupBadgeHtml = isDuplicate ? `
+            <span class="badge" style="background: rgba(245, 158, 11, 0.25); border: 1px solid #F59E0B; color: #FBBF24; padding: 2px 8px; border-radius: 12px; font-size: 0.68rem; font-weight: 800; display: inline-flex; align-items: center; gap: 4px; box-shadow: 0 0 10px rgba(245,158,11,0.3);" title="⚠️ Another member exists with this exact name (${nameCounts[cleanName]} records total).">
+                <span>⚠️ Duplicate (${nameCounts[cleanName]})</span>
+            </span>
+        ` : '';
 
         rowsHtml.push(`
-            <tr class="activity-row" style="border-bottom: 1px solid rgba(255, 255, 255, 0.05); transition: background 0.2s ease;">
+            <tr class="activity-row ${isDuplicate ? 'duplicate-row-highlight' : ''}" style="${rowStyle}">
                 <td style="font-weight: 700; color: #F8FAFC; font-size: 0.92rem; white-space: nowrap; padding: 16px 20px;">
                     <a href="javascript:void(0)" onclick="openMemberProfile('${mem.id}')" style="color: #F8FAFC; text-decoration: none; display: inline-flex; align-items: center; gap: 6px; transition: color 0.2s;" onmouseover="this.style.color='#38BDF8'" onmouseout="this.style.color='#F8FAFC'">
                         <span>${mem.name}</span>
                         <span style="font-size: 0.72rem; color: #38BDF8; opacity: 0.8;">↗ Dossier</span>
                     </a>
                     <div style="margin-top: 5px; display: flex; gap: 4px; flex-wrap: wrap;">
+                        ${dupBadgeHtml}
                         ${badgesHtml}
                     </div>
                 </td>
@@ -3667,10 +3753,10 @@ function renderMembersTable() {
     });
 
     tbody.innerHTML = rowsHtml.join('');
-    renderMembersMobileCards(filtered);
+    renderMembersMobileCards(filtered, nameCounts);
 }
 
-function renderMembersMobileCards(filtered) {
+function renderMembersMobileCards(filtered, nameCounts = {}) {
     const container = document.getElementById('members-mobile-cards-container');
     if (!container) return;
 
@@ -3708,9 +3794,19 @@ function renderMembersMobileCards(filtered) {
         }
 
         const initial = mem.name ? mem.name.charAt(0).toUpperCase() : 'M';
+        const cleanName = (mem.name || '').trim().toLowerCase();
+        const isDuplicate = nameCounts[cleanName] > 1;
+
+        const cardStyle = isDuplicate
+            ? `padding: 16px; border-radius: 16px; background: rgba(245, 158, 11, 0.15); border: 2px solid #F59E0B; box-shadow: 0 4px 22px rgba(245,158,11,0.25);`
+            : `padding: 16px; border-radius: 16px; background: rgba(15, 23, 42, 0.88); border: 1px solid rgba(255, 255, 255, 0.09); box-shadow: 0 4px 18px rgba(0,0,0,0.3);`;
+
+        const dupBadgeHtml = isDuplicate ? `
+            <span style="background: rgba(245, 158, 11, 0.25); border: 1px solid #F59E0B; color: #FBBF24; padding: 2px 8px; border-radius: 12px; font-weight: 800; font-size: 0.68rem;">⚠️ DUPLICATE (${nameCounts[cleanName]})</span>
+        ` : '';
 
         cardsHtml.push(`
-            <div class="mobile-member-card glass-card" style="padding: 16px; border-radius: 16px; background: rgba(15, 23, 42, 0.88); border: 1px solid rgba(255, 255, 255, 0.09); box-shadow: 0 4px 18px rgba(0,0,0,0.3);">
+            <div class="mobile-member-card glass-card" style="${cardStyle}">
                 <!-- Header -->
                 <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; margin-bottom: 12px;">
                     <div style="display: flex; align-items: center; gap: 12px; min-width: 0;">
@@ -3722,6 +3818,7 @@ function renderMembersMobileCards(filtered) {
                                 ${mem.name}
                             </div>
                             <div style="margin-top: 4px; display: flex; align-items: center; gap: 6px; flex-wrap: wrap;">
+                                ${dupBadgeHtml}
                                 <span style="background: var(--grad-emerald); color: white; padding: 2px 10px; border-radius: 12px; font-weight: 700; font-size: 0.68rem; text-transform: uppercase;">
                                     ${mem.chapter || 'EAST'}
                                 </span>
