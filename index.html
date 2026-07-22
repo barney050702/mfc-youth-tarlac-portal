@@ -261,21 +261,15 @@
 
                     <!-- Firebase Cloud Sync Button -->
                     <button id="firebase-cloud-status-btn" onclick="openFirebaseConfigModal()" title="Click to view or configure Firebase Cloud Sync"
-                        style="display: flex; align-items: center; gap: 6px; padding: 6px 14px; background: linear-gradient(135deg, rgba(249,115,22,0.2), rgba(234,88,12,0.15)); border: 1px solid rgba(249,115,22,0.45); border-radius: 20px; color: #FB923C; font-size: 0.75rem; font-weight: 700; cursor: pointer; transition: all 0.2s; box-shadow: 0 0 12px rgba(249,115,22,0.15);">
-                        <span style="display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: #22C55E; box-shadow: 0 0 8px #22C55E;"></span>
-                        <span id="firebase-status-label">🔥 Firebase: Connected</span>
+                        style="display: flex; align-items: center; gap: 6px; padding: 6px 14px; background: linear-gradient(135deg, rgba(249,115,22,0.2), rgba(234,88,12,0.15)); border: 1px solid rgba(249,115,22,0.45); border-radius: 20px; color: #FB923C; font-size: 0.75rem; font-weight: 700; cursor: pointer; transition: all 0.2s; box-shadow: 0 0 12px rgba(249,115,22,0.15); max-width: 240px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; flex-shrink: 1;">
+                        <span style="display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: #22C55E; box-shadow: 0 0 8px #22C55E; flex-shrink: 0;"></span>
+                        <span id="firebase-status-label" style="overflow: hidden; text-overflow: ellipsis;">🔥 Firebase: Connected</span>
                     </button>
 
                     <!-- PWA Install Button (shown dynamically when prompt available or manual instructions) -->
                     <button id="install-pwa-btn" onclick="triggerPWAInstall()" title="Install Portal as Standalone App"
-                        style="display: none; align-items: center; gap: 6px; padding: 6px 14px; background: linear-gradient(135deg, rgba(14,165,233,0.25), rgba(2,132,199,0.2)); border: 1px solid rgba(56,189,248,0.5); border-radius: 20px; color: #38BDF8; font-size: 0.75rem; font-weight: 700; cursor: pointer; transition: all 0.2s; box-shadow: 0 0 12px rgba(56,189,248,0.2);">
+                        style="display: none; align-items: center; gap: 6px; padding: 6px 14px; background: linear-gradient(135deg, rgba(14,165,233,0.25), rgba(2,132,199,0.2)); border: 1px solid rgba(56,189,248,0.5); border-radius: 20px; color: #38BDF8; font-size: 0.75rem; font-weight: 700; cursor: pointer; transition: all 0.2s; box-shadow: 0 0 12px rgba(56,189,248,0.2); flex-shrink: 0;">
                         <span>📱 Install App</span>
-                    </button>
-
-                    <!-- Outdoor Daylight Mode / Theme Toggle -->
-                    <button id="theme-toggle-btn" onclick="togglePortalTheme()" title="Switch between Dark & Outdoor Daylight Mode"
-                        style="display: flex; align-items: center; justify-content: center; width: 34px; height: 34px; background: rgba(15, 23, 42, 0.75); border: 1px solid rgba(255, 255, 255, 0.15); border-radius: 50%; color: #FBBF24; font-size: 1.1rem; cursor: pointer; transition: all 0.2s; box-shadow: 0 0 10px rgba(251, 191, 36, 0.1);">
-                        <span id="theme-toggle-icon-text">☀️</span>
                     </button>
 
                     <!-- Keyboard Shortcuts Help (?) -->
