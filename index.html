@@ -249,10 +249,13 @@
                             <path d="m21 21-4.35-4.35" />
                         </svg>
                         <input type="text" id="global-top-search" placeholder="Quick search..."
-                            onclick="openCommandPalette()" readonly
-                            style="background: rgba(15, 23, 42, 0.75); border: 1px solid rgba(56, 189, 248, 0.3); border-radius: 20px; color: #94A3B8; padding: 7px 70px 7px 36px; font-size: 0.85rem; width: 100%; outline: none; cursor: pointer; transition: all 0.2s;">
-                        <button onclick="openCommandPalette()" title="Press Ctrl+K or Cmd+K to search"
-                            style="position: absolute; right: 8px; top: 50%; transform: translateY(-50%); background: rgba(56, 189, 248, 0.15); border: 1px solid rgba(56, 189, 248, 0.4); color: #38BDF8; border-radius: 12px; padding: 2px 8px; font-size: 0.7rem; font-weight: 800; cursor: pointer; letter-spacing: 0.5px;">Ctrl K</button>
+                            oninput="handleGlobalSearch(this.value)" onkeydown="if(event.key==='Enter' && !this.value.trim()){ openCommandPalette(); }" autocomplete="off"
+                            style="background: rgba(15, 23, 42, 0.75); border: 1px solid rgba(56, 189, 248, 0.3); border-radius: 20px; color: #F8FAFC; padding: 7px 70px 7px 36px; font-size: 0.85rem; width: 100%; outline: none; transition: all 0.2s;">
+                        <button onclick="openCommandPalette()" title="Click or Press Ctrl+K / Cmd+K for Command Palette"
+                            style="position: absolute; right: 8px; top: 50%; transform: translateY(-50%); background: rgba(56, 189, 248, 0.15); border: 1px solid rgba(56, 189, 248, 0.4); color: #38BDF8; border-radius: 12px; padding: 2px 8px; font-size: 0.7rem; font-weight: 800; cursor: pointer; letter-spacing: 0.5px; transition: all 0.2s;"
+                            onmouseover="this.style.background='rgba(56, 189, 248, 0.3)'; this.style.borderColor='#38BDF8'"
+                            onmouseout="this.style.background='rgba(56, 189, 248, 0.15)'; this.style.borderColor='rgba(56, 189, 248, 0.4)'">Ctrl K</button>
+                        <div id="global-search-results" style="position: absolute; top: 100%; left: 0; right: 0; margin-top: 8px; background: rgba(15, 23, 42, 0.98); border: 1px solid rgba(56, 189, 248, 0.45); border-radius: 16px; box-shadow: 0 15px 50px rgba(0,0,0,0.85); z-index: 10000; max-height: 420px; overflow-y: auto; display: none; backdrop-filter: blur(20px);"></div>
                     </div>
                 </div>
 
@@ -3278,36 +3281,36 @@
                 <button onclick="closeKeyboardCheatsheetModal()" style="background:none; border:none; color:#94A3B8; font-size:1.5rem; cursor:pointer;">&times;</button>
             </div>
             <div style="display:flex; flex-direction:column; gap:12px; font-size:0.85rem;">
-                <div style="display:flex; justify-content:space-between; align-items:center; padding:8px 12px; background:rgba(255,255,255,0.04); border-radius:10px;">
-                    <span style="color:#CBD5E1;">Open Global Command Palette</span>
+                <div onclick="closeKeyboardCheatsheetModal(); openCommandPalette();" title="Click to launch Command Palette" style="display:flex; justify-content:space-between; align-items:center; padding:10px 14px; background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.06); border-radius:12px; cursor:pointer; transition:all 0.15s;" onmouseover="this.style.background='rgba(56,189,248,0.15)'; this.style.borderColor='rgba(56,189,248,0.4)'" onmouseout="this.style.background='rgba(255,255,255,0.04)'; this.style.borderColor='rgba(255,255,255,0.06)'">
+                    <span style="color:#CBD5E1; font-weight:600;">Open Global Command Palette <span style="font-size:0.75rem; color:#38BDF8;">(Click to run ⚡)</span></span>
                     <span style="background:rgba(56,189,248,0.2); border:1px solid rgba(56,189,248,0.4); color:#38BDF8; padding:3px 8px; border-radius:6px; font-weight:700;">Ctrl + K / Cmd + K</span>
                 </div>
-                <div style="display:flex; justify-content:space-between; align-items:center; padding:8px 12px; background:rgba(255,255,255,0.04); border-radius:10px;">
-                    <span style="color:#CBD5E1;">Navigate Attendance Roster Rows</span>
+                <div style="display:flex; justify-content:space-between; align-items:center; padding:10px 14px; background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.06); border-radius:12px;">
+                    <span style="color:#CBD5E1; font-weight:600;">Navigate Attendance Roster Rows</span>
                     <span style="background:rgba(168,85,247,0.2); border:1px solid rgba(168,85,247,0.4); color:#C084FC; padding:3px 8px; border-radius:6px; font-weight:700;">↑ / ↓ Arrow Keys</span>
                 </div>
-                <div style="display:flex; justify-content:space-between; align-items:center; padding:8px 12px; background:rgba(255,255,255,0.04); border-radius:10px;">
-                    <span style="color:#CBD5E1;">Mark Highlighted Member <strong style="color:#34D399;">Present</strong></span>
+                <div style="display:flex; justify-content:space-between; align-items:center; padding:10px 14px; background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.06); border-radius:12px;">
+                    <span style="color:#CBD5E1; font-weight:600;">Mark Highlighted Member <strong style="color:#34D399;">Present</strong></span>
                     <span style="background:rgba(52,211,153,0.2); border:1px solid rgba(52,211,153,0.4); color:#34D399; padding:3px 10px; border-radius:6px; font-weight:700;">P</span>
                 </div>
-                <div style="display:flex; justify-content:space-between; align-items:center; padding:8px 12px; background:rgba(255,255,255,0.04); border-radius:10px;">
-                    <span style="color:#CBD5E1;">Mark Highlighted Member <strong style="color:#F87171;">Absent</strong></span>
+                <div style="display:flex; justify-content:space-between; align-items:center; padding:10px 14px; background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.06); border-radius:12px;">
+                    <span style="color:#CBD5E1; font-weight:600;">Mark Highlighted Member <strong style="color:#F87171;">Absent</strong></span>
                     <span style="background:rgba(248,113,113,0.2); border:1px solid rgba(248,113,113,0.4); color:#F87171; padding:3px 10px; border-radius:6px; font-weight:700;">A</span>
                 </div>
-                <div style="display:flex; justify-content:space-between; align-items:center; padding:8px 12px; background:rgba(255,255,255,0.04); border-radius:10px;">
-                    <span style="color:#CBD5E1;">Mark Highlighted Member <strong style="color:#FBBF24;">Late</strong></span>
+                <div style="display:flex; justify-content:space-between; align-items:center; padding:10px 14px; background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.06); border-radius:12px;">
+                    <span style="color:#CBD5E1; font-weight:600;">Mark Highlighted Member <strong style="color:#FBBF24;">Late</strong></span>
                     <span style="background:rgba(251,191,36,0.2); border:1px solid rgba(251,191,36,0.4); color:#FBBF24; padding:3px 10px; border-radius:6px; font-weight:700;">L</span>
                 </div>
-                <div style="display:flex; justify-content:space-between; align-items:center; padding:8px 12px; background:rgba(255,255,255,0.04); border-radius:10px;">
-                    <span style="color:#CBD5E1;">Open Live QR Camera Scanner</span>
+                <div onclick="closeKeyboardCheatsheetModal(); openQRScannerModal();" title="Click to launch QR Scanner" style="display:flex; justify-content:space-between; align-items:center; padding:10px 14px; background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.06); border-radius:12px; cursor:pointer; transition:all 0.15s;" onmouseover="this.style.background='rgba(56,189,248,0.15)'; this.style.borderColor='rgba(56,189,248,0.4)'" onmouseout="this.style.background='rgba(255,255,255,0.04)'; this.style.borderColor='rgba(255,255,255,0.06)'">
+                    <span style="color:#CBD5E1; font-weight:600;">Open Live QR Camera Scanner <span style="font-size:0.75rem; color:#38BDF8;">(Click to run ⚡)</span></span>
                     <span style="background:rgba(56,189,248,0.2); border:1px solid rgba(56,189,248,0.4); color:#38BDF8; padding:3px 8px; border-radius:6px; font-weight:700;">Alt + Q</span>
                 </div>
-                <div style="display:flex; justify-content:space-between; align-items:center; padding:8px 12px; background:rgba(255,255,255,0.04); border-radius:10px;">
-                    <span style="color:#CBD5E1;">Open Add New Member Modal</span>
+                <div onclick="closeKeyboardCheatsheetModal(); openAddMemberModal();" title="Click to open Add Member modal" style="display:flex; justify-content:space-between; align-items:center; padding:10px 14px; background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.06); border-radius:12px; cursor:pointer; transition:all 0.15s;" onmouseover="this.style.background='rgba(56,189,248,0.15)'; this.style.borderColor='rgba(56,189,248,0.4)'" onmouseout="this.style.background='rgba(255,255,255,0.04)'; this.style.borderColor='rgba(255,255,255,0.06)'">
+                    <span style="color:#CBD5E1; font-weight:600;">Open Add New Member Modal <span style="font-size:0.75rem; color:#38BDF8;">(Click to run ⚡)</span></span>
                     <span style="background:rgba(56,189,248,0.2); border:1px solid rgba(56,189,248,0.4); color:#38BDF8; padding:3px 8px; border-radius:6px; font-weight:700;">Alt + N</span>
                 </div>
-                <div style="display:flex; justify-content:space-between; align-items:center; padding:8px 12px; background:rgba(255,255,255,0.04); border-radius:10px;">
-                    <span style="color:#CBD5E1;">Show this Keyboard Cheatsheet</span>
+                <div style="display:flex; justify-content:space-between; align-items:center; padding:10px 14px; background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.06); border-radius:12px;">
+                    <span style="color:#CBD5E1; font-weight:600;">Show this Keyboard Cheatsheet</span>
                     <span style="background:rgba(168,85,247,0.2); border:1px solid rgba(168,85,247,0.4); color:#C084FC; padding:3px 8px; border-radius:6px; font-weight:700;">? or Shift + /</span>
                 </div>
             </div>

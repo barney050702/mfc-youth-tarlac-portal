@@ -426,15 +426,30 @@ function setupEventListeners() {
         });
     }
 
-    // Global Search
-    const searchInput = document.getElementById('global-search-input');
-    if (searchInput) {
-        searchInput.addEventListener('input', (e) => {
-            state.searchQuery = e.target.value.toLowerCase();
-            if (state.currentView !== 'activities') {
-                switchView('activities');
-            } else {
-                renderActivitiesTable();
+    // Global Top Search Keyboard Navigation (ArrowUp / ArrowDown / Enter)
+    const topSearchInput = document.getElementById('global-top-search');
+    if (topSearchInput) {
+        topSearchInput.addEventListener('keydown', (e) => {
+            const resultsBox = document.getElementById('global-search-results');
+            if (!resultsBox || resultsBox.style.display === 'none') return;
+            const items = Array.from(resultsBox.querySelectorAll('.global-search-item'));
+            if (items.length === 0) return;
+
+            if (typeof window.topSearchIdx !== 'number') window.topSearchIdx = -1;
+
+            if (e.key === 'ArrowDown') {
+                e.preventDefault();
+                window.topSearchIdx = (window.topSearchIdx + 1) % items.length;
+                updateTopSearchHighlight(items);
+            } else if (e.key === 'ArrowUp') {
+                e.preventDefault();
+                window.topSearchIdx = (window.topSearchIdx - 1 + items.length) % items.length;
+                updateTopSearchHighlight(items);
+            } else if (e.key === 'Enter' && window.topSearchIdx >= 0 && items[window.topSearchIdx]) {
+                e.preventDefault();
+                items[window.topSearchIdx].click();
+            } else if (e.key === 'Escape') {
+                resultsBox.style.display = 'none';
             }
         });
     }
@@ -6521,6 +6536,40 @@ document.addEventListener('keydown', (e) => {
     }
 });
 
+function updateTopSearchHighlight(items) {
+    items.forEach((item, idx) => {
+        if (idx === window.topSearchIdx) {
+            item.style.background = 'rgba(56, 189, 248, 0.25)';
+            item.style.outline = '1px solid #38BDF8';
+            item.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        } else {
+            item.style.background = 'transparent';
+            item.style.outline = 'none';
+        }
+    });
+}
+
+function updateCmdPaletteHighlight() {
+    const resultsContainer = document.getElementById('cmd-palette-results');
+    if (!resultsContainer) return;
+    const items = Array.from(resultsContainer.querySelectorAll('.cmd-palette-item'));
+    if (items.length === 0) return;
+    if (typeof window.cmdPaletteSelectedIndex !== 'number') window.cmdPaletteSelectedIndex = 0;
+    if (window.cmdPaletteSelectedIndex < 0) window.cmdPaletteSelectedIndex = items.length - 1;
+    if (window.cmdPaletteSelectedIndex >= items.length) window.cmdPaletteSelectedIndex = 0;
+
+    items.forEach((item, idx) => {
+        if (idx === window.cmdPaletteSelectedIndex) {
+            item.style.background = 'rgba(56, 189, 248, 0.25)';
+            item.style.borderColor = '#38BDF8';
+            item.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        } else {
+            item.style.background = 'rgba(15,23,42,0.6)';
+            item.style.borderColor = 'rgba(255,255,255,0.07)';
+        }
+    });
+}
+
 function openCommandPalette() {
     const modal = document.getElementById('modal-command-palette');
     if (modal) {
@@ -6529,7 +6578,33 @@ function openCommandPalette() {
         if (input) {
             input.value = '';
             input.focus();
+            if (!input.dataset.keybound) {
+                input.dataset.keybound = 'true';
+                input.addEventListener('keydown', (e) => {
+                    const resultsContainer = document.getElementById('cmd-palette-results');
+                    if (!resultsContainer) return;
+                    const items = Array.from(resultsContainer.querySelectorAll('.cmd-palette-item'));
+                    if (items.length === 0) return;
+
+                    if (e.key === 'ArrowDown') {
+                        e.preventDefault();
+                        window.cmdPaletteSelectedIndex = (window.cmdPaletteSelectedIndex || 0) + 1;
+                        updateCmdPaletteHighlight();
+                    } else if (e.key === 'ArrowUp') {
+                        e.preventDefault();
+                        window.cmdPaletteSelectedIndex = (window.cmdPaletteSelectedIndex || 0) - 1;
+                        updateCmdPaletteHighlight();
+                    } else if (e.key === 'Enter') {
+                        e.preventDefault();
+                        const activeItem = items[window.cmdPaletteSelectedIndex || 0];
+                        if (activeItem) activeItem.click();
+                    } else if (e.key === 'Escape') {
+                        closeCommandPalette();
+                    }
+                });
+            }
         }
+        window.cmdPaletteSelectedIndex = 0;
         handleCommandPaletteSearch('');
     }
 }
@@ -6576,7 +6651,7 @@ function handleCommandPaletteSearch(query) {
         html += `<div style="font-size:0.7rem; font-weight:800; color:#38BDF8; letter-spacing:0.06em; padding:4px 6px;">NAVIGATION VIEWS</div>`;
         matchedViews.forEach(v => {
             html += `
-                <div onclick="switchView('${v.id}'); closeCommandPalette();" style="display:flex; align-items:center; justify-content:space-between; padding:10px 14px; background:rgba(15,23,42,0.6); border:1px solid rgba(255,255,255,0.07); border-radius:12px; cursor:pointer; transition:all 0.15s;" onmouseover="this.style.background='rgba(56,189,248,0.15)'; this.style.borderColor='rgba(56,189,248,0.4)';" onmouseout="this.style.background='rgba(15,23,42,0.6)'; this.style.borderColor='rgba(255,255,255,0.07)';">
+                <div class="cmd-palette-item" onclick="switchView('${v.id}'); closeCommandPalette();" style="display:flex; align-items:center; justify-content:space-between; padding:10px 14px; background:rgba(15,23,42,0.6); border:1px solid rgba(255,255,255,0.07); border-radius:12px; cursor:pointer; transition:all 0.15s;" onmouseover="this.style.background='rgba(56,189,248,0.15)'; this.style.borderColor='rgba(56,189,248,0.4)';" onmouseout="this.style.background='rgba(15,23,42,0.6)'; this.style.borderColor='rgba(255,255,255,0.07)';">
                     <div style="display:flex; align-items:center; gap:12px;">
                         <span style="font-size:1.4rem;">${v.emoji}</span>
                         <div>
@@ -6595,7 +6670,7 @@ function handleCommandPaletteSearch(query) {
         html += `<div style="font-size:0.7rem; font-weight:800; color:#10B981; letter-spacing:0.06em; padding:8px 6px 4px;">OFFICIAL RESOURCES & MANUALS</div>`;
         matchedResources.forEach(r => {
             html += `
-                <div onclick="closeCommandPalette(); const a=document.createElement('a'); a.href='${r.url}'; a.download='${r.filename}'; document.body.appendChild(a); a.click(); document.body.removeChild(a); showToast('📥 Downloading ${r.title}...', 'success');" style="display:flex; align-items:center; justify-content:space-between; padding:10px 14px; background:rgba(15,23,42,0.6); border:1px solid rgba(16,185,129,0.18); border-radius:12px; cursor:pointer; transition:all 0.15s;" onmouseover="this.style.background='rgba(16,185,129,0.15)'; this.style.borderColor='rgba(16,185,129,0.4)';" onmouseout="this.style.background='rgba(15,23,42,0.6)'; this.style.borderColor='rgba(16,185,129,0.18)';">
+                <div class="cmd-palette-item" onclick="closeCommandPalette(); const a=document.createElement('a'); a.href='${r.url}'; a.download='${r.filename}'; document.body.appendChild(a); a.click(); document.body.removeChild(a); showToast('📥 Downloading ${r.title}...', 'success');" style="display:flex; align-items:center; justify-content:space-between; padding:10px 14px; background:rgba(15,23,42,0.6); border:1px solid rgba(16,185,129,0.18); border-radius:12px; cursor:pointer; transition:all 0.15s;" onmouseover="this.style.background='rgba(16,185,129,0.15)'; this.style.borderColor='rgba(16,185,129,0.4)';" onmouseout="this.style.background='rgba(15,23,42,0.6)'; this.style.borderColor='rgba(16,185,129,0.18)';">
                     <div style="display:flex; align-items:center; gap:12px;">
                         <span style="font-size:1.4rem;">${r.emoji}</span>
                         <div>
@@ -6614,7 +6689,7 @@ function handleCommandPaletteSearch(query) {
         html += `<div style="font-size:0.7rem; font-weight:800; color:#F472B6; letter-spacing:0.06em; padding:8px 6px 4px;">YOUTH MEMBERS (${matchedMembers.length})</div>`;
         matchedMembers.forEach(m => {
             html += `
-                <div onclick="switchView('members'); closeCommandPalette(); showToast('Navigating to ${m.name}...', 'info');" style="display:flex; align-items:center; justify-content:space-between; padding:10px 14px; background:rgba(15,23,42,0.6); border:1px solid rgba(244,114,182,0.18); border-radius:12px; cursor:pointer; transition:all 0.15s;" onmouseover="this.style.background='rgba(244,114,182,0.15)'; this.style.borderColor='rgba(244,114,182,0.4)';" onmouseout="this.style.background='rgba(15,23,42,0.6)'; this.style.borderColor='rgba(244,114,182,0.18)';">
+                <div class="cmd-palette-item" onclick="switchView('members'); closeCommandPalette(); showToast('Navigating to ${m.name}...', 'info');" style="display:flex; align-items:center; justify-content:space-between; padding:10px 14px; background:rgba(15,23,42,0.6); border:1px solid rgba(244,114,182,0.18); border-radius:12px; cursor:pointer; transition:all 0.15s;" onmouseover="this.style.background='rgba(244,114,182,0.15)'; this.style.borderColor='rgba(244,114,182,0.4)';" onmouseout="this.style.background='rgba(15,23,42,0.6)'; this.style.borderColor='rgba(244,114,182,0.18)';">
                     <div style="display:flex; align-items:center; gap:12px;">
                         <span style="font-size:1.4rem;">👤</span>
                         <div>
@@ -6633,6 +6708,8 @@ function handleCommandPaletteSearch(query) {
     }
 
     resultsContainer.innerHTML = html;
+    window.cmdPaletteSelectedIndex = 0;
+    updateCmdPaletteHighlight();
 }
 
 function handleGlobalSearch(query) {
@@ -6660,7 +6737,7 @@ function handleGlobalSearch(query) {
         html += `<div style="font-size: 0.7rem; font-weight: 800; color: #38BDF8; letter-spacing: 0.05em; padding: 4px 8px;">MEMBERS (${matchedMembers.length})</div>`;
         matchedMembers.forEach(m => {
             html += `
-                <div onclick="switchView('members'); document.getElementById('global-search-results').style.display='none'; showToast('Navigating to ${m.name}...', 'info');" style="padding: 8px; border-radius: 8px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; transition: background 0.15s;" onmouseover="this.style.background='rgba(56,189,248,0.1)'" onmouseout="this.style.background='transparent'">
+                <div class="global-search-item" onclick="switchView('members'); document.getElementById('global-search-results').style.display='none'; showToast('Navigating to ${m.name}...', 'info');" style="padding: 8px; border-radius: 8px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; transition: background 0.15s;" onmouseover="this.style.background='rgba(56,189,248,0.1)'" onmouseout="this.style.background='transparent'">
                     <div>
                         <div style="color: #FFF; font-weight: 700; font-size: 0.82rem;">${m.name}</div>
                         <div style="color: #94A3B8; font-size: 0.72rem;">${m.chapter || 'Central'} • ${m.role || 'Member'}</div>
@@ -6676,7 +6753,7 @@ function handleGlobalSearch(query) {
         matchedActivities.forEach(a => {
             const displayTitle = a.title || a.name || 'Untitled';
             html += `
-                <div onclick="selectActivityForAttendance('${a.id}'); document.getElementById('global-search-results').style.display='none';" style="padding: 8px; border-radius: 8px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; transition: background 0.15s;" onmouseover="this.style.background='rgba(16,185,129,0.1)'" onmouseout="this.style.background='transparent'">
+                <div class="global-search-item" onclick="selectActivityForAttendance('${a.id}'); document.getElementById('global-search-results').style.display='none';" style="padding: 8px; border-radius: 8px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; transition: background 0.15s;" onmouseover="this.style.background='rgba(16,185,129,0.1)'" onmouseout="this.style.background='transparent'">
                     <div>
                         <div style="color: #FFF; font-weight: 700; font-size: 0.82rem;">${displayTitle}</div>
                         <div style="color: #94A3B8; font-size: 0.72rem;">${a.date || 'No date'} • ${a.status || 'Scheduled'}</div>
@@ -6689,6 +6766,7 @@ function handleGlobalSearch(query) {
 
     resultsBox.innerHTML = html;
     resultsBox.style.display = 'block';
+    window.topSearchIdx = -1;
 }
 
 
