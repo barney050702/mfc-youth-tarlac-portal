@@ -21,8 +21,19 @@ let state = {
     agendaViewMode: 'grid',
     auditLog: [],
     currentRole: 'Super Admin',
-    showOnlyDuplicates: false
+    showOnlyDuplicates: false,
+    sortOrder: 'ASC'
 };
+
+// Toggle Sort Order
+function toggleAgendaSort() {
+    state.sortOrder = state.sortOrder === 'ASC' ? 'DESC' : 'ASC';
+    const sortBtn = document.getElementById('agenda-sort-btn');
+    if (sortBtn) {
+        sortBtn.innerHTML = state.sortOrder === 'ASC' ? '<span>⇅ Date: Oldest</span>' : '<span>⇅ Date: Newest</span>';
+    }
+    renderActivitiesTable();
+}
 
 // ============================================================================
 // 1. INITIALIZATION & SAMPLE DATA PERSISTENCE
@@ -1792,6 +1803,11 @@ function renderActivitiesTable() {
     updateBadgeCount();
     const totalMems = state.members.length;
 
+    // Calculate tab counts
+    let s1Count = 0;
+    let s2Count = 0;
+    let allCount = 0;
+
     const filtered = state.activities.filter(act => {
         const actName = act.name || act.title || '';
         const actVenue = act.venue || act.location || '';
@@ -1807,14 +1823,40 @@ function renderActivitiesTable() {
         let matchesSem = true;
         const dObjSem = new Date(act.date);
         const mNum = !isNaN(dObjSem.getTime()) ? dObjSem.getMonth() : -1;
+        
+        const isS1 = act.semester === 's1' || (act.semester !== 's2' && mNum >= 0 && mNum <= 5);
+        const isS2 = act.semester === 's2' || (act.semester !== 's1' && mNum >= 6 && mNum <= 11);
+
+        if (matchesCat && matchesStat && matchesSearch) {
+            allCount++;
+            if (isS1) s1Count++;
+            if (isS2) s2Count++;
+        }
+
         if (state.agendaSemester === 's1') {
-            matchesSem = act.semester === 's1' || (act.semester !== 's2' && mNum >= 0 && mNum <= 5);
+            matchesSem = isS1;
         } else if (state.agendaSemester === 's2') {
-            matchesSem = act.semester === 's2' || (act.semester !== 's1' && mNum >= 6 && mNum <= 11);
+            matchesSem = isS2;
         }
 
         return matchesCat && matchesStat && matchesSearch && matchesSem;
-    }).sort((a, b) => new Date(a.date) - new Date(b.date));
+    }).sort((a, b) => {
+        const dateA = new Date(a.date);
+        const dateB = new Date(b.date);
+        return state.sortOrder === 'ASC' ? dateA - dateB : dateB - dateA;
+    });
+
+    // Update UI Counters
+    const totalActEl = document.getElementById('total-activities-count');
+    if (totalActEl) totalActEl.innerText = `${filtered.length} activities total`;
+
+    const tabS1 = document.getElementById('tab-s1');
+    const tabS2 = document.getElementById('tab-s2');
+    const tabAll = document.getElementById('tab-all');
+    if (tabS1) tabS1.innerText = `1st Sem · ${s1Count}`;
+    if (tabS2) tabS2.innerText = `2nd Sem · ${s2Count}`;
+    if (tabAll) tabAll.innerText = `All Activities · ${allCount}`;
+
 
     // Render Grid View
     if (gridCont) {
@@ -1839,20 +1881,42 @@ function renderActivitiesTable() {
                 });
                 const rate = totalMems > 0 ? ((pCount / totalMems) * 100).toFixed(1) : '0.0';
                 
+                // Point 1: Empty check-in state
+                let rateText = `${pCount} / ${totalMems} (${rate}%)`;
+                let rateValue = parseFloat(rate);
+                if (totalMems === 0) {
+                    rateText = "No registered participants yet";
+                    rateValue = 0;
+                }
+
+                // Point 6: Color code progress
+                let progressColor1 = '#34D399'; // green (default >70)
+                let progressColor2 = '#10B981';
+                if (rateValue < 30) {
+                    progressColor1 = '#F87171'; // red
+                    progressColor2 = '#EF4444';
+                } else if (rateValue <= 70) {
+                    progressColor1 = '#FCD34D'; // yellow
+                    progressColor2 = '#F59E0B';
+                }
+                
                 const dObj = new Date(act.date);
                 const dateUpper = isNaN(dObj.getTime()) ? act.date.toUpperCase() : dObj.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }).toUpperCase();
                 
                 const mNum = !isNaN(dObj.getTime()) ? dObj.getMonth() : -1;
-                let semBadgeText = '🗓️ 1st Sem (Jan-Jun)';
+                
+                // Point 9: Colorblind icons
+                let semBadgeText = '📅 1st Sem (Jan-Jun)';
                 if (act.semester === 's2' || (act.semester !== 's1' && mNum >= 6 && mNum <= 11)) {
-                    semBadgeText = '🗓️ 2nd Sem (Jul-Dec)';
+                    semBadgeText = '📅 2nd Sem (Jul-Dec)';
                 }
 
                 const isAccomplished = act.status === 'Completed' || act.status === 'Accomplished';
                 const pillBg = isAccomplished ? 'rgba(16, 185, 129, 0.15)' : 'rgba(56, 189, 248, 0.15)';
                 const pillColor = isAccomplished ? '#10B981' : '#38BDF8';
                 const pillBorder = isAccomplished ? 'rgba(16, 185, 129, 0.3)' : 'rgba(56, 189, 248, 0.3)';
-                const pillText = isAccomplished ? 'Accomplished' : act.status;
+                const pillIcon = isAccomplished ? '✅ ' : '⏳ ';
+                const pillText = pillIcon + (isAccomplished ? 'Accomplished' : act.status);
 
                 const displayTitle = act.title || act.name || 'Untitled Activity';
                 return `
@@ -1877,36 +1941,36 @@ function renderActivitiesTable() {
                             </h3>
 
                             <div style="display: flex; align-items: center; gap: 6px; color: #94A3B8; font-size: 0.85rem; margin-bottom: 16px;">
-                                <span>📍</span>
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 16px; height: 16px; color: #94A3B8;"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
                                 <span>${act.venue || act.location || 'TBA'}</span>
                             </div>
 
                             <div style="background: rgba(30, 41, 59, 0.6); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 12px; padding: 12px 14px; margin-bottom: 20px;">
-                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
-                                    <span style="color: #CBD5E1; font-size: 0.8rem; font-weight: 700;">Youth Check-Ins</span>
-                                    <span style="color: #38BDF8; font-size: 0.85rem; font-weight: 800;">${pCount} / ${totalMems} (${rate}%)</span>
+                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; flex-wrap: wrap; gap: 4px;">
+                                    <span style="color: #CBD5E1; font-size: 0.8rem; font-weight: 700;">Checked-in / Registered</span>
+                                    <span style="color: #F8FAFC; font-size: 0.8rem; font-weight: 800;">${rateText}</span>
                                 </div>
                                 <div style="height: 6px; background: rgba(15, 23, 42, 0.8); border-radius: 6px; overflow: hidden;">
-                                    <div style="width: ${rate}%; height: 100%; background: linear-gradient(90deg, #3B82F6, #38BDF8); border-radius: 6px; transition: width 0.5s ease;"></div>
+                                    <div style="width: ${rate}%; height: 100%; background: linear-gradient(90deg, ${progressColor1}, ${progressColor2}); border-radius: 6px; transition: width 0.5s ease;"></div>
                                 </div>
                             </div>
                         </div>
 
-                        <div style="border-top: 1px solid rgba(255, 255, 255, 0.07); padding-top: 16px; display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap;">
-                            <div style="display: flex; gap: 6px;">
-                                <button onclick="openAddModal('${act.id}')" style="background: rgba(255, 255, 255, 0.06); color: #E2E8F0; border: 1px solid rgba(255, 255, 255, 0.1); padding: 7px 12px; border-radius: 8px; font-weight: 700; font-size: 0.78rem; cursor: pointer; transition: all 0.2s;">
-                                    ✏️ Edit
+                        <div style="border-top: 1px solid rgba(255, 255, 255, 0.07); padding-top: 16px; display: flex; flex-direction: column; gap: 12px;">
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <button onclick="selectActivityForAttendance('${act.id}')" class="btn-primary" style="flex: 1; padding: 10px; border-radius: 12px; font-weight: 700; font-size: 0.85rem; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 6px; min-height: 44px; min-width: 44px;">
+                                    <span>📋 Check Roster</span>
                                 </button>
-                                <button onclick="deleteActivity('${act.id}')" style="background: rgba(239, 68, 68, 0.12); color: #F87171; border: 1px solid rgba(239, 68, 68, 0.25); padding: 7px 12px; border-radius: 8px; font-weight: 700; font-size: 0.78rem; cursor: pointer; transition: all 0.2s;">
-                                    🗑️
-                                </button>
-                            </div>
-                            <div style="display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap;">
-                                <button onclick="downloadActivityPDF('${act.id}', '${displayTitle.replace(/'/g, "\\'")}')" style="background: rgba(59, 130, 246, 0.15); color: #60A5FA; border: 1px solid rgba(59, 130, 246, 0.4); padding: 7px 14px; border-radius: 8px; font-weight: 700; font-size: 0.8rem; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 6px;">
+                                <button onclick="downloadActivityPDF('${act.id}', '${displayTitle.replace(/'/g, "\\'")}')" class="btn-secondary" style="flex: 1; padding: 10px; border-radius: 12px; font-weight: 700; font-size: 0.85rem; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 6px; min-height: 44px; min-width: 44px;">
                                     <span>📄 Export PDF</span>
                                 </button>
-                                <button onclick="selectActivityForAttendance('${act.id}')" style="background: rgba(16, 185, 129, 0.15); color: #34D399; border: 1px solid rgba(16, 185, 129, 0.4); padding: 7px 14px; border-radius: 8px; font-weight: 700; font-size: 0.8rem; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 6px;">
-                                    <span>📋 Check Roster</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; align-items: center; gap: 8px;">
+                                <button onclick="openAddModal('${act.id}')" style="background: rgba(255, 255, 255, 0.06); color: #E2E8F0; border: 1px solid rgba(255, 255, 255, 0.1); padding: 10px 16px; border-radius: 12px; font-weight: 700; font-size: 0.8rem; cursor: pointer; transition: all 0.2s; min-height: 44px; min-width: 44px;">
+                                    ✏️ Edit
+                                </button>
+                                <button onclick="deleteActivity('${act.id}')" style="background: rgba(239, 68, 68, 0.1); color: #F87171; border: 1px solid rgba(239, 68, 68, 0.2); padding: 10px 16px; border-radius: 12px; font-weight: 700; font-size: 0.8rem; cursor: pointer; transition: all 0.2s; min-height: 44px; min-width: 44px; margin-left: auto;">
+                                    🗑️ Delete
                                 </button>
                             </div>
                         </div>

@@ -659,41 +659,40 @@
                         style="background: #FFFFFF; color: #0F172A; padding: 28px 36px; border-radius: 16px; margin-bottom: 24px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25); display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px;">
                         <div>
                             <h2 id="semester-banner-title"
-                                style="color: #1E3A8A; font-size: 1.7rem; font-weight: 800; margin: 0 0 6px 0;">All
-                                Activities History</h2>
-                            <p id="semester-banner-desc" style="color: #475569; font-size: 0.95rem; margin: 0;">
+                                style="color: #1E3A8A; font-size: 1.7rem; font-weight: 800; margin: 0 0 4px 0;">All Activities History</h2>
+                            <p id="total-activities-count" style="color: #3B82F6; font-size: 0.85rem; font-weight: 700; margin: 0 0 4px 0;">0 activities total</p>
+                            <p id="semester-banner-desc" style="color: #64748B; font-size: 0.95rem; margin: 0;">
                                 Comprehensive record of all organizational events and gatherings.</p>
                         </div>
                         <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
                             <div class="semester-tabs"
                                 style="display: inline-flex; background: #F1F5F9; padding: 4px; border-radius: 10px; border: 1px solid #E2E8F0;">
-                                <button class="sem-tab-btn" onclick="setAgendaSemester('s1', this)"
-                                    style="padding: 6px 14px; border-radius: 8px; border: none; font-weight: 700; font-size: 0.82rem; cursor: pointer; transition: all 0.2s; background: transparent; color: #475569;">1st
-                                    Sem (Jan-Jun)</button>
-                                <button class="sem-tab-btn" onclick="setAgendaSemester('s2', this)"
-                                    style="padding: 6px 14px; border-radius: 8px; border: none; font-weight: 700; font-size: 0.82rem; cursor: pointer; transition: all 0.2s; background: transparent; color: #475569;">2nd
-                                    Sem (Jul-Dec)</button>
-                                <button class="sem-tab-btn active" onclick="setAgendaSemester('all', this)"
-                                    style="padding: 6px 14px; border-radius: 8px; border: none; font-weight: 700; font-size: 0.82rem; cursor: pointer; transition: all 0.2s; background: #1E3A8A; color: #FFF;">All
-                                    Activities</button>
+                                <button id="tab-s1" class="sem-tab-btn" onclick="setAgendaSemester('s1', this)"
+                                    style="padding: 6px 14px; border-radius: 8px; border: none; font-weight: 700; font-size: 0.82rem; cursor: pointer; transition: all 0.2s; background: transparent; color: #475569;">1st Sem · Jan-Jun</button>
+                                <button id="tab-s2" class="sem-tab-btn" onclick="setAgendaSemester('s2', this)"
+                                    style="padding: 6px 14px; border-radius: 8px; border: none; font-weight: 700; font-size: 0.82rem; cursor: pointer; transition: all 0.2s; background: transparent; color: #475569;">2nd Sem · Jul-Dec</button>
+                                <button id="tab-all" class="sem-tab-btn active" onclick="setAgendaSemester('all', this)"
+                                    style="padding: 6px 14px; border-radius: 8px; border: none; font-weight: 700; font-size: 0.82rem; cursor: pointer; transition: all 0.2s; background: #1E3A8A; color: #FFF;">All Activities</button>
                             </div>
                         </div>
                     </div>
 
                     <!-- Toolbar & Controls -->
-                    <div
-                        style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; flex-wrap: wrap; gap: 16px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; flex-wrap: wrap; gap: 16px;">
                         <div style="display: flex; align-items: center; gap: 14px; flex-wrap: wrap;">
-                            <button onclick="refreshAgendaHistory()"
-                                style="background: rgba(15, 23, 42, 0.7); border: 1px solid rgba(59, 130, 246, 0.4); color: #60A5FA; padding: 10px 22px; border-radius: 10px; font-weight: 700; font-size: 0.85rem; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; transition: all 0.2s; box-shadow: 0 4px 15px rgba(0,0,0,0.2);">
+                            <button onclick="refreshAgendaHistory()" title="Refresh Records"
+                                style="background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); color: #94A3B8; padding: 10px; border-radius: 12px; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; transition: all 0.2s; min-width: 44px; min-height: 44px;">
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
-                                    style="width: 16px; height: 16px;">
+                                    style="width: 18px; height: 18px;">
                                     <path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
                                     <path d="M3 3v5h5" />
                                     <path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16" />
                                     <path d="M16 16h5v5" />
                                 </svg>
-                                <span>REFRESH RECORDS</span>
+                            </button>
+                            <button onclick="toggleAgendaSort()" id="agenda-sort-btn" title="Sort by Date"
+                                style="background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); color: #94A3B8; padding: 10px 14px; border-radius: 12px; font-weight: 700; font-size: 0.85rem; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; transition: all 0.2s; min-height: 44px;">
+                                <span>⇅ Date: Oldest</span>
                             </button>
                         </div>
                         <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
@@ -704,8 +703,8 @@
                                 </svg>
                                 <input type="text" id="activity-search-input" placeholder="Search activities...">
                             </div>
-                            <div class="filter-group" style="margin: 0;">
-                                <select id="filter-category" class="custom-select" style="padding: 8px 14px;">
+                            <div class="filter-group" style="margin: 0; position: relative;">
+                                <select id="filter-category" class="custom-select" style="padding: 10px 32px 10px 16px; border-radius: 12px; min-height: 44px; appearance: none; background-color: rgba(15, 23, 42, 0.6); border: 1px solid rgba(255,255,255,0.1); color: #F8FAFC;">
                                     <option value="ALL">All Categories</option>
                                     <option value="Chapter Assembly">Chapter Assembly</option>
                                     <option value="Chapter Household">Chapter Household</option>
@@ -714,6 +713,9 @@
                                     <option value="Upper Core Household">Upper Core Household</option>
                                     <option value="MFC Conference">MFC Conference</option>
                                 </select>
+                                <svg viewBox="0 0 24 24" fill="none" stroke="#94A3B8" stroke-width="2" style="width: 16px; height: 16px; position: absolute; right: 12px; top: 50%; transform: translateY(-50%); pointer-events: none;">
+                                    <polyline points="6 9 12 15 18 9"></polyline>
+                                </svg>
                             </div>
                         </div>
                     </div>
