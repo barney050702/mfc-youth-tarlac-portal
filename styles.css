@@ -1699,6 +1699,12 @@ button svg, button span, button i, button path, button polyline, button line {
     overflow-x: auto;
 }
 
+.table-container {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
 .data-table {
     width: 100%;
     border-collapse: separate;
@@ -1715,12 +1721,14 @@ button svg, button span, button i, button path, button polyline, button line {
     text-transform: uppercase;
     letter-spacing: 0.06em;
     border-bottom: 1px solid var(--border-color);
+    white-space: nowrap;
 }
 
 .data-table td {
     padding: 16px;
     border-bottom: 1px solid rgba(255, 255, 255, 0.04);
     vertical-align: middle;
+    white-space: nowrap;
 }
 
 .data-table tr:last-child td {
