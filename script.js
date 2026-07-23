@@ -50,9 +50,50 @@ const SAMPLE_ACTIVITIES = [
     { id: 'act-107', name: 'MFC Youth Conference 2026', date: '2026-08-15', location: 'Tarlac Convention Center', type: 'MFC Conference', category: 'MFC Conference', status: 'Upcoming', notes: 'Annual chapter and diocesan MFC Youth Conference' }
 ];
 
+function setupSpotlights() {
+    document.addEventListener('mousemove', (e) => {
+        const cards = document.querySelectorAll('.spotlight-card, .glass-card');
+        cards.forEach((card) => {
+            const rect = card.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            if (x >= -100 && x <= rect.width + 100 && y >= -100 && y <= rect.height + 100) {
+                card.style.setProperty('--mouse-x', `${x}px`);
+                card.style.setProperty('--mouse-y', `${y}px`);
+            }
+        });
+    });
+}
+
+function animateCounter(el, targetValue, duration = 650, prefix = '', suffix = '') {
+    if (!el) return;
+    const startValue = parseInt(el.dataset.currentVal || '0', 10) || 0;
+    if (startValue === targetValue && el.textContent) {
+        el.textContent = prefix + targetValue.toLocaleString() + suffix;
+        return;
+    }
+    el.dataset.currentVal = targetValue;
+    const startTime = performance.now();
+
+    function updateCounter(currentTime) {
+        const elapsed = currentTime - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+        const easeProgress = 1 - Math.pow(1 - progress, 3);
+        const currentNum = Math.round(startValue + (targetValue - startValue) * easeProgress);
+        el.textContent = prefix + currentNum.toLocaleString() + suffix;
+        if (progress < 1) {
+            requestAnimationFrame(updateCounter);
+        } else {
+            el.textContent = prefix + targetValue.toLocaleString() + suffix;
+        }
+    }
+    requestAnimationFrame(updateCounter);
+}
+
 function initApp() {
     loadFromStorage();
     setupEventListeners();
+    setupSpotlights();
     renderAll();
     if (window.innerWidth <= 1024) {
         closeMobileSidebar();
@@ -576,13 +617,17 @@ function switchView(viewId) {
         else item.classList.remove('active');
     });
 
-    // Update view panels
+    // Update view panels with staggered entrance animation
     document.querySelectorAll('.view-panel').forEach(panel => {
         const targetViewId = (viewId === 'servants') ? 'members' : viewId;
         if (panel.id === `view-${targetViewId}`) {
             panel.classList.add('active');
+            panel.classList.remove('view-section-enter');
+            void panel.offsetWidth;
+            panel.classList.add('view-section-enter');
         } else {
             panel.classList.remove('active');
+            panel.classList.remove('view-section-enter');
         }
     });
 
@@ -857,15 +902,25 @@ function renderDashboard() {
     let totalCheckins = 0;
     let totalRateSum = 0;
     let ratedActivitiesCount = 0;
+    let totalPresentSum = 0;
+    let totalLateSum = 0;
+    let totalAbsentSum = 0;
 
     state.activities.forEach(act => {
         const attObj = state.attendance[act.id] || {};
         let presentCount = 0;
         state.members.forEach(m => {
             const st = attObj[m.id]?.status;
-            if (st === 'present' || st === 'late') {
+            if (st === 'present') {
                 presentCount++;
                 totalCheckins++;
+                totalPresentSum++;
+            } else if (st === 'late') {
+                presentCount++;
+                totalCheckins++;
+                totalLateSum++;
+            } else {
+                totalAbsentSum++;
             }
         });
 
@@ -877,19 +932,38 @@ function renderDashboard() {
     });
 
     const avgRate = ratedActivitiesCount > 0 ? Math.round(totalRateSum / ratedActivitiesCount) : 0;
+    const totalAttendanceRecords = totalPresentSum + totalLateSum + totalAbsentSum;
+    const pctPresent = totalAttendanceRecords > 0 ? Math.round((totalPresentSum / totalAttendanceRecords) * 100) : 0;
+    const pctLate = totalAttendanceRecords > 0 ? Math.round((totalLateSum / totalAttendanceRecords) * 100) : 0;
+    const pctAbsent = totalAttendanceRecords > 0 ? Math.max(0, 100 - pctPresent - pctLate) : 0;
 
-    // Update DOM metrics
+    // Update DOM metrics with Odometer animation & Gradients
     const elTotalActs = document.getElementById('stat-total-activities');
     const elAvgRate = document.getElementById('stat-avg-rate');
     const elRateBar = document.getElementById('stat-rate-bar');
     const elTotalMems = document.getElementById('stat-total-members');
     const elTotalCheckins = document.getElementById('stat-total-checkins');
 
-    if (elTotalActs) elTotalActs.textContent = totalActs;
-    if (elAvgRate) elAvgRate.textContent = `${avgRate}%`;
+    if (elTotalActs) { elTotalActs.className = 'metric-value stat-number-gradient'; animateCounter(elTotalActs, totalActs); }
+    if (elAvgRate) { elAvgRate.className = 'metric-value stat-number-emerald'; animateCounter(elAvgRate, avgRate, 650, '', '%'); }
     if (elRateBar) elRateBar.style.width = `${avgRate}%`;
-    if (elTotalMems) elTotalMems.textContent = totalMems;
-    if (elTotalCheckins) elTotalCheckins.textContent = totalCheckins;
+    if (elTotalMems) { elTotalMems.className = 'metric-value stat-number-gradient'; animateCounter(elTotalMems, totalMems); }
+    if (elTotalCheckins) { elTotalCheckins.className = 'metric-value stat-number-amber'; animateCounter(elTotalCheckins, totalCheckins); }
+
+    // Update Overall Check-In Distribution Bar
+    const segPresent = document.getElementById('bar-seg-present');
+    const segLate = document.getElementById('bar-seg-late');
+    const segAbsent = document.getElementById('bar-seg-absent');
+    const legPresent = document.getElementById('legend-present');
+    const legLate = document.getElementById('legend-late');
+    const legAbsent = document.getElementById('legend-absent');
+
+    if (segPresent) segPresent.style.width = `${pctPresent}%`;
+    if (segLate) segLate.style.width = `${pctLate}%`;
+    if (segAbsent) segAbsent.style.width = `${pctAbsent}%`;
+    if (legPresent) legPresent.textContent = `${pctPresent}% (${totalPresentSum})`;
+    if (legLate) legLate.textContent = `${pctLate}% (${totalLateSum})`;
+    if (legAbsent) legAbsent.textContent = `${pctAbsent}% (${totalAbsentSum})`;
 
     // Render Recent Activities Table (Screenshot 2 exact clone)
     const recentTable = document.getElementById('dashboard-recent-table');
@@ -1746,14 +1820,17 @@ function renderActivitiesTable() {
     if (gridCont) {
         if (filtered.length === 0) {
             gridCont.innerHTML = `
-                <div style="grid-column: 1 / -1; text-align: center; padding: 60px 20px; background: rgba(15, 23, 42, 0.5); border-radius: 16px; border: 1px dashed rgba(255,255,255,0.1); color: #94A3B8;">
-                    <div style="font-size: 2rem; margin-bottom: 12px;">📅</div>
-                    <div style="font-weight: 700; font-size: 1.1rem; color: #E2E8F0; margin-bottom: 4px;">No activities found in this semester</div>
-                    <div style="font-size: 0.88rem;">Try selecting a different semester or clearing your filters.</div>
+                <div style="grid-column: 1 / -1;">
+                    <div class="zero-state-card">
+                        <div class="zero-state-icon">📅</div>
+                        <h4 style="color: #F8FAFC; font-size: 1.15rem; font-weight: 800; margin: 0;">No Activities Found</h4>
+                        <p style="color: #94A3B8; font-size: 0.85rem; max-width: 380px; margin: 0;">Try selecting a different semester or clearing your category and search filters.</p>
+                        <button onclick="document.getElementById('filter-category').value='ALL'; document.getElementById('filter-status').value='ALL'; document.getElementById('search-input').value=''; state.filterCategory='ALL'; state.filterStatus='ALL'; state.searchQuery=''; renderActivitiesTable();" class="btn-secondary" style="padding: 6px 14px; font-size: 0.78rem; margin-top: 6px;">✨ Reset Filters</button>
+                    </div>
                 </div>
             `;
         } else {
-            gridCont.innerHTML = filtered.map(act => {
+            gridCont.innerHTML = filtered.map((act, idx) => {
                 const attObj = state.attendance[act.id] || {};
                 let pCount = 0;
                 state.members.forEach(m => {
@@ -1779,40 +1856,50 @@ function renderActivitiesTable() {
 
                 const displayTitle = act.title || act.name || 'Untitled Activity';
                 return `
-                    <div class="agenda-card glass-card" style="background: rgba(15, 23, 42, 0.85); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 16px; padding: 24px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); display: flex; flex-direction: column; justify-content: space-between; transition: transform 0.2s ease, border-color 0.2s ease;">
+                    <div class="agenda-card glass-card spotlight-card stagger-item" style="background: rgba(15, 23, 42, 0.85); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 16px; padding: 24px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); display: flex; flex-direction: column; justify-content: space-between; transition: transform 0.2s ease, border-color 0.2s ease; --stagger-idx: ${idx};">
                         <div>
                             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; flex-wrap: wrap; gap: 8px;">
                                 <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
                                     <span style="color: #F59E0B; font-weight: 800; font-size: 0.82rem; letter-spacing: 0.06em; text-transform: uppercase;">
                                         ${dateUpper}
                                     </span>
-                                    <span style="background: rgba(99, 102, 241, 0.15); color: #A5B4FC; border: 1px solid rgba(99, 102, 241, 0.35); padding: 2px 10px; border-radius: 12px; font-weight: 700; font-size: 0.72rem;" title="Attached Semester">
-                                        ${semBadgeText}
+                                    <span style="background: ${pillBg}; color: ${pillColor}; border: 1px solid ${pillBorder}; padding: 3px 10px; border-radius: 12px; font-weight: 800; font-size: 0.72rem; letter-spacing: 0.04em;">
+                                        ${pillText}
                                     </span>
                                 </div>
-                                <span style="background: ${pillBg}; color: ${pillColor}; border: 1px solid ${pillBorder}; padding: 3px 12px; border-radius: 12px; font-weight: 700; font-size: 0.75rem;">
-                                    ${pillText}
+                                <span style="background: rgba(99, 102, 241, 0.15); color: #A5B4FC; border: 1px solid rgba(99, 102, 241, 0.35); padding: 3px 10px; border-radius: 12px; font-weight: 700; font-size: 0.72rem;">
+                                    ${semBadgeText}
                                 </span>
                             </div>
-                            <h3 style="color: #F8FAFC; font-size: 1.22rem; font-weight: 800; margin: 0 0 6px 0; line-height: 1.35;">
+
+                            <h3 style="color: #F8FAFC; font-size: 1.18rem; font-weight: 800; line-height: 1.35; margin-bottom: 10px; letter-spacing: -0.01em;">
                                 ${displayTitle}
                             </h3>
-                            <div style="color: #38BDF8; font-size: 0.88rem; font-weight: 600; margin-bottom: ${act.description ? '6px' : '16px'};">
-                                ${act.category || act.type || 'Chapter Assembly'}
+
+                            <div style="display: flex; align-items: center; gap: 6px; color: #94A3B8; font-size: 0.85rem; margin-bottom: 16px;">
+                                <span>📍</span>
+                                <span>${act.venue || act.location || 'TBA'}</span>
                             </div>
-                            ${act.description ? `<div style="color: #94A3B8; font-size: 0.82rem; margin-bottom: 16px; line-height: 1.4;">${act.description}</div>` : ''}
-                            <hr style="border: 0; border-top: 1px solid rgba(255, 255, 255, 0.08); margin: 16px 0;">
-                            <div style="font-size: 0.88rem; margin-bottom: 8px;">
-                                <span style="font-weight: 700; color: #E2E8F0;">Held In:</span> <span style="color: #94A3B8;">${act.heldIn || 'Face to Face'}</span>
+
+                            <div style="background: rgba(30, 41, 59, 0.6); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 12px; padding: 12px 14px; margin-bottom: 20px;">
+                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                                    <span style="color: #CBD5E1; font-size: 0.8rem; font-weight: 700;">Youth Check-Ins</span>
+                                    <span style="color: #38BDF8; font-size: 0.85rem; font-weight: 800;">${pCount} / ${totalMems} (${rate}%)</span>
+                                </div>
+                                <div style="height: 6px; background: rgba(15, 23, 42, 0.8); border-radius: 6px; overflow: hidden;">
+                                    <div style="width: ${rate}%; height: 100%; background: linear-gradient(90deg, #3B82F6, #38BDF8); border-radius: 6px; transition: width 0.5s ease;"></div>
+                                </div>
                             </div>
-                            <div style="font-size: 0.88rem; margin-bottom: 16px;">
-                                <span style="font-weight: 700; color: #E2E8F0;">Venue:</span> <span style="color: #94A3B8;">${act.location || 'TBA'}</span>
-                            </div>
-                            <hr style="border: 0; border-top: 1px solid rgba(255, 255, 255, 0.08); margin: 16px 0;">
                         </div>
-                        <div>
-                            <div style="font-size: 0.72rem; color: #94A3B8; font-weight: 700; letter-spacing: 0.06em; margin-bottom: 12px;">
-                                AVAILABLE DOCUMENTS
+
+                        <div style="border-top: 1px solid rgba(255, 255, 255, 0.07); padding-top: 16px; display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap;">
+                            <div style="display: flex; gap: 6px;">
+                                <button onclick="openAddModal('${act.id}')" style="background: rgba(255, 255, 255, 0.06); color: #E2E8F0; border: 1px solid rgba(255, 255, 255, 0.1); padding: 7px 12px; border-radius: 8px; font-weight: 700; font-size: 0.78rem; cursor: pointer; transition: all 0.2s;">
+                                    ✏️ Edit
+                                </button>
+                                <button onclick="deleteActivity('${act.id}')" style="background: rgba(239, 68, 68, 0.12); color: #F87171; border: 1px solid rgba(239, 68, 68, 0.25); padding: 7px 12px; border-radius: 8px; font-weight: 700; font-size: 0.78rem; cursor: pointer; transition: all 0.2s;">
+                                    🗑️
+                                </button>
                             </div>
                             <div style="display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap;">
                                 <button onclick="downloadActivityPDF('${act.id}', '${displayTitle.replace(/'/g, "\\'")}')" style="background: rgba(59, 130, 246, 0.15); color: #60A5FA; border: 1px solid rgba(59, 130, 246, 0.4); padding: 7px 14px; border-radius: 8px; font-weight: 700; font-size: 0.8rem; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 6px;">
@@ -1834,18 +1921,23 @@ function renderActivitiesTable() {
         if (filtered.length === 0) {
             tableBody.innerHTML = `
                 <tr>
-                    <td colspan="5" style="text-align: center; padding: 40px; color: var(--text-muted);">
-                        No activities found matching your filters or search criteria.
+                    <td colspan="5" style="padding: 0; border: none;">
+                        <div class="zero-state-card">
+                            <div class="zero-state-icon">📅</div>
+                            <h4 style="color: #F8FAFC; font-size: 1.15rem; font-weight: 800; margin: 0;">No Activities Found</h4>
+                            <p style="color: #94A3B8; font-size: 0.85rem; max-width: 380px; margin: 0;">Try adjusting your search criteria or clearing active category filters.</p>
+                            <button onclick="document.getElementById('filter-category').value='ALL'; document.getElementById('filter-status').value='ALL'; document.getElementById('search-input').value=''; state.filterCategory='ALL'; state.filterStatus='ALL'; state.searchQuery=''; renderActivitiesTable();" class="btn-secondary" style="padding: 6px 14px; font-size: 0.78rem; margin-top: 6px;">✨ Reset Filters</button>
+                        </div>
                     </td>
                 </tr>
             `;
         } else {
-            tableBody.innerHTML = filtered.map(act => {
+            tableBody.innerHTML = filtered.map((act, idx) => {
                 const dateStr = new Date(act.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
                 const timeStr = new Date(act.date).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
 
                 return `
-                    <tr>
+                    <tr class="stagger-item" style="--stagger-idx: ${idx};">
                         <td>
                             <div class="activity-title-cell">
                                 <span class="activity-title-main">${act.title || act.name || 'Untitled Activity'}</span>
@@ -3777,10 +3869,11 @@ function renderMembersMobileCards(filtered, nameCounts = {}) {
 
     if (!filtered || filtered.length === 0) {
         container.innerHTML = `
-            <div style="text-align: center; padding: 40px 20px; background: rgba(15, 23, 42, 0.7); border-radius: 16px; border: 1px dashed rgba(255,255,255,0.1); color: #94A3B8;">
-                <div style="font-size: 2.5rem; margin-bottom: 12px;">👥</div>
-                <div style="font-size: 1.05rem; font-weight: 700; color: #F8FAFC;">No Members Found</div>
-                <p style="font-size: 0.85rem; margin-top: 6px;">No members match your search or filter.</p>
+            <div class="zero-state-card">
+                <div class="zero-state-icon">👥</div>
+                <h4 style="color: #F8FAFC; font-size: 1.15rem; font-weight: 800; margin: 0;">No Youth Members Found</h4>
+                <p style="color: #94A3B8; font-size: 0.85rem; max-width: 380px; margin: 0;">No members currently match your search query or chapter/department filters.</p>
+                <button onclick="document.getElementById('members-search-input').value=''; document.getElementById('members-filter-dept').value='ALL'; document.getElementById('members-filter-chapter').value='ALL'; if(state.showOnlyDuplicates) state.showOnlyDuplicates=false; renderMembersTable();" class="btn-secondary" style="padding: 6px 14px; font-size: 0.78rem; margin-top: 6px;">✨ Reset Filters</button>
             </div>
         `;
         return;
@@ -3821,7 +3914,7 @@ function renderMembersMobileCards(filtered, nameCounts = {}) {
         ` : '';
 
         cardsHtml.push(`
-            <div class="mobile-member-card glass-card" style="${cardStyle}">
+            <div class="mobile-member-card glass-card spotlight-card stagger-item" style="${cardStyle}; --stagger-idx: ${cardsHtml.length};">
                 <!-- Header -->
                 <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; margin-bottom: 12px;">
                     <div style="display: flex; align-items: center; gap: 12px; min-width: 0;">
@@ -6704,7 +6797,13 @@ function handleCommandPaletteSearch(query) {
     }
 
     if (!html) {
-        html = `<div style="text-align:center; color:#94A3B8; padding:32px; font-size:0.9rem;">No matching navigation commands, members, or resources found.</div>`;
+        html = `
+            <div class="zero-state-card" style="padding: 32px 20px; margin: 12px 0;">
+                <div class="zero-state-icon">⚡</div>
+                <h4 style="color: #F8FAFC; font-size: 1.05rem; font-weight: 800; margin: 0;">No Commands or Resources Found</h4>
+                <p style="color: #94A3B8; font-size: 0.82rem; margin: 0;">We couldn't find any view, member, or guide matching your query.</p>
+            </div>
+        `;
     }
 
     resultsContainer.innerHTML = html;
@@ -6728,7 +6827,13 @@ function handleGlobalSearch(query) {
 
     if (matchedMembers.length === 0 && matchedActivities.length === 0) {
         resultsBox.style.display = 'block';
-        resultsBox.innerHTML = `<div style="padding: 10px; color: #94A3B8; font-size: 0.8rem; text-align: center;">No matching members or activities found.</div>`;
+        resultsBox.innerHTML = `
+            <div class="zero-state-card" style="padding: 24px 16px; margin: 6px;">
+                <div class="zero-state-icon" style="font-size: 2.2rem;">🔍</div>
+                <h4 style="color: #F8FAFC; font-size: 0.95rem; font-weight: 800; margin: 0;">No Results Found</h4>
+                <p style="color: #94A3B8; font-size: 0.78rem; margin: 0;">No members or activities matching "${q}"</p>
+            </div>
+        `;
         return;
     }
 
@@ -6952,6 +7057,8 @@ const STATIC_RESOURCE_LABELS = {
     'static-songbook':          { emoji: '🎸', title: 'MFC Youth Official Songbook',        category: 'Songboard' },
     'static-setlist-planner':   { emoji: '🎹', title: 'Worship Setlist Planner',            category: 'Songboard' },
     'static-rosary-joyful-pptx':{ emoji: '✨', title: 'The Joyful Mysteries (.pptx)',          category: 'Holy Rosary' },
+    'static-rosary-luminous-pptx':{ emoji: '🌟', title: 'The Luminous Mysteries (.pptx)',        category: 'Holy Rosary' },
+    'static-rosary-sorrowful-pptx':{ emoji: '✝️', title: 'The Sorrowful Mysteries (.pptx)',       category: 'Holy Rosary' },
     'static-rosary-glorious-pptx':{ emoji: '👑', title: 'The Glorious Mysteries (.pptx)',        category: 'Holy Rosary' },
     'static-holy-rosary':       { emoji: '📿', title: 'The Holy Rosary Interactive Guide',  category: 'Holy Rosary' },
     'static-prayer-litany':     { emoji: '🕊️', title: 'Chapter Prayer & Litany Sheet',      category: 'Holy Rosary' },
@@ -7040,6 +7147,8 @@ const OFFICIAL_DOWNLOADABLE_RESOURCES = [
     { id: 'dl-transportation', title: 'Letter For Transportation (.docx)', url: 'resources/Letter For Transportation.docx', filename: 'Letter For Transportation.docx', emoji: '🚌', size: '80 KB', category: 'Letters' },
     { id: 'dl-songboard', title: 'MFC Youth Songboard (.pptx)', url: 'resources/MFC Youth Songboard.pptx', filename: 'MFC Youth Songboard.pptx', emoji: '🎶', size: '9.1 MB', category: 'Songboard' },
     { id: 'dl-rosary-joyful', title: 'The Joyful Mysteries (.pptx)', url: 'resources/The Joyful Mysteries (Monday and Saturday).pptx', filename: 'The Joyful Mysteries (Monday and Saturday).pptx', emoji: '✨', size: '145 MB', category: 'Holy Rosary' },
+    { id: 'dl-rosary-luminous', title: 'The Luminous Mysteries (.pptx)', url: 'resources/The Luminous Mysteries (Thursday).pptx', filename: 'The Luminous Mysteries (Thursday).pptx', emoji: '🌟', size: '139 MB', category: 'Holy Rosary' },
+    { id: 'dl-rosary-sorrowful', title: 'The Sorrowful Mysteries (.pptx)', url: 'resources/The Sorrowful Mysteries (Tuesday and Friday).pptx', filename: 'The Sorrowful Mysteries (Tuesday and Friday).pptx', emoji: '✝️', size: '142 MB', category: 'Holy Rosary' },
     { id: 'dl-rosary-glorious', title: 'The Glorious Mysteries (.pptx)', url: 'resources/The Glorious Mysteries (Wednesday and Sunday).pptx', filename: 'The Glorious Mysteries (Wednesday and Sunday).pptx', emoji: '👑', size: '142 MB', category: 'Holy Rosary' }
 ];
 
@@ -7052,7 +7161,7 @@ function openDownloadAllModal() {
     const btn = document.getElementById('btn-start-batch-download');
     if (btn) {
         btn.disabled = false;
-        btn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width:15px;height:15px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg><span>Start Batch Download (6 Files)</span>`;
+        btn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width:15px;height:15px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg><span>Start Batch Download (8 Files)</span>`;
     }
 }
 
