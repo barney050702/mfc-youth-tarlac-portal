@@ -1778,6 +1778,21 @@
                                 <span>📂 Open Folder</span>
                             </button>
                         </div>
+                        
+                        <!-- FOLDER CARD: Chapter Servants Training -->
+                        <div class="glass-card hover-glow" onclick="openCSTFolderModal()" style="padding: 22px; border-radius: 16px; border: 1px solid rgba(56, 189, 248, 0.4); background: rgba(15, 23, 42, 0.85); position: relative; cursor: pointer; transition: transform 0.2s ease, box-shadow 0.2s ease;">
+                            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;">
+                                <div style="font-size: 2.2rem;">📁</div>
+                                <span style="background: rgba(16, 185, 129, 0.2); border: 1px solid rgba(16, 185, 129, 0.4); color: #34D399; padding: 3px 10px; border-radius: 12px; font-size: 0.72rem; font-weight: 800; display: inline-flex; align-items: center; gap: 4px;">6 FILES</span>
+                            </div>
+                            <h3 style="color: #F8FAFC; font-size: 1.15rem; font-weight: 800; margin: 0 0 8px 0;">
+                                Chapter Servants Training Modules</h3>
+                            <p style="color: #94A3B8; font-size: 0.82rem; line-height: 1.5; margin: 0 0 16px 0;">
+                                Complete collection of official manuals, session decks, and workshop presentations for Chapter Servants.</p>
+                            <button class="btn-primary btn-sm" style="width: 100%; display: flex; align-items: center; justify-content: center; gap: 6px; pointer-events: none;">
+                                <span>📂 Open Folder</span>
+                            </button>
+                        </div>
                     </div>
 
                     <!-- TAB 3: SONGBOARD -->
@@ -2084,6 +2099,81 @@
 
                         <div style="display:flex; justify-content:flex-end; margin-top:16px;">
                             <button onclick="closeHHFolderModal()" class="btn-secondary btn-sm">Close Folder</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- MODAL: CHAPTER SERVANTS TRAINING FOLDER -->
+                <div id="modal-cst-folder" class="modal-backdrop" style="display:none; z-index:100000; align-items:center; justify-content:center;">
+                    <div class="glass-card" style="width:100%; max-width:850px; max-height:85vh; padding:32px; border-radius:20px; position:relative; display:flex; flex-direction:column;">
+                        <button onclick="closeCSTFolderModal()" style="position:absolute; top:16px; right:16px; background:none; border:none; color:#94A3B8; font-size:1.4rem; cursor:pointer; line-height:1;">&times;</button>
+                        <div style="display:flex; align-items:center; gap:12px; margin-bottom:16px;">
+                            <div style="font-size:2rem;">📁</div>
+                            <div>
+                                <h3 style="color:#FFF; font-size:1.25rem; font-weight:800; margin:0;">Chapter Servants Training Modules</h3>
+                                <p style="color:#94A3B8; font-size:0.82rem; margin:0;">Click any item below to open or download.</p>
+                            </div>
+                        </div>
+                        
+                        <div style="overflow-y:auto; flex:1; padding-right:8px; display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px;">
+                            <!-- MFC Youth Chapter Servants Training Manual 2020.pdf -->
+                            <div class="glass-card" style="padding: 16px; border-radius: 12px; background: rgba(15, 23, 42, 0.6); border: 1px solid rgba(255,255,255,0.05);">
+                                <div style="font-size: 1.5rem; margin-bottom: 8px;">📘</div>
+                                <h4 style="color: #F8FAFC; font-size: 0.95rem; font-weight: 700; margin: 0 0 4px 0;">Chapter Servants Manual</h4>
+                                <div style="display: flex; gap: 8px; margin-top: 12px;">
+                                    <a href="resources/MFC Youth Chapter Servants Training Manual 2020.pdf" target="_blank" class="btn-primary btn-sm" style="flex:1; text-align:center; padding: 6px; font-size: 0.75rem; text-decoration:none;">📄 Open</a>
+                                    <a href="resources/MFC Youth Chapter Servants Training Manual 2020.pdf" download class="btn-secondary btn-sm" style="flex:1; text-align:center; padding: 6px; font-size: 0.75rem; text-decoration:none;">📥 DL</a>
+                                </div>
+                            </div>
+                            <!-- Visionary Leadership.pptx -->
+                            <div class="glass-card" style="padding: 16px; border-radius: 12px; background: rgba(15, 23, 42, 0.6); border: 1px solid rgba(255,255,255,0.05);">
+                                <div style="font-size: 1.5rem; margin-bottom: 8px;">📊</div>
+                                <h4 style="color: #F8FAFC; font-size: 0.95rem; font-weight: 700; margin: 0 0 4px 0;">Visionary Leadership</h4>
+                                <div style="display: flex; gap: 8px; margin-top: 12px;">
+                                    <a href="resources/Visionary Leadership.pptx" target="_blank" class="btn-primary btn-sm" style="flex:1; text-align:center; padding: 6px; font-size: 0.75rem; text-decoration:none;">📄 Open</a>
+                                    <a href="resources/Visionary Leadership.pptx" download class="btn-secondary btn-sm" style="flex:1; text-align:center; padding: 6px; font-size: 0.75rem; text-decoration:none;">📥 DL</a>
+                                </div>
+                            </div>
+                            <!-- Building, Inspiring and Forming a Killer Team.pptx -->
+                            <div class="glass-card" style="padding: 16px; border-radius: 12px; background: rgba(15, 23, 42, 0.6); border: 1px solid rgba(255,255,255,0.05);">
+                                <div style="font-size: 1.5rem; margin-bottom: 8px;">📊</div>
+                                <h4 style="color: #F8FAFC; font-size: 0.95rem; font-weight: 700; margin: 0 0 4px 0;">Building a Killer Team</h4>
+                                <div style="display: flex; gap: 8px; margin-top: 12px;">
+                                    <a href="resources/Building, Inspiring and Forming a Killer Team.pptx" target="_blank" class="btn-primary btn-sm" style="flex:1; text-align:center; padding: 6px; font-size: 0.75rem; text-decoration:none;">📄 Open</a>
+                                    <a href="resources/Building, Inspiring and Forming a Killer Team.pptx" download class="btn-secondary btn-sm" style="flex:1; text-align:center; padding: 6px; font-size: 0.75rem; text-decoration:none;">📥 DL</a>
+                                </div>
+                            </div>
+                            <!-- Evangelistic Sensitivity Workshop.pptx -->
+                            <div class="glass-card" style="padding: 16px; border-radius: 12px; background: rgba(15, 23, 42, 0.6); border: 1px solid rgba(255,255,255,0.05);">
+                                <div style="font-size: 1.5rem; margin-bottom: 8px;">📊</div>
+                                <h4 style="color: #F8FAFC; font-size: 0.95rem; font-weight: 700; margin: 0 0 4px 0;">Evangelistic Sensitivity</h4>
+                                <div style="display: flex; gap: 8px; margin-top: 12px;">
+                                    <a href="resources/Evangelistic Sensitivity Workshop.pptx" target="_blank" class="btn-primary btn-sm" style="flex:1; text-align:center; padding: 6px; font-size: 0.75rem; text-decoration:none;">📄 Open</a>
+                                    <a href="resources/Evangelistic Sensitivity Workshop.pptx" download class="btn-secondary btn-sm" style="flex:1; text-align:center; padding: 6px; font-size: 0.75rem; text-decoration:none;">📥 DL</a>
+                                </div>
+                            </div>
+                            <!-- Liturgical Bible Study Workshop.pptx -->
+                            <div class="glass-card" style="padding: 16px; border-radius: 12px; background: rgba(15, 23, 42, 0.6); border: 1px solid rgba(255,255,255,0.05);">
+                                <div style="font-size: 1.5rem; margin-bottom: 8px;">📊</div>
+                                <h4 style="color: #F8FAFC; font-size: 0.95rem; font-weight: 700; margin: 0 0 4px 0;">Liturgical Bible Study</h4>
+                                <div style="display: flex; gap: 8px; margin-top: 12px;">
+                                    <a href="resources/Liturgical Bible Study Workshop.pptx" target="_blank" class="btn-primary btn-sm" style="flex:1; text-align:center; padding: 6px; font-size: 0.75rem; text-decoration:none;">📄 Open</a>
+                                    <a href="resources/Liturgical Bible Study Workshop.pptx" download class="btn-secondary btn-sm" style="flex:1; text-align:center; padding: 6px; font-size: 0.75rem; text-decoration:none;">📥 DL</a>
+                                </div>
+                            </div>
+                            <!-- Talk-Writing Workshop.pptx -->
+                            <div class="glass-card" style="padding: 16px; border-radius: 12px; background: rgba(15, 23, 42, 0.6); border: 1px solid rgba(255,255,255,0.05);">
+                                <div style="font-size: 1.5rem; margin-bottom: 8px;">📊</div>
+                                <h4 style="color: #F8FAFC; font-size: 0.95rem; font-weight: 700; margin: 0 0 4px 0;">Talk-Writing Workshop</h4>
+                                <div style="display: flex; gap: 8px; margin-top: 12px;">
+                                    <a href="resources/Talk-Writing Workshop.pptx" target="_blank" class="btn-primary btn-sm" style="flex:1; text-align:center; padding: 6px; font-size: 0.75rem; text-decoration:none;">📄 Open</a>
+                                    <a href="resources/Talk-Writing Workshop.pptx" download class="btn-secondary btn-sm" style="flex:1; text-align:center; padding: 6px; font-size: 0.75rem; text-decoration:none;">📥 DL</a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div style="display:flex; justify-content:flex-end; margin-top:16px;">
+                            <button onclick="closeCSTFolderModal()" class="btn-secondary btn-sm">Close Folder</button>
                         </div>
                     </div>
                 </div>

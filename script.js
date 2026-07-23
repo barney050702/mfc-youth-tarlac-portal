@@ -8844,3 +8844,25 @@ function closeHHFolderModal() {
         }, 200);
     }
 }
+
+function openCSTFolderModal() {
+    const modal = document.getElementById('modal-cst-folder');
+    if (modal) {
+        modal.style.display = 'flex';
+        modal.style.opacity = '0';
+        setTimeout(() => {
+            modal.style.transition = 'opacity 0.2s ease';
+            modal.style.opacity = '1';
+        }, 10);
+    }
+}
+
+function closeCSTFolderModal() {
+    const modal = document.getElementById('modal-cst-folder');
+    if (modal) {
+        modal.style.opacity = '0';
+        setTimeout(() => {
+            modal.style.display = 'none';
+        }, 200);
+    }
+}
