@@ -4791,3 +4791,38 @@ button:active, .btn-primary:active, .btn-secondary:active, .glow-button:active {
     from { transform: translateY(100%); opacity: 0; }
     to { transform: translateY(0); opacity: 1; }
 }
+
+@media (max-width: 768px) {
+    /* Fix Attendance Select Layout */
+    .attendance-select-box {
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        width: 100% !important;
+        gap: 8px !important;
+    }
+    .attendance-select-box select {
+        width: 100% !important;
+        font-size: 0.85rem !important;
+        padding: 10px !important;
+    }
+    
+    /* Compact Grid for Attendance Quick Actions */
+    .attendance-quick-actions {
+        display: grid !important;
+        grid-template-columns: 1fr 1fr !important;
+        gap: 10px !important;
+    }
+    .attendance-quick-actions button {
+        width: 100% !important;
+        padding: 8px !important;
+        font-size: 0.72rem !important;
+        line-height: 1.2 !important;
+        white-space: normal !important;
+        min-height: 48px !important;
+    }
+    /* Make the primary QR scan button span both columns to stand out */
+    .attendance-quick-actions button.btn-primary,
+    .attendance-quick-actions button[onclick*='resetAttendance'] {
+        grid-column: span 2 !important;
+    }
+}
