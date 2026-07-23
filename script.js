@@ -615,7 +615,7 @@ function switchView(viewId) {
     state.currentView = viewId;
 
     // Update nav links active state
-    document.querySelectorAll('.nav-item').forEach(item => {
+    document.querySelectorAll('.nav-item, .bottom-nav-item').forEach(item => {
         if (item.getAttribute('data-view') === viewId) {
             item.classList.add('active');
         } else {
@@ -1120,6 +1120,14 @@ function renderDashboardCharts() {
         attendanceCounts.push(checkinsInMonth > 0 ? checkinsInMonth : simulatedBaseCheckins);
     }
 
+    const gradientBlue = ctx.createLinearGradient(0, 0, 0, 300);
+    gradientBlue.addColorStop(0, 'rgba(56, 189, 248, 0.6)');
+    gradientBlue.addColorStop(1, 'rgba(56, 189, 248, 0.02)');
+    
+    const gradientPurple = ctx.createLinearGradient(0, 0, 0, 300);
+    gradientPurple.addColorStop(0, 'rgba(167, 139, 250, 0.6)');
+    gradientPurple.addColorStop(1, 'rgba(167, 139, 250, 0.02)');
+
     if (dashboardGrowthChartInstance) {
         dashboardGrowthChartInstance.destroy();
     }
@@ -1133,7 +1141,7 @@ function renderDashboardCharts() {
                     label: 'Total Check-ins',
                     data: attendanceCounts,
                     borderColor: '#38BDF8',
-                    backgroundColor: 'rgba(56, 189, 248, 0.15)',
+                    backgroundColor: gradientBlue,
                     borderWidth: 3,
                     tension: 0.4,
                     fill: true,
@@ -1145,15 +1153,15 @@ function renderDashboardCharts() {
                 {
                     label: 'Activities Held',
                     data: activityCounts,
-                    borderColor: '#10B981',
-                    backgroundColor: 'rgba(16, 185, 129, 0.1)',
-                    borderWidth: 2,
+                    borderColor: '#A78BFA',
+                    backgroundColor: gradientPurple,
+                    borderWidth: 3,
                     tension: 0.4,
                     fill: true,
-                    pointBackgroundColor: '#10B981',
+                    pointBackgroundColor: '#A78BFA',
                     pointBorderColor: '#0F172A',
                     pointBorderWidth: 2,
-                    pointRadius: 4
+                    pointRadius: 5
                 }
             ]
         },
@@ -6448,6 +6456,11 @@ function renderInteractiveCharts() {
         `;
     } else if (trendCanvas && window.Chart) {
         if (activeAttendanceChart) activeAttendanceChart.destroy();
+        const trendCtx = trendCanvas.getContext('2d');
+        const gradientTrend = trendCtx.createLinearGradient(0, 0, 0, 300);
+        gradientTrend.addColorStop(0, 'rgba(56, 189, 248, 0.6)');
+        gradientTrend.addColorStop(1, 'rgba(56, 189, 248, 0.02)');
+
         activeAttendanceChart = new Chart(trendCanvas, {
             type: 'line',
             data: {
@@ -6456,7 +6469,7 @@ function renderInteractiveCharts() {
                     label: 'Attendance Rate (%)',
                     data: dataRates.length ? dataRates : [0],
                     borderColor: '#38BDF8',
-                    backgroundColor: 'rgba(56, 189, 248, 0.18)',
+                    backgroundColor: gradientTrend,
                     borderWidth: 3,
                     fill: true,
                     tension: 0.35,
@@ -6496,6 +6509,14 @@ function renderInteractiveCharts() {
         const catLabels = Object.keys(catMap);
         const catCounts = Object.values(catMap);
 
+        const catCtx = catCanvas.getContext('2d');
+        const makeGrad = (c1, c2) => {
+            const g = catCtx.createLinearGradient(0, 0, 0, 150);
+            g.addColorStop(0, c1);
+            g.addColorStop(1, c2);
+            return g;
+        };
+
         if (activeCategoryChart) activeCategoryChart.destroy();
         activeCategoryChart = new Chart(catCanvas, {
             type: 'doughnut',
@@ -6503,7 +6524,14 @@ function renderInteractiveCharts() {
                 labels: catLabels.length ? catLabels : ['General Assembly'],
                 datasets: [{
                     data: catCounts.length ? catCounts : [1],
-                    backgroundColor: ['#38BDF8', '#10B981', '#F59E0B', '#8B5CF6', '#F43F5E', '#EC4899'],
+                    backgroundColor: [
+                        makeGrad('#38BDF8', '#0284C7'),
+                        makeGrad('#10B981', '#047857'),
+                        makeGrad('#F59E0B', '#B45309'),
+                        makeGrad('#8B5CF6', '#6D28D9'),
+                        makeGrad('#F43F5E', '#BE123C'),
+                        makeGrad('#EC4899', '#BE185D')
+                    ],
                     borderColor: '#0F172A',
                     borderWidth: 2
                 }]
