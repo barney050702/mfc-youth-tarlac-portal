@@ -4708,3 +4708,16 @@ button:active, .btn-primary:active, .btn-secondary:active, .glow-button:active {
 
 .badge { white-space: nowrap !important; }
 
+
+@media (max-width: 480px) {
+    #portal-sync-badge span:last-child {
+        display: none !important;
+    }
+    #portal-sync-badge {
+        padding: 0 !important;
+        width: 36px !important;
+        height: 36px !important;
+        border-radius: 50% !important;
+        justify-content: center !important;
+    }
+}
