@@ -4693,3 +4693,18 @@ button:active, .btn-primary:active, .btn-secondary:active, .glow-button:active {
         gap: 6px !important;
     }
 }
+
+@media (max-width: 480px) {
+    #dashboard-admin-actions {
+        flex-direction: column !important;
+        align-items: stretch !important;
+    }
+    #dashboard-admin-actions button, 
+    #dashboard-admin-actions label {
+        width: 100% !important;
+        justify-content: center !important;
+    }
+}
+
+.badge { white-space: nowrap !important; }
+
