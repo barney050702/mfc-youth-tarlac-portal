@@ -4883,12 +4883,12 @@ function renderFundsTable() {
     if (filtered.length === 0) {
         tbody.innerHTML = `
             <tr>
-                <td colspan="7" style="text-align: center; padding: 60px 20px; color: #94A3B8;">
-                    <div style="display: flex; justify-content: center; margin-bottom: 16px;">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="#64748B" stroke-width="1.5" style="width: 52px; height: 52px; opacity: 0.7;"><path d="M19 5c-1.5 0-2.8 1.4-3 2-3.5-1.5-11-.3-11 5 0 1.8 0 3 2 4.5V20h4v-2h3v2h4v-4c1-.5 1.7-1 2-2h2v-4h-2c0-1-.5-1.5-1-2h0V5z"/><circle cx="14" cy="11" r="1"/></svg>
+                <td colspan="7" style="text-align: center; padding: 100px 20px; color: #94A3B8; vertical-align: middle;">
+                    <div style="display: flex; justify-content: center; margin-bottom: 20px;">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="#38BDF8" stroke-width="1.2" style="width: 72px; height: 72px; opacity: 0.8;"><path d="M19 5c-1.5 0-2.8 1.4-3 2-3.5-1.5-11-.3-11 5 0 1.8 0 3 2 4.5V20h4v-2h3v2h4v-4c1-.5 1.7-1 2-2h2v-4h-2c0-1-.5-1.5-1-2h0V5z"/><circle cx="14" cy="11" r="1"/></svg>
                     </div>
-                    <div style="font-weight: 700; color: #E2E8F0; font-size: 1.1rem; margin-bottom: 6px;">No records found</div>
-                    <div style="font-size: 0.88rem; color: #64748B;">Add income or expense entries to track your funds.</div>
+                    <div style="font-family: var(--font-heading); font-weight: 700; color: #E2E8F0; font-size: 1.4rem; margin-bottom: 8px;">No records found</div>
+                    <div style="font-size: 0.95rem; color: #94A3B8;">Start tracking your funds by adding your first record.</div>
                 </td>
             </tr>
         `;

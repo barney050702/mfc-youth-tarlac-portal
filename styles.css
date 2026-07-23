@@ -19,8 +19,8 @@
     --glass-blur: blur(16px);
 
     /* Typography & Text */
-    --font-heading: 'Outfit', sans-serif;
-    --font-body: 'Inter', sans-serif;
+    --font-heading: 'Cormorant Garamond', serif;
+    --font-body: 'Source Sans 3', sans-serif;
     --text-primary: #F8FAFC;
     --text-secondary: #94A3B8;
     --text-muted: #64748B;
@@ -5074,3 +5074,39 @@ body, .main-content {
     border: 1px solid rgba(255, 255, 255, 0.12) !important; /* More visible border */
     box-shadow: inset 0 1px 1px rgba(255,255,255,0.05), 0 10px 30px rgba(0,0,0,0.4) !important;
 }
+
+/* ==========================================================================
+   FUNDS TAB & GLOBAL TYPOGRAPHY OVERRIDES
+   ========================================================================== */
+
+.metric-value, .table-cell:nth-child(5), .tabular-nums {
+    font-variant-numeric: tabular-nums !important;
+}
+
+.metric-value {
+    margin-bottom: 16px !important;
+}
+
+.metric-card.glass-card {
+    box-shadow: 0 4px 20px rgba(0,0,0,0.15) !important;
+    border-color: rgba(255,255,255,0.06) !important;
+}
+
+.metric-label, .table-header {
+    text-transform: uppercase !important;
+    font-weight: 600 !important;
+    letter-spacing: 0.05em !important;
+}
+
+.metric-label {
+    color: #94A3B8 !important;
+}
+
+.table-header {
+    color: #94A3B8 !important;
+}
+
+h1, h2, h3, h4, h5, h6, .brand-name, .view-title, .modal-title {
+    font-family: var(--font-heading) !important;
+}
+
