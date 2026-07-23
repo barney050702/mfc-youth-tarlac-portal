@@ -4826,3 +4826,13 @@ button:active, .btn-primary:active, .btn-secondary:active, .glow-button:active {
         grid-column: span 2 !important;
     }
 }
+
+@media (max-width: 768px) {
+    .attendance-select-box label {
+        font-size: 0.8rem !important;
+    }
+    .attendance-select-box select {
+        font-size: 0.75rem !important;
+        text-overflow: ellipsis;
+    }
+}
