@@ -5110,3 +5110,8 @@ h1, h2, h3, h4, h5, h6, .brand-name, .view-title, .modal-title {
     font-family: var(--font-heading) !important;
 }
 
+
+.mfc-serif-brand, .brand-name {
+    font-family: 'Cormorant Garamond', serif !important;
+}
+
