@@ -4811,6 +4811,10 @@ function handleAddMemberSubmit(event) {
         const idx = state.members.findIndex(m => m.id === idEl.value);
         if (idx !== -1) {
             state.members[idx] = { ...state.members[idx], ...memberData };
+            // Sync updated member to Firestore
+            if (typeof MFCFirebaseCloud !== 'undefined' && MFCFirebaseCloud.syncMember) {
+                MFCFirebaseCloud.syncMember(state.members[idx]);
+            }
             showToast(`Member "${fullName}" updated successfully!`, 'success');
             logAuditAction(`Updated member record: ${fullName}`, 'members');
         }
@@ -4821,6 +4825,10 @@ function handleAddMemberSubmit(event) {
             ...memberData
         };
         state.members.push(newMember);
+        // Sync new member to Firestore
+        if (typeof MFCFirebaseCloud !== 'undefined' && MFCFirebaseCloud.syncMember) {
+            MFCFirebaseCloud.syncMember(newMember);
+        }
         showToast(`New member "${fullName}" added to organization!`, 'success');
         logAuditAction(`Added new member: ${fullName}`, 'members');
     }
@@ -7429,6 +7437,18 @@ const MFCFirebaseCloud = {
             console.warn('Firebase Cloud SDK init notice (REST hybrid fallback active):', err);
             this.updateStatusBadge('Connected via Cloud REST');
             this.pullSnapshot(true);
+        }
+    },
+    // Sync a single member to Firestore
+    syncMember: async function(member) {
+        if (!this.initialized) return;
+        if (!member || !member.id) return;
+        try {
+            const db = firebase.firestore();
+            await db.collection('members').doc(member.id).set(member);
+            console.log('[Firestore] Member synced:', member.id);
+        } catch (e) {
+            console.warn('Failed to sync member to Firestore:', e);
         }
     },
 
