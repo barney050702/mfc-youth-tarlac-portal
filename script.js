@@ -4078,33 +4078,44 @@ function formatDateClean(dateStr) {
     }
 }
 
-function deleteMember(id) {
+async function deleteMember(id) {
     const mem = state.members.find(m => m.id === id);
     if (!mem) return;
-    if (confirm(`Are you sure you want to remove "${mem.name}" from the organization?`)) {
-        const deletedCopy = { ...mem };
-        state.members = state.members.filter(m => m.id !== id);
-        localStorage.setItem('ps_members_initialized', 'true');
+    if (!confirm(`Are you sure you want to remove "${mem.name}" from the organization?`)) return;
+
+    const deletedCopy = { ...mem };
+
+    // 1. Delete from Firestore FIRST
+    if (typeof MFCFirebaseCloud !== 'undefined' && MFCFirebaseCloud.initialized) {
+        try {
+            await firebase.firestore().collection('members').doc(id).delete();
+            console.log('[Firestore] Member deleted:', id);
+        } catch (e) {
+            console.warn('Firestore delete error:', e);
+            showToast('Could not delete from cloud. Try again.', 'error');
+            return; // Abort if cloud delete fails
+        }
+    }
+
+    // 2. Remove from local state and storage
+    state.members = state.members.filter(m => m.id !== id);
+    localStorage.setItem('ps_members', JSON.stringify(state.members));
+    saveToStorage();
+    renderAll();
+    logAuditAction(`Deleted member ${mem.name}`, 'members');
+
+    // 3. Show undo toast (undo re-adds to both state AND Firestore)
+    showToast(`Member "${mem.name}" removed successfully.`, 'info', async () => {
+        state.members.push(deletedCopy);
+        localStorage.setItem('ps_members', JSON.stringify(state.members));
         saveToStorage();
         renderAll();
-        // Delete from Firestore
+        // Re-sync restored member to Firestore
         if (typeof MFCFirebaseCloud !== 'undefined' && MFCFirebaseCloud.initialized) {
-            try {
-                firebase.firestore().collection('members').doc(id).delete()
-                    .catch(e => console.warn('Firestore delete error:', e));
-            } catch(e) { console.warn('Firestore delete error:', e); }
+            try { await firebase.firestore().collection('members').doc(deletedCopy.id).set(deletedCopy); } catch(e) {}
         }
-        showToast(`Member "${mem.name}" removed successfully.`, 'info', () => {
-            state.members.push(deletedCopy);
-            saveToStorage();
-            if (typeof MFCFirebaseCloud !== 'undefined' && MFCFirebaseCloud.initialized) {
-                try { MFCFirebaseCloud.syncMember(deletedCopy); } catch(e) {}
-            }
-            renderAll();
-            logAuditAction(`Restored member ${deletedCopy.name} via Undo`, 'members');
-        });
-        logAuditAction(`Deleted member ${mem.name}`, 'members');
-    }
+        logAuditAction(`Restored member ${deletedCopy.name} via Undo`, 'members');
+    });
 }
 
 function clearAllMembers() {
