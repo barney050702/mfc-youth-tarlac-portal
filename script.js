@@ -5818,16 +5818,26 @@ async function loginUser(event) {
     if (event) event.preventDefault();
 
     const passEl = document.getElementById('auth-login-password');
+    const errMsgEl = document.getElementById('login-error-msg');
     const passVal = (passEl && passEl.value) ? passEl.value.trim() : '';
 
     if (passVal.toLowerCase() !== 'mfcyouthtarlac') {
-        showToast('🚫 Incorrect password. Please check your password or ask your coordinator.', 'error');
+        if (errMsgEl) {
+            errMsgEl.innerText = '🚫 Incorrect password. Please try again.';
+            errMsgEl.style.display = 'block';
+        } else {
+            showToast('🚫 Incorrect password. Please check your password or ask your coordinator.', 'error');
+        }
         if (passEl) {
             passEl.value = '';
             passEl.focus();
+            passEl.style.borderColor = '#EF4444';
         }
         return;
     }
+    
+    if (errMsgEl) errMsgEl.style.display = 'none';
+    if (passEl) passEl.style.borderColor = 'rgba(255, 255, 255, 0.2)';
 
     // Unlock Portal cleanly
     state.failedLoginAttempts = 0;
