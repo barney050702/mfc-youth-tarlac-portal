@@ -7470,7 +7470,8 @@ const MFCFirebaseCloud = {
         // If the cloud is newer, accept the update!
         if (cloudTime > localTime) {
             if (Array.isArray(data.activities)) state.activities = data.activities;
-            if (Array.isArray(data.members)) state.members = data.members;
+            // Members are managed by Firestore - do NOT overwrite from Realtime DB
+            // if (Array.isArray(data.members)) state.members = data.members;
             if (data.attendance && typeof data.attendance === 'object') state.attendance = data.attendance;
             if (Array.isArray(data.funds)) state.funds = data.funds;
             if (Array.isArray(data.accounts)) state.accounts = data.accounts;
@@ -7499,7 +7500,7 @@ const MFCFirebaseCloud = {
             state.lastUpdated = Date.now();
             const snapshot = {
                 activities: state.activities || [],
-                members: state.members || [],
+                // Members stored in Firestore - exclude from RTDB snapshot to avoid overwriting
                 attendance: state.attendance || {},
                 funds: state.funds || [],
                 accounts: state.accounts || [],
@@ -7549,10 +7550,10 @@ const MFCFirebaseCloud = {
             .then(data => {
                 if (data && typeof data === 'object') {
                     if (Array.isArray(data.activities)) state.activities = data.activities;
-                    // Restore members from Firebase cloud
-                    if (Array.isArray(data.members) && data.members.length > 0) {
-                        state.members = data.members;
-                    }
+                    // Members are managed exclusively via Firestore - skip RTDB restore
+                    // if (Array.isArray(data.members) && data.members.length > 0) {
+                    //     state.members = data.members;
+                    // }
                     if (data.attendance && typeof data.attendance === 'object') state.attendance = data.attendance;
                     if (Array.isArray(data.funds)) state.funds = data.funds;
                     if (Array.isArray(data.accounts)) state.accounts = data.accounts;
