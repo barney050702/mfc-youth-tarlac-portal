@@ -5766,15 +5766,17 @@ function checkAdminPrivilege(requiredRole = 'CHAPTER HEAD', actionDescription = 
 
 function logoutUser() {
     localStorage.setItem('ps_logged_in', 'false');
+    sessionStorage.setItem('ps_logged_in', 'false');
+    
     const overlay = document.getElementById('auth-login-overlay');
-    if (overlay) {
-        overlay.style.display = 'flex';
-    }
-    cancel2FA();
-    updateSecurityStatusUI();
-    closeUserProfileModal();
+    if (overlay) overlay.style.display = 'flex';
+    
     showToast('Logged out of MFC Youth Tarlac Portal.', 'info');
     logAuditAction('User logged out of the portal', 'security');
+    
+    setTimeout(() => {
+        window.location.reload();
+    }, 400);
 }
 
 function togglePasskeyVisibility() {
