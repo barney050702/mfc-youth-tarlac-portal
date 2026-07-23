@@ -4087,9 +4087,19 @@ function deleteMember(id) {
         localStorage.setItem('ps_members_initialized', 'true');
         saveToStorage();
         renderAll();
+        // Delete from Firestore
+        if (typeof MFCFirebaseCloud !== 'undefined' && MFCFirebaseCloud.initialized) {
+            try {
+                firebase.firestore().collection('members').doc(id).delete()
+                    .catch(e => console.warn('Firestore delete error:', e));
+            } catch(e) { console.warn('Firestore delete error:', e); }
+        }
         showToast(`Member "${mem.name}" removed successfully.`, 'info', () => {
             state.members.push(deletedCopy);
             saveToStorage();
+            if (typeof MFCFirebaseCloud !== 'undefined' && MFCFirebaseCloud.initialized) {
+                try { MFCFirebaseCloud.syncMember(deletedCopy); } catch(e) {}
+            }
             renderAll();
             logAuditAction(`Restored member ${deletedCopy.name} via Undo`, 'members');
         });
@@ -4103,10 +4113,21 @@ function clearAllMembers() {
         return;
     }
     if (confirm('Are you sure you want to clear all members? This action cannot be undone.')) {
+        const toDelete = [...state.members];
         state.members = [];
         localStorage.setItem('ps_members_initialized', 'true');
         saveToStorage();
         renderAll();
+        // Delete all from Firestore
+        if (typeof MFCFirebaseCloud !== 'undefined' && MFCFirebaseCloud.initialized) {
+            try {
+                const db = firebase.firestore();
+                toDelete.forEach(m => {
+                    if (m.id) db.collection('members').doc(m.id).delete()
+                        .catch(e => console.warn('Firestore clear error:', e));
+                });
+            } catch(e) { console.warn('Firestore clear error:', e); }
+        }
         showToast('All members have been cleared successfully.', 'info');
     }
 }
@@ -7592,9 +7613,18 @@ const MFCFirebaseCloud = {
             const db = firebase.firestore();
             const snapshot = await db.collection('members').get();
             const members = [];
+            const toClean = [];
             snapshot.forEach(doc => {
-                members.push(doc.data());
+                const data = doc.data();
+                // Only accept valid member documents (must have both id and name)
+                if (data.id && data.name) {
+                    members.push(data);
+                } else {
+                    // Delete invalid/placeholder documents automatically
+                    toClean.push(doc.ref);
+                }
             });
+            toClean.forEach(ref => ref.delete().catch(() => {}));
             if (members.length) {
                 state.members = members;
                 localStorage.setItem('ps_members', JSON.stringify(state.members));
