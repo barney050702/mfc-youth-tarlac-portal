@@ -22,7 +22,8 @@ let state = {
     auditLog: [],
     currentRole: 'Super Admin',
     showOnlyDuplicates: false,
-    sortOrder: 'ASC'
+    sortOrder: 'ASC',
+    lastUpdated: 0
 };
 
 // Toggle Sort Order
@@ -7407,6 +7408,16 @@ const MFCFirebaseCloud = {
                     firebase.initializeApp(this.config);
                 }
                 this.initialized = true;
+
+                // Live Cloud Sync Listener
+                if (firebase.database) {
+                    firebase.database().ref('mfc_portal_live_data').on('value', (snapshot) => {
+                        const data = snapshot.val();
+                        if (data) {
+                            this.handleLiveSyncUpdate(data);
+                        }
+                    });
+                }
             }
 
             this.updateStatusBadge('Connected to Firebase Cloud');
@@ -7419,15 +7430,50 @@ const MFCFirebaseCloud = {
         }
     },
 
+    handleLiveSyncUpdate: function(data) {
+        if (!data) return;
+        
+        // Prevent infinite sync loops: only update if the cloud data is newer
+        const cloudTime = data.lastUpdated || 0;
+        const localTime = state.lastUpdated || 0;
+        
+        // If the cloud is newer, accept the update!
+        if (cloudTime > localTime) {
+            if (Array.isArray(data.activities)) state.activities = data.activities;
+            if (Array.isArray(data.members)) state.members = data.members;
+            if (data.attendance && typeof data.attendance === 'object') state.attendance = data.attendance;
+            if (Array.isArray(data.funds)) state.funds = data.funds;
+            if (Array.isArray(data.accounts)) state.accounts = data.accounts;
+            
+            // Sync timestamp so we know we are up to date
+            state.lastUpdated = cloudTime;
+            
+            // Backup to local storage
+            localStorage.setItem('ps_activities', JSON.stringify(state.activities));
+            localStorage.setItem('ps_members', JSON.stringify(state.members));
+            localStorage.setItem('ps_attendance', JSON.stringify(state.attendance));
+            localStorage.setItem('ps_funds', JSON.stringify(state.funds));
+            localStorage.setItem('ps_accounts', JSON.stringify(state.accounts));
+            
+            // Refresh the UI to reflect new live data
+            if (typeof renderAllViews === 'function') {
+                renderAllViews();
+            }
+            
+            this.updateStatusBadge('🔥 Firebase: Live Sync Received');
+        }
+    },
+
     pushSnapshot: function() {
         try {
+            state.lastUpdated = Date.now();
             const snapshot = {
                 activities: state.activities || [],
                 members: state.members || [],
                 attendance: state.attendance || {},
                 funds: state.funds || [],
                 accounts: state.accounts || [],
-                lastUpdated: Date.now()
+                lastUpdated: state.lastUpdated
             };
             localStorage.setItem('ps_firebase_local_mirror', JSON.stringify(snapshot));
 
