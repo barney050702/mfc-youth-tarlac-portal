@@ -153,11 +153,8 @@ function loadFromStorage() {
         }
     }
 
-    // One-time wipe of all stored members (version flag: ps_members_cleared_v1)
-    if (localStorage.getItem('ps_members_cleared_v1') !== 'true') {
-        localStorage.removeItem('ps_members');
-        localStorage.setItem('ps_members_cleared_v1', 'true');
-    }
+    // Remove stale cleared flag so members are always loaded from storage/Firestore
+    localStorage.removeItem('ps_members_cleared_v1');
 
     const refreshedStoredMembers = localStorage.getItem('ps_members');
     if (refreshedStoredMembers !== null) {
@@ -4812,8 +4809,9 @@ function handleAddMemberSubmit(event) {
         if (idx !== -1) {
             state.members[idx] = { ...state.members[idx], ...memberData };
             // Sync updated member to Firestore
-            if (typeof MFCFirebaseCloud !== 'undefined' && MFCFirebaseCloud.syncMember) {
+            if (typeof MFCFirebaseCloud !== 'undefined' && MFCFirebaseCloud.enabled && MFCFirebaseCloud.syncMember) {
                 MFCFirebaseCloud.syncMember(state.members[idx]);
+                if (typeof MFCFirebaseCloud.pushSnapshot === 'function') { MFCFirebaseCloud.pushSnapshot(); }
             }
             showToast(`Member "${fullName}" updated successfully!`, 'success');
             logAuditAction(`Updated member record: ${fullName}`, 'members');
@@ -4826,8 +4824,9 @@ function handleAddMemberSubmit(event) {
         };
         state.members.push(newMember);
         // Sync new member to Firestore
-        if (typeof MFCFirebaseCloud !== 'undefined' && MFCFirebaseCloud.syncMember) {
+        if (typeof MFCFirebaseCloud !== 'undefined' && MFCFirebaseCloud.enabled && MFCFirebaseCloud.syncMember) {
             MFCFirebaseCloud.syncMember(newMember);
+            if (typeof MFCFirebaseCloud.pushSnapshot === 'function') { MFCFirebaseCloud.pushSnapshot(); }
         }
         showToast(`New member "${fullName}" added to organization!`, 'success');
         logAuditAction(`Added new member: ${fullName}`, 'members');
@@ -7394,6 +7393,7 @@ function closePublishModal() {
 
 const MFCFirebaseCloud = {
     initialized: false,
+    enabled: false,
     config: {
         apiKey: "AIzaSyCt5A7AMbBkgWqZrOk19y8jv3HIRCpEgDY",
         authDomain: "mfc-youth-data.firebaseapp.com",
@@ -7407,6 +7407,8 @@ const MFCFirebaseCloud = {
     init: function() {
         try {
             const savedConfig = localStorage.getItem('ps_firebase_config');
+            // Mark as enabled after init
+            this.enabled = true;
             if (savedConfig) {
                 const parsed = JSON.parse(savedConfig);
                 this.config = { ...this.config, ...parsed };
@@ -7418,6 +7420,12 @@ const MFCFirebaseCloud = {
                     firebase.initializeApp(this.config);
                 }
                 this.initialized = true;
+                this.enabled = true;
+
+                // Load members from Firestore for persistence
+                if (typeof this.loadMembersFromFirestore === 'function') {
+                    this.loadMembersFromFirestore();
+                }
 
                 // Live Cloud Sync Listener
                 if (firebase.database) {
@@ -7531,6 +7539,7 @@ const MFCFirebaseCloud = {
         });
     },
 
+    // Existing pullSnapshot for Realtime DB (kept for other data)
     pullSnapshot: function(silent = false) {
         const dbUrl = (this.config.databaseURL || "https://mfc-youth-data-default-rtdb.firebaseio.com").replace(/\/$/, "");
         const endpoint = `${dbUrl}/mfc_portal_live_data.json`;
@@ -7540,13 +7549,9 @@ const MFCFirebaseCloud = {
             .then(data => {
                 if (data && typeof data === 'object') {
                     if (Array.isArray(data.activities)) state.activities = data.activities;
-                    // Never restore members from Firebase if they have been intentionally cleared
-                    if (Array.isArray(data.members) && localStorage.getItem('ps_members_cleared_v1') !== 'true') {
+                    // Restore members from Firebase cloud
+                    if (Array.isArray(data.members) && data.members.length > 0) {
                         state.members = data.members;
-                    } else if (localStorage.getItem('ps_members_cleared_v1') === 'true') {
-                        // Members were cleared locally — push empty list back to Firebase so cloud is also cleared
-                        state.members = [];
-                        this.pushSnapshot();
                     }
                     if (data.attendance && typeof data.attendance === 'object') state.attendance = data.attendance;
                     if (Array.isArray(data.funds)) state.funds = data.funds;
@@ -7577,6 +7582,27 @@ const MFCFirebaseCloud = {
         if (lbl) lbl.textContent = msg || '🔥 Firebase: Connected';
         const modalBadge = document.getElementById('firebase-modal-status-badge');
         if (modalBadge) modalBadge.textContent = msg || 'CONNECTED TO FIREBASE CLOUD';
+    },
+
+    // Load all members from Firestore into state and localStorage on page load
+    loadMembersFromFirestore: async function() {
+        if (!this.initialized) return;
+        try {
+            const db = firebase.firestore();
+            const snapshot = await db.collection('members').get();
+            const members = [];
+            snapshot.forEach(doc => {
+                members.push(doc.data());
+            });
+            if (members.length) {
+                state.members = members;
+                localStorage.setItem('ps_members', JSON.stringify(state.members));
+                renderAll();
+                this.updateStatusBadge('🔥 Firestore: Members Loaded (' + members.length + ')');
+            }
+        } catch (e) {
+            console.warn('Failed to load members from Firestore:', e);
+        }
     }
 };
 
