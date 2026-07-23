@@ -4670,3 +4670,26 @@ button:active, .btn-primary:active, .btn-secondary:active, .glow-button:active {
 
 
 
+
+@media (max-width: 768px) {
+    /* Mobile UI Spacing and Font Fixes */
+    .chapter-bullet-btn {
+        font-size: 0.7rem !important;
+        padding: 5px 10px !important;
+    }
+    #members-chapter-bullets span {
+        display: none !important;
+    }
+    .toolbar-right button.btn-secondary {
+        font-size: 0.7rem !important;
+        padding: 6px 10px !important;
+    }
+    .toolbar-right svg {
+        width: 14px !important;
+        height: 14px !important;
+        margin-right: 4px !important;
+    }
+    .toolbar-right {
+        gap: 6px !important;
+    }
+}
