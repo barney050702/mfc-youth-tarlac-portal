@@ -7053,6 +7053,13 @@ const STATIC_RESOURCE_LABELS = {
     'static-clt-module':        { emoji: '🏆', title: 'Chapter Leadership Training (CLT)',   category: 'Trainings' },
     'static-hht-guide':         { emoji: '🤝', title: 'Household Heads Training (HHT)',      category: 'Trainings' },
     'static-speaker-workshop':  { emoji: '🗣️', title: "Speaker's Workshop Guide",            category: 'Trainings' },
+    'static-hh-jumpstart-manual':{ emoji: '📘', title: 'HH Servants Jumpstart Manual 2020',  category: 'Trainings' },
+    'static-hh-servants-training':{ emoji: '📘', title: 'MFC Youth Household Servants Training',  category: 'Trainings' },
+    'static-hh-session1-pptx':  { emoji: '📊', title: 'Session 1 - Household Basics (.pptx)', category: 'Trainings' },
+    'static-hh-session2-pptx':  { emoji: '📊', title: 'Session 2 - Heart of a Household Servant (.pptx)', category: 'Trainings' },
+    'static-hh-workshop1-pptx': { emoji: '📊', title: 'Workshop 1 - Discerning a Household Topic (.pptx)', category: 'Trainings' },
+    'static-hh-workshop2-pptx': { emoji: '📊', title: 'Workshop 2 - Leading a Household (.pptx)', category: 'Trainings' },
+    'static-hh-workshop3-pptx': { emoji: '📊', title: 'Workshop 3 - Worship Workshop (.pptx)', category: 'Trainings' },
     'static-songboard-pptx':    { emoji: '🎶', title: 'MFC Youth Songboard (.pptx)',          category: 'Songboard' },
     'static-songbook':          { emoji: '🎸', title: 'MFC Youth Official Songbook',        category: 'Songboard' },
     'static-setlist-planner':   { emoji: '🎹', title: 'Worship Setlist Planner',            category: 'Songboard' },
@@ -7149,7 +7156,14 @@ const OFFICIAL_DOWNLOADABLE_RESOURCES = [
     { id: 'dl-rosary-joyful', title: 'The Joyful Mysteries (.pptx)', url: 'resources/The Joyful Mysteries (Monday and Saturday).pptx', filename: 'The Joyful Mysteries (Monday and Saturday).pptx', emoji: '✨', size: '145 MB', category: 'Holy Rosary' },
     { id: 'dl-rosary-luminous', title: 'The Luminous Mysteries (.pptx)', url: 'resources/The Luminous Mysteries (Thursday).pptx', filename: 'The Luminous Mysteries (Thursday).pptx', emoji: '🌟', size: '139 MB', category: 'Holy Rosary' },
     { id: 'dl-rosary-sorrowful', title: 'The Sorrowful Mysteries (.pptx)', url: 'resources/The Sorrowful Mysteries (Tuesday and Friday).pptx', filename: 'The Sorrowful Mysteries (Tuesday and Friday).pptx', emoji: '✝️', size: '142 MB', category: 'Holy Rosary' },
-    { id: 'dl-rosary-glorious', title: 'The Glorious Mysteries (.pptx)', url: 'resources/The Glorious Mysteries (Wednesday and Sunday).pptx', filename: 'The Glorious Mysteries (Wednesday and Sunday).pptx', emoji: '👑', size: '142 MB', category: 'Holy Rosary' }
+    { id: 'dl-rosary-glorious', title: 'The Glorious Mysteries (.pptx)', url: 'resources/The Glorious Mysteries (Wednesday and Sunday).pptx', filename: 'The Glorious Mysteries (Wednesday and Sunday).pptx', emoji: '👑', size: '142 MB', category: 'Holy Rosary' },
+    { id: 'dl-hh-jumpstart', title: 'HH Servants Jumpstart Manual 2020', url: 'resources/HH Servants Jumpstart Manual 2020.pdf', filename: 'HH Servants Jumpstart Manual 2020.pdf', emoji: '📘', size: '1.4 MB', category: 'Trainings' },
+    { id: 'dl-hh-servants-training', title: 'MFC Youth Household Servants Training', url: 'resources/MFC Youth Household Servants Training.pdf', filename: 'MFC Youth Household Servants Training.pdf', emoji: '📘', size: '1.0 MB', category: 'Trainings' },
+    { id: 'dl-hh-session1', title: 'Session 1 - Household Basics (.pptx)', url: 'resources/Session 1 - Household Basics.pptx', filename: 'Session 1 - Household Basics.pptx', emoji: '📊', size: '7.8 MB', category: 'Trainings' },
+    { id: 'dl-hh-session2', title: 'Session 2 - Heart of a Household Servant (.pptx)', url: 'resources/Session 2 - Heart of a Household Servant.pptx', filename: 'Session 2 - Heart of a Household Servant.pptx', emoji: '📊', size: '3.6 MB', category: 'Trainings' },
+    { id: 'dl-hh-workshop1', title: 'Workshop 1 - Discerning a Household Topic (.pptx)', url: 'resources/Workshop 1 - Discerning a Household Topic.pptx', filename: 'Workshop 1 - Discerning a Household Topic.pptx', emoji: '📊', size: '4.6 MB', category: 'Trainings' },
+    { id: 'dl-hh-workshop2', title: 'Workshop 2 - Leading a Household (.pptx)', url: 'resources/Workshop 2 - Leading a Household.pptx', filename: 'Workshop 2 - Leading a Household.pptx', emoji: '📊', size: '5.2 MB', category: 'Trainings' },
+    { id: 'dl-hh-workshop3', title: 'Workshop 3 - Worship Workshop (.pptx)', url: 'resources/Workshop 3 - Worship Workshop.pptx', filename: 'Workshop 3 - Worship Workshop.pptx', emoji: '📊', size: '6.9 MB', category: 'Trainings' }
 ];
 
 function openDownloadAllModal() {
@@ -7161,7 +7175,7 @@ function openDownloadAllModal() {
     const btn = document.getElementById('btn-start-batch-download');
     if (btn) {
         btn.disabled = false;
-        btn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width:15px;height:15px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg><span>Start Batch Download (8 Files)</span>`;
+        btn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width:15px;height:15px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg><span>Start Batch Download (15 Files)</span>`;
     }
 }
 
