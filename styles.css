@@ -4988,3 +4988,79 @@ button:active, .btn-primary:active, .btn-secondary:active, .glow-button:active {
     font-weight: 700 !important;
     letter-spacing: 0.02em !important;
 }
+
+/* ==========================================================================
+   APP-WIDE MOBILE PREMIUM OVERHAUL (GLASSMORPHISM & FLOATING UI)
+   ========================================================================== */
+@media (max-width: 768px) {
+    /* 1. Floating iOS-Style Bottom Navigation Dock */
+    .mobile-bottom-nav {
+        width: calc(100% - 24px) !important;
+        left: 12px !important;
+        bottom: env(safe-area-inset-bottom, 12px) !important;
+        border-radius: 24px !important;
+        background: rgba(15, 23, 42, 0.75) !important;
+        backdrop-filter: blur(20px) !important;
+        -webkit-backdrop-filter: blur(20px) !important;
+        border: 1px solid rgba(255, 255, 255, 0.08) !important;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5) !important;
+        padding-bottom: 0 !important;
+        height: 64px !important;
+        min-height: 64px !important;
+        justify-content: space-around !important;
+        padding: 0 10px !important;
+    }
+    .main-content {
+        padding-bottom: calc(90px + env(safe-area-inset-bottom, 12px)) !important;
+    }
+
+    /* 2. Frosted Glass Top Header */
+    .top-bar {
+        position: sticky !important;
+        top: 0 !important;
+        z-index: 1000 !important;
+        background: rgba(15, 23, 42, 0.65) !important;
+        backdrop-filter: blur(16px) !important;
+        -webkit-backdrop-filter: blur(16px) !important;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
+    }
+    .brand-section {
+        background: transparent !important;
+    }
+
+    /* 3. Universal Premium Card Design (Strip Neon Borders) */
+    .glass-panel, .glass-card, .content-card {
+        background: rgba(30, 41, 59, 0.4) !important;
+        backdrop-filter: blur(16px) !important;
+        -webkit-backdrop-filter: blur(16px) !important;
+        border: 1px solid rgba(255, 255, 255, 0.08) !important;
+        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15) !important;
+        border-radius: 16px !important;
+    }
+    
+    /* Soften primary and secondary buttons */
+    .btn-primary, .btn-secondary {
+        border-radius: 12px !important;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2) !important;
+        border: 1px solid rgba(255, 255, 255, 0.05) !important;
+        transition: transform 0.2s ease !important;
+    }
+    .btn-primary:active, .btn-secondary:active {
+        transform: scale(0.96) !important;
+    }
+
+    /* 4. Perfect Typography & Alignment */
+    .metric-value {
+        font-size: 1.6rem !important;
+        font-weight: 800 !important;
+        letter-spacing: -0.03em !important;
+    }
+    
+    div[style*='margin-bottom: 24px'], 
+    div[style*='margin-bottom: 32px'] {
+        margin-bottom: 16px !important;
+    }
+    div[style*='margin-bottom: 40px'] {
+        margin-bottom: 24px !important;
+    }
+}
