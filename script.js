@@ -8822,3 +8822,25 @@ document.addEventListener('DOMContentLoaded', () => {
     initMobileNativeGestures();
 });
 
+
+function openHHFolderModal() {
+    const modal = document.getElementById('modal-hh-folder');
+    if (modal) {
+        modal.style.display = 'flex';
+        modal.style.opacity = '0';
+        setTimeout(() => {
+            modal.style.transition = 'opacity 0.2s ease';
+            modal.style.opacity = '1';
+        }, 10);
+    }
+}
+
+function closeHHFolderModal() {
+    const modal = document.getElementById('modal-hh-folder');
+    if (modal) {
+        modal.style.opacity = '0';
+        setTimeout(() => {
+            modal.style.display = 'none';
+        }, 200);
+    }
+}
