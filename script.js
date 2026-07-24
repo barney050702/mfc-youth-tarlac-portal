@@ -7564,12 +7564,31 @@ const MFCFirebaseCloud = {
                 }
             });
             toClean.forEach(ref => ref.delete().catch(() => {}));
-            if (members.length) {
-                state.members = members;
-                localStorage.setItem('ps_members', JSON.stringify(state.members));
-                renderAll();
-                this.updateStatusBadge('🔥 Firestore: Members Loaded (' + members.length + ')');
-            }
+            
+            // Merge Firebase members into local state.members
+            const localMembers = [...state.members];
+            
+            members.forEach(fbMem => {
+                const idx = localMembers.findIndex(m => m.id === fbMem.id || (m.name && fbMem.name && m.name.trim().toLowerCase() === fbMem.name.trim().toLowerCase()));
+                if (idx !== -1) {
+                    localMembers[idx] = fbMem;
+                } else {
+                    localMembers.push(fbMem);
+                }
+            });
+            
+            state.members = localMembers;
+            localStorage.setItem('ps_members', JSON.stringify(state.members));
+            
+            // Sync any local members not present in Firestore up to the cloud
+            state.members.forEach(lm => {
+                if (!members.some(fbMem => fbMem.id === lm.id)) {
+                    db.collection('members').doc(lm.id).set(lm).catch(() => {});
+                }
+            });
+
+            renderAll();
+            this.updateStatusBadge('🔥 Firestore: Members Loaded (' + state.members.length + ')');
         } catch (e) {
             console.warn('Failed to load members from Firestore:', e);
         }
