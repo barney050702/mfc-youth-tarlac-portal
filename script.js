@@ -1,4 +1,4 @@
-﻿/**
+/**
  * ============================================================================
  * MFC YOUTH TARLAC | ACTIVITY & ATTENDANCE PORTAL APPLICATION LOGIC
  * State Management, Interactive Roster, CRUD Operations & Export Engines
@@ -4654,6 +4654,7 @@ function openEditMemberModal(id) {
     const setVal = (elId, val) => { const el = document.getElementById(elId); if (el) el.value = val || ''; };
     setVal('mem-first-name', first);
     setVal('mem-middle-name', mem.middleName || '');
+    setVal('mem-last-name', last);
     let chapVal = mem.chapter || 'East Chapter';
     if (['EAST', 'NORTH', 'WEST', 'SOUTH', 'CENTRAL'].includes(chapVal.toUpperCase())) {
         chapVal = chapVal.charAt(0).toUpperCase() + chapVal.slice(1).toLowerCase() + ' Chapter';
