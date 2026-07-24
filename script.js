@@ -3457,7 +3457,7 @@ function renderOrgChart() {
         <div class="org-tree-wrapper">
             <!-- Tier 1: Executive Leadership & Chapter Heads -->
             <div class="org-tier-header" style="text-align:center; margin-bottom:14px;">
-                <span style="background:linear-gradient(135deg, #F59E0B, #D97706); color:#FFF; font-weight:800; font-size:0.78rem; letter-spacing:0.08em; text-transform:uppercase; padding:6px 18px; border-radius:20px; box-shadow:0 4px 14px rgba(245,158,11,0.3);">👑 Executive Leadership & Chapter Heads</span>
+                <span style="background:linear-gradient(135deg, #F59E0B, #D97706); color:#FFF; font-weight:800; font-size:0.78rem; letter-spacing:0.08em; text-transform:uppercase; padding:6px 18px; border-radius:20px; box-shadow:0 4px 14px rgba(245,158,11,0.3);">👑 AREA SERVANTS</span>
             </div>
             <div style="display:flex; flex-wrap:wrap; justify-content:center; gap:16px; margin-bottom:28px;">
                 ${execMembers.length > 0 ? execMembers.map(m => renderOrgMemberCard(m, true)).join('') : `
