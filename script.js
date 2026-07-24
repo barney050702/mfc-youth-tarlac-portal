@@ -106,25 +106,6 @@ const SAMPLE_MEMBERS = [
     { id: 'm-img-63', name: 'Antonia G. Egipto', chapter: 'NORTH', age: 12, birthday: '6/28/2013', address: 'Magaspac, Gerona Tarlac', contactNum: '', parentsContact: '9672539992' },
     { id: 'm-img-64', name: 'Liselle Ondrea B. Egipto', chapter: 'NORTH', age: 14, birthday: '1/9/2012', address: 'Magaspac, Gerona Tarlac', contactNum: '', parentsContact: '9278825052' }
 ];
-const SAMPLE_ACCOUNTS = [
-    { id: 'acc-1', email: 'reyesbarney38@gmail.com', role: 'SUPER ADMIN', area: 'All Chapters', password: 'admin123' },
-    { id: 'acc-tricia', email: 'triciamheyc@gmail.com', role: 'CHAPTER HEAD', area: 'East', password: 'mfc2026' },
-    { id: 'acc-2', email: 'tricia@mfcyouthtarlac.com', role: 'CHAPTER HEAD', area: 'East', password: 'chapter123' },
-    { id: 'acc-3', email: 'central.chapter@mfcyouthtarlac.com', role: 'CHAPTER HEAD', area: 'Central', password: 'chapter123' },
-    { id: 'acc-4', email: 'north.chapter@mfcyouthtarlac.com', role: 'CHAPTER HEAD', area: 'North', password: 'chapter123' },
-    { id: 'acc-5', email: 'south.chapter@mfcyouthtarlac.com', role: 'CHAPTER HEAD', area: 'South', password: 'chapter123' },
-    { id: 'acc-6', email: 'west.chapter@mfcyouthtarlac.com', role: 'CHAPTER HEAD', area: 'West', password: 'chapter123' }
-];
-
-const SAMPLE_ACTIVITIES = [
-    { id: 'act-101', name: 'MFC Youth Tarlac Chapter Assembly - May', date: '2026-05-16', location: 'Tarlac Cathedral Parish Hall', type: 'Assembly', status: 'Completed', notes: 'Monthly general youth assembly' },
-    { id: 'act-102', name: 'Youth Camp Service Team Training', date: '2026-06-06', location: 'MFC Diocesan Center Tarlac', type: 'Training', status: 'Completed', notes: 'Service team leadership formation' },
-    { id: 'act-103', name: 'East & Central Household Worship Night', date: '2026-06-20', location: 'St. Michael Parish Function Room', type: 'Household', status: 'Completed', notes: 'Joint chapter household worship' },
-    { id: 'act-104', name: 'MFC Youth Tarlac Midyear General Assembly', date: '2026-07-04', location: 'San Sebastian Cathedral Auditorium', type: 'Assembly', status: 'Completed', notes: 'Midyear thanksgiving celebration' },
-    { id: 'act-105', name: 'Logistics & Media Production Workshop', date: '2026-07-11', location: 'MFC Center Media Lab', type: 'Training', status: 'Completed', notes: 'Technical training for live production' },
-    { id: 'act-106', name: 'Chapter Fellowship & Sports Fest 2026', date: '2026-07-25', location: 'Tarlac Recreational Complex', type: 'Fellowship', status: 'Upcoming', notes: 'Chapter unity sports fest' },
-    { id: 'act-107', name: 'MFC Youth Conference 2026', date: '2026-08-15', location: 'Tarlac Convention Center', type: 'MFC Conference', category: 'MFC Conference', status: 'Upcoming', notes: 'Annual chapter and diocesan MFC Youth Conference' }
-];
 
 function setupSpotlights() {
     document.addEventListener('mousemove', (e) => {
@@ -201,20 +182,12 @@ function loadFromStorage() {
             state.activities = JSON.parse(storedActivities);
             if (!Array.isArray(state.activities)) state.activities = [];
         } catch (e) {
-            state.activities = [...SAMPLE_ACTIVITIES];
+            state.activities = [];
         }
     } else {
-        state.activities = [...SAMPLE_ACTIVITIES];
+        state.activities = [];
         localStorage.setItem('ps_activities', JSON.stringify(state.activities));
         localStorage.setItem('ps_activities_mfc_v11', 'true');
-    }
-
-    if (!state.activities.some(a => a.id === 'act-107' || a.category === 'MFC Conference' || a.type === 'MFC Conference')) {
-        const confAct = SAMPLE_ACTIVITIES.find(a => a.id === 'act-107');
-        if (confAct) {
-            state.activities.push(confAct);
-            localStorage.setItem('ps_activities', JSON.stringify(state.activities));
-        }
     }
 
     // Remove stale cleared flag so members are always loaded from storage/Firestore
@@ -236,11 +209,11 @@ function loadFromStorage() {
     // Migrate any members using old field names to the canonical schema
     state.members = state.members.map(m => {
         const migrated = { ...m };
-        if (m.phone && !m.contactNum)       { migrated.contactNum = m.phone; }
-        if (m.birthdate && !m.birthday)     { migrated.birthday = m.birthdate; }
+        if (m.phone && !m.contactNum) { migrated.contactNum = m.phone; }
+        if (m.birthdate && !m.birthday) { migrated.birthday = m.birthdate; }
         if (m.parentContact && !m.parentsContact) { migrated.parentsContact = m.parentContact; }
         if (m.youthCampDate && !m.campDate) { migrated.campDate = m.youthCampDate; }
-        if (m.department && !m.dept)        { migrated.dept = m.department; }
+        if (m.department && !m.dept) { migrated.dept = m.department; }
         return migrated;
     });
 
@@ -273,7 +246,7 @@ function loadFromStorage() {
                     }
                     if (calcAge >= 0 && calcAge <= 120) enriched.age = calcAge;
                 }
-            } catch(e) {}
+            } catch (e) { }
         }
         // Auto breakdown firstName, middleName, lastName if missing
         if (!enriched.firstName || !enriched.lastName) {
@@ -433,7 +406,7 @@ function saveToStorage() {
 // Optional Cloud Backend Bridge (REST / Firebase / Supabase)
 window.MFCCloudBridge = {
     endpointUrl: localStorage.getItem('mfc_cloud_endpoint') || null,
-    syncSnapshot: async function() {
+    syncSnapshot: async function () {
         if (!this.endpointUrl) return;
         try {
             await fetch(this.endpointUrl, {
@@ -867,7 +840,7 @@ function openPastoralFollowUpModal() {
 
     const reportText = `📋 *MFC YOUTH TARLAC — PASTORAL FOLLOW-UP REPORT*\n` +
         `🗓 *Activity:* ${act.title} (${act.date})\n` +
-        `👥 *Attendance Rate:* ${presentMems.length}/${state.members.length} (${Math.round((presentMems.length/Math.max(1, state.members.length))*100)}%)\n` +
+        `👥 *Attendance Rate:* ${presentMems.length}/${state.members.length} (${Math.round((presentMems.length / Math.max(1, state.members.length)) * 100)}%)\n` +
         `===================================\n\n` +
         `✅ *PRESENT MEMBERS (${presentMems.length}):*\n` +
         (presentMems.length > 0 ? presentMems.map(m => `  • ${m.name} [${m.chapter || 'Central'}]`).join('\n') : '  None recorded') + `\n\n` +
@@ -1180,7 +1153,7 @@ function renderDashboardCharts() {
     const gradientBlue = ctx.createLinearGradient(0, 0, 0, 300);
     gradientBlue.addColorStop(0, 'rgba(56, 189, 248, 0.6)');
     gradientBlue.addColorStop(1, 'rgba(56, 189, 248, 0.02)');
-    
+
     const gradientPurple = ctx.createLinearGradient(0, 0, 0, 300);
     gradientPurple.addColorStop(0, 'rgba(167, 139, 250, 0.6)');
     gradientPurple.addColorStop(1, 'rgba(167, 139, 250, 0.02)');
@@ -1698,7 +1671,7 @@ function downloadActivityPDF(actId, title) {
             1: { cellWidth: 50, fontStyle: 'bold' },
             4: { fontStyle: 'bold' }
         },
-        didParseCell: function(data) {
+        didParseCell: function (data) {
             if (data.section === 'body' && data.column.index === 4) {
                 if (data.cell.raw === 'PRESENT') {
                     data.cell.styles.textColor = [16, 185, 129];
@@ -1748,15 +1721,15 @@ function renderActivitiesTable() {
 
         const matchesCat = state.filterCategory === 'ALL' || actType === state.filterCategory;
         const matchesStat = state.filterStatus === 'ALL' || act.status === state.filterStatus;
-        const matchesSearch = !state.searchQuery || 
+        const matchesSearch = !state.searchQuery ||
             actName.toLowerCase().includes(state.searchQuery) ||
             actVenue.toLowerCase().includes(state.searchQuery) ||
             actType.toLowerCase().includes(state.searchQuery);
-        
+
         let matchesSem = true;
         const dObjSem = new Date(act.date);
         const mNum = !isNaN(dObjSem.getTime()) ? dObjSem.getMonth() : -1;
-        
+
         const isS1 = act.semester === 's1' || (act.semester !== 's2' && mNum >= 0 && mNum <= 5);
         const isS2 = act.semester === 's2' || (act.semester !== 's1' && mNum >= 6 && mNum <= 11);
 
@@ -1813,7 +1786,7 @@ function renderActivitiesTable() {
                     if (st === 'present' || st === 'late') pCount++;
                 });
                 const rate = totalMems > 0 ? ((pCount / totalMems) * 100).toFixed(1) : '0.0';
-                
+
                 // Point 1: Empty check-in state
                 let rateText = `${pCount} / ${totalMems} (${rate}%)`;
                 let rateValue = parseFloat(rate);
@@ -1832,12 +1805,12 @@ function renderActivitiesTable() {
                     progressColor1 = '#FCD34D'; // yellow
                     progressColor2 = '#F59E0B';
                 }
-                
+
                 const dObj = new Date(act.date);
                 const dateUpper = isNaN(dObj.getTime()) ? act.date.toUpperCase() : dObj.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }).toUpperCase();
-                
+
                 const mNum = !isNaN(dObj.getTime()) ? dObj.getMonth() : -1;
-                
+
                 // Point 9: Colorblind icons
                 let semBadgeText = '📅 1st Sem (Jan-Jun)';
                 if (act.semester === 's2' || (act.semester !== 's1' && mNum >= 6 && mNum <= 11)) {
@@ -2154,10 +2127,10 @@ function populateAttendanceDropdown() {
     selectEl.innerHTML = `
         <option value="">-- Choose an Activity to Check Attendance --</option>
         ${sorted.map(act => {
-            const dateStr = act.date ? new Date(act.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : 'No Date';
-            const displayTitle = act.title || act.name || 'Untitled Activity';
-            return `<option value="${act.id}" ${act.id === currentVal ? 'selected' : ''}>[${dateStr}] ${displayTitle} (${act.status || 'Upcoming'})</option>`;
-        }).join('')}
+        const dateStr = act.date ? new Date(act.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : 'No Date';
+        const displayTitle = act.title || act.name || 'Untitled Activity';
+        return `<option value="${act.id}" ${act.id === currentVal ? 'selected' : ''}>[${dateStr}] ${displayTitle} (${act.status || 'Upcoming'})</option>`;
+    }).join('')}
     `;
 }
 
@@ -2230,11 +2203,11 @@ function renderAttendanceRoster() {
             `;
         } else {
             tbody.innerHTML = state.members.map((mem, idx) => {
-            const memAtt = attMap[mem.id] || { status: 'absent', notes: '' };
-            const st = memAtt.status;
-            const notesStr = memAtt.notes || '';
+                const memAtt = attMap[mem.id] || { status: 'absent', notes: '' };
+                const st = memAtt.status;
+                const notesStr = memAtt.notes || '';
 
-            return `
+                return `
                 <tr id="row-${mem.id}">
                     <td style="font-weight:700; color:var(--text-muted);">${idx + 1}</td>
                     <td>
@@ -2385,10 +2358,10 @@ function batchMarkChapterPresent(chapterName) {
         const memChap = (mem.chapter || 'EAST').toLowerCase();
         if (memChap.includes(cleanChapter) || cleanChapter.includes(memChap)) {
             if (!state.attendance[actId][mem.id]) {
-                state.attendance[actId][mem.id] = { status: 'present', notes: '', time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) };
+                state.attendance[actId][mem.id] = { status: 'present', notes: '', time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) };
             } else {
                 state.attendance[actId][mem.id].status = 'present';
-                state.attendance[actId][mem.id].time = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+                state.attendance[actId][mem.id].time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
             }
             count++;
         }
@@ -2701,90 +2674,90 @@ function exportToPDF() {
         }
         const doc = new jsPDFObj('p', 'mm', 'a4');
 
-    // Header Background
-    doc.setFillColor(11, 15, 25);
-    doc.rect(0, 0, 210, 38, 'F');
+        // Header Background
+        doc.setFillColor(11, 15, 25);
+        doc.rect(0, 0, 210, 38, 'F');
 
-    doc.setFont("helvetica", "bold");
-    doc.setFontSize(20);
-    doc.setTextColor(56, 189, 248);
-    doc.text("MFC YOUTH TARLAC PORTAL", 14, 18);
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(20);
+        doc.setTextColor(56, 189, 248);
+        doc.text("MFC YOUTH TARLAC PORTAL", 14, 18);
 
-    doc.setFontSize(11);
-    doc.setTextColor(248, 250, 252);
-    doc.text("Official Attendance & Activity Master Report", 14, 26);
+        doc.setFontSize(11);
+        doc.setTextColor(248, 250, 252);
+        doc.text("Official Attendance & Activity Master Report", 14, 26);
 
-    doc.setFontSize(9);
-    doc.setTextColor(148, 163, 184);
-    doc.text(`Generated on: ${new Date().toLocaleString()}`, 14, 32);
+        doc.setFontSize(9);
+        doc.setTextColor(148, 163, 184);
+        doc.text(`Generated on: ${new Date().toLocaleString()}`, 14, 32);
 
-    // Section 1: Activities Summary Table
-    doc.setFontSize(13);
-    doc.setTextColor(11, 15, 25);
-    doc.text("1. Activity Performance Summary", 14, 48);
+        // Section 1: Activities Summary Table
+        doc.setFontSize(13);
+        doc.setTextColor(11, 15, 25);
+        doc.text("1. Activity Performance Summary", 14, 48);
 
-    const actHeaders = [["Activity Title", "Category", "Date", "Status", "Present", "Rate"]];
-    const totalMems = state.members.length;
-    const actRows = state.activities.map(act => {
-        const attObj = state.attendance[act.id] || {};
-        let pCount = 0;
-        state.members.forEach(m => {
-            if (attObj[m.id]?.status === 'present' || attObj[m.id]?.status === 'late') pCount++;
+        const actHeaders = [["Activity Title", "Category", "Date", "Status", "Present", "Rate"]];
+        const totalMems = state.members.length;
+        const actRows = state.activities.map(act => {
+            const attObj = state.attendance[act.id] || {};
+            let pCount = 0;
+            state.members.forEach(m => {
+                if (attObj[m.id]?.status === 'present' || attObj[m.id]?.status === 'late') pCount++;
+            });
+            const rate = totalMems > 0 ? Math.round((pCount / totalMems) * 100) : 0;
+            const dateStr = new Date(act.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+            return [act.name || act.title || 'Untitled', act.type || act.category || 'Event', dateStr, act.status, `${pCount}/${totalMems}`, `${rate}%`];
         });
-        const rate = totalMems > 0 ? Math.round((pCount / totalMems) * 100) : 0;
-        const dateStr = new Date(act.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-        return [act.name || act.title || 'Untitled', act.type || act.category || 'Event', dateStr, act.status, `${pCount}/${totalMems}`, `${rate}%`];
-    });
 
-    doc.autoTable({
-        startY: 52,
-        head: actHeaders,
-        body: actRows,
-        theme: 'grid',
-        headStyles: { fillColor: [59, 130, 246], textColor: [255, 255, 255], fontStyle: 'bold' },
-        styles: { fontSize: 8.5, cellPadding: 3 },
-        columnStyles: { 0: { cellWidth: 65 }, 5: { fontStyle: 'bold', textColor: [5, 150, 105] } }
-    });
+        doc.autoTable({
+            startY: 52,
+            head: actHeaders,
+            body: actRows,
+            theme: 'grid',
+            headStyles: { fillColor: [59, 130, 246], textColor: [255, 255, 255], fontStyle: 'bold' },
+            styles: { fontSize: 8.5, cellPadding: 3 },
+            columnStyles: { 0: { cellWidth: 65 }, 5: { fontStyle: 'bold', textColor: [5, 150, 105] } }
+        });
 
-    let nextY = doc.lastAutoTable.finalY + 12;
+        let nextY = doc.lastAutoTable.finalY + 12;
 
-    // Section 2: Active Roster Check (if selected activity exists)
-    if (state.selectedActivityId) {
-        const selAct = state.activities.find(a => a.id === state.selectedActivityId);
-        if (selAct) {
-            if (nextY > 230) { doc.addPage(); nextY = 20; }
-            doc.setFontSize(13);
-            doc.setTextColor(11, 15, 25);
-            doc.text(`2. Detailed Attendance Sheet: ${selAct.title}`, 14, nextY);
+        // Section 2: Active Roster Check (if selected activity exists)
+        if (state.selectedActivityId) {
+            const selAct = state.activities.find(a => a.id === state.selectedActivityId);
+            if (selAct) {
+                if (nextY > 230) { doc.addPage(); nextY = 20; }
+                doc.setFontSize(13);
+                doc.setTextColor(11, 15, 25);
+                doc.text(`2. Detailed Attendance Sheet: ${selAct.title}`, 14, nextY);
 
-            const rosHeaders = [["#", "Member Name", "Department / Role", "Status", "Time Check", "Remarks"]];
-            const attMap = state.attendance[selAct.id] || {};
-            const rosRows = state.members.map((mem, idx) => {
-                const att = attMap[mem.id] || { status: 'absent', time: '-', notes: '' };
-                return [idx + 1, mem.name, `${mem.dept} (${mem.role})`, att.status.toUpperCase(), att.time, att.notes || '-'];
-            });
+                const rosHeaders = [["#", "Member Name", "Department / Role", "Status", "Time Check", "Remarks"]];
+                const attMap = state.attendance[selAct.id] || {};
+                const rosRows = state.members.map((mem, idx) => {
+                    const att = attMap[mem.id] || { status: 'absent', time: '-', notes: '' };
+                    return [idx + 1, mem.name, `${mem.dept} (${mem.role})`, att.status.toUpperCase(), att.time, att.notes || '-'];
+                });
 
-            doc.autoTable({
-                startY: nextY + 4,
-                head: rosHeaders,
-                body: rosRows,
-                theme: 'striped',
-                headStyles: { fillColor: [15, 23, 42], textColor: [56, 189, 248], fontStyle: 'bold' },
-                styles: { fontSize: 8, cellPadding: 2.5 },
-                didParseCell: function(data) {
-                    if (data.section === 'body' && data.column.index === 3) {
-                        if (data.cell.raw === 'PRESENT') data.cell.styles.textColor = [5, 150, 105];
-                        else if (data.cell.raw === 'LATE') data.cell.styles.textColor = [217, 119, 6];
-                        else data.cell.styles.textColor = [225, 29, 72];
-                        data.cell.styles.fontStyle = 'bold';
+                doc.autoTable({
+                    startY: nextY + 4,
+                    head: rosHeaders,
+                    body: rosRows,
+                    theme: 'striped',
+                    headStyles: { fillColor: [15, 23, 42], textColor: [56, 189, 248], fontStyle: 'bold' },
+                    styles: { fontSize: 8, cellPadding: 2.5 },
+                    didParseCell: function (data) {
+                        if (data.section === 'body' && data.column.index === 3) {
+                            if (data.cell.raw === 'PRESENT') data.cell.styles.textColor = [5, 150, 105];
+                            else if (data.cell.raw === 'LATE') data.cell.styles.textColor = [217, 119, 6];
+                            else data.cell.styles.textColor = [225, 29, 72];
+                            data.cell.styles.fontStyle = 'bold';
+                        }
                     }
-                }
-            });
+                });
+            }
         }
-    }
 
-    doc.save(`mfc_youth_tarlac_attendance_report_${new Date().toISOString().slice(0, 10)}.pdf`);
-    showToast('PDF Roster document generated and saved!', 'success');
+        doc.save(`mfc_youth_tarlac_attendance_report_${new Date().toISOString().slice(0, 10)}.pdf`);
+        showToast('PDF Roster document generated and saved!', 'success');
     } catch (err) {
         console.warn('jsPDF export fallback triggered:', err);
         generatePrintablePDFSheet();
@@ -3272,7 +3245,7 @@ function renderOrgMemberCard(member, isExec = false) {
     const deptName = member.department || member.dept || 'General';
     const roleName = member.role || 'Youth Member';
     const chapterName = member.chapter || 'MFC Youth Tarlac';
-    
+
     let badgeColor = '#38BDF8';
     if (rate >= 80) badgeColor = '#10B981';
     else if (rate < 60) badgeColor = '#F43F5E';
@@ -3430,8 +3403,8 @@ function renderOrgChart() {
                 </div>
                 <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(300px, 1fr)); gap:20px;">
                     ${hhHeads.length > 0 ? hhHeads.map(h => {
-                        const assignedYouth = generalMembers.filter(m => (m.chapter || '') === (h.chapter || ''));
-                        return `
+            const assignedYouth = generalMembers.filter(m => (m.chapter || '') === (h.chapter || ''));
+            return `
                             <div style="background:rgba(15,23,42,0.65); border:1px solid rgba(129,140,248,0.35); border-radius:16px; padding:16px;">
                                 <div style="display:flex; align-items:center; gap:10px; margin-bottom:12px;">
                                     <span style="font-size:1.4rem;">👑</span>
@@ -3451,7 +3424,7 @@ function renderOrgChart() {
                                 </div>
                             </div>
                         `;
-                    }).join('') : `<div style="grid-column:1/-1; text-align:center; color:#64748B; padding:20px;">No Household Heads recorded yet.</div>`}
+        }).join('') : `<div style="grid-column:1/-1; text-align:center; color:#64748B; padding:20px;">No Household Heads recorded yet.</div>`}
                 </div>
             </div>
         `;
@@ -3507,13 +3480,13 @@ function renderOrgChart() {
             
             <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(270px, 1fr)); gap:20px;">
                 ${chapters.map(chapName => {
-                    const chapMembers = otherMembers.filter(m => getCanonicalChapterName(m.chapter) === chapName);
-                    if (chapMembers.length === 0 && filterDept !== 'ALL') return '';
+        const chapMembers = otherMembers.filter(m => getCanonicalChapterName(m.chapter) === chapName);
+        if (chapMembers.length === 0 && filterDept !== 'ALL') return '';
 
-                    const hhHeads = chapMembers.filter(m => getRoleRank(m.role) === 2);
-                    const regularMems = chapMembers.filter(m => getRoleRank(m.role) > 2);
+        const hhHeads = chapMembers.filter(m => getRoleRank(m.role) === 2);
+        const regularMems = chapMembers.filter(m => getRoleRank(m.role) > 2);
 
-                    return `
+        return `
                         <div class="org-branch-column glass-panel" style="padding:18px; border-radius:18px; border:1px solid rgba(255,255,255,0.08); background:rgba(15,23,42,0.75); display:flex; flex-direction:column; gap:14px;">
                             <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid rgba(255,255,255,0.08); padding-bottom:10px;">
                                 <strong style="color:#F8FAFC; font-size:0.98rem;">📍 ${chapName}</strong>
@@ -3538,7 +3511,7 @@ function renderOrgChart() {
                             </div>
                         </div>
                     `;
-                }).join('')}
+    }).join('')}
             </div>
         </div>
     `;
@@ -3784,7 +3757,7 @@ function renderMembersTable() {
         const cleanName = (mem.name || '').trim().toLowerCase();
         const isDuplicate = nameCounts[cleanName] > 1;
 
-        const rowStyle = isDuplicate 
+        const rowStyle = isDuplicate
             ? `background: rgba(245, 158, 11, 0.12); border-left: 4px solid #F59E0B; border-bottom: 1px solid rgba(245, 158, 11, 0.3); transition: background 0.2s ease;`
             : `border-bottom: 1px solid rgba(255, 255, 255, 0.05); transition: background 0.2s ease;`;
 
@@ -4039,7 +4012,7 @@ async function deleteMember(id) {
         renderAll();
         // Re-sync restored member to Firestore
         if (typeof MFCFirebaseCloud !== 'undefined' && MFCFirebaseCloud.initialized) {
-            try { await firebase.firestore().collection('members').doc(deletedCopy.id).set(deletedCopy); } catch(e) {}
+            try { await firebase.firestore().collection('members').doc(deletedCopy.id).set(deletedCopy); } catch (e) { }
         }
         logAuditAction(`Restored member ${deletedCopy.name} via Undo`, 'members');
     });
@@ -4064,7 +4037,7 @@ function clearAllMembers() {
                     if (m.id) db.collection('members').doc(m.id).delete()
                         .catch(e => console.warn('Firestore clear error:', e));
                 });
-            } catch(e) { console.warn('Firestore clear error:', e); }
+            } catch (e) { console.warn('Firestore clear error:', e); }
         }
         showToast('All members have been cleared successfully.', 'info');
     }
@@ -4273,11 +4246,11 @@ function generateMemberIDMatrixSVG(memberId = 'M-001') {
     }
     const size = 11;
     let svgRects = '';
-    const corners = [[0,0], [0,8], [8,0]];
+    const corners = [[0, 0], [0, 8], [8, 0]];
     for (const [cx, cy] of corners) {
-        svgRects += `<rect x="${cx*14+2}" y="${cy*14+2}" width="42" height="42" fill="#0F172A" rx="4"/>`;
-        svgRects += `<rect x="${cx*14+8}" y="${cy*14+8}" width="30" height="30" fill="#FFF" rx="2"/>`;
-        svgRects += `<rect x="${cx*14+14}" y="${cy*14+14}" width="18" height="18" fill="#0284C7" rx="2"/>`;
+        svgRects += `<rect x="${cx * 14 + 2}" y="${cy * 14 + 2}" width="42" height="42" fill="#0F172A" rx="4"/>`;
+        svgRects += `<rect x="${cx * 14 + 8}" y="${cy * 14 + 8}" width="30" height="30" fill="#FFF" rx="2"/>`;
+        svgRects += `<rect x="${cx * 14 + 14}" y="${cy * 14 + 14}" width="18" height="18" fill="#0284C7" rx="2"/>`;
     }
     for (let r = 0; r < size; r++) {
         for (let c = 0; c < size; c++) {
@@ -4285,7 +4258,7 @@ function generateMemberIDMatrixSVG(memberId = 'M-001') {
             const bit = Math.abs(Math.sin((r * 13 + c * 17 + hash) * 100)) > 0.45;
             if (bit) {
                 const color = ((r + c) % 4 === 0) ? '#0284C7' : '#0F172A';
-                svgRects += `<rect x="${c*14+4}" y="${r*14+4}" width="10" height="10" fill="${color}" rx="2"/>`;
+                svgRects += `<rect x="${c * 14 + 4}" y="${r * 14 + 4}" width="10" height="10" fill="${color}" rx="2"/>`;
             }
         }
     }
@@ -4302,7 +4275,7 @@ function openMemberQRModal(memberId) {
     const roleEl = document.getElementById('qr-badge-role');
     const qrCont = document.getElementById('qrcode-container');
     const idNumEl = document.getElementById('qr-badge-id-num');
-    
+
     if (nameEl) nameEl.textContent = mem.name || 'Member';
     if (roleEl) roleEl.textContent = `${mem.role || 'Member'} • ${mem.chapter || 'MFC Youth Tarlac'}`;
     if (idNumEl) idNumEl.textContent = `ID: #${mem.id.toUpperCase()}`;
@@ -4494,16 +4467,16 @@ function exportFinancialStatementPDF() {
         doc.setTextColor(15, 23, 42);
         doc.setFont('helvetica', 'bold');
         doc.setFontSize(11);
-        doc.text(`Total Income: P${totalIncome.toLocaleString('en-PH', {minimumFractionDigits: 2})}`, 14, 52);
-        doc.text(`Total Expenses: P${totalExpense.toLocaleString('en-PH', {minimumFractionDigits: 2})}`, 80, 52);
-        doc.text(`Net Balance: P${netBalance.toLocaleString('en-PH', {minimumFractionDigits: 2})}`, 145, 52);
+        doc.text(`Total Income: P${totalIncome.toLocaleString('en-PH', { minimumFractionDigits: 2 })}`, 14, 52);
+        doc.text(`Total Expenses: P${totalExpense.toLocaleString('en-PH', { minimumFractionDigits: 2 })}`, 80, 52);
+        doc.text(`Net Balance: P${netBalance.toLocaleString('en-PH', { minimumFractionDigits: 2 })}`, 145, 52);
 
         const rows = records.map(r => [
             r.date || '-',
             r.type || '-',
             r.category || '-',
             r.description || '-',
-            `P${(parseFloat(r.amount) || 0).toLocaleString('en-PH', {minimumFractionDigits: 2})}`
+            `P${(parseFloat(r.amount) || 0).toLocaleString('en-PH', { minimumFractionDigits: 2 })}`
         ]);
 
         doc.autoTable({
@@ -4535,7 +4508,7 @@ function exportFinancialStatementPDF() {
                 <td style="padding: 10px 12px; border-bottom: 1px solid #E2E8F0; font-weight: 600; color: ${color};">${r.type}</td>
                 <td style="padding: 10px 12px; border-bottom: 1px solid #E2E8F0;">${r.category || '-'}</td>
                 <td style="padding: 10px 12px; border-bottom: 1px solid #E2E8F0;">${r.description || '-'}</td>
-                <td style="padding: 10px 12px; border-bottom: 1px solid #E2E8F0; text-align: right; font-weight: 700; color: ${color};">₱${amt.toLocaleString('en-PH', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
+                <td style="padding: 10px 12px; border-bottom: 1px solid #E2E8F0; text-align: right; font-weight: 700; color: ${color};">₱${amt.toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
             </tr>
         `;
     }).join('');
@@ -4566,15 +4539,15 @@ function exportFinancialStatementPDF() {
             <div class="summary-grid">
                 <div class="summary-card">
                     <div style="font-size:0.75rem; color:#64748B;">Total Income</div>
-                    <div style="font-size:1.4rem; font-weight:800; color:#059669;">₱${totalIncome.toLocaleString('en-PH', {minimumFractionDigits: 2})}</div>
+                    <div style="font-size:1.4rem; font-weight:800; color:#059669;">₱${totalIncome.toLocaleString('en-PH', { minimumFractionDigits: 2 })}</div>
                 </div>
                 <div class="summary-card">
                     <div style="font-size:0.75rem; color:#64748B;">Total Expense</div>
-                    <div style="font-size:1.4rem; font-weight:800; color:#DC2626;">₱${totalExpense.toLocaleString('en-PH', {minimumFractionDigits: 2})}</div>
+                    <div style="font-size:1.4rem; font-weight:800; color:#DC2626;">₱${totalExpense.toLocaleString('en-PH', { minimumFractionDigits: 2 })}</div>
                 </div>
                 <div class="summary-card">
                     <div style="font-size:0.75rem; color:#64748B;">Net Balance</div>
-                    <div style="font-size:1.4rem; font-weight:800;">₱${netBalance.toLocaleString('en-PH', {minimumFractionDigits: 2})}</div>
+                    <div style="font-size:1.4rem; font-weight:800;">₱${netBalance.toLocaleString('en-PH', { minimumFractionDigits: 2 })}</div>
                 </div>
             </div>
             <table>
@@ -4623,7 +4596,7 @@ function openAddMemberModal() {
     const idEl = document.getElementById('form-mem-id');
     const titleEl = document.getElementById('add-member-title');
     const btnTextEl = document.getElementById('mem-submit-btn-text');
-    
+
     if (idEl) idEl.value = '';
     if (titleEl) titleEl.textContent = 'Add New Member';
     if (btnTextEl) btnTextEl.textContent = 'Add Member';
@@ -4642,7 +4615,7 @@ function openEditMemberModal(id) {
     const idEl = document.getElementById('form-mem-id');
     const titleEl = document.getElementById('add-member-title');
     const btnTextEl = document.getElementById('mem-submit-btn-text');
-    
+
     if (idEl) idEl.value = mem.id;
     if (titleEl) titleEl.textContent = 'Edit Member';
     if (btnTextEl) btnTextEl.textContent = 'Save Changes';
@@ -4650,7 +4623,7 @@ function openEditMemberModal(id) {
     const names = mem.name ? mem.name.split(' ') : [''];
     const first = mem.firstName || (names.length > 1 ? names.slice(0, -1).join(' ') : names[0] || '');
     const last = mem.lastName || (names.length > 1 ? names[names.length - 1] : '');
-    
+
     const setVal = (elId, val) => { const el = document.getElementById(elId); if (el) el.value = val || ''; };
     setVal('mem-first-name', first);
     setVal('mem-middle-name', mem.middleName || '');
@@ -4808,11 +4781,11 @@ function renderFundsTable() {
     if (!tbody) return;
 
     let funds = state.funds || [];
-    
+
     const typeFilter = document.getElementById('funds-type-filter');
     const categoryFilter = document.getElementById('funds-category-filter');
     const searchInput = document.getElementById('funds-search-input');
-    
+
     const selectedType = typeFilter ? typeFilter.value : 'ALL';
     const selectedCategory = categoryFilter ? categoryFilter.value : 'ALL';
     const query = searchInput ? searchInput.value.toLowerCase().trim() : '';
@@ -4820,8 +4793,8 @@ function renderFundsTable() {
     const filtered = funds.filter(item => {
         const matchType = selectedType === 'ALL' || item.type === selectedType;
         const matchCategory = selectedCategory === 'ALL' || item.category === selectedCategory;
-        const matchQuery = !query || 
-            item.description.toLowerCase().includes(query) || 
+        const matchQuery = !query ||
+            item.description.toLowerCase().includes(query) ||
             item.category.toLowerCase().includes(query) ||
             (item.receipt && item.receipt.toLowerCase().includes(query));
         return matchType && matchCategory && matchQuery;
@@ -4944,7 +4917,7 @@ function filterFunds() {
         const currentCat = catFilter.value;
         const incomeCats = ['Tithe & Offering', 'Donation / Sponsorship', 'Fundraising Event', 'Registration Fees', 'Other Income'];
         const expenseCats = ['Assembly & Event Supplies', 'Youth Camp Food & Venue', 'Transportation & Logistics', 'Honorarium & Speakers', 'Administrative / Office', 'Other Expense'];
-        
+
         let catsToShow = [];
         if (typeFilter.value === 'Income') catsToShow = incomeCats;
         else if (typeFilter.value === 'Expense') catsToShow = expenseCats;
@@ -4997,7 +4970,7 @@ function handleReceiptImageSelect(event) {
     }
 
     const reader = new FileReader();
-    reader.onload = function(e) {
+    reader.onload = function (e) {
         const base64Data = e.target.result;
         const imgDataEl = document.getElementById('fund-receipt-image-data');
         if (imgDataEl) imgDataEl.value = base64Data;
@@ -5300,7 +5273,7 @@ function switchProfileModalView(view) {
     const recoveryView = document.getElementById('profile-modal-recovery-view');
     const rbacView = document.getElementById('profile-modal-rbac-view');
     const auditView = document.getElementById('profile-modal-audit-view');
-    
+
     if (menuView) menuView.style.display = 'none';
     if (passcodeView) passcodeView.style.display = 'none';
     if (recoveryView) recoveryView.style.display = 'none';
@@ -5385,7 +5358,7 @@ function renderAuditLog() {
         }
     }
 
-    const htmlContent = state.auditLog.length === 0 
+    const htmlContent = state.auditLog.length === 0
         ? '<div style="color: #94A3B8; font-size: 0.85rem; text-align: center; padding: 12px;">No recent audit actions logged.</div>'
         : state.auditLog.map(item => {
             let catColor = '#38BDF8';
@@ -5489,7 +5462,7 @@ function importBackupJSON(event) {
     if (!file) return;
 
     const reader = new FileReader();
-    reader.onload = function(e) {
+    reader.onload = function (e) {
         try {
             const data = JSON.parse(e.target.result);
             if (!data || !data.activities || !data.members) {
@@ -5587,7 +5560,7 @@ function stopLiveCameraQRScanner() {
     if (html5QrCodeScannerInstance) {
         html5QrCodeScannerInstance.stop().then(() => {
             html5QrCodeScannerInstance.clear();
-        }).catch(() => {});
+        }).catch(() => { });
     }
     const placeholderEl = document.getElementById('qr-camera-placeholder');
     if (placeholderEl) placeholderEl.style.display = 'block';
@@ -5607,7 +5580,7 @@ function playCheckInBeep() {
         gain.connect(audioCtx.destination);
         osc.start();
         osc.stop(audioCtx.currentTime + 0.2);
-    } catch (e) {}
+    } catch (e) { }
     if (navigator.vibrate) navigator.vibrate([100, 50, 100]);
 }
 
@@ -5619,7 +5592,7 @@ function handleDecodedQRText(decodedText) {
     try {
         const parsed = JSON.parse(decodedText);
         if (parsed && parsed.id) targetId = parsed.id;
-    } catch(e) {}
+    } catch (e) { }
 
     const member = state.members.find(m => m.id === targetId || m.name.toLowerCase() === targetId.toLowerCase());
     if (!member) {
@@ -5676,7 +5649,7 @@ function switchSimulatedRole(roleName) {
     state.currentRole = roleName;
     const subEl = document.getElementById('profile-modal-role');
     const sideRoleEl = document.querySelector('.sidebar-user-role');
-    
+
     if (subEl) subEl.textContent = roleName;
     if (sideRoleEl) sideRoleEl.textContent = roleName;
 
@@ -5714,8 +5687,8 @@ let inactivityWarningTimer = null;
 const INACTIVITY_LIMIT_MS = 15 * 60 * 1000; // 15 Minutes
 const INACTIVITY_WARNING_MS = 14 * 60 * 1000; // 14 Minutes warning
 
-function resetInactivityTimer() {}
-function startInactivityWatchdog() {}
+function resetInactivityTimer() { }
+function startInactivityWatchdog() { }
 
 function checkAdminPrivilege(requiredRole = 'CHAPTER HEAD', actionDescription = 'This sensitive action') {
     const role = state.currentAdminRole || 'CHAPTER HEAD';
@@ -5734,13 +5707,13 @@ function checkAdminPrivilege(requiredRole = 'CHAPTER HEAD', actionDescription = 
 function logoutUser() {
     localStorage.setItem('ps_logged_in', 'false');
     sessionStorage.setItem('ps_logged_in', 'false');
-    
+
     const overlay = document.getElementById('auth-login-overlay');
     if (overlay) overlay.style.display = 'flex';
-    
+
     showToast('Logged out of MFC Youth Tarlac Portal.', 'info');
     logAuditAction('User logged out of the portal', 'security');
-    
+
     setTimeout(() => {
         window.location.reload();
     }, 400);
@@ -5813,7 +5786,7 @@ async function loginUser(event) {
         }
         return;
     }
-    
+
     if (errMsgEl) errMsgEl.style.display = 'none';
     if (passEl) passEl.style.borderColor = 'rgba(255, 255, 255, 0.2)';
 
@@ -5831,7 +5804,7 @@ async function loginUser(event) {
     renderAll();
 }
 
-function applyRBACRoleUI() {}
+function applyRBACRoleUI() { }
 
 function resendAdmin2FACode() {
     if (!state.pending2FAAccount) return;
@@ -5941,7 +5914,7 @@ function handleCSVFileUpload(event) {
     const file = event.target.files?.[0];
     if (!file) return;
     const reader = new FileReader();
-    reader.onload = function(e) {
+    reader.onload = function (e) {
         const textarea = document.getElementById('import-csv-text');
         if (textarea) {
             textarea.value = e.target.result;
@@ -5960,7 +5933,7 @@ function splitCSVLine(line) {
     let inQuote = false;
     for (let i = 0; i < line.length; i++) {
         const char = line[i];
-        if (char === '"' && (i === 0 || line[i-1] !== '\\')) {
+        if (char === '"' && (i === 0 || line[i - 1] !== '\\')) {
             inQuote = !inQuote;
         } else if (char === ',' && !inQuote) {
             result.push(cur.trim().replace(/^"+|"+$/g, ''));
@@ -5976,7 +5949,7 @@ function splitCSVLine(line) {
 function smartParseCSVRows(rawText) {
     const lines = rawText.trim().split(/\r?\n/);
     const parsedRows = [];
-    
+
     // Default mappings if no header detected
     let nameCol = 0;
     let chapterCol = 1;
@@ -5987,7 +5960,7 @@ function smartParseCSVRows(rawText) {
     let birthdayCol = -1;
     let parentContactCol = -1;
     let addressCol = -1;
-    
+
     let headerRowIndex = -1;
 
     // Scan for header row
@@ -6026,7 +5999,7 @@ function smartParseCSVRows(rawText) {
         // If name is just a sequence number ('1', '2') and we had no header, look for actual name column
         if (/^\d+$/.test(name) || !name) {
             for (let c = 0; c < cols.length; c++) {
-                if (c !== chapterCol && c !== phoneCol && c !== birthdayCol && cols[c] && /[a-zA-Z]{3,}/.test(cols[c]) && !['east','west','north','south','central','chapter'].some(x => cols[c].toLowerCase().includes(x))) {
+                if (c !== chapterCol && c !== phoneCol && c !== birthdayCol && cols[c] && /[a-zA-Z]{3,}/.test(cols[c]) && !['east', 'west', 'north', 'south', 'central', 'chapter'].some(x => cols[c].toLowerCase().includes(x))) {
                     name = cols[c];
                     break;
                 }
@@ -6213,7 +6186,7 @@ function renderScannableQRCode(containerEl, qrText) {
     img.style.objectFit = 'contain';
     img.style.display = 'block';
     img.style.margin = '0 auto';
-    img.onerror = function() {
+    img.onerror = function () {
         containerEl.innerHTML = '';
         if (window.QRCode) {
             new QRCode(containerEl, {
@@ -6308,7 +6281,7 @@ function restoreBackupJSON(event) {
     if (!file) return;
 
     const reader = new FileReader();
-    reader.onload = function(e) {
+    reader.onload = function (e) {
         try {
             const data = JSON.parse(e.target.result);
             if (data.members) state.members = data.members;
@@ -6345,7 +6318,7 @@ function restoreFromAutoRecoverySnapshot() {
         renderAll();
         showToast('Data restored successfully from automatic snapshot!', 'success');
         logAuditAction('Restored data from automatic recovery snapshot', 'security');
-    } catch(e) {
+    } catch (e) {
         showToast('Failed to restore snapshot.', 'error');
     }
 }
@@ -6419,7 +6392,7 @@ function renderInteractiveCharts() {
                     <div style="display:flex; flex-direction:column; align-items:center; flex:1; height:100%; justify-content:flex-end;">
                         <span style="font-size:0.75rem; color:#38BDF8; font-weight:700; margin-bottom:4px;">${dataRates[idx]}%</span>
                         <div style="width:100%; max-width:40px; height:${Math.max(10, dataRates[idx])}%; background:linear-gradient(180deg, #38BDF8, #0284C7); border-radius:6px 6px 0 0;"></div>
-                        <span style="font-size:0.7rem; color:#94A3B8; margin-top:6px; text-align:center; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:60px;">${(act.name||'Act').substring(0,8)}</span>
+                        <span style="font-size:0.7rem; color:#94A3B8; margin-top:6px; text-align:center; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:60px;">${(act.name || 'Act').substring(0, 8)}</span>
                     </div>
                 `).join('')}
             </div>
@@ -7058,10 +7031,10 @@ function closeAddResourceModal() {
 function handleAddResourceSubmit(e) {
     e.preventDefault();
     const category = document.getElementById('res-input-category').value;
-    const emoji    = (document.getElementById('res-input-emoji').value || '\uD83D\uDCC4').trim();
-    const title    = document.getElementById('res-input-title').value.trim();
-    const desc     = document.getElementById('res-input-desc').value.trim();
-    const url      = document.getElementById('res-input-url').value.trim();
+    const emoji = (document.getElementById('res-input-emoji').value || '\uD83D\uDCC4').trim();
+    const title = document.getElementById('res-input-title').value.trim();
+    const desc = document.getElementById('res-input-desc').value.trim();
+    const url = document.getElementById('res-input-url').value.trim();
 
     if (!title) return;
 
@@ -7097,9 +7070,9 @@ function renderResourceCards() {
                 <h3 style="color:#F8FAFC; font-size:1.05rem; font-weight:800; margin:0 0 8px; padding-right:32px;">${r.title}</h3>
                 <p style="color:#94A3B8; font-size:0.82rem; line-height:1.5; margin:0 0 16px;">${r.desc || 'No description provided.'}</p>
                 ${r.url
-                    ? `<a href="${r.url}" target="_blank" rel="noopener" class="btn-secondary btn-sm" style="display:block; text-align:center; text-decoration:none;">Open File \u2192</a>`
-                    : `<button class="btn-secondary btn-sm" onclick="showToast('No link attached to this resource.', 'info')" style="width:100%;">No Link</button>`
-                }
+                ? `<a href="${r.url}" target="_blank" rel="noopener" class="btn-secondary btn-sm" style="display:block; text-align:center; text-decoration:none;">Open File \u2192</a>`
+                : `<button class="btn-secondary btn-sm" onclick="showToast('No link attached to this resource.', 'info')" style="width:100%;">No Link</button>`
+            }
             </div>
         `).join('');
     });
@@ -7119,32 +7092,32 @@ function deleteResourceCard(id) {
 const STATIC_RESOURCE_LABELS = {
     'static-youth-camp-manual-2020': { emoji: '⛺', title: 'MFC Youth Youth Camp Manual 2020', category: 'Youthcamp' },
     'static-road-to-youth-camp-2020': { emoji: '🛣️', title: 'MFC Youth Road to Youth Camp 2020', category: 'Youthcamp' },
-    'static-clc-manual':        { emoji: '📖', title: 'Christian Life Camp (CLC) Manual',    category: 'Youthcamp' },
-    'static-service-checklist': { emoji: '📋', title: 'Service Team Checklist',              category: 'Youthcamp' },
-    'static-speaker-deck':      { emoji: '🎤', title: 'Speaker Slide Deck Template',         category: 'Youthcamp' },
-    'static-clt-module':        { emoji: '🏆', title: 'Chapter Leadership Training (CLT)',   category: 'Trainings' },
-    'static-hht-guide':         { emoji: '🤝', title: 'Household Heads Training (HHT)',      category: 'Trainings' },
-    'static-speaker-workshop':  { emoji: '🗣️', title: "Speaker's Workshop Guide",            category: 'Trainings' },
-    'static-hh-jumpstart-manual':{ emoji: '📘', title: 'HH Servants Jumpstart Manual 2020',  category: 'Trainings' },
-    'static-hh-servants-training':{ emoji: '📘', title: 'MFC Youth Household Servants Training',  category: 'Trainings' },
-    'static-hh-session1-pptx':  { emoji: '📊', title: 'Session 1 - Household Basics (.pptx)', category: 'Trainings' },
-    'static-hh-session2-pptx':  { emoji: '📊', title: 'Session 2 - Heart of a Household Servant (.pptx)', category: 'Trainings' },
+    'static-clc-manual': { emoji: '📖', title: 'Christian Life Camp (CLC) Manual', category: 'Youthcamp' },
+    'static-service-checklist': { emoji: '📋', title: 'Service Team Checklist', category: 'Youthcamp' },
+    'static-speaker-deck': { emoji: '🎤', title: 'Speaker Slide Deck Template', category: 'Youthcamp' },
+    'static-clt-module': { emoji: '🏆', title: 'Chapter Leadership Training (CLT)', category: 'Trainings' },
+    'static-hht-guide': { emoji: '🤝', title: 'Household Heads Training (HHT)', category: 'Trainings' },
+    'static-speaker-workshop': { emoji: '🗣️', title: "Speaker's Workshop Guide", category: 'Trainings' },
+    'static-hh-jumpstart-manual': { emoji: '📘', title: 'HH Servants Jumpstart Manual 2020', category: 'Trainings' },
+    'static-hh-servants-training': { emoji: '📘', title: 'MFC Youth Household Servants Training', category: 'Trainings' },
+    'static-hh-session1-pptx': { emoji: '📊', title: 'Session 1 - Household Basics (.pptx)', category: 'Trainings' },
+    'static-hh-session2-pptx': { emoji: '📊', title: 'Session 2 - Heart of a Household Servant (.pptx)', category: 'Trainings' },
     'static-hh-workshop1-pptx': { emoji: '📊', title: 'Workshop 1 - Discerning a Household Topic (.pptx)', category: 'Trainings' },
     'static-hh-workshop2-pptx': { emoji: '📊', title: 'Workshop 2 - Leading a Household (.pptx)', category: 'Trainings' },
     'static-hh-workshop3-pptx': { emoji: '📊', title: 'Workshop 3 - Worship Workshop (.pptx)', category: 'Trainings' },
-    'static-songboard-pptx':    { emoji: '🎶', title: 'MFC Youth Songboard (.pptx)',          category: 'Songboard' },
-    'static-songbook':          { emoji: '🎸', title: 'MFC Youth Official Songbook',        category: 'Songboard' },
-    'static-setlist-planner':   { emoji: '🎹', title: 'Worship Setlist Planner',            category: 'Songboard' },
-    'static-rosary-joyful-pptx':{ emoji: '✨', title: 'The Joyful Mysteries (.pptx)',          category: 'Holy Rosary' },
-    'static-rosary-luminous-pptx':{ emoji: '🌟', title: 'The Luminous Mysteries (.pptx)',        category: 'Holy Rosary' },
-    'static-rosary-sorrowful-pptx':{ emoji: '✝️', title: 'The Sorrowful Mysteries (.pptx)',       category: 'Holy Rosary' },
-    'static-rosary-glorious-pptx':{ emoji: '👑', title: 'The Glorious Mysteries (.pptx)',        category: 'Holy Rosary' },
-    'static-holy-rosary':       { emoji: '📿', title: 'The Holy Rosary Interactive Guide',  category: 'Holy Rosary' },
-    'static-prayer-litany':     { emoji: '🕊️', title: 'Chapter Prayer & Litany Sheet',      category: 'Holy Rosary' },
+    'static-songboard-pptx': { emoji: '🎶', title: 'MFC Youth Songboard (.pptx)', category: 'Songboard' },
+    'static-songbook': { emoji: '🎸', title: 'MFC Youth Official Songbook', category: 'Songboard' },
+    'static-setlist-planner': { emoji: '🎹', title: 'Worship Setlist Planner', category: 'Songboard' },
+    'static-rosary-joyful-pptx': { emoji: '✨', title: 'The Joyful Mysteries (.pptx)', category: 'Holy Rosary' },
+    'static-rosary-luminous-pptx': { emoji: '🌟', title: 'The Luminous Mysteries (.pptx)', category: 'Holy Rosary' },
+    'static-rosary-sorrowful-pptx': { emoji: '✝️', title: 'The Sorrowful Mysteries (.pptx)', category: 'Holy Rosary' },
+    'static-rosary-glorious-pptx': { emoji: '👑', title: 'The Glorious Mysteries (.pptx)', category: 'Holy Rosary' },
+    'static-holy-rosary': { emoji: '📿', title: 'The Holy Rosary Interactive Guide', category: 'Holy Rosary' },
+    'static-prayer-litany': { emoji: '🕊️', title: 'Chapter Prayer & Litany Sheet', category: 'Holy Rosary' },
     'static-letter-transportation': { emoji: '🚌', title: 'Letter For Transportation (.docx)', category: 'Letters' },
-    'static-letter-endorsement':{ emoji: '💌', title: 'Parental Consent & Endorsement Letter', category: 'Letters' },
+    'static-letter-endorsement': { emoji: '💌', title: 'Parental Consent & Endorsement Letter', category: 'Letters' },
     'static-letter-invitation': { emoji: '📜', title: 'Pastoral Invitation & School Excuse Letter', category: 'Letters' },
-    'static-letter-sponsorship':{ emoji: '🤝', title: 'Sponsorship & Solicitation Appeal',     category: 'Letters' }
+    'static-letter-sponsorship': { emoji: '🤝', title: 'Sponsorship & Solicitation Appeal', category: 'Letters' }
 };
 
 function applyHiddenStaticResources() {
@@ -7199,7 +7172,7 @@ function renderRemoveList() {
     });
 
     dynamicResources.forEach(r => {
-        const catLabel = { youthcamp:'Youthcamp', trainings:'Trainings', songboard:'Songboard', holyrosary:'Holy Rosary', letters:'Letters' }[r.category] || r.category;
+        const catLabel = { youthcamp: 'Youthcamp', trainings: 'Trainings', songboard: 'Songboard', holyrosary: 'Holy Rosary', letters: 'Letters' }[r.category] || r.category;
         rows.push(`
             <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:rgba(15,23,42,0.5);border:1px solid rgba(56,189,248,0.12);border-radius:12px;gap:12px;">
                 <div style="display:flex;align-items:center;gap:10px;min-width:0;">
@@ -7364,7 +7337,7 @@ const MFCFirebaseCloud = {
         databaseURL: "https://mfc-youth-data-default-rtdb.firebaseio.com"
     },
 
-    init: function() {
+    init: function () {
         try {
             const savedConfig = localStorage.getItem('ps_firebase_config');
             // Mark as enabled after init
@@ -7408,7 +7381,7 @@ const MFCFirebaseCloud = {
         }
     },
     // Sync a single member to Firestore
-    syncMember: async function(member) {
+    syncMember: async function (member) {
         if (!this.initialized) return;
         if (!member || !member.id) return;
         try {
@@ -7420,13 +7393,13 @@ const MFCFirebaseCloud = {
         }
     },
 
-    handleLiveSyncUpdate: function(data) {
+    handleLiveSyncUpdate: function (data) {
         if (!data) return;
-        
+
         // Prevent infinite sync loops: only update if the cloud data is newer
         const cloudTime = data.lastUpdated || 0;
         const localTime = state.lastUpdated || 0;
-        
+
         // If the cloud is newer, accept the update!
         if (cloudTime > localTime) {
             if (Array.isArray(data.activities)) state.activities = data.activities;
@@ -7435,27 +7408,27 @@ const MFCFirebaseCloud = {
             if (data.attendance && typeof data.attendance === 'object') state.attendance = data.attendance;
             if (Array.isArray(data.funds)) state.funds = data.funds;
             if (Array.isArray(data.accounts)) state.accounts = data.accounts;
-            
+
             // Sync timestamp so we know we are up to date
             state.lastUpdated = cloudTime;
-            
+
             // Backup to local storage
             localStorage.setItem('ps_activities', JSON.stringify(state.activities));
             localStorage.setItem('ps_members', JSON.stringify(state.members));
             localStorage.setItem('ps_attendance', JSON.stringify(state.attendance));
             localStorage.setItem('ps_funds', JSON.stringify(state.funds));
             localStorage.setItem('ps_accounts', JSON.stringify(state.accounts));
-            
+
             // Refresh the UI to reflect new live data
             if (typeof renderAllViews === 'function') {
                 renderAllViews();
             }
-            
+
             this.updateStatusBadge('🔥 Firebase: Live Sync Received');
         }
     },
 
-    pushSnapshot: function() {
+    pushSnapshot: function () {
         try {
             state.lastUpdated = Date.now();
             const snapshot = {
@@ -7484,7 +7457,7 @@ const MFCFirebaseCloud = {
         }
     },
 
-    pushSnapshotREST: function(endpoint, snapshot) {
+    pushSnapshotREST: function (endpoint, snapshot) {
         fetch(endpoint, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
@@ -7501,7 +7474,7 @@ const MFCFirebaseCloud = {
     },
 
     // Existing pullSnapshot for Realtime DB (kept for other data)
-    pullSnapshot: function(silent = false) {
+    pullSnapshot: function (silent = false) {
         const dbUrl = (this.config.databaseURL || "https://mfc-youth-data-default-rtdb.firebaseio.com").replace(/\/$/, "");
         const endpoint = `${dbUrl}/mfc_portal_live_data.json`;
 
@@ -7538,7 +7511,7 @@ const MFCFirebaseCloud = {
             });
     },
 
-    updateStatusBadge: function(msg) {
+    updateStatusBadge: function (msg) {
         const lbl = document.getElementById('firebase-status-label');
         if (lbl) lbl.textContent = msg || '🔥 Firebase: Connected';
         const modalBadge = document.getElementById('firebase-modal-status-badge');
@@ -7546,7 +7519,7 @@ const MFCFirebaseCloud = {
     },
 
     // Load all members from Firestore into state and localStorage on page load
-    loadMembersFromFirestore: async function() {
+    loadMembersFromFirestore: async function () {
         if (!this.initialized) return;
         try {
             const db = firebase.firestore();
@@ -7563,11 +7536,11 @@ const MFCFirebaseCloud = {
                     toClean.push(doc.ref);
                 }
             });
-            toClean.forEach(ref => ref.delete().catch(() => {}));
-            
+            toClean.forEach(ref => ref.delete().catch(() => { }));
+
             // Merge Firebase members into local state.members
             const localMembers = [...state.members];
-            
+
             members.forEach(fbMem => {
                 const idx = localMembers.findIndex(m => m.id === fbMem.id || (m.name && fbMem.name && m.name.trim().toLowerCase() === fbMem.name.trim().toLowerCase()));
                 if (idx !== -1) {
@@ -7576,14 +7549,14 @@ const MFCFirebaseCloud = {
                     localMembers.push(fbMem);
                 }
             });
-            
+
             state.members = localMembers;
             localStorage.setItem('ps_members', JSON.stringify(state.members));
-            
+
             // Sync any local members not present in Firestore up to the cloud
             state.members.forEach(lm => {
                 if (!members.some(fbMem => fbMem.id === lm.id)) {
-                    db.collection('members').doc(lm.id).set(lm).catch(() => {});
+                    db.collection('members').doc(lm.id).set(lm).catch(() => { });
                 }
             });
 
@@ -7767,7 +7740,7 @@ function triggerHapticFeedback(pattern = 15) {
     if (typeof navigator !== 'undefined' && navigator.vibrate) {
         try {
             navigator.vibrate(pattern);
-        } catch (e) {}
+        } catch (e) { }
     }
 }
 
@@ -7931,7 +7904,7 @@ function importFullBackupJSON(inputEl) {
     if (!file) return;
 
     const reader = new FileReader();
-    reader.onload = function(e) {
+    reader.onload = function (e) {
         try {
             const data = JSON.parse(e.target.result);
             if (data.members && Array.isArray(data.members)) {
@@ -8088,9 +8061,9 @@ function renderAttendanceMatrixSheet() {
             <th style="padding: 10px 12px; text-align: left; color: #FFF; position: sticky; left: 0; background: #0F172A; z-index: 2;">Member Name</th>
             <th style="padding: 10px 12px; text-align: left; color: #94A3B8;">Chapter</th>
             ${sortedActs.map(a => {
-                const shortDate = a.date ? a.date.slice(5) : 'Date';
-                return `<th style="padding: 10px 8px; text-align: center; color: #38BDF8; font-size: 0.74rem; min-width: 70px;" title="${a.title}">${shortDate}<br><span style="font-size: 0.68rem; color: #94A3B8;">${a.title.slice(0, 10)}</span></th>`;
-            }).join('')}
+        const shortDate = a.date ? a.date.slice(5) : 'Date';
+        return `<th style="padding: 10px 8px; text-align: center; color: #38BDF8; font-size: 0.74rem; min-width: 70px;" title="${a.title}">${shortDate}<br><span style="font-size: 0.68rem; color: #94A3B8;">${a.title.slice(0, 10)}</span></th>`;
+    }).join('')}
             <th style="padding: 10px 12px; text-align: center; color: #22C55E;">Rate</th>
         </tr>
     `;
@@ -8684,7 +8657,7 @@ function applyStoredTheme() {
     const savedTheme = localStorage.getItem('mfcyouth_theme') || localStorage.getItem('ps_portal_theme') || 'dark';
     const themeBtn = document.getElementById('theme-toggle-btn');
     const isLight = (savedTheme === 'light');
-    
+
     if (isLight) {
         document.body.classList.add('light-mode');
     } else {
