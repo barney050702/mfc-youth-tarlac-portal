@@ -3695,6 +3695,14 @@ function renderMembersTable() {
         const cleanN = (mem.name || '').trim().toLowerCase();
         if (state.showOnlyDuplicates && nameCounts[cleanN] <= 1) return false;
 
+        // If viewing Servant Leaders directory, hide standard members
+        if (state.currentView === 'servants') {
+            const role = (mem.role || '').toLowerCase().trim();
+            if (role === '' || role === 'member' || role === 'youth member') {
+                return false;
+            }
+        }
+
         const matchesQuery = (mem.name || '').toLowerCase().includes(query) || (mem.role || '').toLowerCase().includes(query);
         const matchesDept = deptFilter === 'ALL' || (mem.dept || mem.department || '') === deptFilter;
         const memChap = (mem.chapter || 'EAST').toLowerCase();
