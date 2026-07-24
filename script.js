@@ -3368,7 +3368,7 @@ function renderOrgChart() {
                         <div style="display:flex; align-items:center; gap:12px;">
                             <span style="font-size:1.6rem;">${deptIcons[dept] || '🏛️'}</span>
                             <div>
-                                <h3 style="color:#FFF; font-size:1.15rem; font-weight:800; margin:0;">${dept} Department</h3>
+                                <h3 style="color:#FFF; font-size:1.15rem; font-weight:800; margin:0;">${dept === 'Executive' ? 'AREA SERVANTS' : dept + ' Department'}</h3>
                                 <p style="color:#94A3B8; font-size:0.82rem; margin:2px 0 0;">${deptMembers.length} active member(s) assigned</p>
                             </div>
                         </div>
