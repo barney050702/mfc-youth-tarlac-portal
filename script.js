@@ -3568,8 +3568,11 @@ function syncChapterBullets(val) {
 
 function filterByChapterBullet(chapterValue, clickedBtn) {
     syncChapterBullets(chapterValue);
+    
+    // Store in global state since the dropdown doesn't exist
+    state.activeChapterFilter = chapterValue;
 
-    // Sync with the Chapter select dropdown
+    // Sync with the Chapter select dropdown if it exists
     const chapterSelect = document.getElementById('members-filter-chapter');
     if (chapterSelect) {
         chapterSelect.value = chapterValue;
@@ -3686,7 +3689,7 @@ function renderMembersTable() {
     const chapterSelect = document.getElementById('members-filter-chapter');
     const query = searchInput ? searchInput.value.toLowerCase() : '';
     const deptFilter = deptSelect ? deptSelect.value : 'ALL';
-    const chapterSelectFilter = chapterSelect ? chapterSelect.value : 'ALL';
+    const chapterSelectFilter = chapterSelect ? chapterSelect.value : (state.activeChapterFilter || 'ALL');
 
     const filtered = state.members.filter(mem => {
         const cleanN = (mem.name || '').trim().toLowerCase();
@@ -3843,7 +3846,7 @@ function renderMembersMobileCards(filtered, nameCounts = {}) {
                 <div class="zero-state-icon">👥</div>
                 <h4 style="color: #F8FAFC; font-size: 1.15rem; font-weight: 800; margin: 0;">No Youth Members Found</h4>
                 <p style="color: #94A3B8; font-size: 0.85rem; max-width: 380px; margin: 0;">No members currently match your search query or chapter/department filters.</p>
-                <button onclick="document.getElementById('members-search-input').value=''; document.getElementById('members-filter-dept').value='ALL'; document.getElementById('members-filter-chapter').value='ALL'; if(state.showOnlyDuplicates) state.showOnlyDuplicates=false; renderMembersTable();" class="btn-secondary" style="padding: 6px 14px; font-size: 0.78rem; margin-top: 6px;">✨ Reset Filters</button>
+                <button onclick="document.getElementById('members-search-input').value=''; document.getElementById('members-filter-dept').value='ALL'; const mc = document.getElementById('members-filter-chapter'); if (mc) mc.value='ALL'; state.activeChapterFilter = 'ALL'; syncChapterBullets('ALL'); if(state.showOnlyDuplicates) state.showOnlyDuplicates=false; renderMembersTable();" class="btn-secondary" style="padding: 6px 14px; font-size: 0.78rem; margin-top: 6px;">✨ Reset Filters</button>
             </div>
         `;
         return;
