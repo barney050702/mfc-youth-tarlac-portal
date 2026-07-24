@@ -1,4 +1,4 @@
-/**
+﻿/**
  * ============================================================================
  * MFC YOUTH TARLAC | ACTIVITY & ATTENDANCE PORTAL APPLICATION LOGIC
  * State Management, Interactive Roster, CRUD Operations & Export Engines
@@ -712,8 +712,6 @@ function switchView(viewId) {
         if (titleEl) titleEl.textContent = 'Dashboard Overview';
         if (subEl) subEl.textContent = 'Real-time attendance metrics and active event logs';
         renderDashboard();
-        renderCelebrationsWidget();
-        renderHonorRollWidget();
         renderAttendanceHeatmapWidget();
     } else if (viewId === 'activities') {
         if (titleEl) titleEl.textContent = 'Activities Record & Semester Cards';
@@ -771,8 +769,6 @@ function renderAll() {
     const cur = state.currentView || 'dashboard';
     if (cur === 'dashboard') {
         renderDashboard();
-        renderCelebrationsWidget();
-        renderHonorRollWidget();
         renderAttendanceHeatmapWidget();
     } else if (cur === 'activities' || cur === 'agenda') {
         renderActivitiesTable();
@@ -1133,7 +1129,6 @@ function renderDashboard() {
     renderDashboardCelebrants();
     renderDashboardAgenda();
     renderDashboardCharts();
-    renderPastoralAlerts();
 }
 
 let dashboardGrowthChartInstance = null;
@@ -1258,81 +1253,8 @@ function renderDashboardCharts() {
     });
 }
 
-function renderPastoralAlerts() {
-    const elContainer = document.getElementById('dashboard-pastoral-alerts');
-    if (!elContainer) return;
-
-    let alertsHtml = '';
-    const now = new Date();
-    const currentMonthIdx = now.getMonth();
-
-    // 1. Members with upcoming birthdays or celebrations this month
-    const birthdayMems = state.members.filter(m => {
-        if (!m.birthday) return false;
-        const b = new Date(m.birthday);
-        return !isNaN(b) && b.getMonth() === currentMonthIdx;
-    }).slice(0, 3);
-
-    birthdayMems.forEach(m => {
-        alertsHtml += `
-            <div style="display:flex; align-items:center; justify-content:space-between; padding:10px 14px; background:rgba(236,72,153,0.1); border:1px solid rgba(236,72,153,0.3); border-radius:12px;">
-                <div style="display:flex; align-items:center; gap:10px;">
-                    <span style="font-size:1.3rem;">🎂</span>
-                    <div>
-                        <div style="color:#FFF; font-weight:700; font-size:0.85rem;">${m.name}</div>
-                        <div style="color:#F472B6; font-size:0.75rem;">Birthday this month &bull; ${m.chapter || 'Central'}</div>
-                    </div>
-                </div>
-                <button onclick="openPastoralGreetingModal('${m.id}', 'Birthday Celebration'); triggerConfettiBurst();" style="background:rgba(236,72,153,0.2); border:1px solid rgba(236,72,153,0.4); color:#F472B6; padding:4px 10px; border-radius:8px; font-size:0.72rem; font-weight:700; cursor:pointer;">Celebrate 🎉</button>
-            </div>
-        `;
-    });
-
-    // 2. Members with low attendance check-ins recently (Pastoral Check-in Needed)
-    const recentActs = state.activities.slice(0, 4);
-    if (recentActs.length > 0 && state.members.length > 0) {
-        let checkinNeededList = [];
-        state.members.forEach(m => {
-            let missedCount = 0;
-            recentActs.forEach(act => {
-                const st = state.attendance[act.id]?.[m.id]?.status;
-                if (!st || st === 'absent') missedCount++;
-            });
-            if (missedCount >= 3) {
-                checkinNeededList.push(m);
-            }
-        });
-
-        // If no one missed 3 in real data, take 2 sample members for pastoral reminder demo
-        if (checkinNeededList.length === 0 && state.members.length >= 2) {
-            checkinNeededList = state.members.slice(-2);
-        }
-
-        checkinNeededList.slice(0, 3).forEach(m => {
-            alertsHtml += `
-                <div style="display:flex; align-items:center; justify-content:space-between; padding:10px 14px; background:rgba(244,63,94,0.1); border:1px solid rgba(244,63,94,0.3); border-radius:12px;">
-                    <div style="display:flex; align-items:center; gap:10px;">
-                        <span style="font-size:1.3rem;">💬</span>
-                        <div>
-                            <div style="color:#FFF; font-weight:700; font-size:0.85rem;">${m.name}</div>
-                            <div style="color:#FB7185; font-size:0.75rem;">Needs Pastoral Follow-up &bull; Missed recent assemblies</div>
-                        </div>
-                    </div>
-                    <button onclick="switchView('members'); showToast('Check-in scheduled with ${m.name}!', 'info');" style="background:rgba(244,63,94,0.2); border:1px solid rgba(244,63,94,0.4); color:#FB7185; padding:4px 10px; border-radius:8px; font-size:0.72rem; font-weight:700; cursor:pointer;">Check-in ➜</button>
-                </div>
-            `;
-        });
-    }
-
-    if (!alertsHtml) {
-        alertsHtml = `<div style="text-align:center; color:#94A3B8; padding:24px; font-size:0.85rem;">All members are active and in good pastoral standing! 🕊️</div>`;
-    }
-
-    elContainer.innerHTML = alertsHtml;
-}
 
 function renderDashboardCelebrants() {
-    renderCelebrationsWidget();
     const listEl = document.getElementById('dashboard-celebrants-list');
     if (!listEl) return;
 
@@ -1404,65 +1326,6 @@ function renderDashboardAgenda() {
         `;
     }).join('');
 }
-
-function renderCelebrationsWidget() {
-    const grid = document.getElementById('dashboard-celebrations-grid');
-    if (!grid) return;
-
-    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-    const currentMonthIdx = new Date().getMonth();
-
-    let celebrants = state.members.filter((m, i) => {
-        if (m.birthdate || m.birthday) {
-            const bDate = new Date(m.birthdate || m.birthday);
-            return !isNaN(bDate) && bDate.getMonth() === currentMonthIdx;
-        }
-        return i < 4;
-    }).slice(0, 5);
-
-    if (celebrants.length === 0 && state.members.length > 0) {
-        celebrants = state.members.slice(0, 4);
-    }
-
-    if (celebrants.length === 0) {
-        grid.innerHTML = `<div style="color: #94A3B8; font-size: 0.85rem; padding: 12px;">No active celebrations found this month. Add members to see upcoming celebrations!</div>`;
-        return;
-    }
-
-    grid.innerHTML = celebrants.map(m => {
-        const initials = (m.name || 'M').split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase();
-        const dateStr = m.birthdate ? new Date(m.birthdate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : 'Milestone 🎉';
-        return `
-            <div style="min-width: 210px; background: rgba(15,23,42,0.85); border: 1px solid rgba(236,72,153,0.35); border-radius: 16px; padding: 14px; display: flex; flex-direction: column; justify-content: space-between; gap: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.3);">
-                <div style="display: flex; align-items: center; gap: 10px;">
-                    <div style="width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, #EC4899, #8B5CF6); display: flex; align-items: center; justify-content: center; font-weight: 800; color: #FFF; font-size: 0.95rem; flex-shrink: 0; box-shadow: 0 0 12px rgba(236,72,153,0.4);">
-                        ${initials}
-                    </div>
-                    <div style="min-width: 0;">
-                        <div style="color: #F8FAFC; font-weight: 800; font-size: 0.88rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="${m.name || 'Member'}">${m.name || 'Member'}</div>
-                        <div style="color: #F472B6; font-size: 0.75rem; font-weight: 600;">🎂 ${dateStr}</div>
-                    </div>
-                </div>
-                <div style="display: flex; justify-content: space-between; align-items: center;">
-                    <span style="color: #94A3B8; font-size: 0.72rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100px;">${m.chapter || 'Central'}</span>
-                    <button onclick="sendCelebrationGreeting('${(m.name || '').replace(/'/g, "\\'")}')" style="background: rgba(236,72,153,0.2); color: #F472B6; border: 1px solid rgba(236,72,153,0.45); border-radius: 12px; padding: 4px 10px; font-size: 0.72rem; font-weight: 700; cursor: pointer; transition: all 0.2s;">
-                        💌 Greet
-                    </button>
-                </div>
-            </div>
-        `;
-    }).join('');
-}
-
-function sendCelebrationGreeting(name) {
-    const elName = document.getElementById('bday-card-name');
-    if (elName) elName.textContent = `Happy Birthday, ${name}!`;
-    const modal = document.getElementById('birthday-card-backdrop');
-    if (modal) modal.style.display = 'flex';
-    showToast(`🎉 Opened digital birthday card for ${name}!`, 'success');
-}
-
-
 
 function generateExecutiveSummaryReport() {
     const totalMems = state.members.length;
@@ -8110,59 +7973,6 @@ function getMemberBadgesHtml(mem) {
             <span>${b.label}</span>
         </span>
     `).join('');
-}
-
-// ==========================================
-// TOP 5 ACTIVE SERVANTS (HONOR ROLL WIDGET)
-// ==========================================
-function renderHonorRollWidget() {
-    const grid = document.getElementById('dashboard-honor-roll-grid');
-    if (!grid || !state.members) return;
-
-    // Calculate attendance count per member
-    const scoredMembers = state.members.map(m => {
-        let count = 0;
-        if (state.attendance) {
-            Object.values(state.attendance).forEach(attObj => {
-                const st = attObj[m.id]?.status;
-                if (st === 'present' || st === 'late') count++;
-            });
-        }
-        return { ...m, attendanceCount: count };
-    });
-
-    scoredMembers.sort((a, b) => b.attendanceCount - a.attendanceCount);
-    const topServants = scoredMembers.slice(0, 5);
-
-    if (topServants.length === 0) {
-        grid.innerHTML = `<div style="text-align: center; padding: 20px; color: #94A3B8; font-size: 0.85rem;">No attendance data yet.</div>`;
-        return;
-    }
-
-    const rankMedals = ['🥇', '🥈', '🥉', '🏅', '🏅'];
-    const rankColors = ['#F59E0B', '#94A3B8', '#D97706', '#38BDF8', '#8B5CF6'];
-
-    grid.innerHTML = topServants.map((m, idx) => {
-        const medal = rankMedals[idx] || '🏅';
-        const color = rankColors[idx] || '#38BDF8';
-        return `
-            <div style="display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; background: rgba(15, 23, 42, 0.65); border: 1px solid rgba(255,255,255,0.06); border-radius: 12px; transition: all 0.2s;">
-                <div style="display: flex; align-items: center; gap: 12px; min-width: 0;">
-                    <div style="width: 34px; height: 34px; border-radius: 10px; background: rgba(255,255,255,0.06); border: 1px solid ${color}; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; flex-shrink: 0;">
-                        ${medal}
-                    </div>
-                    <div style="min-width: 0;">
-                        <div style="color: #F8FAFC; font-weight: 800; font-size: 0.88rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${m.name}</div>
-                        <div style="color: #94A3B8; font-size: 0.74rem;">${m.role} • ${m.chapter || 'EAST'}</div>
-                    </div>
-                </div>
-                <div style="text-align: right; flex-shrink: 0;">
-                    <span style="font-weight: 800; color: ${color}; font-size: 0.92rem;">${m.attendanceCount}</span>
-                    <span style="font-size: 0.7rem; color: #64748B; display: block;">Check-ins</span>
-                </div>
-            </div>
-        `;
-    }).join('');
 }
 
 // ==========================================
