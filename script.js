@@ -214,8 +214,16 @@ function loadFromStorage() {
         if (m.parentContact && !m.parentsContact) { migrated.parentsContact = m.parentContact; }
         if (m.youthCampDate && !m.campDate) { migrated.campDate = m.youthCampDate; }
         if (m.department && !m.dept) { migrated.dept = m.department; }
+        
+        // Auto-migrate "Logistics & Tech" to "EAST CHAPTER"
+        if (migrated.dept === 'Logistics & Tech') { migrated.dept = 'EAST CHAPTER'; }
+        if (migrated.department === 'Logistics & Tech') { migrated.department = 'EAST CHAPTER'; }
+        
         return migrated;
     });
+    
+    // Immediately save migrated members back to storage
+    localStorage.setItem('ps_members', JSON.stringify(state.members));
 
     // Auto-enrich members with age, name breakdown (firstName, middleName, lastName), address, and camp details
     state.members = state.members.map(m => {
