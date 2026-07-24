@@ -3438,7 +3438,9 @@ function renderOrgChart() {
     if (execMembers.length === 0 && members.length > 0) {
         // If filtering by a department without a Rank 1 head, showcase top ranking members in this department
         const minRank = Math.min(...members.map(m => getRoleRank(m.role)));
-        execMembers = members.filter(m => getRoleRank(m.role) === minRank);
+        if (minRank < 5) {
+            execMembers = members.filter(m => getRoleRank(m.role) === minRank);
+        }
     }
     const otherMembers = members.filter(m => !execMembers.some(em => em.id === m.id));
 
