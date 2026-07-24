@@ -3222,7 +3222,7 @@ function matchOrgDepartment(memberDept = '', filterVal = 'ALL') {
     if (fv.includes('creative') && md.includes('creative')) return true;
     if (fv.includes('outreach') && md.includes('outreach')) return true;
     if (fv.includes('finance') && md.includes('finance')) return true;
-    if (fv.includes('logistics') && md.includes('logistics')) return true;
+    if (fv.includes('east chapter') && md.includes('east chapter')) return true;
     if (md.includes(fv) || fv.includes(md)) return true;
     return false;
 }
@@ -3345,7 +3345,7 @@ function renderOrgChart() {
 
     if (viewMode === 'grid') {
         // GRID VIEW: Group by Department
-        const departments = ['Executive', 'Logistics & Tech', 'Programs & Events', 'Creative & Media', 'Outreach & Fellowship', 'Finance & Treasury'];
+        const departments = ['Executive', 'EAST CHAPTER', 'Programs & Events', 'Creative & Media', 'Outreach & Fellowship', 'Finance & Treasury'];
         const activeDepts = filterDept === 'ALL' ? departments : [filterDept];
 
         const gridHtml = activeDepts.map(dept => {
@@ -3355,7 +3355,7 @@ function renderOrgChart() {
             const deptAvg = deptMembers.length > 0 ? Math.round(deptMembers.reduce((sum, m) => sum + getMemberAttendanceRate(m.id), 0) / deptMembers.length) : 0;
             const deptIcons = {
                 'Executive': '👑',
-                'Logistics & Tech': '⚡',
+                'EAST CHAPTER': '⚡',
                 'Programs & Events': '🎉',
                 'Creative & Media': '🎨',
                 'Outreach & Fellowship': '🤝',
@@ -3368,7 +3368,7 @@ function renderOrgChart() {
                         <div style="display:flex; align-items:center; gap:12px;">
                             <span style="font-size:1.6rem;">${deptIcons[dept] || '🏛️'}</span>
                             <div>
-                                <h3 style="color:#FFF; font-size:1.15rem; font-weight:800; margin:0;">${dept === 'Executive' ? 'AREA SERVANTS' : dept + ' Department'}</h3>
+                                <h3 style="color:#FFF; font-size:1.15rem; font-weight:800; margin:0;">${dept === 'Executive' ? 'AREA SERVANTS' : (dept.includes('CHAPTER') ? dept : dept + ' Department')}</h3>
                                 <p style="color:#94A3B8; font-size:0.82rem; margin:2px 0 0;">${deptMembers.length} active member(s) assigned</p>
                             </div>
                         </div>
