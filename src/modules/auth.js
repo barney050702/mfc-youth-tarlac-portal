@@ -82,6 +82,11 @@ export async function loginUser(event) {
 
 export function logoutUser(reason = 'Logged out successfully.') {
     localStorage.removeItem('ps_logged_in');
+
+    if (typeof firebase !== 'undefined' && firebase.auth) {
+        firebase.auth().signOut().catch(err => console.warn('Firebase sign out error:', err));
+    }
+
     const overlay = document.getElementById('auth-login-overlay');
     if (overlay) overlay.style.display = 'flex';
     showToast(reason, 'info');

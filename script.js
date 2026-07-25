@@ -5735,15 +5735,15 @@ function logoutUser() {
     localStorage.setItem('ps_logged_in', 'false');
     sessionStorage.setItem('ps_logged_in', 'false');
 
+    if (typeof firebase !== 'undefined' && firebase.auth) {
+        firebase.auth().signOut().catch(err => console.warn('Firebase sign out error:', err));
+    }
+
     const overlay = document.getElementById('auth-login-overlay');
     if (overlay) overlay.style.display = 'flex';
 
     showToast('Logged out of MFC Youth Tarlac Portal.', 'info');
     logAuditAction('User logged out of the portal', 'security');
-
-    setTimeout(() => {
-        window.location.reload();
-    }, 400);
 }
 
 function togglePasskeyVisibility() {
