@@ -1781,7 +1781,7 @@ function renderActivitiesTable() {
                         <div class="zero-state-icon">📅</div>
                         <h4 style="color: #F8FAFC; font-size: 1.15rem; font-weight: 800; margin: 0;">No Activities Found</h4>
                         <p style="color: #94A3B8; font-size: 0.85rem; max-width: 380px; margin: 0;">Try selecting a different semester or clearing your category and search filters.</p>
-                        <button onclick="document.getElementById('filter-category').value='ALL'; document.getElementById('filter-status').value='ALL'; document.getElementById('search-input').value=''; state.filterCategory='ALL'; state.filterStatus='ALL'; state.searchQuery=''; renderActivitiesTable();" class="btn-secondary" style="padding: 6px 14px; font-size: 0.78rem; margin-top: 6px;">✨ Reset Filters</button>
+                        <button onclick="resetActivityFilters()" class="btn-secondary" style="padding: 6px 14px; font-size: 0.78rem; margin-top: 6px;">✨ Reset Filters</button>
                     </div>
                 </div>
             `;
@@ -1904,7 +1904,7 @@ function renderActivitiesTable() {
                             <div class="zero-state-icon">📅</div>
                             <h4 style="color: #F8FAFC; font-size: 1.15rem; font-weight: 800; margin: 0;">No Activities Found</h4>
                             <p style="color: #94A3B8; font-size: 0.85rem; max-width: 380px; margin: 0;">Try adjusting your search criteria or clearing active category filters.</p>
-                            <button onclick="document.getElementById('filter-category').value='ALL'; document.getElementById('filter-status').value='ALL'; document.getElementById('search-input').value=''; state.filterCategory='ALL'; state.filterStatus='ALL'; state.searchQuery=''; renderActivitiesTable();" class="btn-secondary" style="padding: 6px 14px; font-size: 0.78rem; margin-top: 6px;">✨ Reset Filters</button>
+                            <button onclick="resetActivityFilters()" class="btn-secondary" style="padding: 6px 14px; font-size: 0.78rem; margin-top: 6px;">✨ Reset Filters</button>
                         </div>
                     </td>
                 </tr>
@@ -2004,14 +2004,22 @@ function closeAddModal() {
 }
 
 function handleFormSubmit(e) {
-    e.preventDefault();
-    const idVal = document.getElementById('form-activity-id').value;
-    const titleVal = document.getElementById('form-title').value.trim();
-    const dateVal = document.getElementById('form-date').value;
-    const catVal = document.getElementById('form-category').value;
-    const locVal = document.getElementById('form-location').value.trim();
-    const statVal = document.getElementById('form-status').value;
-    const descVal = document.getElementById('form-description').value.trim();
+    if (e && e.preventDefault) e.preventDefault();
+    const idEl = document.getElementById('form-activity-id');
+    const titleEl = document.getElementById('form-title');
+    const dateEl = document.getElementById('form-date');
+    const catEl = document.getElementById('form-category');
+    const locEl = document.getElementById('form-location');
+    const statEl = document.getElementById('form-status');
+    const descEl = document.getElementById('form-description');
+
+    const idVal = idEl ? idEl.value : '';
+    const titleVal = titleEl ? titleEl.value.trim() : '';
+    const dateVal = dateEl ? dateEl.value : '';
+    const catVal = catEl ? catEl.value : 'PASTORAL';
+    const locVal = locEl ? locEl.value.trim() : '';
+    const statVal = statEl ? statEl.value : 'UPCOMING';
+    const descVal = descEl ? descEl.value.trim() : '';
 
     if (!titleVal || !dateVal || !locVal) {
         showToast('Please fill out all required fields.', 'error');
@@ -3864,7 +3872,7 @@ function renderMembersMobileCards(filtered, nameCounts = {}) {
                 <div class="zero-state-icon">👥</div>
                 <h4 style="color: #F8FAFC; font-size: 1.15rem; font-weight: 800; margin: 0;">No Youth Members Found</h4>
                 <p style="color: #94A3B8; font-size: 0.85rem; max-width: 380px; margin: 0;">No members currently match your search query or chapter/department filters.</p>
-                <button onclick="document.getElementById('members-search-input').value=''; document.getElementById('members-filter-dept').value='ALL'; const mc = document.getElementById('members-filter-chapter'); if (mc) mc.value='ALL'; state.activeChapterFilter = 'ALL'; syncChapterBullets('ALL'); if(state.showOnlyDuplicates) state.showOnlyDuplicates=false; renderMembersTable();" class="btn-secondary" style="padding: 6px 14px; font-size: 0.78rem; margin-top: 6px;">✨ Reset Filters</button>
+                <button onclick="resetMemberFilters()" class="btn-secondary" style="padding: 6px 14px; font-size: 0.78rem; margin-top: 6px;">✨ Reset Filters</button>
             </div>
         `;
         return;
@@ -6908,7 +6916,7 @@ function handleGlobalSearch(query) {
         html += `<div style="font-size: 0.7rem; font-weight: 800; color: #38BDF8; letter-spacing: 0.05em; padding: 4px 8px;">MEMBERS (${matchedMembers.length})</div>`;
         matchedMembers.forEach(m => {
             html += `
-                <div class="global-search-item" onclick="switchView('members'); document.getElementById('global-search-results').style.display='none'; showToast('Navigating to ${m.name}...', 'info');" style="padding: 8px; border-radius: 8px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; transition: background 0.15s;" onmouseover="this.style.background='rgba(56,189,248,0.1)'" onmouseout="this.style.background='transparent'">
+                <div class="global-search-item" onclick="switchView('members'); const gsr = document.getElementById('global-search-results'); if (gsr) gsr.style.display='none'; showToast('Navigating to ${m.name}...', 'info');" style="padding: 8px; border-radius: 8px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; transition: background 0.15s;" onmouseover="this.style.background='rgba(56,189,248,0.1)'" onmouseout="this.style.background='transparent'">
                     <div>
                         <div style="color: #FFF; font-weight: 700; font-size: 0.82rem;">${m.name}</div>
                         <div style="color: #94A3B8; font-size: 0.72rem;">${m.chapter || 'Central'} • ${m.role || 'Member'}</div>
@@ -6924,7 +6932,7 @@ function handleGlobalSearch(query) {
         matchedActivities.forEach(a => {
             const displayTitle = a.title || a.name || 'Untitled';
             html += `
-                <div class="global-search-item" onclick="selectActivityForAttendance('${a.id}'); document.getElementById('global-search-results').style.display='none';" style="padding: 8px; border-radius: 8px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; transition: background 0.15s;" onmouseover="this.style.background='rgba(16,185,129,0.1)'" onmouseout="this.style.background='transparent'">
+                <div class="global-search-item" onclick="selectActivityForAttendance('${a.id}'); const gsr = document.getElementById('global-search-results'); if (gsr) gsr.style.display='none';" style="padding: 8px; border-radius: 8px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; transition: background 0.15s;" onmouseover="this.style.background='rgba(16,185,129,0.1)'" onmouseout="this.style.background='transparent'">
                     <div>
                         <div style="color: #FFF; font-weight: 700; font-size: 0.82rem;">${displayTitle}</div>
                         <div style="color: #94A3B8; font-size: 0.72rem;">${a.date || 'No date'} • ${a.status || 'Scheduled'}</div>
@@ -7050,12 +7058,18 @@ function closeAddResourceModal() {
 }
 
 function handleAddResourceSubmit(e) {
-    e.preventDefault();
-    const category = document.getElementById('res-input-category').value;
-    const emoji = (document.getElementById('res-input-emoji').value || '\uD83D\uDCC4').trim();
-    const title = document.getElementById('res-input-title').value.trim();
-    const desc = document.getElementById('res-input-desc').value.trim();
-    const url = document.getElementById('res-input-url').value.trim();
+    if (e && e.preventDefault) e.preventDefault();
+    const catEl = document.getElementById('res-input-category');
+    const emoEl = document.getElementById('res-input-emoji');
+    const titEl = document.getElementById('res-input-title');
+    const desEl = document.getElementById('res-input-desc');
+    const urlEl = document.getElementById('res-input-url');
+
+    const category = catEl ? catEl.value : 'GENERAL';
+    const emoji = emoEl && emoEl.value ? emoEl.value.trim() : '📄';
+    const title = titEl && titEl.value ? titEl.value.trim() : '';
+    const desc = desEl && desEl.value ? desEl.value.trim() : '';
+    const url = urlEl && urlEl.value ? urlEl.value.trim() : '#';
 
     if (!title) return;
 
@@ -8990,5 +9004,168 @@ function closeCSTFolderModal() {
         setTimeout(() => {
             modal.style.display = 'none';
         }, 200);
+    }
+}
+
+function closeMemberProfileModal() {
+    const modal = document.getElementById('modal-member-profile');
+    if (modal) modal.style.display = 'none';
+    const backdrop = document.getElementById('member-modal-backdrop');
+    if (backdrop) backdrop.style.display = 'none';
+}
+
+function resetActivityFilters() {
+    ['filter-category', 'agenda-filter-category', 'filter-status'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.value = 'ALL';
+    });
+    ['search-input', 'activity-search-input', 'agenda-search-input'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.value = '';
+    });
+    state.filterCategory = 'ALL';
+    state.filterStatus = 'ALL';
+    state.searchQuery = '';
+    renderActivitiesTable();
+}
+
+function resetMemberFilters() {
+    ['members-search-input', 'member-search-input'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.value = '';
+    });
+    ['members-filter-dept', 'members-filter-chapter'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.value = 'ALL';
+    });
+    state.activeChapterFilter = 'ALL';
+    if (typeof syncChapterBullets === 'function') syncChapterBullets('ALL');
+    if (state.showOnlyDuplicates) state.showOnlyDuplicates = false;
+    renderMembersTable();
+}
+
+function openBatchIDPrintModal() {
+    if (!state.members || state.members.length === 0) {
+        showToast('No members registered in roster to print.', 'warning');
+        return;
+    }
+    const printWin = window.open('', '_blank', 'width=1000,height=800');
+    if (!printWin) {
+        showToast('Please allow popups to print batch member IDs.', 'error');
+        return;
+    }
+
+    const cardsHtml = state.members.map(m => `
+        <div style="width: 320px; height: 195px; border: 2px solid #0284C7; border-radius: 12px; padding: 12px; box-sizing: border-box; background: #0B0F19; color: #FFF; font-family: sans-serif; display: flex; flex-direction: column; justify-content: space-between; page-break-inside: avoid;">
+            <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid rgba(56,189,248,0.3); padding-bottom: 6px;">
+                <span style="font-size: 11px; font-weight: 800; color: #38BDF8; letter-spacing: 0.5px;">MFC YOUTH TARLAC</span>
+                <span style="font-size: 9px; background: rgba(56,189,248,0.2); color: #38BDF8; padding: 2px 6px; border-radius: 4px; font-weight: 700;">${m.chapter || 'CENTRAL'}</span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 12px; margin: 8px 0;">
+                <div style="width: 50px; height: 50px; border-radius: 50%; background: #0284C7; display: flex; align-items: center; justify-content: center; font-size: 20px; font-weight: 800; color: #FFF;">
+                    ${(m.name || 'M')[0].toUpperCase()}
+                </div>
+                <div style="flex: 1;">
+                    <div style="font-size: 13px; font-weight: 700; color: #FFF;">${m.name || 'Unnamed Member'}</div>
+                    <div style="font-size: 10px; color: #94A3B8;">Age: ${m.age || 'N/A'} &bull; ${m.birthday || ''}</div>
+                    <div style="font-size: 10px; color: #38BDF8;">${m.contactNum || m.parentsContact || 'No Contact'}</div>
+                </div>
+            </div>
+            <div style="display: flex; align-items: center; justify-content: space-between; font-size: 9px; color: #64748B; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 4px;">
+                <span>ID: ${m.id || 'N/A'}</span>
+                <span>Official Youth Member</span>
+            </div>
+        </div>
+    `).join('');
+
+    printWin.document.write(`
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <title>MFC Youth Tarlac - Batch Member IDs</title>
+            <style>
+                body { font-family: 'Inter', system-ui, sans-serif; background: #FFF; margin: 20px; padding: 0; }
+                .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; justify-items: center; }
+                @media print {
+                    body { margin: 0; }
+                    .no-print { display: none; }
+                }
+            </style>
+        </head>
+        <body>
+            <div class="no-print" style="margin-bottom: 20px; text-align: center;">
+                <button onclick="window.print()" style="background: #0284C7; color: #FFF; border: none; padding: 10px 24px; border-radius: 8px; font-size: 14px; font-weight: 700; cursor: pointer;">Print Batch Member IDs (A4)</button>
+            </div>
+            <div class="grid">${cardsHtml}</div>
+            <script>
+                window.onload = () => { setTimeout(() => window.print(), 500); };
+            </script>
+        </body>
+        </html>
+    `);
+    printWin.document.close();
+}
+
+function generateOfficialLedgerPDF() {
+    if (typeof jspdf === 'undefined' && typeof window.jspdf === 'undefined') {
+        showToast('jsPDF library loading, please try again in a moment.', 'warning');
+        return;
+    }
+
+    try {
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
+
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(18);
+        doc.setTextColor(2, 132, 199);
+        doc.text('MFC YOUTH TARLAC - FINANCIAL LEDGER', 14, 20);
+
+        doc.setFontSize(11);
+        doc.setTextColor(100, 116, 139);
+        doc.text('Official Funds & Expenses Ledger Report', 14, 27);
+        doc.text(`Generated: ${new Date().toLocaleDateString()}`, 14, 33);
+
+        const tableData = (state.funds || []).map(f => [
+            f.date || 'N/A',
+            f.title || f.description || 'Transaction',
+            (f.type || 'INCOME').toUpperCase(),
+            f.category || 'General',
+            `₱${parseFloat(f.amount || 0).toLocaleString('en-US', { minimumFractionDigits: 2 })}`
+        ]);
+
+        let totalIncome = 0;
+        let totalExpenses = 0;
+        (state.funds || []).forEach(f => {
+            const amt = parseFloat(f.amount || 0);
+            if ((f.type || 'INCOME').toUpperCase() === 'INCOME') totalIncome += amt;
+            else totalExpenses += amt;
+        });
+        const netBalance = totalIncome - totalExpenses;
+
+        doc.setFontSize(10);
+        doc.setFont('helvetica', 'bold');
+        doc.setTextColor(16, 185, 129);
+        doc.text(`Total Income: ₱${totalIncome.toLocaleString('en-US', { minimumFractionDigits: 2 })}`, 14, 42);
+        doc.setTextColor(239, 68, 68);
+        doc.text(`Total Expenses: ₱${totalExpenses.toLocaleString('en-US', { minimumFractionDigits: 2 })}`, 85, 42);
+        doc.setTextColor(2, 132, 199);
+        doc.text(`Net Balance: ₱${netBalance.toLocaleString('en-US', { minimumFractionDigits: 2 })}`, 155, 42);
+
+        if (doc.autoTable) {
+            doc.autoTable({
+                startY: 48,
+                head: [['Date', 'Description / Title', 'Type', 'Category', 'Amount']],
+                body: tableData,
+                headStyles: { fillColor: [2, 132, 199] },
+                alternateRowStyles: { fillColor: [241, 245, 249] }
+            });
+        }
+
+        doc.save(`MFC_Youth_Tarlac_Financial_Ledger_${Date.now()}.pdf`);
+        showToast('📄 Official Financial Ledger PDF exported successfully!', 'success');
+        if (typeof triggerHaptic === 'function') triggerHaptic('success');
+    } catch (err) {
+        showToast(`PDF Export Error: ${err.message}`, 'error');
     }
 }
