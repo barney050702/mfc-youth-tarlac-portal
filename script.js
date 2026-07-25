@@ -148,6 +148,12 @@ function animateCounter(el, targetValue, duration = 650, prefix = '', suffix = '
 }
 
 function initApp() {
+    window.addEventListener('beforeunload', () => {
+        if (localStorage.getItem('ps_logged_in') === 'true') {
+            logoutUser();
+        }
+    });
+
     loadFromStorage();
     setupEventListeners();
     setupSpotlights();
@@ -165,6 +171,9 @@ function initApp() {
     // Auto logout on page load / refresh
     localStorage.setItem('ps_logged_in', 'false');
     sessionStorage.setItem('ps_logged_in', 'false');
+    if (typeof firebase !== 'undefined' && firebase.auth) {
+        firebase.auth().signOut().catch(e => console.warn(e));
+    }
     const overlay = document.getElementById('auth-login-overlay');
     if (overlay) {
         overlay.style.display = 'flex';
