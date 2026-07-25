@@ -5714,8 +5714,35 @@ let inactivityWarningTimer = null;
 const INACTIVITY_LIMIT_MS = 15 * 60 * 1000; // 15 Minutes
 const INACTIVITY_WARNING_MS = 14 * 60 * 1000; // 14 Minutes warning
 
-function resetInactivityTimer() { }
-function startInactivityWatchdog() { }
+let watchdogStarted = false;
+
+function resetInactivityTimer() {
+    if (localStorage.getItem('ps_logged_in') !== 'true' && sessionStorage.getItem('ps_logged_in') !== 'true') return;
+
+    clearTimeout(inactivityTimer);
+    clearTimeout(inactivityWarningTimer);
+
+    inactivityWarningTimer = setTimeout(() => {
+        showToast('⚠️ You will be automatically logged out in 1 minute due to inactivity.', 'warning');
+    }, INACTIVITY_WARNING_MS);
+
+    inactivityTimer = setTimeout(() => {
+        logoutUser();
+        showToast('Logged out due to inactivity to protect sensitive data.', 'info');
+    }, INACTIVITY_LIMIT_MS);
+}
+
+function startInactivityWatchdog() {
+    if (watchdogStarted) return;
+    watchdogStarted = true;
+
+    const events = ['mousemove', 'keydown', 'touchstart', 'scroll', 'click'];
+    events.forEach(evt => {
+        document.addEventListener(evt, resetInactivityTimer, { passive: true });
+    });
+    
+    resetInactivityTimer();
+}
 
 function checkAdminPrivilege(requiredRole = 'CHAPTER HEAD', actionDescription = 'This sensitive action') {
     const role = state.currentAdminRole || 'CHAPTER HEAD';
