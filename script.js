@@ -4315,9 +4315,7 @@ function openMemberQRModal(memberId) {
     if (modal) modal.style.display = 'flex';
 }
 
-function openMemberQRBadgeModal(memberId) {
-    openMemberQRModal(memberId);
-}
+
 
 function closeMemberQRModal() {
     const modal = document.getElementById('modal-member-qr-id');
@@ -6231,35 +6229,7 @@ function renderScannableQRCode(containerEl, qrText) {
     containerEl.appendChild(img);
 }
 
-function openMemberQRBadgeModal() {
-    const memberId = window.currentProfileMemberId || (state.members[0] ? state.members[0].id : null);
-    const member = state.members.find(m => m.id === memberId);
-    if (!member) {
-        showToast('Please select a member first.', 'error');
-        return;
-    }
 
-    const nameEl = document.getElementById('qr-badge-name');
-    const roleAreaEl = document.getElementById('qr-badge-role-area');
-    const idCodeEl = document.getElementById('qr-badge-id-code');
-    const qrBox = document.getElementById('qr-badge-box');
-
-    if (nameEl) nameEl.textContent = member.name;
-    if (roleAreaEl) roleAreaEl.textContent = `${member.chapter || 'East Chapter'} • ${member.department || 'Programs'}`;
-    if (idCodeEl) idCodeEl.textContent = `ID: ${member.id.toUpperCase()}`;
-
-    if (qrBox) {
-        renderScannableQRCode(qrBox, `MFC Youth Tarlac ID: ${member.id} (${member.name})`);
-    }
-
-    const backdrop = document.getElementById('qr-badge-backdrop');
-    if (backdrop) backdrop.style.display = 'flex';
-}
-
-function closeMemberQRBadgeModal() {
-    const backdrop = document.getElementById('qr-badge-backdrop');
-    if (backdrop) backdrop.style.display = 'none';
-}
 
 function printMemberIDCard() {
     const cardContent = document.getElementById('printable-id-card');
@@ -6370,29 +6340,7 @@ function resetSystemToDefault() {
 // ENHANCED ROADMAP FEATURES: QR BADGE, CHART ANALYTICS & PASTORAL CARE
 // ============================================================================
 
-function openMemberQRModal(memberId) {
-    const mem = state.members.find(m => m.id === memberId);
-    if (!mem) return;
 
-    const nameEl = document.getElementById('qr-badge-name');
-    const roleEl = document.getElementById('qr-badge-role');
-    const qrCont = document.getElementById('qrcode-container');
-    const modalEl = document.getElementById('modal-member-qr-id');
-
-    if (nameEl) nameEl.textContent = mem.name;
-    if (roleEl) roleEl.textContent = `${mem.role || 'Member'} • ${mem.dept || 'MFC Youth Tarlac'}`;
-
-    if (qrCont) {
-        renderScannableQRCode(qrCont, `MFC Youth Tarlac ID: ${mem.id} (${mem.name})`);
-    }
-
-    if (modalEl) modalEl.style.display = 'flex';
-}
-
-function closeMemberQRModal() {
-    const modalEl = document.getElementById('modal-member-qr-id');
-    if (modalEl) modalEl.style.display = 'none';
-}
 
 let activeAttendanceChart = null;
 let activeCategoryChart = null;
@@ -7785,40 +7733,7 @@ function triggerMobileQuickScan() {
     openQRCheckInModal();
 }
 
-function initMobileNativeGestures() {
-    let startY = 0;
-    let isPulling = false;
 
-    window.addEventListener('touchstart', (e) => {
-        if (window.scrollY === 0 && e.touches.length === 1) {
-            startY = e.touches[0].clientY;
-            isPulling = true;
-        }
-    }, { passive: true });
-
-    window.addEventListener('touchmove', (e) => {
-        if (!isPulling || window.scrollY > 0) return;
-        const currentY = e.touches[0].clientY;
-        const diffY = currentY - startY;
-
-        if (diffY > 90) {
-            isPulling = false;
-            triggerHapticFeedback([20, 40, 20]);
-            const indicator = document.getElementById('mobile-pull-refresh-indicator');
-            if (indicator) {
-                indicator.style.display = 'block';
-                triggerFirebaseForceSync();
-                setTimeout(() => {
-                    indicator.style.display = 'none';
-                }, 1600);
-            }
-        }
-    }, { passive: true });
-
-    window.addEventListener('touchend', () => {
-        isPulling = false;
-    }, { passive: true });
-}
 
 // Executive Summary PDF Export
 function exportExecutiveSummaryPDF() {

@@ -1,15 +1,15 @@
-const CACHE_NAME = 'mfc-youth-tarlac-portal-v4.23';
+const CACHE_NAME = 'mfc-youth-tarlac-portal-v4.25';
 const ASSETS_TO_CACHE = [
     './',
     './index.html',
     './styles.css',
     './script.js',
+    './src/main.js',
     './manifest.json',
     './mfc-logo.png',
     'https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js',
     'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js',
-    'https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js',
-    'https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js',
+    'https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js',
     'https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js'
 ];
 
