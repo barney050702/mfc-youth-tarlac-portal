@@ -74,23 +74,27 @@ export function showToast(message, type = 'info', duration = 3000) {
 }
 
 export function switchView(viewId) {
+    if (typeof window !== 'undefined' && typeof window.switchView === 'function' && window.switchView !== switchView) {
+        return window.switchView(viewId);
+    }
+
     state.currentView = viewId;
     triggerHaptic('light');
 
-    document.querySelectorAll('.view-section').forEach(sec => {
-        sec.style.display = 'none';
-    });
-
-    const activeView = document.getElementById(`view-${viewId}`);
-    if (activeView) {
-        activeView.style.display = 'block';
-    }
-
-    document.querySelectorAll('.nav-item, .sidebar-nav-item').forEach(btn => {
+    document.querySelectorAll('.nav-item, .sidebar-nav-item, .bottom-nav-item, .mobile-nav-item').forEach(btn => {
         if (btn.getAttribute('data-view') === viewId) {
             btn.classList.add('active');
         } else {
             btn.classList.remove('active');
+        }
+    });
+
+    document.querySelectorAll('.view-panel').forEach(panel => {
+        const targetViewId = (viewId === 'servants') ? 'members' : viewId;
+        if (panel.id === `view-${targetViewId}`) {
+            panel.classList.add('active');
+        } else {
+            panel.classList.remove('active');
         }
     });
 
