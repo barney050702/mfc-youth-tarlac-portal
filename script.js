@@ -9346,144 +9346,173 @@ window.renderCustomUploadedResources = renderCustomUploadedResources;
    FEATURE 3: INTERACTIVE FILLABLE & PRINTABLE LETTER GENERATOR
    ========================================================================== */
 function openLetterGeneratorModal(type) {
-    const el = document.getElementById('letter-generator-backdrop');
-    if (el) el.style.display = 'flex';
-    if (type) {
-        const sel = document.getElementById('let-template-type');
-        if (sel) sel.value = type;
+    try {
+        const el = document.getElementById('letter-generator-backdrop');
+        if (el) {
+            el.style.display = 'flex';
+            el.style.zIndex = '100000';
+        }
+        if (type) {
+            const sel = document.getElementById('let-template-type');
+            if (sel) sel.value = type;
+        }
+        updateLetterPreview();
+    } catch (e) {
+        console.warn('openLetterGeneratorModal error:', e);
     }
-    updateLetterPreview();
 }
 function closeLetterGeneratorModal() {
-    const el = document.getElementById('letter-generator-backdrop');
-    if (el) el.style.display = 'none';
+    try {
+        const el = document.getElementById('letter-generator-backdrop');
+        if (el) el.style.display = 'none';
+    } catch (e) {}
 }
 window.openLetterGeneratorModal = openLetterGeneratorModal;
 window.closeLetterGeneratorModal = closeLetterGeneratorModal;
 
 function updateLetterPreview() {
-    const type = document.getElementById('let-template-type').value;
-    const memberName = document.getElementById('let-member-name').value.trim() || '[Member / Student Name]';
-    const parentName = document.getElementById('let-parent-name').value.trim() || '[Parent / Addressee Name]';
-    const eventTitle = document.getElementById('let-event-title').value.trim() || '[Event / Activity Title]';
-    const eventDate = document.getElementById('let-event-date').value.trim() || '[Event Date]';
-    const venue = document.getElementById('let-venue').value.trim() || '[Venue Location]';
-    const servantName = document.getElementById('let-servant-name').value.trim() || '[Chapter Servant Name]';
+    try {
+        const selectEl = document.getElementById('let-template-type');
+        const type = selectEl ? selectEl.value : 'parental';
 
-    const container = document.getElementById('letter-live-content');
-    if (!container) return;
+        const memberEl = document.getElementById('let-member-name');
+        const parentEl = document.getElementById('let-parent-name');
+        const eventEl = document.getElementById('let-event-title');
+        const dateEl = document.getElementById('let-event-date');
+        const venueEl = document.getElementById('let-venue');
+        const servantEl = document.getElementById('let-servant-name');
 
-    let html = `
-        <div style="text-align: center; border-bottom: 2px solid #0F172A; padding-bottom: 12px; margin-bottom: 20px;">
-            <h2 style="margin: 0; font-size: 1.4rem; letter-spacing: 0.05em; color: #0F172A; text-transform: uppercase;">MISSIONARIES OF CHRIST YOUTH</h2>
-            <h4 style="margin: 4px 0 0 0; font-size: 1rem; color: #475569; font-weight: 600;">Province of Tarlac Chapter</h4>
-            <p style="margin: 2px 0 0 0; font-size: 0.8rem; color: #64748B;">Diocese of Tarlac • Official Pastoral Office</p>
-        </div>
-        <div style="text-align: right; margin-bottom: 20px; font-size: 0.9rem; color: #334155;">
-            Date: ${new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
-        </div>
-    `;
+        const memberName = (memberEl && memberEl.value.trim()) ? memberEl.value.trim() : '[Member / Student Name]';
+        const parentName = (parentEl && parentEl.value.trim()) ? parentEl.value.trim() : '[Parent / Addressee Name]';
+        const eventTitle = (eventEl && eventEl.value.trim()) ? eventEl.value.trim() : '[Event / Activity Title]';
+        const eventDate = (dateEl && dateEl.value.trim()) ? dateEl.value.trim() : '[Event Date]';
+        const venue = (venueEl && venueEl.value.trim()) ? venueEl.value.trim() : '[Venue Location]';
+        const servantName = (servantEl && servantEl.value.trim()) ? servantEl.value.trim() : '[Chapter Servant Name]';
 
-    if (type === 'parental') {
-        html += `
-            <div style="margin-bottom: 16px; font-weight: bold;">To: ${parentName}</div>
-            <h3 style="text-align: center; text-decoration: underline; margin-bottom: 20px;">PARENTAL CONSENT AND INDEMNITY WAIVER</h3>
-            <p>Dear Parent / Guardian,</p>
-            <p>Peace and grace in Christ!</p>
-            <p>This is to formally invite and request your permission for your son/daughter, <strong>${memberName}</strong>, to participate in the upcoming <strong>${eventTitle}</strong> organized by MFC Youth Tarlac. Details of the activity are as follows:</p>
-            <ul style="margin-left: 20px; margin-bottom: 16px;">
-                <li><strong>Activity:</strong> ${eventTitle}</li>
-                <li><strong>Date & Time:</strong> ${eventDate}</li>
-                <li><strong>Venue:</strong> ${venue}</li>
-            </ul>
-            <p>Our team of youth coordinators and pastoral leaders will ensure full safety, spiritual guidance, and supervision throughout the activity.</p>
-            <div style="margin-top: 30px; border: 1px solid #94A3B8; padding: 16px; border-radius: 6px;">
-                <p style="text-align: center; font-weight: bold; margin-top: 0;">PARENT / GUARDIAN AFFIRMATION</p>
-                <p>I, <strong>${parentName}</strong>, hereby grant full permission for my son/daughter <strong>${memberName}</strong> to attend <strong>${eventTitle}</strong> on <strong>${eventDate}</strong> at <strong>${venue}</strong>.</p>
-                <div style="margin-top: 40px; display: flex; justify-content: space-between;">
-                    <div>
-                        ___________________________<br>
-                        Signature Over Printed Name
-                    </div>
-                    <div>
-                        Date: _______________
+        const container = document.getElementById('letter-live-content');
+        if (!container) return;
+
+        let html = `
+            <div style="text-align: center; border-bottom: 2px solid #0F172A; padding-bottom: 12px; margin-bottom: 20px;">
+                <h2 style="margin: 0; font-size: 1.4rem; letter-spacing: 0.05em; color: #0F172A; text-transform: uppercase;">MISSIONARIES OF CHRIST YOUTH</h2>
+                <h4 style="margin: 4px 0 0 0; font-size: 1rem; color: #475569; font-weight: 600;">Province of Tarlac Chapter</h4>
+                <p style="margin: 2px 0 0 0; font-size: 0.8rem; color: #64748B;">Diocese of Tarlac • Official Pastoral Office</p>
+            </div>
+            <div style="text-align: right; margin-bottom: 20px; font-size: 0.9rem; color: #334155;">
+                Date: ${new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
+            </div>
+        `;
+
+        if (type === 'parental') {
+            html += `
+                <div style="margin-bottom: 16px; font-weight: bold;">To: ${parentName}</div>
+                <h3 style="text-align: center; text-decoration: underline; margin-bottom: 20px;">PARENTAL CONSENT AND INDEMNITY WAIVER</h3>
+                <p>Dear Parent / Guardian,</p>
+                <p>Peace and grace in Christ!</p>
+                <p>This is to formally invite and request your permission for your son/daughter, <strong>${memberName}</strong>, to participate in the upcoming <strong>${eventTitle}</strong> organized by MFC Youth Tarlac. Details of the activity are as follows:</p>
+                <ul style="margin-left: 20px; margin-bottom: 16px;">
+                    <li><strong>Activity:</strong> ${eventTitle}</li>
+                    <li><strong>Date & Time:</strong> ${eventDate}</li>
+                    <li><strong>Venue:</strong> ${venue}</li>
+                </ul>
+                <p>Our team of youth coordinators and pastoral leaders will ensure full safety, spiritual guidance, and supervision throughout the activity.</p>
+                <div style="margin-top: 30px; border: 1px solid #94A3B8; padding: 16px; border-radius: 6px;">
+                    <p style="text-align: center; font-weight: bold; margin-top: 0;">PARENT / GUARDIAN AFFIRMATION</p>
+                    <p>I, <strong>${parentName}</strong>, hereby grant full permission for my son/daughter <strong>${memberName}</strong> to attend <strong>${eventTitle}</strong> on <strong>${eventDate}</strong> at <strong>${venue}</strong>.</p>
+                    <div style="margin-top: 40px; display: flex; justify-content: space-between;">
+                        <div>
+                            ___________________________<br>
+                            Signature Over Printed Name
+                        </div>
+                        <div>
+                            Date: _______________
+                        </div>
                     </div>
                 </div>
-            </div>
-        `;
-    } else if (type === 'excuse') {
+            `;
+        } else if (type === 'excuse') {
+            html += `
+                <div style="margin-bottom: 16px;">
+                    <strong>To:</strong> ${parentName}<br>
+                    <strong>Subject:</strong> Formal Pastoral Request for School / University Excuse
+                </div>
+                <h3 style="text-align: center; text-decoration: underline; margin-bottom: 20px;">PASTORAL EXCUSE LETTER</h3>
+                <p>Dear Sir / Ma'am,</p>
+                <p>Greetings of Peace!</p>
+                <p>We are writing on behalf of <strong>Missionaries of Christ Youth Tarlac</strong> to respectfully request your good office to excuse <strong>${memberName}</strong> from their scheduled classes/activities on <strong>${eventDate}</strong>.</p>
+                <p>The student will be serving as an official delegate/servant in our upcoming <strong>${eventTitle}</strong> located at <strong>${venue}</strong>. This spiritual conference forms an essential component of their leadership development and moral formation.</p>
+                <p>We assure you that <strong>${memberName}</strong> will be responsible for completing any missed coursework, quizzes, or assignments upon their return.</p>
+                <p>Thank you for your generous support of youth empowerment and spiritual formation.</p>
+            `;
+        } else if (type === 'sponsorship') {
+            html += `
+                <div style="margin-bottom: 16px;">
+                    <strong>To:</strong> ${parentName}<br>
+                    <strong>Subject:</strong> Sponsorship & Solicitation Appeal for Youth Outreach
+                </div>
+                <h3 style="text-align: center; text-decoration: underline; margin-bottom: 20px;">PARTNERSHIP & SPONSORSHIP APPEAL</h3>
+                <p>Dear Valued Partner & Benefactor,</p>
+                <p>Grace and peace to you and your family!</p>
+                <p>MFC Youth Tarlac is organizing <strong>${eventTitle}</strong> on <strong>${eventDate}</strong> at <strong>${venue}</strong> for over 200 young delegates across the province.</p>
+                <p>To ensure that underprivileged youth can attend this life-changing event without financial burden, we humbly appeal for your financial or in-kind sponsorship support for <strong>${memberName}</strong> and our team.</p>
+                <p>Your generosity will directly cover delegate kits, meals, transport, and camp materials. May God reward your loving heart abundantly!</p>
+            `;
+        } else if (type === 'lgu') {
+            html += `
+                <div style="margin-bottom: 16px;">
+                    <strong>To:</strong> Honorable ${parentName}<br>
+                    <strong>Subject:</strong> Request for Courtesy Clearance & Event Permit
+                </div>
+                <h3 style="text-align: center; text-decoration: underline; margin-bottom: 20px;">LGU & BARANGAY EVENT PERMIT REQUEST</h3>
+                <p>Dear Honorable Leader,</p>
+                <p>Greetings from Missionaries of Christ Youth Tarlac!</p>
+                <p>We respectfully request courtesy permission and safety clearance from your good office to hold our provincial activity, <strong>${eventTitle}</strong>, on <strong>${eventDate}</strong> at <strong>${venue}</strong>.</p>
+                <p>Our delegate coordinator <strong>${memberName}</strong> and servant leadership team will coordinate with local barangay officials to ensure peaceful conduct, cleanliness, and security.</p>
+                <p>Thank you for your public service and support of youth community initiatives.</p>
+            `;
+        } else if (type === 'transport') {
+            html += `
+                <div style="margin-bottom: 16px;">
+                    <strong>To:</strong> ${parentName}<br>
+                    <strong>Subject:</strong> Official Request for Vehicle Transportation & Shuttle Service
+                </div>
+                <h3 style="text-align: center; text-decoration: underline; margin-bottom: 20px;">TRANSPORTATION & SHUTTLE SERVICE REQUEST</h3>
+                <p>Dear Transportation Officer / Manager,</p>
+                <p>Peace be with you!</p>
+                <p>MFC Youth Tarlac is requesting official bus/shuttle assistance for delegate <strong>${memberName}</strong> and our team attending <strong>${eventTitle}</strong> on <strong>${eventDate}</strong> at <strong>${venue}</strong>.</p>
+                <p>Your support in providing safe travel arrangements for our delegates is greatly appreciated.</p>
+            `;
+        }
+
         html += `
-            <div style="margin-bottom: 16px;">
-                <strong>To:</strong> ${parentName}<br>
-                <strong>Subject:</strong> Formal Pastoral Request for School / University Excuse
+            <div style="margin-top: 40px;">
+                <p>Yours in Christ,</p>
+                <br>
+                <strong>${servantName}</strong><br>
+                <span style="color: #475569;">Chapter Coordinator & Servant Team</span><br>
+                MFC Youth Tarlac Chapter
             </div>
-            <h3 style="text-align: center; text-decoration: underline; margin-bottom: 20px;">PASTORAL EXCUSE LETTER</h3>
-            <p>Dear Sir / Ma'am,</p>
-            <p>Greetings of Peace!</p>
-            <p>We are writing on behalf of <strong>Missionaries of Christ Youth Tarlac</strong> to respectfully request your good office to excuse <strong>${memberName}</strong> from their scheduled classes/activities on <strong>${eventDate}</strong>.</p>
-            <p>The student will be serving as an official delegate/servant in our upcoming <strong>${eventTitle}</strong> located at <strong>${venue}</strong>. This spiritual conference forms an essential component of their leadership development and moral formation.</p>
-            <p>We assure you that <strong>${memberName}</strong> will be responsible for completing any missed coursework, quizzes, or assignments upon their return.</p>
-            <p>Thank you for your generous support of youth empowerment and spiritual formation.</p>
         `;
-    } else if (type === 'sponsorship') {
-        html += `
-            <div style="margin-bottom: 16px;">
-                <strong>To:</strong> ${parentName}<br>
-                <strong>Subject:</strong> Sponsorship & Solicitation Appeal for Youth Outreach
-            </div>
-            <h3 style="text-align: center; text-decoration: underline; margin-bottom: 20px;">PARTNERSHIP & SPONSORSHIP APPEAL</h3>
-            <p>Dear Valued Partner & Benefactor,</p>
-            <p>Grace and peace to you and your family!</p>
-            <p>MFC Youth Tarlac is organizing <strong>${eventTitle}</strong> on <strong>${eventDate}</strong> at <strong>${venue}</strong> for over 200 young delegates across the province.</p>
-            <p>To ensure that underprivileged youth can attend this life-changing event without financial burden, we humbly appeal for your financial or in-kind sponsorship support for <strong>${memberName}</strong> and our team.</p>
-            <p>Your generosity will directly cover delegate kits, meals, transport, and camp materials. May God reward your loving heart abundantly!</p>
-        `;
-    } else if (type === 'lgu') {
-        html += `
-            <div style="margin-bottom: 16px;">
-                <strong>To:</strong> Honorable ${parentName}<br>
-                <strong>Subject:</strong> Request for Courtesy Clearance & Event Permit
-            </div>
-            <h3 style="text-align: center; text-decoration: underline; margin-bottom: 20px;">LGU & BARANGAY EVENT PERMIT REQUEST</h3>
-            <p>Dear Honorable Leader,</p>
-            <p>Greetings from Missionaries of Christ Youth Tarlac!</p>
-            <p>We respectfully request courtesy permission and safety clearance from your good office to hold our provincial activity, <strong>${eventTitle}</strong>, on <strong>${eventDate}</strong> at <strong>${venue}</strong>.</p>
-            <p>Our delegate coordinator <strong>${memberName}</strong> and servant leadership team will coordinate with local barangay officials to ensure peaceful conduct, cleanliness, and security.</p>
-            <p>Thank you for your public service and support of youth community initiatives.</p>
-        `;
-    } else if (type === 'transport') {
-        html += `
-            <div style="margin-bottom: 16px;">
-                <strong>To:</strong> ${parentName}<br>
-                <strong>Subject:</strong> Official Request for Vehicle Transportation & Shuttle Service
-            </div>
-            <h3 style="text-align: center; text-decoration: underline; margin-bottom: 20px;">TRANSPORTATION & SHUTTLE SERVICE REQUEST</h3>
-            <p>Dear Transportation Officer / Manager,</p>
-            <p>Peace be with you!</p>
-            <p>MFC Youth Tarlac is requesting official bus/shuttle assistance for delegate <strong>${memberName}</strong> and our team attending <strong>${eventTitle}</strong> on <strong>${eventDate}</strong> at <strong>${venue}</strong>.</p>
-            <p>Your support in providing safe travel arrangements for our delegates is greatly appreciated.</p>
-        `;
+
+        container.innerHTML = html;
+    } catch (e) {
+        console.warn('updateLetterPreview error:', e);
     }
-
-    html += `
-        <div style="margin-top: 40px;">
-            <p>Yours in Christ,</p>
-            <br>
-            <strong>${servantName}</strong><br>
-            <span style="color: #475569;">Chapter Coordinator & Servant Team</span><br>
-            MFC Youth Tarlac Chapter
-        </div>
-    `;
-
-    container.innerHTML = html;
 }
 window.updateLetterPreview = updateLetterPreview;
 
 function downloadLetterPDF() {
     try {
-        const type = document.getElementById('let-template-type').value;
-        const name = document.getElementById('let-member-name').value.trim() || 'Delegate';
+        const selectEl = document.getElementById('let-template-type');
+        const type = selectEl ? selectEl.value : 'parental';
+        const nameEl = document.getElementById('let-member-name');
+        const name = (nameEl && nameEl.value.trim()) ? nameEl.value.trim() : 'Delegate';
         const element = document.getElementById('printable-letter-container');
+
+        if (!element) {
+            if (typeof showToast === 'function') showToast('⚠️ Letter container element not found.', 'warning');
+            return;
+        }
 
         if (typeof html2pdf !== 'undefined') {
             if (typeof showToast === 'function') {
@@ -9501,7 +9530,7 @@ function downloadLetterPDF() {
                     showToast('✅ PDF Letter exported and downloaded successfully!', 'success');
                 }
             }).catch(err => {
-                console.warn('html2pdf fallback to window.print:', err);
+                console.warn('html2pdf fallback to print:', err);
                 window.print();
             });
         } else {
@@ -9513,6 +9542,12 @@ function downloadLetterPDF() {
     }
 }
 window.downloadLetterPDF = downloadLetterPDF;
+
+function printGeneratedLetter() {
+    window.print();
+}
+window.printGeneratedLetter = printGeneratedLetter;
+
 
 function printGeneratedLetter() {
     window.print();
