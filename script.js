@@ -826,6 +826,7 @@ function switchView(viewId) {
     closeMobileSidebar();
     window.scrollTo({ top: 0, behavior: 'smooth' });
 }
+window.switchView = switchView;
 
 function renderAll() {
     updateBadgeCount();
