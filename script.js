@@ -1940,10 +1940,14 @@ function renderActivitiesTable() {
                                 ${displayTitle}
                             </h3>
 
-                            <button onclick="pinVenueLocation('${(act.venue || act.location || '').replace(/'/g, "\\'")}')" class="btn-secondary btn-sm" style="padding: 5px 10px; font-size: 0.78rem; color: #38BDF8; border-color: rgba(56, 189, 248, 0.45); display: inline-flex; align-items: center; gap: 6px; cursor: pointer; border-radius: 8px; margin-bottom: 16px;" title="Pin this venue location on live map">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 14px; height: 14px; color: #38BDF8;"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
-                                <span>📌 Pin Map: ${act.venue || act.location || 'TBA'}</span>
-                            </button>
+                            <div style="display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 16px;">
+                                <button onclick="pinVenueLocation('${(act.venue || act.location || '').replace(/'/g, "\\'")}')" class="btn-secondary btn-sm" style="padding: 4px 8px; font-size: 0.76rem; color: #38BDF8; border-color: rgba(56, 189, 248, 0.45); display: inline-flex; align-items: center; gap: 4px; cursor: pointer; border-radius: 8px;" title="Pin location on live map">
+                                    📌 Pin: ${act.venue || act.location || 'TBA'}
+                                </button>
+                                <a href="https://maps.google.com/?q=${encodeURIComponent(act.venue || act.location || 'Tarlac City')}" target="_blank" rel="noopener" class="btn-primary btn-sm" style="padding: 4px 8px; font-size: 0.76rem; background: linear-gradient(135deg, #059669, #10B981); color: #FFF; border: none; text-decoration: none; display: inline-flex; align-items: center; gap: 4px; border-radius: 8px; font-weight: 700;" title="Open live Google Maps turn-by-turn directions in new tab">
+                                    🗺️ Directions ↗
+                                </a>
+                            </div>
 
                             <div style="background: rgba(30, 41, 59, 0.6); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 12px; padding: 12px 14px; margin-bottom: 20px;">
                                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; flex-wrap: wrap; gap: 4px;">
@@ -2012,9 +2016,14 @@ function renderActivitiesTable() {
                         <td>
                             <div style="display:flex; flex-direction:column; gap:4px;">
                                 <span style="color:#FFF; font-weight:600;">${dateStr} • ${timeStr}</span>
-                                <button onclick="pinVenueLocation('${venueLocation.replace(/'/g, "\\'")}')" class="btn-secondary btn-sm" style="align-self: flex-start; padding: 3px 8px; font-size: 0.73rem; color: #38BDF8; border-color: rgba(56, 189, 248, 0.4); border-radius: 6px; cursor: pointer; display: inline-flex; align-items: center; gap: 4px; font-weight: 700;" title="Pin '${venueLocation}' on live map">
-                                    📍 Pin Map: ${venueLocation}
-                                </button>
+                                <div style="display: flex; gap: 4px; flex-wrap: wrap; margin-top: 2px;">
+                                    <button onclick="pinVenueLocation('${venueLocation.replace(/'/g, "\\'")}')" class="btn-secondary btn-sm" style="padding: 2px 6px; font-size: 0.72rem; color: #38BDF8; border-color: rgba(56, 189, 248, 0.4); border-radius: 6px; cursor: pointer; display: inline-flex; align-items: center; gap: 3px; font-weight: 700;" title="Pin '${venueLocation}' on map">
+                                        📌 Pin
+                                    </button>
+                                    <a href="https://maps.google.com/?q=${encodeURIComponent(venueLocation)}" target="_blank" rel="noopener" class="btn-primary btn-sm" style="padding: 2px 6px; font-size: 0.72rem; background: linear-gradient(135deg, #059669, #10B981); color: #FFF; border: none; text-decoration: none; border-radius: 6px; display: inline-flex; align-items: center; gap: 3px; font-weight: 700;" title="Open Google Maps turn-by-turn directions in new tab">
+                                        🗺️ Directions ↗
+                                    </a>
+                                </div>
                             </div>
                         </td>
                         <td>
@@ -2095,12 +2104,17 @@ function updateFormMapPreview(val) {
     formMapDebounceTimer = setTimeout(() => {
         const iframe = document.getElementById('modal-location-map-iframe');
         const label = document.getElementById('modal-map-pinned-label');
+        const dirBtn = document.getElementById('modal-open-google-maps-btn');
         if (!iframe) return;
 
         const locQuery = (val && val.trim()) ? val.trim() : 'Tarlac City';
-        iframe.src = `https://maps.google.com/maps?q=${encodeURIComponent(locQuery)}&t=&z=15&ie=UTF8&iwloc=&output=embed`;
+        const encoded = encodeURIComponent(locQuery);
+        iframe.src = `https://maps.google.com/maps?q=${encoded}&t=&z=15&ie=UTF8&iwloc=&output=embed`;
         if (label) {
             label.innerText = `📍 Pinned: ${locQuery}`;
+        }
+        if (dirBtn) {
+            dirBtn.href = `https://maps.google.com/?q=${encoded}`;
         }
     }, 400);
 }
