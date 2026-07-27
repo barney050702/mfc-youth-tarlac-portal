@@ -5344,10 +5344,15 @@ h1, h2, h3, h4, h5, h6, .brand-name, .view-title, .modal-title {
     #letter-generator-backdrop,
     #letter-generator-backdrop *,
     #printable-letter-container,
-    #printable-letter-container * {
+    #printable-letter-container *,
+    #member-id-card-backdrop,
+    #member-id-card-backdrop *,
+    #printable-member-id-card,
+    #printable-member-id-card * {
         visibility: visible;
     }
-    #letter-generator-backdrop {
+    #letter-generator-backdrop,
+    #member-id-card-backdrop {
         position: absolute !important;
         left: 0 !important;
         top: 0 !important;
@@ -5367,7 +5372,8 @@ h1, h2, h3, h4, h5, h6, .brand-name, .view-title, .modal-title {
     .mobile-bottom-nav {
         display: none !important;
     }
-    #printable-letter-container {
+    #printable-letter-container,
+    #printable-member-id-card {
         border: none !important;
         box-shadow: none !important;
         padding: 0 !important;
