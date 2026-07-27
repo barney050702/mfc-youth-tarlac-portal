@@ -10373,6 +10373,35 @@ window.closeCertificateModal = closeCertificateModal;
 window.downloadCertificatePDF = downloadCertificatePDF;
 
 /* ==========================================================================
+   INTERACTIVE MAP VENUE PINNING & ROUTE NAVIGATOR
+   ========================================================================== */
+function pinVenueLocation(venueName) {
+    try {
+        const iframe = document.getElementById('diocesan-live-map-iframe');
+        if (!iframe) return;
+
+        const encoded = encodeURIComponent(venueName);
+        iframe.src = `https://maps.google.com/maps?q=${encoded}&t=&z=15&ie=UTF8&iwloc=&output=embed`;
+        
+        iframe.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        if (typeof showToast === 'function') {
+            showToast(`📍 Pinned on Map: ${venueName}`, 'success');
+        }
+    } catch (e) {
+        console.warn('pinVenueLocation error:', e);
+    }
+}
+function handleCustomVenuePinSubmit(e) {
+    e.preventDefault();
+    const input = document.getElementById('custom-venue-search-input');
+    if (input && input.value.trim()) {
+        pinVenueLocation(input.value.trim());
+    }
+}
+window.pinVenueLocation = pinVenueLocation;
+window.handleCustomVenuePinSubmit = handleCustomVenuePinSubmit;
+
+/* ==========================================================================
    GLOBAL KEYBOARD ACCESSIBILITY & BACKDROP CLICK HANDLERS
    ========================================================================== */
 window.addEventListener('keydown', (e) => {
