@@ -9197,3 +9197,555 @@ function generateOfficialLedgerPDF() {
         showToast(`PDF Export Error: ${err.message}`, 'error');
     }
 }
+
+/* ==========================================================================
+   FEATURE 1: MEMBER DIRECTORY CSV EXPORT
+   ========================================================================== */
+function exportMembersCSV() {
+    try {
+        const membersList = (state && state.members) ? state.members : [];
+        if (!membersList || membersList.length === 0) {
+            showToast('⚠️ No members available to export.', 'warning');
+            return;
+        }
+
+        const headers = ['Full Name', 'Chapter Area', 'Ministry / Dept', 'Designation / Role', 'Phone', 'Email', 'Status', 'Camp Batch'];
+        const csvRows = [headers.join(',')];
+
+        membersList.forEach(m => {
+            const row = [
+                `"${(m.name || '').replace(/"/g, '""')}"`,
+                `"${(m.chapterArea || m.chapter || 'Central').replace(/"/g, '""')}"`,
+                `"${(m.ministry || 'Programs').replace(/"/g, '""')}"`,
+                `"${(m.role || 'Member').replace(/"/g, '""')}"`,
+                `"${(m.phone || '').replace(/"/g, '""')}"`,
+                `"${(m.email || '').replace(/"/g, '""')}"`,
+                `"${(m.status || 'Active').replace(/"/g, '""')}"`,
+                `"${(m.campBatch || '2025').replace(/"/g, '""')}"`
+            ];
+            csvRows.push(row.join(','));
+        });
+
+        const csvContent = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csvRows.join('\n'));
+        const link = document.createElement('a');
+        link.setAttribute('href', csvContent);
+        link.setAttribute('download', `MFC_Youth_Tarlac_Member_Roster_${Date.now()}.csv`);
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+
+        showToast('📥 Member Roster exported to Excel/CSV successfully!', 'success');
+    } catch (err) {
+        showToast(`CSV Export Error: ${err.message}`, 'error');
+    }
+}
+window.exportMembersCSV = exportMembersCSV;
+
+/* ==========================================================================
+   FEATURE 2: UPLOAD CUSTOM RESOURCE DOCUMENT
+   ========================================================================== */
+function openUploadResourceModal() {
+    const el = document.getElementById('upload-resource-backdrop');
+    if (el) el.style.display = 'flex';
+}
+function closeUploadResourceModal() {
+    const el = document.getElementById('upload-resource-backdrop');
+    if (el) el.style.display = 'none';
+}
+window.openUploadResourceModal = openUploadResourceModal;
+window.closeUploadResourceModal = closeUploadResourceModal;
+
+function saveCustomResourceFile(e) {
+    e.preventDefault();
+    try {
+        const title = document.getElementById('res-upload-title').value.trim();
+        const category = document.getElementById('res-upload-category').value;
+        const desc = document.getElementById('res-upload-desc').value.trim();
+        const fileInput = document.getElementById('res-upload-file');
+
+        if (!fileInput.files || fileInput.files.length === 0) {
+            showToast('⚠️ Please select a document file to upload.', 'warning');
+            return;
+        }
+
+        const file = fileInput.files[0];
+        const reader = new FileReader();
+
+        reader.onload = function(evt) {
+            const fileDataUrl = evt.target.result;
+            const newRes = {
+                id: 'custom_res_' + Date.now(),
+                title: title,
+                category: category,
+                desc: desc || 'Custom chapter resource document.',
+                fileName: file.name,
+                fileUrl: fileDataUrl,
+                fileType: file.type,
+                dateAdded: new Date().toLocaleDateString()
+            };
+
+            const existing = JSON.parse(localStorage.getItem('mfc_custom_resources') || '[]');
+            existing.push(newRes);
+            localStorage.setItem('mfc_custom_resources', JSON.stringify(existing));
+
+            renderCustomUploadedResources();
+            closeUploadResourceModal();
+            document.getElementById('upload-resource-form').reset();
+            showToast(`✅ "${title}" uploaded and saved to Resource Vault!`, 'success');
+        };
+
+        reader.readAsDataURL(file);
+    } catch (err) {
+        showToast(`Upload Error: ${err.message}`, 'error');
+    }
+}
+window.saveCustomResourceFile = saveCustomResourceFile;
+
+function renderCustomUploadedResources() {
+    try {
+        const customRes = JSON.parse(localStorage.getItem('mfc_custom_resources') || '[]');
+        const categories = ['youthcamp', 'trainings', 'songboard', 'holyrosary', 'letters'];
+
+        categories.forEach(cat => {
+            const container = document.getElementById(`res-dynamic-${cat}`);
+            if (!container) return;
+            container.innerHTML = '';
+            container.style.display = 'grid';
+
+            const items = customRes.filter(r => r.category === cat);
+            items.forEach(item => {
+                const card = document.createElement('div');
+                card.className = 'glass-card';
+                card.style.cssText = 'padding: 22px; border-radius: 16px; border: 1px solid rgba(56, 189, 248, 0.4); background: rgba(15, 23, 42, 0.85); position: relative;';
+                card.innerHTML = `
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;">
+                        <div style="font-size: 1.8rem;">📄</div>
+                        <span style="background: rgba(16, 185, 129, 0.2); border: 1px solid rgba(16, 185, 129, 0.4); color: #34D399; padding: 3px 10px; border-radius: 12px; font-size: 0.72rem; font-weight: 800;">USER UPLOADED</span>
+                    </div>
+                    <h3 style="color: #F8FAFC; font-size: 1.15rem; font-weight: 800; margin: 0 0 8px 0;">${item.title}</h3>
+                    <p style="color: #94A3B8; font-size: 0.82rem; line-height: 1.5; margin: 0 0 16px 0;">${item.desc}</p>
+                    <div style="display: flex; gap: 10px;">
+                        <a href="${item.fileUrl}" target="_blank" rel="noopener noreferrer" class="btn-primary btn-sm" style="flex: 1; text-align: center; text-decoration: none; display: flex; align-items: center; justify-content: center; gap: 6px;">
+                            <span>📄 Open Document</span>
+                        </a>
+                        <a href="${item.fileUrl}" download="${item.fileName}" class="btn-secondary btn-sm" style="flex: 1; text-align: center; text-decoration: none; display: flex; align-items: center; justify-content: center; gap: 6px;">
+                            <span>📥 Download</span>
+                        </a>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        });
+    } catch (err) {
+        console.warn('Render custom resources error:', err);
+    }
+}
+window.renderCustomUploadedResources = renderCustomUploadedResources;
+
+/* ==========================================================================
+   FEATURE 3: INTERACTIVE FILLABLE & PRINTABLE LETTER GENERATOR
+   ========================================================================== */
+function openLetterGeneratorModal(type) {
+    const el = document.getElementById('letter-generator-backdrop');
+    if (el) el.style.display = 'flex';
+    if (type) {
+        const sel = document.getElementById('let-template-type');
+        if (sel) sel.value = type;
+    }
+    updateLetterPreview();
+}
+function closeLetterGeneratorModal() {
+    const el = document.getElementById('letter-generator-backdrop');
+    if (el) el.style.display = 'none';
+}
+window.openLetterGeneratorModal = openLetterGeneratorModal;
+window.closeLetterGeneratorModal = closeLetterGeneratorModal;
+
+function updateLetterPreview() {
+    const type = document.getElementById('let-template-type').value;
+    const memberName = document.getElementById('let-member-name').value.trim() || '[Member / Student Name]';
+    const parentName = document.getElementById('let-parent-name').value.trim() || '[Parent / Addressee Name]';
+    const eventTitle = document.getElementById('let-event-title').value.trim() || '[Event / Activity Title]';
+    const eventDate = document.getElementById('let-event-date').value.trim() || '[Event Date]';
+    const venue = document.getElementById('let-venue').value.trim() || '[Venue Location]';
+    const servantName = document.getElementById('let-servant-name').value.trim() || '[Chapter Servant Name]';
+
+    const container = document.getElementById('letter-live-content');
+    if (!container) return;
+
+    let html = `
+        <div style="text-align: center; border-bottom: 2px solid #0F172A; padding-bottom: 12px; margin-bottom: 20px;">
+            <h2 style="margin: 0; font-size: 1.4rem; letter-spacing: 0.05em; color: #0F172A; text-transform: uppercase;">MISSIONARIES OF CHRIST YOUTH</h2>
+            <h4 style="margin: 4px 0 0 0; font-size: 1rem; color: #475569; font-weight: 600;">Province of Tarlac Chapter</h4>
+            <p style="margin: 2px 0 0 0; font-size: 0.8rem; color: #64748B;">Diocese of Tarlac • Official Pastoral Office</p>
+        </div>
+        <div style="text-align: right; margin-bottom: 20px; font-size: 0.9rem; color: #334155;">
+            Date: ${new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
+        </div>
+    `;
+
+    if (type === 'parental') {
+        html += `
+            <div style="margin-bottom: 16px; font-weight: bold;">To: ${parentName}</div>
+            <h3 style="text-align: center; text-decoration: underline; margin-bottom: 20px;">PARENTAL CONSENT AND INDEMNITY WAIVER</h3>
+            <p>Dear Parent / Guardian,</p>
+            <p>Peace and grace in Christ!</p>
+            <p>This is to formally invite and request your permission for your son/daughter, <strong>${memberName}</strong>, to participate in the upcoming <strong>${eventTitle}</strong> organized by MFC Youth Tarlac. Details of the activity are as follows:</p>
+            <ul style="margin-left: 20px; margin-bottom: 16px;">
+                <li><strong>Activity:</strong> ${eventTitle}</li>
+                <li><strong>Date & Time:</strong> ${eventDate}</li>
+                <li><strong>Venue:</strong> ${venue}</li>
+            </ul>
+            <p>Our team of youth coordinators and pastoral leaders will ensure full safety, spiritual guidance, and supervision throughout the activity.</p>
+            <div style="margin-top: 30px; border: 1px solid #94A3B8; padding: 16px; border-radius: 6px;">
+                <p style="text-align: center; font-weight: bold; margin-top: 0;">PARENT / GUARDIAN AFFIRMATION</p>
+                <p>I, <strong>${parentName}</strong>, hereby grant full permission for my son/daughter <strong>${memberName}</strong> to attend <strong>${eventTitle}</strong> on <strong>${eventDate}</strong> at <strong>${venue}</strong>.</p>
+                <div style="margin-top: 40px; display: flex; justify-content: space-between;">
+                    <div>
+                        ___________________________<br>
+                        Signature Over Printed Name
+                    </div>
+                    <div>
+                        Date: _______________
+                    </div>
+                </div>
+            </div>
+        `;
+    } else if (type === 'excuse') {
+        html += `
+            <div style="margin-bottom: 16px;">
+                <strong>To:</strong> ${parentName}<br>
+                <strong>Subject:</strong> Formal Pastoral Request for School / University Excuse
+            </div>
+            <h3 style="text-align: center; text-decoration: underline; margin-bottom: 20px;">PASTORAL EXCUSE LETTER</h3>
+            <p>Dear Sir / Ma'am,</p>
+            <p>Greetings of Peace!</p>
+            <p>We are writing on behalf of <strong>Missionaries of Christ Youth Tarlac</strong> to respectfully request your good office to excuse <strong>${memberName}</strong> from their scheduled classes/activities on <strong>${eventDate}</strong>.</p>
+            <p>The student will be serving as an official delegate/servant in our upcoming <strong>${eventTitle}</strong> located at <strong>${venue}</strong>. This spiritual conference forms an essential component of their leadership development and moral formation.</p>
+            <p>We assure you that <strong>${memberName}</strong> will be responsible for completing any missed coursework, quizzes, or assignments upon their return.</p>
+            <p>Thank you for your generous support of youth empowerment and spiritual formation.</p>
+        `;
+    } else {
+        html += `
+            <div style="margin-bottom: 16px;">
+                <strong>To:</strong> ${parentName}<br>
+                <strong>Subject:</strong> Sponsorship & Solicitation Appeal for Youth Outreach
+            </div>
+            <h3 style="text-align: center; text-decoration: underline; margin-bottom: 20px;">PARTNERSHIP & SPONSORSHIP APPEAL</h3>
+            <p>Dear Valued Partner & Benefactor,</p>
+            <p>Grace and peace to you and your family!</p>
+            <p>MFC Youth Tarlac is organizing <strong>${eventTitle}</strong> on <strong>${eventDate}</strong> at <strong>${venue}</strong> for over 200 young delegates across the province.</p>
+            <p>To ensure that underprivileged youth can attend this life-changing event without financial burden, we humbly appeal for your financial or in-kind sponsorship support for <strong>${memberName}</strong> and our team.</p>
+            <p>Your generosity will directly cover delegate kits, meals, transport, and camp materials. May God reward your loving heart abundantly!</p>
+        `;
+    }
+
+    html += `
+        <div style="margin-top: 40px;">
+            <p>Yours in Christ,</p>
+            <br>
+            <strong>${servantName}</strong><br>
+            <span style="color: #475569;">Chapter Coordinator & Servant Team</span><br>
+            MFC Youth Tarlac Chapter
+        </div>
+    `;
+
+    container.innerHTML = html;
+}
+window.updateLetterPreview = updateLetterPreview;
+
+function printGeneratedLetter() {
+    window.print();
+}
+window.printGeneratedLetter = printGeneratedLetter;
+
+/* ==========================================================================
+   FEATURE 4: INTERACTIVE SONGBOOK & CHORD KEY TRANSPOSER
+   ========================================================================== */
+const SONGS_DATABASE = {
+    god_is_enough: {
+        title: "God is Enough",
+        key: "G",
+        chords: `[G]       [D]          [Em]      [C]
+I am found in Your grace, I am washed by Your blood
+[G]       [D]          [Em]      [C]
+No longer a slave, I am raised with the Son
+[Am]      [Em]         [D]
+Jesus, my Savior, You are enough!`
+    },
+    build_my_life: {
+        title: "Build My Life",
+        key: "D",
+        chords: `[D]       [G]          [Bm]      [A]
+Worthy of every song we could ever sing
+[D]       [G]          [Bm]      [A]
+Worthy of all the praise we could ever bring
+[G]       [Em]         [A]
+Holy, there is no one like You Jesus!`
+    },
+    nothing_more: {
+        title: "Nothing More",
+        key: "E",
+        chords: `[E]       [B]          [C#m]     [A]
+I want You Lord, nothing more, nothing less
+[E]       [B]          [C#m]     [A]
+My heart belongs to You alone in holiness
+[F#m]     [C#m]        [B]
+You are my all, my God and King!`
+    },
+    glorify: {
+        title: "Glorify Your Name",
+        key: "C",
+        chords: `[C]       [F]          [G]       [C]
+Father, we love You, we worship and adore You
+[C]       [F]          [G]       [C]
+Glorify Your Name in all the earth!`
+    },
+    gracious_god: {
+        title: "Gracious God",
+        key: "A",
+        chords: `[A]       [D]          [F#m]     [E]
+Gracious God, You have called us by name
+[A]       [D]          [F#m]     [E]
+Filled our hearts with Your holy flame!`
+    },
+    one_way: {
+        title: "One Way",
+        key: "B",
+        chords: `[B]       [G#m]        [F#]      [E]
+I lay my life down at Your feet, You're the only one I need
+[B]       [G#m]        [F#]      [E]
+One way, Jesus, You're the only one that I could live for!`
+    }
+};
+
+let currentTranspositionOffset = 0;
+let currentActiveSongKey = 'god_is_enough';
+
+const CHROMATIC_SCALE = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
+
+function transposeNote(note, semitones) {
+    let cleanNote = note.replace(/m|maj7|7|add9|sus4|dim|aug/gi, '');
+    let suffix = note.substring(cleanNote.length);
+    let index = CHROMATIC_SCALE.indexOf(cleanNote.toUpperCase());
+    if (index === -1) return note;
+    let newIndex = (index + semitones) % 12;
+    if (newIndex < 0) newIndex += 12;
+    return CHROMATIC_SCALE[newIndex] + suffix;
+}
+
+function openSongbookTransposerModal() {
+    const el = document.getElementById('songbook-transposer-backdrop');
+    if (el) el.style.display = 'flex';
+    loadSongForTransposer();
+}
+function closeSongbookTransposerModal() {
+    const el = document.getElementById('songbook-transposer-backdrop');
+    if (el) el.style.display = 'none';
+}
+window.openSongbookTransposerModal = openSongbookTransposerModal;
+window.closeSongbookTransposerModal = closeSongbookTransposerModal;
+
+function loadSongForTransposer() {
+    const sel = document.getElementById('song-select-dropdown');
+    if (sel) currentActiveSongKey = sel.value;
+    currentTranspositionOffset = 0;
+    renderTransposedSong();
+}
+window.loadSongForTransposer = loadSongForTransposer;
+
+function transposeSongKey(delta) {
+    currentTranspositionOffset += delta;
+    renderTransposedSong();
+}
+function resetSongKey() {
+    currentTranspositionOffset = 0;
+    renderTransposedSong();
+}
+window.transposeSongKey = transposeSongKey;
+window.resetSongKey = resetSongKey;
+
+function renderTransposedSong() {
+    const song = SONGS_DATABASE[currentActiveSongKey];
+    if (!song) return;
+
+    const baseKey = song.key;
+    const newKey = transposeNote(baseKey, currentTranspositionOffset);
+
+    const badge = document.getElementById('current-key-badge');
+    if (badge) badge.innerText = `Key: ${newKey}`;
+
+    const container = document.getElementById('songbook-chord-display');
+    if (!container) return;
+
+    const lines = song.chords.split('\n');
+    let html = `<h2 style="color: #38BDF8; margin: 0 0 16px 0; font-family: sans-serif; font-size: 1.3rem;">${song.title}</h2>`;
+
+    lines.forEach(line => {
+        if (line.includes('[')) {
+            let chordFormatted = line.replace(/\[([A-G][b#]?[a-zA-Z0-9]*)\]/g, (match, chord) => {
+                const transposed = transposeNote(chord, currentTranspositionOffset);
+                return `<span style="color: #38BDF8; font-weight: bold; background: rgba(56,189,248,0.15); padding: 1px 5px; border-radius: 4px;">${transposed}</span>`;
+            });
+            html += `<div style="margin-bottom: 8px;">${chordFormatted}</div>`;
+        } else {
+            html += `<div style="color: #E2E8F0; margin-bottom: 12px;">${line}</div>`;
+        }
+    });
+
+    container.innerHTML = html;
+}
+
+/* ==========================================================================
+   FEATURE 5: INTERACTIVE HOLY ROSARY PRAYER COUNTER
+   ========================================================================== */
+const ROSARY_MYSTERIES = {
+    joyful: {
+        name: "The Joyful Mysteries",
+        decades: [
+            { title: "First Mystery: The Annunciation", desc: "The Angel Gabriel announces to Mary that she will conceive the Son of God.", verse: "Do not be afraid, Mary, for you have found favor with God. — Luke 1:30" },
+            { title: "Second Mystery: The Visitation", desc: "Mary visits her cousin Elizabeth who is pregnant with John the Baptist.", verse: "Blessed are you among women, and blessed is the fruit of your womb! — Luke 1:42" },
+            { title: "Third Mystery: The Nativity", desc: "Jesus Christ is born in Bethlehem of Judea in a humble manger.", verse: "She gave birth to her firstborn son and wrapped him in swaddling clothes. — Luke 2:7" },
+            { title: "Fourth Mystery: The Presentation", desc: "Mary and Joseph present baby Jesus at the Temple in Jerusalem.", verse: "My eyes have seen your salvation which you prepared in the sight of all. — Luke 2:30" },
+            { title: "Fifth Mystery: Finding in the Temple", desc: "Jesus is found after 3 days teaching teachers in the Temple.", verse: "Did you not know that I must be in my Father's house? — Luke 2:49" }
+        ]
+    },
+    luminous: {
+        name: "The Luminous Mysteries",
+        decades: [
+            { title: "First Mystery: Baptism of Jesus", desc: "Jesus is baptized by John in the Jordan River as God's voice declares His Beloved Son.", verse: "This is my beloved Son, with whom I am well pleased. — Matthew 3:17" },
+            { title: "Second Mystery: Wedding at Cana", desc: "Jesus turns water into wine at Mary's request during the wedding feast.", verse: "Do whatever he tells you. — John 2:5" },
+            { title: "Third Mystery: Proclamation of the Kingdom", desc: "Jesus calls all to repentance and proclaims the Gospel of the Kingdom of God.", verse: "Repent and believe in the Gospel. — Mark 1:15" },
+            { title: "Fourth Mystery: The Transfiguration", desc: "Jesus shines with divine glory on Mount Tabor alongside Moses and Elijah.", verse: "His face shone like the sun and his clothes became white as light. — Matthew 17:2" },
+            { title: "Fifth Mystery: Institution of the Eucharist", desc: "Jesus offers His Body and Blood under the signs of bread and wine at the Last Supper.", verse: "This is my body, which is given for you; do this in remembrance of me. — Luke 22:19" }
+        ]
+    },
+    sorrowful: {
+        name: "The Sorrowful Mysteries",
+        decades: [
+            { title: "First Mystery: Agony in the Garden", desc: "Jesus prays in deep agony in the Garden of Gethsemane before His arrest.", verse: "Father, if you are willing, take this cup from me; yet not my will, but yours be done. — Luke 22:42" },
+            { title: "Second Mystery: Scourging at the Pillar", desc: "Jesus is brutally whipped and scourged by Roman soldiers.", verse: "He was pierced for our transgressions, he was crushed for our iniquities. — Isaiah 53:5" },
+            { title: "Third Mystery: Crowning with Thorns", desc: "Jesus is mocked as King and crowned with sharp thorns.", verse: "Hail, King of the Jews! — Matthew 27:29" },
+            { title: "Fourth Mystery: Carrying of the Cross", desc: "Jesus carries His heavy cross to Calvary for our salvation.", verse: "Whoever wants to be my disciple must deny themselves and take up their cross. — Matthew 16:24" },
+            { title: "Fifth Mystery: The Crucifixion", desc: "Jesus dies on the Cross for the sins of humanity.", verse: "Father, into your hands I commend my spirit. — Luke 23:46" }
+        ]
+    },
+    glorious: {
+        name: "The Glorious Mysteries",
+        decades: [
+            { title: "First Mystery: The Resurrection", desc: "Jesus rises triumphantly from the dead on Easter morning.", verse: "He is not here; he has risen, just as he said. — Matthew 28:6" },
+            { title: "Second Mystery: The Ascension", desc: "Jesus ascends gloriously into Heaven 40 days after resurrection.", verse: "Go into all the world and preach the gospel to all creation. — Mark 16:15" },
+            { title: "Third Mystery: Descent of the Holy Spirit", desc: "The Holy Spirit descends upon Mary and the Apostles as tongues of fire.", verse: "All of them were filled with the Holy Spirit. — Acts 2:4" },
+            { title: "Fourth Mystery: The Assumption", desc: "Mary is assumed body and soul into heavenly glory.", verse: "A great sign appeared in heaven: a woman clothed with the sun. — Revelation 12:1" },
+            { title: "Fifth Mystery: Coronation of Mary", desc: "Mary is crowned Queen of Heaven and Earth by Jesus Christ.", verse: "Blessed are you, O daughter, by the Most High God above all women. — Judith 13:18" }
+        ]
+    }
+};
+
+let activeRosaryMysteryKey = 'joyful';
+let currentDecadeIndex = 0;
+let currentBeadCount = 1;
+
+function openInteractiveRosaryModal() {
+    const el = document.getElementById('rosary-interactive-backdrop');
+    if (el) el.style.display = 'flex';
+    renderRosaryState();
+}
+function closeInteractiveRosaryModal() {
+    const el = document.getElementById('rosary-interactive-backdrop');
+    if (el) el.style.display = 'none';
+}
+window.openInteractiveRosaryModal = openInteractiveRosaryModal;
+window.closeInteractiveRosaryModal = closeInteractiveRosaryModal;
+
+function selectRosaryMystery(key) {
+    activeRosaryMysteryKey = key;
+    currentDecadeIndex = 0;
+    currentBeadCount = 1;
+
+    document.querySelectorAll('#rosary-mystery-tabs .ros-tab').forEach(b => {
+        b.style.borderColor = 'rgba(255,255,255,0.15)';
+        b.style.color = '#CBD5E1';
+        b.style.background = 'transparent';
+    });
+    const activeBtn = document.getElementById(`ros-tab-${key}`);
+    if (activeBtn) {
+        activeBtn.style.borderColor = '#38BDF8';
+        activeBtn.style.color = '#38BDF8';
+        activeBtn.style.background = 'rgba(56,189,248,0.15)';
+    }
+
+    renderRosaryState();
+}
+window.selectRosaryMystery = selectRosaryMystery;
+
+function nextRosaryBead() {
+    currentBeadCount++;
+    if (currentBeadCount > 10) {
+        currentBeadCount = 1;
+        currentDecadeIndex++;
+        if (currentDecadeIndex >= 5) {
+            currentDecadeIndex = 0;
+            showToast('🎉 Praise God! Holy Rosary Rosary completed successfully!', 'success');
+        }
+    }
+    renderRosaryState();
+}
+function prevRosaryBead() {
+    currentBeadCount--;
+    if (currentBeadCount < 1) {
+        if (currentDecadeIndex > 0) {
+            currentDecadeIndex--;
+            currentBeadCount = 10;
+        } else {
+            currentBeadCount = 1;
+        }
+    }
+    renderRosaryState();
+}
+window.nextRosaryBead = nextRosaryBead;
+window.prevRosaryBead = prevRosaryBead;
+
+function renderRosaryState() {
+    const mystery = ROSARY_MYSTERIES[activeRosaryMysteryKey];
+    if (!mystery) return;
+
+    const decade = mystery.decades[currentDecadeIndex];
+
+    const titleEl = document.getElementById('rosary-decade-title');
+    if (titleEl) titleEl.innerText = `Decade ${currentDecadeIndex + 1} of 5: ${decade.title}`;
+
+    const badgeEl = document.getElementById('rosary-bead-badge');
+    if (badgeEl) badgeEl.innerText = `Hail Mary #${currentBeadCount} / 10`;
+
+    const mTitle = document.getElementById('ros-meditation-title');
+    if (mTitle) mTitle.innerText = decade.title;
+
+    const mText = document.getElementById('ros-meditation-text');
+    if (mText) mText.innerText = decade.desc;
+
+    const mVerse = document.getElementById('ros-scripture-verse');
+    if (mVerse) mVerse.innerText = decade.verse;
+
+    const beadsContainer = document.getElementById('rosary-beads-container');
+    if (beadsContainer) {
+        let beadsHtml = '';
+        for (let i = 1; i <= 10; i++) {
+            let cls = 'rosary-bead';
+            if (i === currentBeadCount) cls += ' active';
+            else if (i < currentBeadCount) cls += ' completed';
+            beadsHtml += `<div class="${cls}" title="Bead ${i}"></div>`;
+        }
+        beadsContainer.innerHTML = beadsHtml;
+    }
+}
+
+/* ==========================================================================
+   INITIALIZATION HOOK
+   ========================================================================== */
+document.addEventListener('DOMContentLoaded', () => {
+    try {
+        renderCustomUploadedResources();
+    } catch (e) {}
+});
+
