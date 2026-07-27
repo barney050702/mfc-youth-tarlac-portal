@@ -10250,7 +10250,8 @@ function closeAllActiveModals() {
         'certificate-generator-backdrop',
         'pastoral-followup-backdrop',
         'songbook-transposer-backdrop',
-        'holy-rosary-guide-backdrop'
+        'holy-rosary-guide-backdrop',
+        'venue-map-modal-backdrop'
     ];
     backdropIds.forEach(id => {
         const el = document.getElementById(id);
@@ -10425,24 +10426,78 @@ window.closeCertificateModal = closeCertificateModal;
 window.downloadCertificatePDF = downloadCertificatePDF;
 
 /* ==========================================================================
-   INTERACTIVE MAP VENUE PINNING & ROUTE NAVIGATOR
+   INTERACTIVE MAP VENUE PINNING & ROUTE NAVIGATOR (MODAL-BASED)
    ========================================================================== */
 function pinVenueLocation(venueName) {
     try {
-        const iframe = document.getElementById('diocesan-live-map-iframe');
-        if (!iframe) return;
+        const locQuery = (venueName && venueName.trim()) ? venueName.trim() : 'Tarlac City';
+        const encoded = encodeURIComponent(locQuery);
 
-        const encoded = encodeURIComponent(venueName);
+        // Open the venue map modal
+        const backdrop = document.getElementById('venue-map-modal-backdrop');
+        const iframe = document.getElementById('venue-map-modal-iframe');
+        const label = document.getElementById('venue-map-modal-location-label');
+        const status = document.getElementById('venue-map-modal-pinned-status');
+        const dirBtn = document.getElementById('venue-map-modal-directions-btn');
+        const searchInput = document.getElementById('venue-map-modal-search-input');
+
+        if (!backdrop || !iframe) return;
+
+        // Update map iframe
         iframe.src = `https://maps.google.com/maps?q=${encoded}&t=&z=15&ie=UTF8&iwloc=&output=embed`;
-        
-        iframe.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+        // Update labels and links
+        if (label) label.innerText = locQuery;
+        if (status) status.innerHTML = `✅ Pinned: ${locQuery}`;
+        if (dirBtn) dirBtn.href = `https://maps.google.com/?q=${encoded}`;
+        if (searchInput) searchInput.value = locQuery;
+
+        // Show modal
+        backdrop.style.display = 'flex';
+
         if (typeof showToast === 'function') {
-            showToast(`📍 Pinned on Map: ${venueName}`, 'success');
+            showToast(`📍 Pinned on Map: ${locQuery}`, 'success');
         }
     } catch (e) {
         console.warn('pinVenueLocation error:', e);
     }
 }
+
+function closeVenueMapModal() {
+    const backdrop = document.getElementById('venue-map-modal-backdrop');
+    if (backdrop) backdrop.style.display = 'none';
+    // Stop the iframe to save resources
+    const iframe = document.getElementById('venue-map-modal-iframe');
+    if (iframe) iframe.src = 'about:blank';
+}
+
+function handleVenueMapModalPin(e) {
+    if (e) e.preventDefault();
+    const input = document.getElementById('venue-map-modal-search-input');
+    if (input && input.value.trim()) {
+        const locQuery = input.value.trim();
+        const encoded = encodeURIComponent(locQuery);
+
+        const iframe = document.getElementById('venue-map-modal-iframe');
+        const label = document.getElementById('venue-map-modal-location-label');
+        const status = document.getElementById('venue-map-modal-pinned-status');
+        const dirBtn = document.getElementById('venue-map-modal-directions-btn');
+
+        if (iframe) iframe.src = `https://maps.google.com/maps?q=${encoded}&t=&z=15&ie=UTF8&iwloc=&output=embed`;
+        if (label) label.innerText = locQuery;
+        if (status) status.innerHTML = `✅ Pinned: ${locQuery}`;
+        if (dirBtn) dirBtn.href = `https://maps.google.com/?q=${encoded}`;
+
+        if (typeof showToast === 'function') {
+            showToast(`📌 Re-pinned: ${locQuery}`, 'success');
+        }
+    } else {
+        if (typeof showToast === 'function') {
+            showToast('Enter a location to pin on map.', 'info');
+        }
+    }
+}
+
 function handleCustomVenuePinSubmit(e) {
     e.preventDefault();
     const input = document.getElementById('custom-venue-search-input');
@@ -10451,6 +10506,8 @@ function handleCustomVenuePinSubmit(e) {
     }
 }
 window.pinVenueLocation = pinVenueLocation;
+window.closeVenueMapModal = closeVenueMapModal;
+window.handleVenueMapModalPin = handleVenueMapModalPin;
 window.handleCustomVenuePinSubmit = handleCustomVenuePinSubmit;
 
 /* ==========================================================================
