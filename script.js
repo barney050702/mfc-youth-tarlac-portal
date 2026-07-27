@@ -2070,6 +2070,7 @@ function openAddModal(actId = null) {
             formDesc.value = act.description || '';
             const formSem = document.getElementById('form-semester');
             if (formSem) formSem.value = act.semester || 'auto';
+            updateFormMapPreview(act.venue || act.location || 'Tarlac City');
         }
     } else {
         titleEl.textContent = 'Create New Activity';
@@ -2082,10 +2083,44 @@ function openAddModal(actId = null) {
         formDesc.value = '';
         const formSem = document.getElementById('form-semester');
         if (formSem) formSem.value = 'auto';
+        updateFormMapPreview('Tarlac City');
     }
 
     modal.style.display = 'flex';
 }
+
+let formMapDebounceTimer = null;
+function updateFormMapPreview(val) {
+    clearTimeout(formMapDebounceTimer);
+    formMapDebounceTimer = setTimeout(() => {
+        const iframe = document.getElementById('modal-location-map-iframe');
+        const label = document.getElementById('modal-map-pinned-label');
+        if (!iframe) return;
+
+        const locQuery = (val && val.trim()) ? val.trim() : 'Tarlac City';
+        iframe.src = `https://maps.google.com/maps?q=${encodeURIComponent(locQuery)}&t=&z=15&ie=UTF8&iwloc=&output=embed`;
+        if (label) {
+            label.innerText = `📍 Pinned: ${locQuery}`;
+        }
+    }, 400);
+}
+
+function previewFormLocationOnMap() {
+    const formLoc = document.getElementById('form-location');
+    const locVal = formLoc ? formLoc.value.trim() : '';
+    if (locVal) {
+        updateFormMapPreview(locVal);
+        if (typeof showToast === 'function') {
+            showToast(`📍 Pinned on Map: ${locVal}`, 'success');
+        }
+    } else {
+        if (typeof showToast === 'function') {
+            showToast('Enter a venue or location name to pin on map.', 'info');
+        }
+    }
+}
+window.updateFormMapPreview = updateFormMapPreview;
+window.previewFormLocationOnMap = previewFormLocationOnMap;
 
 function closeAddModal() {
     const modal = document.getElementById('modal-backdrop');

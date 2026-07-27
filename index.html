@@ -2338,8 +2338,11 @@
                 </div>
                 <div class="form-grid-2">
                     <div class="form-group">
-                        <label for="form-location">Location / Platform *</label>
-                        <input type="text" id="form-location" required placeholder="e.g. Main Hall / Zoom">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+                            <label for="form-location" style="margin: 0;">Location / Platform *</label>
+                            <button type="button" onclick="previewFormLocationOnMap()" class="btn-secondary btn-sm" style="padding: 2px 8px; font-size: 0.72rem; color: #38BDF8; border-color: rgba(56, 189, 248, 0.4); border-radius: 6px; font-weight: 700; cursor: pointer;">📌 Pin Map</button>
+                        </div>
+                        <input type="text" id="form-location" required placeholder="e.g. Tarlac Diocesan Pastoral Center / Fairlane San Vicente" oninput="updateFormMapPreview(this.value)">
                     </div>
                     <div class="form-group">
                         <label for="form-status">Status *</label>
@@ -2349,6 +2352,17 @@
                             <option value="Cancelled">Cancelled</option>
                         </select>
                     </div>
+                </div>
+
+                <!-- LIVE INTERACTIVE VENUE MAP PICKER & PIN PREVIEW -->
+                <div id="modal-location-map-preview-container" style="margin-top: 8px; margin-bottom: 14px; border-radius: 12px; overflow: hidden; border: 1px solid rgba(56, 189, 248, 0.35); background: rgba(15, 23, 42, 0.95); box-shadow: 0 4px 16px rgba(0,0,0,0.4);">
+                    <div style="display: flex; justify-content: space-between; align-items: center; padding: 8px 12px; background: rgba(15, 23, 42, 0.98); border-bottom: 1px solid rgba(255, 255, 255, 0.08);">
+                        <span style="font-size: 0.78rem; font-weight: 800; color: #38BDF8; display: flex; align-items: center; gap: 6px;">
+                            🗺️ Interactive Live Venue Map Pin
+                        </span>
+                        <span id="modal-map-pinned-label" style="font-size: 0.72rem; color: #94A3B8; font-weight: 600;">📍 Pinned Location</span>
+                    </div>
+                    <iframe id="modal-location-map-iframe" src="https://maps.google.com/maps?q=Tarlac+City&t=&z=14&ie=UTF8&iwloc=&output=embed" style="width: 100%; height: 210px; border: none; display: block;" allowfullscreen loading="lazy" title="Venue Location Map Pin"></iframe>
                 </div>
                 <div class="form-grid-2">
                     <div class="form-group">
