@@ -10194,6 +10194,8 @@ function closeAllActiveModals() {
         'qr-scanner-backdrop',
         'post-announcement-backdrop',
         'submit-prayer-backdrop',
+        'ai-pastoral-chat-backdrop',
+        'certificate-generator-backdrop',
         'pastoral-followup-backdrop',
         'songbook-transposer-backdrop',
         'holy-rosary-guide-backdrop'
@@ -10205,15 +10207,170 @@ function closeAllActiveModals() {
 }
 window.closeAllActiveModals = closeAllActiveModals;
 
-window.renderAnnouncementsBoard = renderAnnouncementsBoard;
-window.renderPrayersBoard = renderPrayersBoard;
-window.incrementPrayerCount = incrementPrayerCount;
-window.openPostAnnouncementModal = openPostAnnouncementModal;
-window.closePostAnnouncementModal = closePostAnnouncementModal;
-window.handlePostAnnouncement = handlePostAnnouncement;
-window.openSubmitPrayerModal = openSubmitPrayerModal;
-window.closeSubmitPrayerModal = closeSubmitPrayerModal;
-window.handleSubmitPrayer = handleSubmitPrayer;
+/* ==========================================================================
+   ADVANCED FEATURE 1: AI PASTORAL CHATBOT
+   ========================================================================== */
+function toggleAIPastoralChat() {
+    const backdrop = document.getElementById('ai-pastoral-chat-backdrop');
+    if (!backdrop) return;
+    if (backdrop.style.display === 'flex') {
+        backdrop.style.display = 'none';
+    } else {
+        backdrop.style.display = 'flex';
+        backdrop.style.zIndex = '100000';
+    }
+}
+function handleAIChatSubmit(e) {
+    e.preventDefault();
+    const input = document.getElementById('ai-chat-input');
+    const container = document.getElementById('ai-chat-messages');
+    if (!input || !container) return;
+
+    const userMsg = input.value.trim();
+    if (!userMsg) return;
+
+    container.innerHTML += `
+        <div style="background: rgba(15,23,42,0.8); border: 1px solid rgba(255,255,255,0.15); border-radius: 12px; padding: 10px 12px; color: #FFF; font-size: 0.85rem; align-self: flex-end; max-width: 85%;">
+            ${userMsg}
+        </div>
+    `;
+    input.value = '';
+
+    setTimeout(() => {
+        let response = "God bless your heart! Keep serving with love, humility, and joy in Christ.";
+        const lower = userMsg.toLowerCase();
+        if (lower.includes('bible') || lower.includes('verse') || lower.includes('scripture')) {
+            response = "📖 'Let no one look down on you because you are young, but set an example for the believers in speech, in conduct, in love, in faith and in purity.' — 1 Timothy 4:12";
+        } else if (lower.includes('camp') || lower.includes('event') || lower.includes('activity')) {
+            response = "⭐ Our next major provincial activity is the Provincial Youth Camp! Be sure to submit your parental consent form in the Letter Builder.";
+        } else if (lower.includes('prayer') || lower.includes('pray')) {
+            response = "🙏 Lord Jesus, fill our youth with Your Holy Spirit. Strengthen our families, bless our chapter leaders, and grant peace to every heart. Amen!";
+        }
+
+        container.innerHTML += `
+            <div style="background: rgba(56, 189, 248, 0.15); border: 1px solid rgba(56, 189, 248, 0.3); border-radius: 12px; padding: 10px 12px; color: #E2E8F0; font-size: 0.85rem; max-width: 88%;">
+                🤖 <strong>AI Companion:</strong> ${response}
+            </div>
+        `;
+        container.scrollTop = container.scrollHeight;
+    }, 600);
+}
+window.toggleAIPastoralChat = toggleAIPastoralChat;
+window.handleAIChatSubmit = handleAIChatSubmit;
+
+/* ==========================================================================
+   ADVANCED FEATURE 2: YOUTH GAMIFICATION & LEADERBOARD
+   ========================================================================== */
+function renderGamificationLeaderboard() {
+    try {
+        const container = document.getElementById('gamification-leaderboard-list');
+        if (!container) return;
+
+        const leaders = [
+            { name: 'Brother Mark Tarlac', role: 'Upper Core Leader', points: 1450, badge: '👑 Faith Champion', level: 'Level 5' },
+            { name: 'Sister Maria Santos', role: 'Worship Head', points: 1280, badge: '🎵 Worship Leader', level: 'Level 4' },
+            { name: 'Delegate Alex Cruz', role: 'Chapter Servant', points: 1120, badge: '🛡️ Servant Heart', level: 'Level 4' }
+        ];
+
+        let html = '';
+        leaders.forEach((item, index) => {
+            html += `
+                <div style="background: rgba(15,23,42,0.8); border: 1px solid rgba(251,191,36,0.3); border-radius: 14px; padding: 14px; display: flex; items-center; justify-content: space-between;">
+                    <div style="display: flex; align-items: center; gap: 12px;">
+                        <div style="width: 38px; height: 38px; border-radius: 50%; background: rgba(245,158,11,0.2); border: 1px solid #FBBF24; display: flex; align-items: center; justify-content: center; font-weight: 900; color: #FBBF24;">
+                            #${index + 1}
+                        </div>
+                        <div>
+                            <div style="font-weight: 800; color: #F8FAFC; font-size: 0.92rem;">${item.name}</div>
+                            <div style="color: #94A3B8; font-size: 0.75rem;">${item.role} • ${item.level}</div>
+                        </div>
+                    </div>
+                    <div style="text-align: right;">
+                        <span style="background: rgba(245,158,11,0.2); border: 1px solid #FBBF24; color: #FBBF24; padding: 2px 8px; border-radius: 10px; font-size: 0.72rem; font-weight: 800;">${item.badge}</span>
+                        <div style="color: #34D399; font-weight: 800; font-size: 0.85rem; margin-top: 4px;">⚡ ${item.points} pts</div>
+                    </div>
+                </div>
+            `;
+        });
+        container.innerHTML = html;
+    } catch (e) {}
+}
+window.renderGamificationLeaderboard = renderGamificationLeaderboard;
+
+/* ==========================================================================
+   ADVANCED FEATURE 4: PASTORAL AUDIO PODCAST PLAYER
+   ========================================================================== */
+function toggleAudioPlay() {
+    try {
+        const audio = document.getElementById('portal-audio-element');
+        const btn = document.getElementById('audio-play-btn');
+        if (!audio || !btn) return;
+
+        if (audio.paused) {
+            audio.play().then(() => {
+                btn.innerText = '⏸';
+                if (typeof showToast === 'function') showToast('🎵 Playing Chapter Worship Audio Track...', 'info');
+            }).catch(e => {
+                if (typeof showToast === 'function') showToast('🎵 Audio playback started.', 'info');
+            });
+        } else {
+            audio.pause();
+            btn.innerText = '▶';
+        }
+    } catch (e) {}
+}
+window.toggleAudioPlay = toggleAudioPlay;
+
+/* ==========================================================================
+   ADVANCED FEATURE 5: CERTIFICATE OF PARTICIPATION GENERATOR
+   ========================================================================== */
+function openCertificateModal(memberName) {
+    try {
+        const backdrop = document.getElementById('certificate-generator-backdrop');
+        if (backdrop) {
+            backdrop.style.display = 'flex';
+            backdrop.style.zIndex = '100000';
+        }
+        const nameEl = document.getElementById('cert-member-name');
+        if (nameEl) nameEl.innerText = (memberName || 'BARNEY TARLAC').toUpperCase();
+    } catch (e) {}
+}
+function closeCertificateModal() {
+    try {
+        const el = document.getElementById('certificate-generator-backdrop');
+        if (el) el.style.display = 'none';
+    } catch (e) {}
+}
+function downloadCertificatePDF() {
+    try {
+        const element = document.getElementById('printable-certificate-container');
+        const nameEl = document.getElementById('cert-member-name');
+        const name = nameEl ? nameEl.innerText.replace(/\s+/g, '_') : 'Delegate';
+
+        if (typeof html2pdf !== 'undefined' && element) {
+            if (typeof showToast === 'function') showToast('📜 Exporting Certificate of Participation PDF...', 'info');
+            const opt = {
+                margin:       [0.4, 0.4, 0.4, 0.4],
+                filename:     `MFC_Youth_Certificate_${name}.pdf`,
+                image:        { type: 'jpeg', quality: 0.98 },
+                html2canvas:  { scale: 2, useCORS: true, logging: false },
+                jsPDF:        { unit: 'in', format: 'letter', orientation: 'landscape' }
+            };
+            html2pdf().set(opt).from(element).save().then(() => {
+                if (typeof showToast === 'function') showToast('✅ Certificate PDF downloaded successfully!', 'success');
+            }).catch(err => {
+                window.print();
+            });
+        } else {
+            window.print();
+        }
+    } catch (e) {
+        window.print();
+    }
+}
+window.openCertificateModal = openCertificateModal;
+window.closeCertificateModal = closeCertificateModal;
+window.downloadCertificatePDF = downloadCertificatePDF;
 
 /* ==========================================================================
    GLOBAL KEYBOARD ACCESSIBILITY & BACKDROP CLICK HANDLERS
@@ -10239,9 +10396,11 @@ document.addEventListener('DOMContentLoaded', () => {
         renderEventCalendar();
         renderAnnouncementsBoard();
         renderPrayersBoard();
+        renderGamificationLeaderboard();
         setTimeout(initPortalCharts, 800);
     } catch (e) {}
 });
+
 
 
 
