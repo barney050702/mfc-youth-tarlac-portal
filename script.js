@@ -10023,6 +10023,9 @@ window.toggleEventRSVP = toggleEventRSVP;
 /* ==========================================================================
    FEATURE 4: VISUAL FINANCIAL & ATTENDANCE CHARTS
    ========================================================================== */
+let chartCompInstance = null;
+let chartPieInstance = null;
+
 function initPortalCharts() {
     try {
         if (typeof Chart === 'undefined') return;
@@ -10030,7 +10033,8 @@ function initPortalCharts() {
         // Funds Comparison Chart
         const compCtx = document.getElementById('funds-comparison-canvas');
         if (compCtx) {
-            new Chart(compCtx, {
+            if (chartCompInstance) chartCompInstance.destroy();
+            chartCompInstance = new Chart(compCtx, {
                 type: 'bar',
                 data: {
                     labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'],
@@ -10046,7 +10050,8 @@ function initPortalCharts() {
         // Funds Pie Chart
         const pieCtx = document.getElementById('funds-pie-canvas');
         if (pieCtx) {
-            new Chart(pieCtx, {
+            if (chartPieInstance) chartPieInstance.destroy();
+            chartPieInstance = new Chart(pieCtx, {
                 type: 'doughnut',
                 data: {
                     labels: ['Events & Camps', 'Pastoral Care', 'Transport & Meals', 'Materials & Supplies'],
@@ -10152,6 +10157,8 @@ function handlePostAnnouncement(e) {
         announcementsList.unshift({ id: Date.now(), title, priority, details, date: 'Just now' });
         renderAnnouncementsBoard();
         closePostAnnouncementModal();
+        const form = document.getElementById('form-post-announcement');
+        if (form) form.reset();
         if (typeof showToast === 'function') showToast('📢 Advisory notice posted successfully!', 'success');
     }
 }
@@ -10174,9 +10181,29 @@ function handleSubmitPrayer(e) {
         prayersList.unshift({ id: Date.now(), name, category, intent, count: 1 });
         renderPrayersBoard();
         closeSubmitPrayerModal();
+        const form = document.getElementById('form-submit-prayer');
+        if (form) form.reset();
         if (typeof showToast === 'function') showToast('🙏 Prayer intention added to the Prayer Wall!', 'success');
     }
 }
+
+function closeAllActiveModals() {
+    const backdropIds = [
+        'letter-generator-backdrop',
+        'member-id-card-backdrop',
+        'qr-scanner-backdrop',
+        'post-announcement-backdrop',
+        'submit-prayer-backdrop',
+        'pastoral-followup-backdrop',
+        'songbook-transposer-backdrop',
+        'holy-rosary-guide-backdrop'
+    ];
+    backdropIds.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.style.display = 'none';
+    });
+}
+window.closeAllActiveModals = closeAllActiveModals;
 
 window.renderAnnouncementsBoard = renderAnnouncementsBoard;
 window.renderPrayersBoard = renderPrayersBoard;
@@ -10187,6 +10214,21 @@ window.handlePostAnnouncement = handlePostAnnouncement;
 window.openSubmitPrayerModal = openSubmitPrayerModal;
 window.closeSubmitPrayerModal = closeSubmitPrayerModal;
 window.handleSubmitPrayer = handleSubmitPrayer;
+
+/* ==========================================================================
+   GLOBAL KEYBOARD ACCESSIBILITY & BACKDROP CLICK HANDLERS
+   ========================================================================== */
+window.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+        closeAllActiveModals();
+    }
+});
+
+window.addEventListener('click', (e) => {
+    if (e.target && e.target.classList && e.target.classList.contains('modal-backdrop')) {
+        e.target.style.display = 'none';
+    }
+});
 
 /* ==========================================================================
    INITIALIZATION HOOK
@@ -10200,5 +10242,6 @@ document.addEventListener('DOMContentLoaded', () => {
         setTimeout(initPortalCharts, 800);
     } catch (e) {}
 });
+
 
 
