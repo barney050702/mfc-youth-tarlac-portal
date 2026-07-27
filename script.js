@@ -162,15 +162,13 @@ function initApp() {
     if (typeof applyStoredTheme === 'function') applyStoredTheme();
     window.activeKeyboardIndex = 0;
 
-    // Check auth state on page load / refresh - default to logged in for seamless access
+    // Auto log out website on initial load / refresh so signing in is required before seeing home page
+    localStorage.setItem('ps_logged_in', 'false');
+    sessionStorage.setItem('ps_logged_in', 'false');
     const overlay = document.getElementById('auth-login-overlay');
-    const isLoggedOut = localStorage.getItem('ps_logged_in') === 'false';
-    if (isLoggedOut) {
-        if (overlay) overlay.style.display = 'flex';
-    } else {
-        localStorage.setItem('ps_logged_in', 'true');
-        sessionStorage.setItem('ps_logged_in', 'true');
-        if (overlay) overlay.style.display = 'none';
+    if (overlay) overlay.style.display = 'flex';
+    if (typeof firebase !== 'undefined' && firebase.auth) {
+        firebase.auth().signOut().catch(e => console.warn(e));
     }
 }
 
