@@ -1836,24 +1836,93 @@
                     <!-- TAB 5: LETTERS -->
                     <div class="resource-section" id="res-section-letters"
                         style="display: none; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px;">
+                        
+                        <!-- FEATURED SMART LETTER GENERATOR CARD -->
+                        <div class="glass-card" data-static-id="static-letter-builder" style="padding: 22px; border-radius: 16px; border: 1px solid rgba(56, 189, 248, 0.5); background: linear-gradient(135deg, rgba(15, 23, 42, 0.95), rgba(2, 132, 199, 0.25)); position: relative;">
+                            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;">
+                                <div style="font-size: 1.8rem;">💌</div>
+                                <span style="background: rgba(56, 189, 248, 0.2); border: 1px solid rgba(56, 189, 248, 0.5); color: #38BDF8; padding: 4px 12px; border-radius: 12px; font-size: 0.72rem; font-weight: 800;">⚡ INSTANT PDF GENERATOR</span>
+                            </div>
+                            <h3 style="color: #F8FAFC; font-size: 1.2rem; font-weight: 800; margin: 0 0 8px 0;">Smart Fillable Chapter Letter & PDF Generator</h3>
+                            <p style="color: #CBD5E1; font-size: 0.83rem; line-height: 1.5; margin: 0 0 16px 0;">
+                                Input the delegate name, parent name, event title, date & location to automatically generate and download an official formatted PDF letter with signature lines!</p>
+                            <button class="btn-primary btn-sm glow-button" onclick="openLetterGeneratorModal('parental')" style="width: 100%; background: linear-gradient(135deg, #0284C7, #38BDF8); border: none; font-weight: 800; display: flex; align-items: center; justify-content: center; gap: 8px; padding: 10px 16px; font-size: 0.9rem;">
+                                <span>✍️ Fill Form & Download PDF →</span>
+                            </button>
+                        </div>
+
+                        <!-- PARENTAL CONSENT CARD -->
+                        <div class="glass-card" data-static-id="static-letter-parental" style="padding: 22px; border-radius: 16px; border: 1px solid rgba(245, 158, 11, 0.4); background: rgba(15, 23, 42, 0.85); position: relative;">
+                            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;">
+                                <div style="font-size: 1.8rem;">📝</div>
+                                <span style="background: rgba(16, 185, 129, 0.2); border: 1px solid rgba(16, 185, 129, 0.4); color: #34D399; padding: 3px 10px; border-radius: 12px; font-size: 0.72rem; font-weight: 800;">PDF & DOCX</span>
+                            </div>
+                            <h3 style="color: #F8FAFC; font-size: 1.1rem; font-weight: 800; margin: 0 0 8px 0;">Parental Consent & Waiver Letter</h3>
+                            <p style="color: #94A3B8; font-size: 0.82rem; line-height: 1.5; margin: 0 0 16px 0;">
+                                Official parental indemnity waiver for youth camps, weekend retreats, and provincial mission trips.</p>
+                            <div style="display: flex; flex-direction: column; gap: 8px;">
+                                <button class="btn-primary btn-sm" onclick="openLetterGeneratorModal('parental')" style="width: 100%; background: linear-gradient(135deg, #F59E0B, #D97706); border: none; font-weight: 800;">✍️ Fill & Export PDF</button>
+                                <div style="display: flex; gap: 8px;">
+                                    <a href="resources/Parental Consent and Endorsement Letter.docx" target="_blank" class="btn-secondary btn-sm" style="flex: 1; text-align: center; text-decoration: none; font-size: 0.75rem;">📄 Open Doc</a>
+                                    <a href="resources/Parental Consent and Endorsement Letter.docx" download class="btn-secondary btn-sm" style="flex: 1; text-align: center; text-decoration: none; font-size: 0.75rem;">📥 Word .docx</a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- SCHOOL EXCUSE CARD -->
+                        <div class="glass-card" data-static-id="static-letter-excuse" style="padding: 22px; border-radius: 16px; border: 1px solid rgba(56, 189, 248, 0.4); background: rgba(15, 23, 42, 0.85); position: relative;">
+                            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;">
+                                <div style="font-size: 1.8rem;">📜</div>
+                                <span style="background: rgba(16, 185, 129, 0.2); border: 1px solid rgba(16, 185, 129, 0.4); color: #34D399; padding: 3px 10px; border-radius: 12px; font-size: 0.72rem; font-weight: 800;">PDF & DOCX</span>
+                            </div>
+                            <h3 style="color: #F8FAFC; font-size: 1.1rem; font-weight: 800; margin: 0 0 8px 0;">Pastoral School / University Excuse</h3>
+                            <p style="color: #94A3B8; font-size: 0.82rem; line-height: 1.5; margin: 0 0 16px 0;">
+                                Formal excuse letter addressed to school deans, principals, and teachers for delegates and servants.</p>
+                            <div style="display: flex; flex-direction: column; gap: 8px;">
+                                <button class="btn-primary btn-sm" onclick="openLetterGeneratorModal('excuse')" style="width: 100%; background: linear-gradient(135deg, #0284C7, #38BDF8); border: none; font-weight: 800;">📜 Fill & Export PDF</button>
+                                <div style="display: flex; gap: 8px;">
+                                    <a href="resources/Pastoral Invitation and School Excuse Letter.docx" target="_blank" class="btn-secondary btn-sm" style="flex: 1; text-align: center; text-decoration: none; font-size: 0.75rem;">📄 Open Doc</a>
+                                    <a href="resources/Pastoral Invitation and School Excuse Letter.docx" download class="btn-secondary btn-sm" style="flex: 1; text-align: center; text-decoration: none; font-size: 0.75rem;">📥 Word .docx</a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- SPONSORSHIP APPEAL CARD -->
+                        <div class="glass-card" data-static-id="static-letter-sponsorship" style="padding: 22px; border-radius: 16px; border: 1px solid rgba(16, 185, 129, 0.4); background: rgba(15, 23, 42, 0.85); position: relative;">
+                            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;">
+                                <div style="font-size: 1.8rem;">🤝</div>
+                                <span style="background: rgba(16, 185, 129, 0.2); border: 1px solid rgba(16, 185, 129, 0.4); color: #34D399; padding: 3px 10px; border-radius: 12px; font-size: 0.72rem; font-weight: 800;">PDF & DOCX</span>
+                            </div>
+                            <h3 style="color: #F8FAFC; font-size: 1.1rem; font-weight: 800; margin: 0 0 8px 0;">Sponsorship & Solicitation Appeal</h3>
+                            <p style="color: #94A3B8; font-size: 0.82rem; line-height: 1.5; margin: 0 0 16px 0;">
+                                Fundraising appeal letter template for financial partners, donors, and sponsors for youth outreach.</p>
+                            <div style="display: flex; flex-direction: column; gap: 8px;">
+                                <button class="btn-primary btn-sm" onclick="openLetterGeneratorModal('sponsorship')" style="width: 100%; background: linear-gradient(135deg, #10B981, #059669); border: none; font-weight: 800;">🤝 Fill & Export PDF</button>
+                                <div style="display: flex; gap: 8px;">
+                                    <a href="resources/Sponsorship and Solicitation Appeal Letter.docx" target="_blank" class="btn-secondary btn-sm" style="flex: 1; text-align: center; text-decoration: none; font-size: 0.75rem;">📄 Open Doc</a>
+                                    <a href="resources/Sponsorship and Solicitation Appeal Letter.docx" download class="btn-secondary btn-sm" style="flex: 1; text-align: center; text-decoration: none; font-size: 0.75rem;">📥 Word .docx</a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- TRANSPORTATION CARD -->
                         <div class="glass-card" data-static-id="static-letter-transportation" style="padding: 22px; border-radius: 16px; border: 1px solid rgba(56, 189, 248, 0.4); background: rgba(15, 23, 42, 0.85); position: relative;">
                             <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;">
                                 <div style="font-size: 1.8rem;">🚌</div>
-                                <span style="background: rgba(16, 185, 129, 0.2); border: 1px solid rgba(16, 185, 129, 0.4); color: #34D399; padding: 3px 10px; border-radius: 12px; font-size: 0.72rem; font-weight: 800; display: inline-flex; align-items: center; gap: 4px;">🟢 OFFICIAL DOCX</span>
+                                <span style="background: rgba(16, 185, 129, 0.2); border: 1px solid rgba(16, 185, 129, 0.4); color: #34D399; padding: 3px 10px; border-radius: 12px; font-size: 0.72rem; font-weight: 800;">PDF & DOCX</span>
                             </div>
-                            <h3 style="color: #F8FAFC; font-size: 1.15rem; font-weight: 800; margin: 0 0 8px 0;">
-                                Letter For Transportation (.docx)</h3>
+                            <h3 style="color: #F8FAFC; font-size: 1.1rem; font-weight: 800; margin: 0 0 8px 0;">Letter For Transportation (.docx)</h3>
                             <p style="color: #94A3B8; font-size: 0.82rem; line-height: 1.5; margin: 0 0 16px 0;">
-                                Official chapter transportation request and shuttle coordination letter template for youth camps, mission trips, and assemblies.</p>
-                            <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-                                <a href="resources/Letter For Transportation.docx" target="_blank" rel="noopener noreferrer" class="btn-primary btn-sm" style="flex: 1; min-width: 130px; text-align: center; text-decoration: none; display: flex; align-items: center; justify-content: center; gap: 6px;">
-                                    <span>📄 Open Document</span>
-                                </a>
-                                <a href="resources/Letter For Transportation.docx" download="Letter For Transportation.docx" class="btn-secondary btn-sm" style="flex: 1; min-width: 130px; text-align: center; text-decoration: none; display: flex; align-items: center; justify-content: center; gap: 6px;">
-                                    <span>📥 Download</span>
-                                </a>
+                                Official chapter transportation request and shuttle coordination letter template for youth camps.</p>
+                            <div style="display: flex; flex-direction: column; gap: 8px;">
+                                <button class="btn-primary btn-sm" onclick="openLetterGeneratorModal('transport')" style="width: 100%; background: linear-gradient(135deg, #0284C7, #38BDF8); border: none; font-weight: 800;">🚌 Fill & Export PDF</button>
+                                <div style="display: flex; gap: 8px;">
+                                    <a href="resources/Letter For Transportation.docx" target="_blank" class="btn-secondary btn-sm" style="flex: 1; text-align: center; text-decoration: none; font-size: 0.75rem;">📄 Open Doc</a>
+                                    <a href="resources/Letter For Transportation.docx" download class="btn-secondary btn-sm" style="flex: 1; text-align: center; text-decoration: none; font-size: 0.75rem;">📥 Word .docx</a>
+                                </div>
                             </div>
                         </div>
+
                     </div>
 
                     <!-- Dynamic user-added resource cards per tab -->
@@ -3614,6 +3683,8 @@
                             <option value="parental">💌 Parental Consent & Waiver</option>
                             <option value="excuse">📜 Pastoral Invitation & School Excuse</option>
                             <option value="sponsorship">🤝 Sponsorship & Solicitation Appeal</option>
+                            <option value="lgu">🏛️ LGU / Barangay Hall Event Permit</option>
+                            <option value="transport">🚌 Official Vehicle / Transport Request</option>
                         </select>
                     </div>
                     <div class="form-group" style="margin-bottom: 12px;">
@@ -3652,8 +3723,11 @@
 
             <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 16px; border-top: 1px solid rgba(255,255,255,0.08); padding-top: 14px;">
                 <button type="button" class="btn-secondary" onclick="closeLetterGeneratorModal()">Close</button>
-                <button type="button" class="btn-primary glow-button" onclick="printGeneratedLetter()" style="background: linear-gradient(135deg, #10B981, #059669); border: none; display: flex; align-items: center; gap: 6px;">
-                    <span>🖨️ Print / Download PDF</span>
+                <button type="button" class="btn-primary glow-button" onclick="downloadLetterPDF()" style="background: linear-gradient(135deg, #0284C7, #38BDF8); border: none; display: flex; align-items: center; gap: 6px; font-weight: 800;">
+                    <span>📥 Download PDF Letter</span>
+                </button>
+                <button type="button" class="btn-secondary" onclick="printGeneratedLetter()" style="display: flex; align-items: center; gap: 6px;">
+                    <span>🖨️ Print</span>
                 </button>
             </div>
         </div>
@@ -3798,6 +3872,8 @@
             });
         }
     </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 </body>
 
 </html>
+

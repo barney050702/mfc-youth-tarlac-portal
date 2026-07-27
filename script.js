@@ -9425,7 +9425,7 @@ function updateLetterPreview() {
             <p>We assure you that <strong>${memberName}</strong> will be responsible for completing any missed coursework, quizzes, or assignments upon their return.</p>
             <p>Thank you for your generous support of youth empowerment and spiritual formation.</p>
         `;
-    } else {
+    } else if (type === 'sponsorship') {
         html += `
             <div style="margin-bottom: 16px;">
                 <strong>To:</strong> ${parentName}<br>
@@ -9437,6 +9437,31 @@ function updateLetterPreview() {
             <p>MFC Youth Tarlac is organizing <strong>${eventTitle}</strong> on <strong>${eventDate}</strong> at <strong>${venue}</strong> for over 200 young delegates across the province.</p>
             <p>To ensure that underprivileged youth can attend this life-changing event without financial burden, we humbly appeal for your financial or in-kind sponsorship support for <strong>${memberName}</strong> and our team.</p>
             <p>Your generosity will directly cover delegate kits, meals, transport, and camp materials. May God reward your loving heart abundantly!</p>
+        `;
+    } else if (type === 'lgu') {
+        html += `
+            <div style="margin-bottom: 16px;">
+                <strong>To:</strong> Honorable ${parentName}<br>
+                <strong>Subject:</strong> Request for Courtesy Clearance & Event Permit
+            </div>
+            <h3 style="text-align: center; text-decoration: underline; margin-bottom: 20px;">LGU & BARANGAY EVENT PERMIT REQUEST</h3>
+            <p>Dear Honorable Leader,</p>
+            <p>Greetings from Missionaries of Christ Youth Tarlac!</p>
+            <p>We respectfully request courtesy permission and safety clearance from your good office to hold our provincial activity, <strong>${eventTitle}</strong>, on <strong>${eventDate}</strong> at <strong>${venue}</strong>.</p>
+            <p>Our delegate coordinator <strong>${memberName}</strong> and servant leadership team will coordinate with local barangay officials to ensure peaceful conduct, cleanliness, and security.</p>
+            <p>Thank you for your public service and support of youth community initiatives.</p>
+        `;
+    } else if (type === 'transport') {
+        html += `
+            <div style="margin-bottom: 16px;">
+                <strong>To:</strong> ${parentName}<br>
+                <strong>Subject:</strong> Official Request for Vehicle Transportation & Shuttle Service
+            </div>
+            <h3 style="text-align: center; text-decoration: underline; margin-bottom: 20px;">TRANSPORTATION & SHUTTLE SERVICE REQUEST</h3>
+            <p>Dear Transportation Officer / Manager,</p>
+            <p>Peace be with you!</p>
+            <p>MFC Youth Tarlac is requesting official bus/shuttle assistance for delegate <strong>${memberName}</strong> and our team attending <strong>${eventTitle}</strong> on <strong>${eventDate}</strong> at <strong>${venue}</strong>.</p>
+            <p>Your support in providing safe travel arrangements for our delegates is greatly appreciated.</p>
         `;
     }
 
@@ -9454,10 +9479,46 @@ function updateLetterPreview() {
 }
 window.updateLetterPreview = updateLetterPreview;
 
+function downloadLetterPDF() {
+    try {
+        const type = document.getElementById('let-template-type').value;
+        const name = document.getElementById('let-member-name').value.trim() || 'Delegate';
+        const element = document.getElementById('printable-letter-container');
+
+        if (typeof html2pdf !== 'undefined') {
+            if (typeof showToast === 'function') {
+                showToast('📄 Generating official PDF letter document...', 'info');
+            }
+            const opt = {
+                margin:       [0.4, 0.4, 0.4, 0.4],
+                filename:     `MFC_Youth_Tarlac_${type.toUpperCase()}_Letter_${name.replace(/\s+/g, '_')}.pdf`,
+                image:        { type: 'jpeg', quality: 0.98 },
+                html2canvas:  { scale: 2, useCORS: true, logging: false },
+                jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
+            };
+            html2pdf().set(opt).from(element).save().then(() => {
+                if (typeof showToast === 'function') {
+                    showToast('✅ PDF Letter exported and downloaded successfully!', 'success');
+                }
+            }).catch(err => {
+                console.warn('html2pdf fallback to window.print:', err);
+                window.print();
+            });
+        } else {
+            window.print();
+        }
+    } catch (err) {
+        console.warn('PDF download error:', err);
+        window.print();
+    }
+}
+window.downloadLetterPDF = downloadLetterPDF;
+
 function printGeneratedLetter() {
     window.print();
 }
 window.printGeneratedLetter = printGeneratedLetter;
+
 
 /* ==========================================================================
    FEATURE 4: INTERACTIVE SONGBOOK & CHORD KEY TRANSPOSER
