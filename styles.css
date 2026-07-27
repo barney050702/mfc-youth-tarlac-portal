@@ -1065,6 +1065,7 @@ a {
     position: relative;
     border: 1px solid transparent;
     text-decoration: none;
+    cursor: pointer;
 }
 
 .nav-icon {

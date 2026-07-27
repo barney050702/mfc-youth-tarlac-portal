@@ -86,7 +86,7 @@ export function switchView(viewId) {
         activeView.style.display = 'block';
     }
 
-    document.querySelectorAll('.sidebar-nav-item').forEach(btn => {
+    document.querySelectorAll('.nav-item, .sidebar-nav-item').forEach(btn => {
         if (btn.getAttribute('data-view') === viewId) {
             btn.classList.add('active');
         } else {

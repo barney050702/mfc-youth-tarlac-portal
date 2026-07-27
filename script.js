@@ -472,7 +472,7 @@ function toggleMainNavigation(event) {
 
 function setupEventListeners() {
     // Navigation Links
-    document.querySelectorAll('.nav-item').forEach(link => {
+    document.querySelectorAll('.nav-item, .sidebar-nav-item').forEach(link => {
         link.addEventListener('click', (e) => {
             const view = link.getAttribute('data-view');
             if (view) switchView(view);
