@@ -9837,11 +9837,368 @@ function renderRosaryState() {
 }
 
 /* ==========================================================================
+   FEATURE 1: DIGITAL YOUTH MEMBER ID CARD & QR GENERATOR
+   ========================================================================== */
+function openMemberIDCard(memberId) {
+    try {
+        const backdrop = document.getElementById('member-id-card-backdrop');
+        if (backdrop) {
+            backdrop.style.display = 'flex';
+            backdrop.style.zIndex = '100000';
+        }
+        
+        let member = null;
+        if (typeof state !== 'undefined' && state.members && state.members.length > 0) {
+            if (memberId) member = state.members.find(m => m.id === memberId || m.name === memberId);
+            if (!member) member = state.members[0];
+        }
+
+        const name = member ? member.name : 'Barney Tarlac';
+        const role = member ? (member.role || member.department || 'Youth Member') : 'Chapter Member';
+        const chapter = member ? (member.chapter || 'Central Chapter') : 'Central Chapter';
+        const idNum = member ? (member.id || 'MFC-TRC-2026-0042') : 'MFC-TRC-2026-0042';
+
+        const nameEl = document.getElementById('id-card-name');
+        const roleEl = document.getElementById('id-card-role');
+        const chapEl = document.getElementById('id-card-chapter');
+        const numEl = document.getElementById('id-card-number');
+        const qrEl = document.getElementById('id-card-qr-code');
+
+        if (nameEl) nameEl.innerText = name.toUpperCase();
+        if (roleEl) roleEl.innerText = role;
+        if (chapEl) chapEl.innerText = `${chapter} • Diocese of Tarlac`;
+        if (numEl) numEl.innerText = `ID: ${idNum}`;
+
+        if (qrEl) {
+            const qrData = encodeURIComponent(`MFC_MEMBER:${idNum}:${name}:${chapter}`);
+            qrEl.innerHTML = `<img src="https://api.qrserver.com/v1/create-qr-code/?size=90x90&data=${qrData}" alt="Member QR" style="width: 80px; height: 80px; display: block; border-radius: 4px;">`;
+        }
+    } catch (e) {
+        console.warn('openMemberIDCard error:', e);
+    }
+}
+function closeMemberIDCardModal() {
+    try {
+        const el = document.getElementById('member-id-card-backdrop');
+        if (el) el.style.display = 'none';
+    } catch (e) {}
+}
+function printMemberIDCard() {
+    window.print();
+}
+window.openMemberIDCard = openMemberIDCard;
+window.closeMemberIDCardModal = closeMemberIDCardModal;
+window.printMemberIDCard = printMemberIDCard;
+
+/* ==========================================================================
+   FEATURE 2: QR ATTENDANCE SCANNER
+   ========================================================================== */
+let html5QrScannerInstance = null;
+function openQRScannerModal() {
+    try {
+        const backdrop = document.getElementById('qr-scanner-backdrop');
+        if (backdrop) {
+            backdrop.style.display = 'flex';
+            backdrop.style.zIndex = '100000';
+        }
+        const resEl = document.getElementById('qr-scan-result');
+        if (resEl) resEl.innerText = '📷 Align member QR code inside scanner frame...';
+
+        if (typeof Html5QrcodeScanner !== 'undefined') {
+            if (!html5QrScannerInstance) {
+                html5QrScannerInstance = new Html5QrcodeScanner("qr-reader", { fps: 10, qrbox: 250 }, false);
+                html5QrScannerInstance.render((decodedText) => {
+                    if (resEl) resEl.innerText = `✅ Check-in Success: ${decodedText}`;
+                    if (typeof showToast === 'function') showToast(`✅ Scanned: ${decodedText}`, 'success');
+                    setTimeout(() => closeQRScannerModal(), 1500);
+                }, (err) => {});
+            }
+        } else {
+            if (resEl) resEl.innerText = '📷 Camera Scanner Active (Simulated Scan Ready)';
+        }
+    } catch (e) {
+        console.warn('openQRScannerModal error:', e);
+    }
+}
+function closeQRScannerModal() {
+    try {
+        const el = document.getElementById('qr-scanner-backdrop');
+        if (el) el.style.display = 'none';
+        if (html5QrScannerInstance) {
+            try { html5QrScannerInstance.clear(); } catch(err){}
+            html5QrScannerInstance = null;
+        }
+    } catch (e) {}
+}
+window.openQRScannerModal = openQRScannerModal;
+window.closeQRScannerModal = closeQRScannerModal;
+
+/* ==========================================================================
+   FEATURE 3: INTERACTIVE EVENT CALENDAR & RSVP HUB
+   ========================================================================== */
+let calendarCurrentDate = new Date();
+const rsvpStore = {};
+
+function renderEventCalendar() {
+    try {
+        const monthYearEl = document.getElementById('calendar-month-year-title');
+        const gridEl = document.getElementById('portal-calendar-grid');
+        if (!gridEl) return;
+
+        const year = calendarCurrentDate.getFullYear();
+        const month = calendarCurrentDate.getMonth();
+        const monthName = calendarCurrentDate.toLocaleString('default', { month: 'long' });
+
+        if (monthYearEl) monthYearEl.innerText = `📅 Event Calendar & RSVP — ${monthName} ${year}`;
+
+        const firstDay = new Date(year, month, 1).getDay();
+        const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+        let html = `
+            <div style="font-weight: 800; color: #38BDF8; font-size: 0.78rem; padding: 6px;">SUN</div>
+            <div style="font-weight: 800; color: #38BDF8; font-size: 0.78rem; padding: 6px;">MON</div>
+            <div style="font-weight: 800; color: #38BDF8; font-size: 0.78rem; padding: 6px;">TUE</div>
+            <div style="font-weight: 800; color: #38BDF8; font-size: 0.78rem; padding: 6px;">WED</div>
+            <div style="font-weight: 800; color: #38BDF8; font-size: 0.78rem; padding: 6px;">THU</div>
+            <div style="font-weight: 800; color: #38BDF8; font-size: 0.78rem; padding: 6px;">FRI</div>
+            <div style="font-weight: 800; color: #38BDF8; font-size: 0.78rem; padding: 6px;">SAT</div>
+        `;
+
+        for (let i = 0; i < firstDay; i++) {
+            html += `<div style="background: rgba(15,23,42,0.3); border-radius: 8px; min-height: 54px;"></div>`;
+        }
+
+        const events = (typeof state !== 'undefined' && state.activities) ? state.activities : [
+            { id: 1, title: 'Youth Camp 2026', date: '2026-07-28' },
+            { id: 2, title: 'Household Assembly', date: '2026-08-02' }
+        ];
+
+        for (let d = 1; d <= daysInMonth; d++) {
+            const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+            const dayEvents = events.filter(e => e.date && e.date.includes(dateStr));
+            const isToday = (d === new Date().getDate() && month === new Date().getMonth() && year === new Date().getFullYear());
+
+            let bg = isToday ? 'rgba(56, 189, 248, 0.25)' : 'rgba(15, 23, 42, 0.75)';
+            let border = isToday ? '1px solid #38BDF8' : '1px solid rgba(255,255,255,0.08)';
+
+            html += `
+                <div style="background: ${bg}; border: ${border}; border-radius: 10px; padding: 8px 4px; min-height: 64px; text-align: left; display: flex; flex-direction: column; justify-content: space-between;">
+                    <div style="font-weight: 800; font-size: 0.85rem; color: ${isToday ? '#38BDF8' : '#F8FAFC'}; margin-bottom: 4px; text-align: center;">${d}</div>
+            `;
+
+            if (dayEvents.length > 0) {
+                dayEvents.forEach(ev => {
+                    const isRSVP = rsvpStore[ev.id];
+                    html += `
+                        <div style="background: rgba(16, 185, 129, 0.25); border: 1px solid #10B981; border-radius: 6px; padding: 3px 6px; font-size: 0.7rem; color: #34D399; margin-top: 2px; text-overflow: ellipsis; overflow: hidden; whitespace: nowrap; cursor: pointer;" onclick="toggleEventRSVP('${ev.id}')" title="${ev.title}">
+                            ⭐ ${ev.title.substring(0, 10)}... ${isRSVP ? '✅ RSVP' : ''}
+                        </div>
+                    `;
+                });
+            }
+
+            html += `</div>`;
+        }
+
+        gridEl.innerHTML = html;
+    } catch (e) {
+        console.warn('renderEventCalendar error:', e);
+    }
+}
+function navigateCalendarMonth(delta) {
+    calendarCurrentDate.setMonth(calendarCurrentDate.getMonth() + delta);
+    renderEventCalendar();
+}
+function toggleEventRSVP(eventId) {
+    rsvpStore[eventId] = !rsvpStore[eventId];
+    if (typeof showToast === 'function') {
+        showToast(rsvpStore[eventId] ? '✅ RSVP Confirmed! You are registered for this event.' : 'ℹ️ RSVP cancelled.', 'info');
+    }
+    renderEventCalendar();
+}
+window.renderEventCalendar = renderEventCalendar;
+window.navigateCalendarMonth = navigateCalendarMonth;
+window.toggleEventRSVP = toggleEventRSVP;
+
+/* ==========================================================================
+   FEATURE 4: VISUAL FINANCIAL & ATTENDANCE CHARTS
+   ========================================================================== */
+function initPortalCharts() {
+    try {
+        if (typeof Chart === 'undefined') return;
+
+        // Funds Comparison Chart
+        const compCtx = document.getElementById('funds-comparison-canvas');
+        if (compCtx) {
+            new Chart(compCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'],
+                    datasets: [
+                        { label: 'Income (₱)', data: [15000, 18000, 22000, 19500, 25000, 28000, 32000], backgroundColor: '#10B981', borderRadius: 6 },
+                        { label: 'Expenses (₱)', data: [12000, 14000, 16500, 15000, 18000, 21000, 23500], backgroundColor: '#EF4444', borderRadius: 6 }
+                    ]
+                },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { labels: { color: '#CBD5E1' } } }, scales: { x: { ticks: { color: '#94A3B8' } }, y: { ticks: { color: '#94A3B8' } } } }
+            });
+        }
+
+        // Funds Pie Chart
+        const pieCtx = document.getElementById('funds-pie-canvas');
+        if (pieCtx) {
+            new Chart(pieCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Events & Camps', 'Pastoral Care', 'Transport & Meals', 'Materials & Supplies'],
+                    datasets: [{
+                        data: [45, 20, 20, 15],
+                        backgroundColor: ['#0284C7', '#A855F7', '#F59E0B', '#10B981'],
+                        borderWidth: 0
+                    }]
+                },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { color: '#CBD5E1', font: { size: 11 } } } } }
+            });
+        }
+    } catch (e) {
+        console.warn('initPortalCharts error:', e);
+    }
+}
+window.initPortalCharts = initPortalCharts;
+
+/* ==========================================================================
+   FEATURE 5: CHAPTER ANNOUNCEMENTS & PRAYER INTENTIONS WALL
+   ========================================================================== */
+const announcementsList = [
+    { id: 1, title: '📢 Provincial Youth Camp 2026 Registration Open', details: 'All members are invited to submit their registration and parental waivers before August 15.', date: 'Today', priority: 'URGENT' },
+    { id: 2, title: '⛪ Upper Core Leadership Household Meeting', details: 'Schedule on Friday, 7:00 PM at Tarlac Diocesan Pastoral Center.', date: 'Yesterday', priority: 'NORMAL' }
+];
+
+const prayersList = [
+    { id: 1, name: 'Youth Camp Delegates', intent: 'For safety, spiritual transformation, and open hearts during the upcoming camp.', category: 'Mission', count: 18 },
+    { id: 2, name: 'Bro. Mark & Family', intent: 'Prayers for complete healing, strength, and fast recovery.', category: 'Healing', count: 24 }
+];
+
+function renderAnnouncementsBoard() {
+    try {
+        const container = document.getElementById('dashboard-announcements-list');
+        if (!container) return;
+
+        let html = '';
+        announcementsList.forEach(item => {
+            const badgeColor = item.priority === 'URGENT' ? '#EF4444' : '#38BDF8';
+            html += `
+                <div style="background: rgba(15,23,42,0.8); border: 1px solid rgba(56,189,248,0.25); border-radius: 12px; padding: 12px 14px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+                        <span style="font-weight: 800; color: #F8FAFC; font-size: 0.9rem;">${item.title}</span>
+                        <span style="background: rgba(239,68,68,0.2); border: 1px solid ${badgeColor}; color: ${badgeColor}; padding: 2px 8px; border-radius: 10px; font-size: 0.68rem; font-weight: 800;">${item.priority}</span>
+                    </div>
+                    <p style="color: #94A3B8; font-size: 0.8rem; margin: 4px 0 6px 0; line-height: 1.4;">${item.details}</p>
+                    <span style="color: #64748B; font-size: 0.72rem;">Posted: ${item.date}</span>
+                </div>
+            `;
+        });
+        container.innerHTML = html;
+    } catch (e) {}
+}
+
+function renderPrayersBoard() {
+    try {
+        const container = document.getElementById('dashboard-prayers-list');
+        if (!container) return;
+
+        let html = '';
+        prayersList.forEach(item => {
+            html += `
+                <div style="background: rgba(15,23,42,0.8); border: 1px solid rgba(168,85,247,0.25); border-radius: 12px; padding: 12px 14px; display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <div style="font-weight: 800; color: #F8FAFC; font-size: 0.88rem;">Intention for: ${item.name}</div>
+                        <p style="color: #CBD5E1; font-size: 0.8rem; margin: 3px 0 4px 0; line-height: 1.4;">"${item.intent}"</p>
+                        <span style="background: rgba(168,85,247,0.2); border: 1px solid rgba(168,85,247,0.4); color: #D8B4FE; padding: 2px 8px; border-radius: 10px; font-size: 0.68rem;">${item.category}</span>
+                    </div>
+                    <button onclick="incrementPrayerCount(${item.id})" class="btn-secondary btn-sm" style="padding: 6px 10px; font-size: 0.75rem; border-color: rgba(168,85,247,0.5); color: #D8B4FE; font-weight: 800;">
+                        🙏 Praying (${item.count})
+                    </button>
+                </div>
+            `;
+        });
+        container.innerHTML = html;
+    } catch (e) {}
+}
+
+function incrementPrayerCount(id) {
+    const item = prayersList.find(p => p.id === id);
+    if (item) {
+        item.count++;
+        if (typeof showToast === 'function') showToast('🙏 Amen! You joined in prayer for this intention.', 'success');
+        renderPrayersBoard();
+    }
+}
+
+function openPostAnnouncementModal() {
+    const el = document.getElementById('post-announcement-backdrop');
+    if (el) el.style.display = 'flex';
+}
+function closePostAnnouncementModal() {
+    const el = document.getElementById('post-announcement-backdrop');
+    if (el) el.style.display = 'none';
+}
+function handlePostAnnouncement(e) {
+    e.preventDefault();
+    const title = document.getElementById('ann-title').value.trim();
+    const priority = document.getElementById('ann-priority').value;
+    const details = document.getElementById('ann-details').value.trim();
+
+    if (title && details) {
+        announcementsList.unshift({ id: Date.now(), title, priority, details, date: 'Just now' });
+        renderAnnouncementsBoard();
+        closePostAnnouncementModal();
+        if (typeof showToast === 'function') showToast('📢 Advisory notice posted successfully!', 'success');
+    }
+}
+
+function openSubmitPrayerModal() {
+    const el = document.getElementById('submit-prayer-backdrop');
+    if (el) el.style.display = 'flex';
+}
+function closeSubmitPrayerModal() {
+    const el = document.getElementById('submit-prayer-backdrop');
+    if (el) el.style.display = 'none';
+}
+function handleSubmitPrayer(e) {
+    e.preventDefault();
+    const name = document.getElementById('pray-name').value.trim();
+    const category = document.getElementById('pray-category').value;
+    const intent = document.getElementById('pray-intent').value.trim();
+
+    if (name && intent) {
+        prayersList.unshift({ id: Date.now(), name, category, intent, count: 1 });
+        renderPrayersBoard();
+        closeSubmitPrayerModal();
+        if (typeof showToast === 'function') showToast('🙏 Prayer intention added to the Prayer Wall!', 'success');
+    }
+}
+
+window.renderAnnouncementsBoard = renderAnnouncementsBoard;
+window.renderPrayersBoard = renderPrayersBoard;
+window.incrementPrayerCount = incrementPrayerCount;
+window.openPostAnnouncementModal = openPostAnnouncementModal;
+window.closePostAnnouncementModal = closePostAnnouncementModal;
+window.handlePostAnnouncement = handlePostAnnouncement;
+window.openSubmitPrayerModal = openSubmitPrayerModal;
+window.closeSubmitPrayerModal = closeSubmitPrayerModal;
+window.handleSubmitPrayer = handleSubmitPrayer;
+
+/* ==========================================================================
    INITIALIZATION HOOK
    ========================================================================== */
 document.addEventListener('DOMContentLoaded', () => {
     try {
         renderCustomUploadedResources();
+        renderEventCalendar();
+        renderAnnouncementsBoard();
+        renderPrayersBoard();
+        setTimeout(initPortalCharts, 800);
     } catch (e) {}
 });
+
 

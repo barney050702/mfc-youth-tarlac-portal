@@ -522,8 +522,42 @@
                         </div>
                     </div>
 
+                    <!-- FEATURE 5: CHAPTER ANNOUNCEMENTS & PRAYER INTENTIONS BOARD -->
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 20px; margin-top: 20px;">
+                        <!-- Announcements Board -->
+                        <div class="glass-panel" style="padding: 24px; border: 1px solid rgba(56, 189, 248, 0.3); background: linear-gradient(135deg, rgba(15, 23, 42, 0.9), rgba(2, 132, 199, 0.15));">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 12px;">
+                                <div style="display: flex; align-items: center; gap: 10px;">
+                                    <span style="font-size: 1.4rem;">📢</span>
+                                    <div>
+                                        <h4 style="color: #F8FAFC; font-size: 1.05rem; font-weight: 800; margin: 0;">Chapter Advisory Announcements</h4>
+                                        <span style="color: #94A3B8; font-size: 0.75rem;">Official notices and event broadcasts</span>
+                                    </div>
+                                </div>
+                                <button onclick="openPostAnnouncementModal()" class="btn-primary btn-sm" style="font-size: 0.78rem; padding: 5px 10px; background: linear-gradient(135deg, #0284C7, #38BDF8); border: none; font-weight: 700;">+ Post Notice</button>
+                            </div>
+                            <div id="dashboard-announcements-list" style="display: flex; flex-direction: column; gap: 12px; max-height: 240px; overflow-y: auto;">
+                                <!-- Populated dynamically via script.js -->
+                            </div>
+                        </div>
 
-                    <!-- Dashboard Content Section -->
+                        <!-- Prayer Wall Board -->
+                        <div class="glass-panel" style="padding: 24px; border: 1px solid rgba(168, 85, 247, 0.3); background: linear-gradient(135deg, rgba(15, 23, 42, 0.9), rgba(168, 85, 247, 0.15));">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 12px;">
+                                <div style="display: flex; align-items: center; gap: 10px;">
+                                    <span style="font-size: 1.4rem;">🙏</span>
+                                    <div>
+                                        <h4 style="color: #F8FAFC; font-size: 1.05rem; font-weight: 800; margin: 0;">Urgent Prayer Intentions Wall</h4>
+                                        <span style="color: #94A3B8; font-size: 0.75rem;">Intercessory intentions for members & families</span>
+                                    </div>
+                                </div>
+                                <button onclick="openSubmitPrayerModal()" class="btn-secondary btn-sm" style="font-size: 0.78rem; padding: 5px 10px; border-color: rgba(168, 85, 247, 0.5); color: #D8B4FE; font-weight: 700;">+ Submit Intent</button>
+                            </div>
+                            <div id="dashboard-prayers-list" style="display: flex; flex-direction: column; gap: 12px; max-height: 240px; overflow-y: auto;">
+                                <!-- Populated dynamically via script.js -->
+                            </div>
+                        </div>
+                    </div>
                     <div style="display: flex; gap: 20px; flex-wrap: wrap; margin-top: 20px;">
                         <!-- Left Panel: Agenda -->
                         <div class="glass-panel" style="flex: 2; min-width: 320px; padding: 28px;">
@@ -723,6 +757,28 @@
                             <button class="btn-primary glow-button" onclick="openAddModal()">
                                 <span>+ Add Activity</span>
                             </button>
+                        </div>
+                    </div>
+
+                    <!-- FEATURE 2: INTERACTIVE EVENT CALENDAR & RSVP HUB -->
+                    <div class="glass-panel" style="padding: 24px; margin-bottom: 20px; border: 1px solid rgba(56, 189, 248, 0.3); background: linear-gradient(135deg, rgba(15, 23, 42, 0.95), rgba(2, 132, 199, 0.15));">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 12px; border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 12px;">
+                            <div style="display: flex; align-items: center; gap: 12px;">
+                                <span style="font-size: 1.5rem;">📅</span>
+                                <div>
+                                    <h3 style="color: #F8FAFC; font-size: 1.15rem; font-weight: 800; margin: 0;" id="calendar-month-year-title">Event Calendar & RSVP Hub</h3>
+                                    <span style="color: #94A3B8; font-size: 0.78rem;">Click any event date to view schedule & RSVP status</span>
+                                </div>
+                            </div>
+                            <div style="display: flex; gap: 8px; align-items: center;">
+                                <button onclick="navigateCalendarMonth(-1)" class="btn-secondary btn-sm" style="padding: 6px 12px; font-weight: 800; color: #38BDF8;">◀ Prev</button>
+                                <button onclick="navigateCalendarMonth(1)" class="btn-secondary btn-sm" style="padding: 6px 12px; font-weight: 800; color: #38BDF8;">Next ▶</button>
+                            </div>
+                        </div>
+                        
+                        <!-- CALENDAR GRID -->
+                        <div id="portal-calendar-grid" style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; text-align: center;">
+                            <!-- Populated dynamically via script.js -->
                         </div>
                     </div>
 
@@ -1031,8 +1087,7 @@
                                 <button class="btn-secondary" onclick="exportMembersCSV()"
                                     title="Export Members Directory to Excel / CSV"
                                     style="padding: 10px 16px; border-color: rgba(34, 197, 94, 0.45); color: #4ADE80; display: flex; align-items: center;">
-                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                                        style="width: 16px; height: 16px; margin-right: 6px;">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 16px; height: 16px; margin-right: 6px;">
                                         <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
                                         <polyline points="14 2 14 8 20 8" />
                                         <line x1="8" y1="13" x2="16" y2="13" />
@@ -1040,6 +1095,18 @@
                                     </svg>
                                     <span>Export Excel/CSV</span>
                                 </button>
+                                <button class="btn-secondary" onclick="openMemberIDCard()"
+                                     title="View & Print Digital Youth Member ID Card"
+                                     style="padding: 10px 16px; border-color: rgba(56, 189, 248, 0.45); color: #38BDF8; display: flex; align-items: center; font-weight: 700;">
+                                     <span style="margin-right: 6px; font-size: 1rem;">🆔</span>
+                                     <span>Digital ID Card</span>
+                                 </button>
+                                 <button class="btn-primary" onclick="openQRScannerModal()"
+                                     title="Scan Member QR Code for Instant Check-in"
+                                     style="padding: 10px 16px; background: linear-gradient(135deg, #10B981, #059669); border: none; display: flex; align-items: center; font-weight: 700;">
+                                     <span style="margin-right: 6px; font-size: 1rem;">📷</span>
+                                     <span>Scan QR Check-In</span>
+                                 </button>
                                 <button class="btn-secondary" onclick="openHouseholdTreeViewModal()"
                                     title="View Visual Pastoral Household & Leadership Mentoring Tree"
                                     style="padding: 10px 16px; border-color: rgba(168, 85, 247, 0.45); color: #C084FC; display: flex; align-items: center;">
@@ -1453,8 +1520,40 @@
                         </div>
                     </div>
 
+                    <!-- FEATURE 3: FINANCIAL VISUAL ANALYTICS CHARTS -->
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 20px; margin-top: 24px; margin-bottom: 24px;">
+                        <div class="glass-panel" style="padding: 20px 24px; border: 1px solid rgba(16, 185, 129, 0.3);">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                                <div style="display: flex; align-items: center; gap: 10px;">
+                                    <span style="font-size: 1.3rem;">📊</span>
+                                    <div>
+                                        <h4 style="color: #F8FAFC; font-size: 0.98rem; font-weight: 800; margin: 0;">Income vs Expenses Comparison</h4>
+                                        <span style="color: #94A3B8; font-size: 0.75rem;">Chapter monthly cashflow balance</span>
+                                    </div>
+                                </div>
+                                <span class="badge badge-green">Chart.js</span>
+                            </div>
+                            <div style="position: relative; height: 210px; width: 100%;">
+                                <canvas id="funds-comparison-canvas"></canvas>
+                            </div>
+                        </div>
 
-                    <!-- Action Bar / Search & Filter -->
+                        <div class="glass-panel" style="padding: 20px 24px; border: 1px solid rgba(139, 92, 246, 0.3);">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                                <div style="display: flex; align-items: center; gap: 10px;">
+                                    <span style="font-size: 1.3rem;">🍕</span>
+                                    <div>
+                                        <h4 style="color: #F8FAFC; font-size: 0.98rem; font-weight: 800; margin: 0;">Expense Allocation Breakdown</h4>
+                                        <span style="color: #94A3B8; font-size: 0.75rem;">Category distribution</span>
+                                    </div>
+                                </div>
+                                <span class="badge badge-purple">Distribution</span>
+                            </div>
+                            <div style="position: relative; height: 210px; width: 100%;">
+                                <canvas id="funds-pie-canvas"></canvas>
+                            </div>
+                        </div>
+                    </div>
                     <div class="toolbar" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; margin-bottom: 24px; margin-top: 24px;">
                         <div class="toolbar-left" style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
                             <div class="search-box" style="width: 260px; height: 42px; border-radius: 12px;">
@@ -3839,6 +3938,160 @@
                     <span>Next Bead ▶</span>
                 </button>
             </div>
+        </div>
+    </div>
+
+    <!-- MODAL 1: DIGITAL YOUTH MEMBER ID CARD MODAL -->
+    <div id="member-id-card-backdrop" class="modal-backdrop" style="display: none;">
+        <div class="glass-modal-content" style="max-width: 520px; width: 95%;">
+            <div class="modal-header">
+                <div>
+                    <h3 style="color: #F8FAFC; font-size: 1.2rem; font-weight: 800; margin: 0;">🆔 Digital Youth Member ID</h3>
+                    <p style="color: #94A3B8; font-size: 0.8rem; margin: 2px 0 0 0;">Official MFC Youth Tarlac Chapter Membership Credential</p>
+                </div>
+                <button class="modal-close-btn" onclick="closeMemberIDCardModal()">✕</button>
+            </div>
+            
+            <!-- PRINTABLE GLASS ID CARD DESIGN -->
+            <div id="printable-member-id-card" style="background: linear-gradient(135deg, #0F172A 0%, #1E293B 50%, #0F172A 100%); border: 2px solid #38BDF8; border-radius: 20px; padding: 24px; color: #FFF; position: relative; box-shadow: 0 10px 30px rgba(0,0,0,0.5); overflow: hidden; margin-top: 14px;">
+                <div style="position: absolute; top: -30px; right: -30px; width: 140px; height: 140px; background: rgba(56, 189, 248, 0.15); border-radius: 50%; blur: 20px; pointer-events: none;"></div>
+                
+                <!-- CARD HEADER -->
+                <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid rgba(56,189,248,0.4); padding-bottom: 12px; margin-bottom: 16px;">
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <img src="mfc-logo.png" alt="MFC Logo" style="width: 44px; height: 44px; filter: drop-shadow(0 0 8px rgba(56,189,248,0.5));">
+                        <div>
+                            <div style="font-size: 1rem; font-weight: 900; letter-spacing: 0.05em; color: #F8FAFC;">MFC YOUTH TARLAC</div>
+                            <div style="font-size: 0.72rem; color: #38BDF8; font-weight: 700; text-transform: uppercase;">Official Member Pass</div>
+                        </div>
+                    </div>
+                    <span style="background: rgba(16,185,129,0.2); border: 1px solid #10B981; color: #34D399; padding: 3px 10px; border-radius: 12px; font-size: 0.7rem; font-weight: 800;">ACTIVE MEMBER</span>
+                </div>
+
+                <!-- CARD BODY -->
+                <div style="display: flex; gap: 16px; align-items: center; margin-bottom: 16px;">
+                    <div style="width: 84px; height: 84px; border-radius: 16px; background: rgba(56, 189, 248, 0.15); border: 2px solid #38BDF8; display: flex; align-items: center; justify-content: center; font-size: 2.4rem;" id="id-card-avatar">
+                        👤
+                    </div>
+                    <div style="flex: 1;">
+                        <div style="font-size: 1.25rem; font-weight: 900; color: #FFF; line-height: 1.2;" id="id-card-name">BARNEY TARLAC</div>
+                        <div style="font-size: 0.85rem; color: #38BDF8; font-weight: 700; margin-top: 4px;" id="id-card-role">Chapter Member</div>
+                        <div style="font-size: 0.78rem; color: #94A3B8; margin-top: 2px;" id="id-card-chapter">Central Chapter • Diocese of Tarlac</div>
+                        <div style="font-size: 0.72rem; color: #CBD5E1; margin-top: 4px;" id="id-card-number">ID: MFC-TRC-2026-0042</div>
+                    </div>
+                </div>
+
+                <!-- CARD FOOTER & QR CODE -->
+                <div style="display: flex; justify-content: space-between; align-items: center; background: rgba(15,23,42,0.8); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; padding: 10px 14px;">
+                    <div style="font-size: 0.72rem; color: #94A3B8;">
+                        <div>Scan for Attendance Check-In</div>
+                        <div style="color: #34D399; font-weight: 700; margin-top: 2px;">Verified Member Status</div>
+                    </div>
+                    <!-- QR Code Canvas -->
+                    <div id="id-card-qr-code" style="background: #FFF; padding: 4px; border-radius: 6px; display: inline-block;"></div>
+                </div>
+            </div>
+
+            <div style="display: flex; gap: 10px; margin-top: 18px; justify-content: flex-end;">
+                <button class="btn-secondary" onclick="closeMemberIDCardModal()">Close</button>
+                <button class="btn-primary glow-button" onclick="printMemberIDCard()">🖨️ Print Member ID Pass</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL 2: QR ATTENDANCE SCANNER MODAL -->
+    <div id="qr-scanner-backdrop" class="modal-backdrop" style="display: none;">
+        <div class="glass-modal-content" style="max-width: 480px; width: 95%;">
+            <div class="modal-header">
+                <div>
+                    <h3 style="color: #F8FAFC; font-size: 1.2rem; font-weight: 800; margin: 0;">📷 QR Attendance Scanner</h3>
+                    <p style="color: #94A3B8; font-size: 0.8rem; margin: 2px 0 0 0;">Scan Member Digital ID QR code for instant check-in</p>
+                </div>
+                <button class="modal-close-btn" onclick="closeQRScannerModal()">✕</button>
+            </div>
+            
+            <div style="margin-top: 16px; text-align: center;">
+                <div id="qr-reader" style="width: 100%; max-width: 400px; margin: 0 auto; border-radius: 16px; overflow: hidden; border: 2px stroke #10B981; background: #000;"></div>
+                <div id="qr-scan-result" style="margin-top: 14px; font-weight: 800; font-size: 0.95rem; color: #34D399; min-height: 24px;">Align member QR code inside the box to scan...</div>
+            </div>
+
+            <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 18px;">
+                <button class="btn-secondary" onclick="closeQRScannerModal()">Close Camera</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL 3: POST ANNOUNCEMENT MODAL -->
+    <div id="post-announcement-backdrop" class="modal-backdrop" style="display: none;">
+        <div class="glass-modal-content" style="max-width: 480px; width: 95%;">
+            <div class="modal-header">
+                <div>
+                    <h3 style="color: #F8FAFC; font-size: 1.2rem; font-weight: 800; margin: 0;">📢 Post Advisory Announcement</h3>
+                    <p style="color: #94A3B8; font-size: 0.8rem; margin: 2px 0 0 0;">Broadcast official notice to all chapter members</p>
+                </div>
+                <button class="modal-close-btn" onclick="closePostAnnouncementModal()">✕</button>
+            </div>
+            
+            <form id="form-post-announcement" onsubmit="handlePostAnnouncement(event)" style="margin-top: 16px;">
+                <div style="margin-bottom: 14px;">
+                    <label style="color: #CBD5E1; font-size: 0.82rem; font-weight: 700; display: block; margin-bottom: 6px;">Notice Title *</label>
+                    <input type="text" id="ann-title" required placeholder="e.g. Important Advisory: Youth Camp Prep Meeting" style="width: 100%; background: #0F172A; border: 1px solid rgba(255,255,255,0.15); border-radius: 8px; padding: 10px 12px; color: #FFF;">
+                </div>
+                <div style="margin-bottom: 14px;">
+                    <label style="color: #CBD5E1; font-size: 0.82rem; font-weight: 700; display: block; margin-bottom: 6px;">Priority Level</label>
+                    <select id="ann-priority" style="width: 100%; background: #0F172A; border: 1px solid rgba(255,255,255,0.15); border-radius: 8px; padding: 10px 12px; color: #FFF;">
+                        <option value="NORMAL">🔵 Normal Announcement</option>
+                        <option value="URGENT">🔴 Urgent Advisory</option>
+                        <option value="EVENT">⭐ Event Reminder</option>
+                    </select>
+                </div>
+                <div style="margin-bottom: 16px;">
+                    <label style="color: #CBD5E1; font-size: 0.82rem; font-weight: 700; display: block; margin-bottom: 6px;">Notice Details *</label>
+                    <textarea id="ann-details" required rows="4" placeholder="Enter announcement body..." style="width: 100%; background: #0F172A; border: 1px solid rgba(255,255,255,0.15); border-radius: 8px; padding: 10px 12px; color: #FFF; resize: vertical;"></textarea>
+                </div>
+                <div style="display: flex; gap: 10px; justify-content: flex-end;">
+                    <button type="button" class="btn-secondary" onclick="closePostAnnouncementModal()">Cancel</button>
+                    <button type="submit" class="btn-primary glow-button">📢 Broadcast Notice</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL 4: SUBMIT PRAYER INTENTION MODAL -->
+    <div id="submit-prayer-backdrop" class="modal-backdrop" style="display: none;">
+        <div class="glass-modal-content" style="max-width: 480px; width: 95%;">
+            <div class="modal-header">
+                <div>
+                    <h3 style="color: #F8FAFC; font-size: 1.2rem; font-weight: 800; margin: 0;">🙏 Submit Prayer Intention</h3>
+                    <p style="color: #94A3B8; font-size: 0.8rem; margin: 2px 0 0 0;">Add intercessory prayer request to chapter prayer wall</p>
+                </div>
+                <button class="modal-close-btn" onclick="closeSubmitPrayerModal()">✕</button>
+            </div>
+            
+            <form id="form-submit-prayer" onsubmit="handleSubmitPrayer(event)" style="margin-top: 16px;">
+                <div style="margin-bottom: 14px;">
+                    <label style="color: #CBD5E1; font-size: 0.82rem; font-weight: 700; display: block; margin-bottom: 6px;">Intention For / Requester Name *</label>
+                    <input type="text" id="pray-name" required placeholder="e.g. Sister Maria / Youth Camp Delegates" style="width: 100%; background: #0F172A; border: 1px solid rgba(255,255,255,0.15); border-radius: 8px; padding: 10px 12px; color: #FFF;">
+                </div>
+                <div style="margin-bottom: 14px;">
+                    <label style="color: #CBD5E1; font-size: 0.82rem; font-weight: 700; display: block; margin-bottom: 6px;">Category</label>
+                    <select id="pray-category" style="width: 100%; background: #0F172A; border: 1px solid rgba(255,255,255,0.15); border-radius: 8px; padding: 10px 12px; color: #FFF;">
+                        <option value="Healing">🏥 Healing & Health</option>
+                        <option value="Exams">📚 Exams & School Success</option>
+                        <option value="Family">🏡 Family & Relationships</option>
+                        <option value="Thanksgiving">🙌 Thanksgiving & Blessing</option>
+                        <option value="Mission">✝️ Pastoral Mission & Event</option>
+                    </select>
+                </div>
+                <div style="margin-bottom: 16px;">
+                    <label style="color: #CBD5E1; font-size: 0.82rem; font-weight: 700; display: block; margin-bottom: 6px;">Prayer Intention Request *</label>
+                    <textarea id="pray-intent" required rows="3" placeholder="Specify your prayer request..." style="width: 100%; background: #0F172A; border: 1px solid rgba(255,255,255,0.15); border-radius: 8px; padding: 10px 12px; color: #FFF; resize: vertical;"></textarea>
+                </div>
+                <div style="display: flex; gap: 10px; justify-content: flex-end;">
+                    <button type="button" class="btn-secondary" onclick="closeSubmitPrayerModal()">Cancel</button>
+                    <button type="submit" class="btn-primary glow-button" style="background: linear-gradient(135deg, #A855F7, #7C3AED); border: none;">🙏 Submit Intention</button>
+                </div>
+            </form>
         </div>
     </div>
 
