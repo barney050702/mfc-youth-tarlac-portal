@@ -1940,10 +1940,10 @@ function renderActivitiesTable() {
                                 ${displayTitle}
                             </h3>
 
-                            <div style="display: flex; align-items: center; gap: 6px; color: #94A3B8; font-size: 0.85rem; margin-bottom: 16px;">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 16px; height: 16px; color: #94A3B8;"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
-                                <span>${act.venue || act.location || 'TBA'}</span>
-                            </div>
+                            <button onclick="pinVenueLocation('${(act.venue || act.location || '').replace(/'/g, "\\'")}')" class="btn-secondary btn-sm" style="padding: 5px 10px; font-size: 0.78rem; color: #38BDF8; border-color: rgba(56, 189, 248, 0.45); display: inline-flex; align-items: center; gap: 6px; cursor: pointer; border-radius: 8px; margin-bottom: 16px;" title="Pin this venue location on live map">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 14px; height: 14px; color: #38BDF8;"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+                                <span>📌 Pin Map: ${act.venue || act.location || 'TBA'}</span>
+                            </button>
 
                             <div style="background: rgba(30, 41, 59, 0.6); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 12px; padding: 12px 14px; margin-bottom: 20px;">
                                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; flex-wrap: wrap; gap: 4px;">
@@ -1999,6 +1999,7 @@ function renderActivitiesTable() {
             tableBody.innerHTML = filtered.map((act, idx) => {
                 const dateStr = new Date(act.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
                 const timeStr = new Date(act.date).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+                const venueLocation = act.location || act.venue || 'TBA';
 
                 return `
                     <tr class="stagger-item" style="--stagger-idx: ${idx};">
@@ -2009,9 +2010,11 @@ function renderActivitiesTable() {
                             </div>
                         </td>
                         <td>
-                            <div style="display:flex; flex-direction:column;">
+                            <div style="display:flex; flex-direction:column; gap:4px;">
                                 <span style="color:#FFF; font-weight:600;">${dateStr} • ${timeStr}</span>
-                                <span style="font-size:0.75rem; color:var(--text-muted);">📍 ${act.location}</span>
+                                <button onclick="pinVenueLocation('${venueLocation.replace(/'/g, "\\'")}')" class="btn-secondary btn-sm" style="align-self: flex-start; padding: 3px 8px; font-size: 0.73rem; color: #38BDF8; border-color: rgba(56, 189, 248, 0.4); border-radius: 6px; cursor: pointer; display: inline-flex; align-items: center; gap: 4px; font-weight: 700;" title="Pin '${venueLocation}' on live map">
+                                    📍 Pin Map: ${venueLocation}
+                                </button>
                             </div>
                         </td>
                         <td>
