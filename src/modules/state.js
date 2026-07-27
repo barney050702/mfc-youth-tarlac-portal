@@ -63,6 +63,87 @@ export function notifyStateChange(changeType = 'update') {
     listeners.forEach(fn => fn(state, changeType));
 }
 
+export const SAMPLE_ACTIVITIES = [
+    {
+        id: 'act-sample-01',
+        title: 'MFC Youth Provincial Assembly 2026',
+        name: 'MFC Youth Provincial Assembly 2026',
+        date: '2026-08-15',
+        category: 'Assembly',
+        type: 'Assembly',
+        location: 'Tarlac Diocesan Center',
+        venue: 'Tarlac Diocesan Center',
+        status: 'Upcoming',
+        description: 'Gathering of all youth members across Tarlac province for worship, teaching, and fellowship.',
+        semester: 's2'
+    },
+    {
+        id: 'act-sample-02',
+        title: 'USBONG Youth Camp 2026',
+        name: 'USBONG Youth Camp 2026',
+        date: '2026-09-05',
+        category: 'Youth Camp',
+        type: 'Youth Camp',
+        location: 'San Manuel Pastoral Center',
+        venue: 'San Manuel Pastoral Center',
+        status: 'Upcoming',
+        description: '3-day flagship entry youth camp for new members and young leaders.',
+        semester: 's2'
+    },
+    {
+        id: 'act-sample-03',
+        title: 'Servant Leaders Mentoring & Roster Assembly',
+        name: 'Servant Leaders Mentoring & Roster Assembly',
+        date: '2026-07-28',
+        category: 'Servant Conference',
+        type: 'Servant Conference',
+        location: 'Victoria Youth Hub',
+        venue: 'Victoria Youth Hub',
+        status: 'Upcoming',
+        description: 'Quarterly leadership alignment, pastoral formation, and household coordinator briefing.',
+        semester: 's2'
+    },
+    {
+        id: 'act-sample-04',
+        title: 'Monthly Chapter Household Fellowship',
+        name: 'Monthly Chapter Household Fellowship',
+        date: '2026-08-01',
+        category: 'Household',
+        type: 'Household',
+        location: 'Moncada Pastoral Center',
+        venue: 'Moncada Pastoral Center',
+        status: 'Upcoming',
+        description: 'Monthly chapter household worship, sharing groups, and mentoring session.',
+        semester: 's2'
+    },
+    {
+        id: 'act-sample-05',
+        title: 'CST Training Workshop (Christian Life Seminar)',
+        name: 'CST Training Workshop (Christian Life Seminar)',
+        date: '2026-06-20',
+        category: 'CST Training',
+        type: 'CST Training',
+        location: 'Lapaz Community Center',
+        venue: 'Lapaz Community Center',
+        status: 'Completed',
+        description: 'Training workshop for upcoming Youth Camp service team members and facilitators.',
+        semester: 's1'
+    },
+    {
+        id: 'act-sample-06',
+        title: 'Sectorial Music & Worship Ministry Workshop',
+        name: 'Sectorial Music & Worship Ministry Workshop',
+        date: '2026-05-18',
+        category: 'Sectorial Event',
+        type: 'Sectorial Event',
+        location: 'San Sebastian Cathedral Parish Hall',
+        venue: 'San Sebastian Cathedral Parish Hall',
+        status: 'Completed',
+        description: 'Music team Jam session, sound engineering, and liturgical praise workshop.',
+        semester: 's1'
+    }
+];
+
 export function loadFromStorage() {
     try {
         const savedActivities = localStorage.getItem('ps_activities');
@@ -71,13 +152,19 @@ export function loadFromStorage() {
         const savedFunds = localStorage.getItem('ps_funds');
         const savedAccounts = localStorage.getItem('ps_accounts');
 
-        state.activities = savedActivities ? JSON.parse(savedActivities) : [];
+        const parsedActs = savedActivities ? JSON.parse(savedActivities) : null;
+        state.activities = (Array.isArray(parsedActs) && parsedActs.length > 0) ? parsedActs : [...SAMPLE_ACTIVITIES];
+        if (!savedActivities || state.activities === SAMPLE_ACTIVITIES) {
+            localStorage.setItem('ps_activities', JSON.stringify(state.activities));
+        }
+
         state.members = savedMembers ? JSON.parse(savedMembers) : SAMPLE_MEMBERS;
         state.attendance = savedAttendance ? JSON.parse(savedAttendance) : {};
         state.funds = savedFunds ? JSON.parse(savedFunds) : [];
         state.accounts = savedAccounts ? JSON.parse(savedAccounts) : [];
     } catch (e) {
         console.warn('Failed to load local storage state:', e);
+        state.activities = [...SAMPLE_ACTIVITIES];
     }
 }
 

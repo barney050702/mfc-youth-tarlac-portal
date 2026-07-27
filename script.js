@@ -172,6 +172,87 @@ function initApp() {
     }
 }
 
+const SAMPLE_ACTIVITIES = [
+    {
+        id: 'act-sample-01',
+        title: 'MFC Youth Provincial Assembly 2026',
+        name: 'MFC Youth Provincial Assembly 2026',
+        date: '2026-08-15',
+        category: 'Assembly',
+        type: 'Assembly',
+        location: 'Tarlac Diocesan Center',
+        venue: 'Tarlac Diocesan Center',
+        status: 'Upcoming',
+        description: 'Gathering of all youth members across Tarlac province for worship, teaching, and fellowship.',
+        semester: 's2'
+    },
+    {
+        id: 'act-sample-02',
+        title: 'USBONG Youth Camp 2026',
+        name: 'USBONG Youth Camp 2026',
+        date: '2026-09-05',
+        category: 'Youth Camp',
+        type: 'Youth Camp',
+        location: 'San Manuel Pastoral Center',
+        venue: 'San Manuel Pastoral Center',
+        status: 'Upcoming',
+        description: '3-day flagship entry youth camp for new members and young leaders.',
+        semester: 's2'
+    },
+    {
+        id: 'act-sample-03',
+        title: 'Servant Leaders Mentoring & Roster Assembly',
+        name: 'Servant Leaders Mentoring & Roster Assembly',
+        date: '2026-07-28',
+        category: 'Servant Conference',
+        type: 'Servant Conference',
+        location: 'Victoria Youth Hub',
+        venue: 'Victoria Youth Hub',
+        status: 'Upcoming',
+        description: 'Quarterly leadership alignment, pastoral formation, and household coordinator briefing.',
+        semester: 's2'
+    },
+    {
+        id: 'act-sample-04',
+        title: 'Monthly Chapter Household Fellowship',
+        name: 'Monthly Chapter Household Fellowship',
+        date: '2026-08-01',
+        category: 'Household',
+        type: 'Household',
+        location: 'Moncada Pastoral Center',
+        venue: 'Moncada Pastoral Center',
+        status: 'Upcoming',
+        description: 'Monthly chapter household worship, sharing groups, and mentoring session.',
+        semester: 's2'
+    },
+    {
+        id: 'act-sample-05',
+        title: 'CST Training Workshop (Christian Life Seminar)',
+        name: 'CST Training Workshop (Christian Life Seminar)',
+        date: '2026-06-20',
+        category: 'CST Training',
+        type: 'CST Training',
+        location: 'Lapaz Community Center',
+        venue: 'Lapaz Community Center',
+        status: 'Completed',
+        description: 'Training workshop for upcoming Youth Camp service team members and facilitators.',
+        semester: 's1'
+    },
+    {
+        id: 'act-sample-06',
+        title: 'Sectorial Music & Worship Ministry Workshop',
+        name: 'Sectorial Music & Worship Ministry Workshop',
+        date: '2026-05-18',
+        category: 'Sectorial Event',
+        type: 'Sectorial Event',
+        location: 'San Sebastian Cathedral Parish Hall',
+        venue: 'San Sebastian Cathedral Parish Hall',
+        status: 'Completed',
+        description: 'Music team Jam session, sound engineering, and liturgical praise workshop.',
+        semester: 's1'
+    }
+];
+
 function loadFromStorage() {
     const storedActivities = localStorage.getItem('ps_activities');
     const storedMembers = localStorage.getItem('ps_members');
@@ -181,12 +262,15 @@ function loadFromStorage() {
     if (storedActivities !== null) {
         try {
             state.activities = JSON.parse(storedActivities);
-            if (!Array.isArray(state.activities)) state.activities = [];
+            if (!Array.isArray(state.activities) || state.activities.length === 0) {
+                state.activities = [...SAMPLE_ACTIVITIES];
+                localStorage.setItem('ps_activities', JSON.stringify(state.activities));
+            }
         } catch (e) {
-            state.activities = [];
+            state.activities = [...SAMPLE_ACTIVITIES];
         }
     } else {
-        state.activities = [];
+        state.activities = [...SAMPLE_ACTIVITIES];
         localStorage.setItem('ps_activities', JSON.stringify(state.activities));
         localStorage.setItem('ps_activities_mfc_v11', 'true');
     }
@@ -7413,7 +7497,7 @@ const MFCFirebaseCloud = {
 
         // If the cloud is newer, accept the update!
         if (cloudTime > localTime) {
-            if (Array.isArray(data.activities)) state.activities = data.activities;
+            if (Array.isArray(data.activities) && data.activities.length > 0) state.activities = data.activities;
             // Members are managed by Firestore - do NOT overwrite from Realtime DB
             // if (Array.isArray(data.members)) state.members = data.members;
             if (data.attendance && typeof data.attendance === 'object') state.attendance = data.attendance;
@@ -7493,7 +7577,7 @@ const MFCFirebaseCloud = {
             .then(res => res.json())
             .then(data => {
                 if (data && typeof data === 'object') {
-                    if (Array.isArray(data.activities)) state.activities = data.activities;
+                    if (Array.isArray(data.activities) && data.activities.length > 0) state.activities = data.activities;
                     // Members are managed exclusively via Firestore - skip RTDB restore
                     // if (Array.isArray(data.members) && data.members.length > 0) {
                     //     state.members = data.members;
