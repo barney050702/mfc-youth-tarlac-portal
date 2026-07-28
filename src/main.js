@@ -4,7 +4,7 @@
  */
 
 import { state, loadFromStorage, subscribeState } from './modules/state.js';
-import { switchView, toggleMobileSidebar, closeMobileSidebar, showToast, copyToClipboardText } from './modules/ui.js';
+import { switchView, toggleMobileSidebar, closeMobileSidebar, showToast, copyToClipboardText, openWhatsNewModal, closeWhatsNewModal } from './modules/ui.js';
 import { loginUser, logoutUser, initAuthWatchdog, sendPasswordReset } from './modules/auth.js';
 import { MFCFirebaseCloud } from './modules/firebase.js';
 import { renderMembersTable, openDigitalQRModal, closeDigitalQRModal } from './modules/members.js';
@@ -38,6 +38,8 @@ document.addEventListener('DOMContentLoaded', () => {
     window.stopLiveQRScanner = window.stopLiveQRScanner || stopLiveQRScanner;
     window.generateExecutiveSummaryReport = window.generateExecutiveSummaryReport || generateExecutiveSummaryReport;
     window.sendPasswordReset = window.sendPasswordReset || sendPasswordReset;
+    window.openWhatsNewModal = window.openWhatsNewModal || openWhatsNewModal;
+    window.closeWhatsNewModal = window.closeWhatsNewModal || closeWhatsNewModal;
 });
 
 function setupNavigationListeners() {

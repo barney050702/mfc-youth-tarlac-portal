@@ -139,3 +139,17 @@ function fallbackCopy(text, successMsg) {
     }
     document.body.removeChild(textArea);
 }
+
+export function openWhatsNewModal() {
+    const modal = document.getElementById('whats-new-modal-backdrop');
+    if (modal) {
+        modal.style.display = 'flex';
+    }
+}
+
+export function closeWhatsNewModal() {
+    const modal = document.getElementById('whats-new-modal-backdrop');
+    if (modal) {
+        modal.style.display = 'none';
+    }
+}
