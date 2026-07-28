@@ -9253,7 +9253,7 @@ function generateOfficialLedgerPDF() {
 /* ==========================================================================
    FEATURE 1: MEMBER DIRECTORY CSV EXPORT
    ========================================================================== */
-function exportMembersCSV() {
+function exportMembersCSV_V2() {
     try {
         const membersList = (state && state.members) ? state.members : [];
         if (!membersList || membersList.length === 0) {
@@ -9291,7 +9291,7 @@ function exportMembersCSV() {
         showToast(`CSV Export Error: ${err.message}`, 'error');
     }
 }
-window.exportMembersCSV = exportMembersCSV;
+window.exportMembersCSV_V2 = exportMembersCSV_V2;
 
 /* ==========================================================================
    FEATURE 2: UPLOAD CUSTOM RESOURCE DOCUMENT
@@ -9595,16 +9595,10 @@ function downloadLetterPDF() {
 }
 window.downloadLetterPDF = downloadLetterPDF;
 
-function printGeneratedLetter() {
-    window.print();
-}
-window.printGeneratedLetter = printGeneratedLetter;
 
 
-function printGeneratedLetter() {
-    window.print();
-}
-window.printGeneratedLetter = printGeneratedLetter;
+
+
 
 
 /* ==========================================================================
@@ -9935,18 +9929,18 @@ function closeMemberIDCardModal() {
         if (el) el.style.display = 'none';
     } catch (e) {}
 }
-function printMemberIDCard() {
+function printMemberIDCard_V2() {
     window.print();
 }
 window.openMemberIDCard = openMemberIDCard;
 window.closeMemberIDCardModal = closeMemberIDCardModal;
-window.printMemberIDCard = printMemberIDCard;
+window.printMemberIDCard_V2 = printMemberIDCard_V2;
 
 /* ==========================================================================
    FEATURE 2: QR ATTENDANCE SCANNER
    ========================================================================== */
 let html5QrScannerInstance = null;
-function openQRScannerModal() {
+function openQRScannerModal_V2() {
     try {
         const backdrop = document.getElementById('qr-scanner-backdrop');
         if (backdrop) {
@@ -9962,17 +9956,17 @@ function openQRScannerModal() {
                 html5QrScannerInstance.render((decodedText) => {
                     if (resEl) resEl.innerText = `✅ Check-in Success: ${decodedText}`;
                     if (typeof showToast === 'function') showToast(`✅ Scanned: ${decodedText}`, 'success');
-                    setTimeout(() => closeQRScannerModal(), 1500);
+                    setTimeout(() => closeQRScannerModal_V2(), 1500);
                 }, (err) => {});
             }
         } else {
             if (resEl) resEl.innerText = '📷 Camera Scanner Active (Simulated Scan Ready)';
         }
     } catch (e) {
-        console.warn('openQRScannerModal error:', e);
+        console.warn('openQRScannerModal_V2 error:', e);
     }
 }
-function closeQRScannerModal() {
+function closeQRScannerModal_V2() {
     try {
         const el = document.getElementById('qr-scanner-backdrop');
         if (el) el.style.display = 'none';
@@ -9982,8 +9976,8 @@ function closeQRScannerModal() {
         }
     } catch (e) {}
 }
-window.openQRScannerModal = openQRScannerModal;
-window.closeQRScannerModal = closeQRScannerModal;
+window.openQRScannerModal_V2 = openQRScannerModal_V2;
+window.closeQRScannerModal_V2 = closeQRScannerModal_V2;
 
 /* ==========================================================================
    FEATURE 3: INTERACTIVE EVENT CALENDAR & RSVP HUB
@@ -10377,7 +10371,7 @@ window.toggleAudioPlay = toggleAudioPlay;
 /* ==========================================================================
    ADVANCED FEATURE 5: CERTIFICATE OF PARTICIPATION GENERATOR
    ========================================================================== */
-function openCertificateModal(memberName) {
+function openCertificateModal_V2(memberName) {
     try {
         const backdrop = document.getElementById('certificate-generator-backdrop');
         if (backdrop) {
@@ -10388,7 +10382,7 @@ function openCertificateModal(memberName) {
         if (nameEl) nameEl.innerText = (memberName || 'BARNEY TARLAC').toUpperCase();
     } catch (e) {}
 }
-function closeCertificateModal() {
+function closeCertificateModal_V2() {
     try {
         const el = document.getElementById('certificate-generator-backdrop');
         if (el) el.style.display = 'none';
@@ -10421,8 +10415,8 @@ function downloadCertificatePDF() {
         window.print();
     }
 }
-window.openCertificateModal = openCertificateModal;
-window.closeCertificateModal = closeCertificateModal;
+window.openCertificateModal_V2 = openCertificateModal_V2;
+window.closeCertificateModal_V2 = closeCertificateModal_V2;
 window.downloadCertificatePDF = downloadCertificatePDF;
 
 /* ==========================================================================
