@@ -4254,6 +4254,100 @@
         </div>
     </div>
 
+    <!-- ==========================================================================
+         MODAL: WHAT'S NEW IN V3.4
+         ========================================================================== -->
+    <div class="modal-backdrop" id="whats-new-modal-backdrop" style="display: none; align-items: center; justify-content: center; z-index: 99999;" onclick="if(event.target===this) closeWhatsNewModal()">
+        <div class="modal-card glass-card" role="dialog" aria-labelledby="whats-new-modal-title"
+            style="width: 96vw; max-width: 680px; max-height: 92vh; border-radius: 12px; overflow-y: auto; overflow-x: hidden; border: 1px solid rgba(56, 189, 248, 0.2); background: #151C2C; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);">
+            <!-- Header -->
+            <div style="display: flex; justify-content: space-between; align-items: center; padding: 20px 24px; border-bottom: 1px solid rgba(255, 255, 255, 0.05); position: sticky; top: 0; background: rgba(21, 28, 44, 0.98); backdrop-filter: blur(10px); z-index: 10;">
+                <h3 id="whats-new-modal-title" style="color: #F8FAFC; font-size: 1.25rem; font-weight: 800; margin: 0; display: flex; align-items: center; gap: 10px; letter-spacing: 0.02em;">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="#7DD3FC" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width: 22px; height: 22px;">
+                        <path d="M14 3c0 4.97-4.03 9-9 9 4.97 0 9 4.03 9 9 0-4.97 4.03-9 9-9-4.97 0-9-4.03-9-9z"></path>
+                        <circle cx="5" cy="18" r="1.5"></circle>
+                    </svg>
+                    WHAT'S NEW IN V3.4
+                </h3>
+                <button onclick="closeWhatsNewModal()" style="background: rgba(255, 255, 255, 0.05); border: none; color: #94A3B8; width: 32px; height: 32px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s ease;" onmouseover="this.style.background='rgba(255, 255, 255, 0.1)'; this.style.color='#F8FAFC';" onmouseout="this.style.background='rgba(255, 255, 255, 0.05)'; this.style.color='#94A3B8';">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 18px; height: 18px;">
+                        <path d="M18 6L6 18M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Body -->
+            <div style="padding: 24px; display: flex; flex-direction: column; gap: 20px;">
+                <!-- General Updates Card -->
+                <div style="border: 1px solid rgba(56, 189, 248, 0.25); border-radius: 12px; background: rgba(15, 23, 42, 0.3); padding: 20px;">
+                    <h4 style="color: #60A5FA; font-size: 0.95rem; font-weight: 800; margin: 0 0 16px 0; display: flex; align-items: center; gap: 8px; letter-spacing: 0.05em; text-transform: uppercase;">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width: 18px; height: 18px;">
+                            <path d="M14 3c0 4.97-4.03 9-9 9 4.97 0 9 4.03 9 9 0-4.97 4.03-9 9-9-4.97 0-9-4.03-9-9z"></path>
+                            <circle cx="5" cy="18" r="1.5"></circle>
+                        </svg>
+                        GENERAL UPDATES
+                    </h4>
+                    <ul style="list-style: none; padding: 0; margin: 0; color: #CBD5E1; font-size: 0.92rem; line-height: 1.6;">
+                        <li style="position: relative; padding-left: 18px; margin-bottom: 12px;">
+                            <span style="position: absolute; left: 0; top: 9px; width: 6px; height: 6px; border-radius: 50%; background: #3B82F6;"></span>
+                            <strong style="color: #F8FAFC; font-weight: 700;">Stay Logged In:</strong> You no longer need to log in to your chapter every time.
+                        </li>
+                        <li style="position: relative; padding-left: 18px; margin-bottom: 12px;">
+                            <span style="position: absolute; left: 0; top: 9px; width: 6px; height: 6px; border-radius: 50%; background: #3B82F6;"></span>
+                            <strong style="color: #F8FAFC; font-weight: 700;">Desktop App:</strong> New downloadable Windows application with OFFLINE support.
+                        </li>
+                        <li style="position: relative; padding-left: 18px; margin-bottom: 12px;">
+                            <span style="position: absolute; left: 0; top: 9px; width: 6px; height: 6px; border-radius: 50%; background: #3B82F6;"></span>
+                            <strong style="color: #F8FAFC; font-weight: 700;">Brand New UI:</strong> Completely redesigned and modernized User Interface (UI) across the entire system.
+                        </li>
+                        <li style="position: relative; padding-left: 18px; margin-bottom: 12px;">
+                            <span style="position: absolute; left: 0; top: 9px; width: 6px; height: 6px; border-radius: 50%; background: #3B82F6;"></span>
+                            <strong style="color: #F8FAFC; font-weight: 700;">Ministry Integration:</strong> Complete support for JAM, VIA, MAN, ELYON, and TRIUNE.
+                        </li>
+                        <li style="position: relative; padding-left: 18px; margin-bottom: 12px;">
+                            <span style="position: absolute; left: 0; top: 9px; width: 6px; height: 6px; border-radius: 50%; background: #3B82F6;"></span>
+                            <strong style="color: #F8FAFC; font-weight: 700;">New Academies:</strong> Added JAM & MAN Academy.
+                        </li>
+                        <li style="position: relative; padding-left: 18px; margin-bottom: 0;">
+                            <span style="position: absolute; left: 0; top: 9px; width: 6px; height: 6px; border-radius: 50%; background: #3B82F6;"></span>
+                            <strong style="color: #F8FAFC; font-weight: 700;">Drag-and-Drop:</strong> New drag-and-drop functionality for songs and backgrounds (BGs).
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Desktop App Card -->
+                <div style="border: 1px solid rgba(56, 189, 248, 0.15); border-radius: 12px; background: rgba(15, 23, 42, 0.3); padding: 20px;">
+                    <h4 style="color: #818CF8; font-size: 0.95rem; font-weight: 800; margin: 0 0 16px 0; display: flex; align-items: center; gap: 8px; letter-spacing: 0.05em; text-transform: uppercase;">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 18px; height: 18px;">
+                            <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+                            <line x1="8" y1="21" x2="16" y2="21"></line>
+                            <line x1="12" y1="17" x2="12" y2="21"></line>
+                        </svg>
+                        THE NEW DESKTOP APP (WINDOWS)
+                    </h4>
+                    <ul style="list-style: none; padding: 0; margin: 0; color: #CBD5E1; font-size: 0.92rem; line-height: 1.6;">
+                        <li style="position: relative; padding-left: 18px; margin-bottom: 12px;">
+                            <span style="position: absolute; left: 0; top: 9px; width: 6px; height: 6px; border-radius: 50%; background: #6366F1;"></span>
+                            Works entirely offline!
+                        </li>
+                        <li style="position: relative; padding-left: 18px; margin-bottom: 12px;">
+                            <span style="position: absolute; left: 0; top: 9px; width: 6px; height: 6px; border-radius: 50%; background: #6366F1;"></span>
+                            Much faster performance and smoother operation.
+                        </li>
+                        <li style="position: relative; padding-left: 18px; margin-bottom: 12px;">
+                            <span style="position: absolute; left: 0; top: 9px; width: 6px; height: 6px; border-radius: 50%; background: #6366F1;"></span>
+                            No more manual full-screen projection setups—it handles it for you.
+                        </li>
+                        <li style="position: relative; padding-left: 18px; margin-bottom: 0;">
+                            <span style="position: absolute; left: 0; top: 9px; width: 6px; height: 6px; border-radius: 50%; background: #6366F1;"></span>
+                            Ability to permanently save Backgrounds and PPT Images locally.
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 </body>
 

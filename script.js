@@ -7701,9 +7701,19 @@ const MFCFirebaseCloud = {
     }
 };
 
-// Placeholder for What's New modal
+// What's New modal handlers
 window.openWhatsNewModal = function() {
-    alert("What's New in V3.4 modal coming soon!");
+    const modal = document.getElementById('whats-new-modal-backdrop');
+    if (modal) {
+        modal.style.display = 'flex';
+    }
+};
+
+window.closeWhatsNewModal = function() {
+    const modal = document.getElementById('whats-new-modal-backdrop');
+    if (modal) {
+        modal.style.display = 'none';
+    }
 };
 
 function openFirebaseConfigModal() {
