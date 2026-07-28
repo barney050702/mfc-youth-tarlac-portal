@@ -1,0 +1,1291 @@
+   FEATURE 1: MEMBER DIRECTORY CSV EXPORT
+   ========================================================================== */
+function exportMembersCSV() {
+    try {
+        const membersList = (state && state.members) ? state.members : [];
+        if (!membersList || membersList.length === 0) {
+            showToast('⚠️ No members available to export.', 'warning');
+            return;
+        }
+
+        const headers = ['Full Name', 'Chapter Area', 'Ministry / Dept', 'Designation / Role', 'Phone', 'Email', 'Status', 'Camp Batch'];
+        const csvRows = [headers.join(',')];
+
+        membersList.forEach(m => {
+            const row = [
+                `"${(m.name || '').replace(/"/g, '""')}"`,
+                `"${(m.chapterArea || m.chapter || 'Central').replace(/"/g, '""')}"`,
+                `"${(m.ministry || 'Programs').replace(/"/g, '""')}"`,
+                `"${(m.role || 'Member').replace(/"/g, '""')}"`,
+                `"${(m.phone || '').replace(/"/g, '""')}"`,
+                `"${(m.email || '').replace(/"/g, '""')}"`,
+                `"${(m.status || 'Active').replace(/"/g, '""')}"`,
+                `"${(m.campBatch || '2025').replace(/"/g, '""')}"`
+            ];
+            csvRows.push(row.join(','));
+        });
+
+        const csvContent = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csvRows.join('\n'));
+        const link = document.createElement('a');
+        link.setAttribute('href', csvContent);
+        link.setAttribute('download', `MFC_Youth_Tarlac_Member_Roster_${Date.now()}.csv`);
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+
+        showToast('📥 Member Roster exported to Excel/CSV successfully!', 'success');
+    } catch (err) {
+        showToast(`CSV Export Error: ${err.message}`, 'error');
+    }
+}
+window.exportMembersCSV = exportMembersCSV;
+
+/* ==========================================================================
+   FEATURE 2: UPLOAD CUSTOM RESOURCE DOCUMENT
+   ========================================================================== */
+function openUploadResourceModal() {
+    const el = document.getElementById('upload-resource-backdrop');
+    if (el) el.style.display = 'flex';
+}
+function closeUploadResourceModal() {
+    const el = document.getElementById('upload-resource-backdrop');
+    if (el) el.style.display = 'none';
+}
+window.openUploadResourceModal = openUploadResourceModal;
+window.closeUploadResourceModal = closeUploadResourceModal;
+
+function saveCustomResourceFile(e) {
+    e.preventDefault();
+    try {
+        const title = document.getElementById('res-upload-title').value.trim();
+        const category = document.getElementById('res-upload-category').value;
+        const desc = document.getElementById('res-upload-desc').value.trim();
+        const fileInput = document.getElementById('res-upload-file');
+
+        if (!fileInput.files || fileInput.files.length === 0) {
+            showToast('⚠️ Please select a document file to upload.', 'warning');
+            return;
+        }
+
+        const file = fileInput.files[0];
+        const reader = new FileReader();
+
+        reader.onload = function(evt) {
+            const fileDataUrl = evt.target.result;
+            const newRes = {
+                id: 'custom_res_' + Date.now(),
+                title: title,
+                category: category,
+                desc: desc || 'Custom chapter resource document.',
+                fileName: file.name,
+                fileUrl: fileDataUrl,
+                fileType: file.type,
+                dateAdded: new Date().toLocaleDateString()
+            };
+
+            const existing = JSON.parse(localStorage.getItem('mfc_custom_resources') || '[]');
+            existing.push(newRes);
+            localStorage.setItem('mfc_custom_resources', JSON.stringify(existing));
+
+            renderCustomUploadedResources();
+            closeUploadResourceModal();
+            document.getElementById('upload-resource-form').reset();
+            showToast(`✅ "${title}" uploaded and saved to Resource Vault!`, 'success');
+        };
+
+        reader.readAsDataURL(file);
+    } catch (err) {
+        showToast(`Upload Error: ${err.message}`, 'error');
+    }
+}
+window.saveCustomResourceFile = saveCustomResourceFile;
+
+function renderCustomUploadedResources() {
+    try {
+        const customRes = JSON.parse(localStorage.getItem('mfc_custom_resources') || '[]');
+        const categories = ['youthcamp', 'trainings', 'songboard', 'holyrosary', 'letters'];
+
+        categories.forEach(cat => {
+            const container = document.getElementById(`res-dynamic-${cat}`);
+            if (!container) return;
+            container.innerHTML = '';
+            container.style.display = 'grid';
+
+            const items = customRes.filter(r => r.category === cat);
+            items.forEach(item => {
+                const card = document.createElement('div');
+                card.className = 'glass-card';
+                card.style.cssText = 'padding: 22px; border-radius: 16px; border: 1px solid rgba(56, 189, 248, 0.4); background: rgba(15, 23, 42, 0.85); position: relative;';
+                card.innerHTML = `
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;">
+                        <div style="font-size: 1.8rem;">📄</div>
+                        <span style="background: rgba(16, 185, 129, 0.2); border: 1px solid rgba(16, 185, 129, 0.4); color: #34D399; padding: 3px 10px; border-radius: 12px; font-size: 0.72rem; font-weight: 800;">USER UPLOADED</span>
+                    </div>
+                    <h3 style="color: #F8FAFC; font-size: 1.15rem; font-weight: 800; margin: 0 0 8px 0;">${item.title}</h3>
+                    <p style="color: #94A3B8; font-size: 0.82rem; line-height: 1.5; margin: 0 0 16px 0;">${item.desc}</p>
+                    <div style="display: flex; gap: 10px;">
+                        <a href="${item.fileUrl}" target="_blank" rel="noopener noreferrer" class="btn-primary btn-sm" style="flex: 1; text-align: center; text-decoration: none; display: flex; align-items: center; justify-content: center; gap: 6px;">
+                            <span>📄 Open Document</span>
+                        </a>
+                        <a href="${item.fileUrl}" download="${item.fileName}" class="btn-secondary btn-sm" style="flex: 1; text-align: center; text-decoration: none; display: flex; align-items: center; justify-content: center; gap: 6px;">
+                            <span>📥 Download</span>
+                        </a>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        });
+    } catch (err) {
+        console.warn('Render custom resources error:', err);
+    }
+}
+window.renderCustomUploadedResources = renderCustomUploadedResources;
+
+/* ==========================================================================
+   FEATURE 3: INTERACTIVE FILLABLE & PRINTABLE LETTER GENERATOR
+   ========================================================================== */
+function openLetterGeneratorModal(type) {
+    try {
+        const el = document.getElementById('letter-generator-backdrop');
+        if (el) {
+            el.style.display = 'flex';
+            el.style.zIndex = '100000';
+        }
+        if (type) {
+            const sel = document.getElementById('let-template-type');
+            if (sel) sel.value = type;
+        }
+        updateLetterPreview();
+    } catch (e) {
+        console.warn('openLetterGeneratorModal error:', e);
+    }
+}
+function closeLetterGeneratorModal() {
+    try {
+        const el = document.getElementById('letter-generator-backdrop');
+        if (el) el.style.display = 'none';
+    } catch (e) {}
+}
+window.openLetterGeneratorModal = openLetterGeneratorModal;
+window.closeLetterGeneratorModal = closeLetterGeneratorModal;
+
+function updateLetterPreview() {
+    try {
+        const selectEl = document.getElementById('let-template-type');
+        const type = selectEl ? selectEl.value : 'parental';
+
+        const memberEl = document.getElementById('let-member-name');
+        const parentEl = document.getElementById('let-parent-name');
+        const eventEl = document.getElementById('let-event-title');
+        const dateEl = document.getElementById('let-event-date');
+        const venueEl = document.getElementById('let-venue');
+        const servantEl = document.getElementById('let-servant-name');
+
+        const memberName = (memberEl && memberEl.value.trim()) ? memberEl.value.trim() : '[Member / Student Name]';
+        const parentName = (parentEl && parentEl.value.trim()) ? parentEl.value.trim() : '[Parent / Addressee Name]';
+        const eventTitle = (eventEl && eventEl.value.trim()) ? eventEl.value.trim() : '[Event / Activity Title]';
+        const eventDate = (dateEl && dateEl.value.trim()) ? dateEl.value.trim() : '[Event Date]';
+        const venue = (venueEl && venueEl.value.trim()) ? venueEl.value.trim() : '[Venue Location]';
+        const servantName = (servantEl && servantEl.value.trim()) ? servantEl.value.trim() : '[Chapter Servant Name]';
+
+        const container = document.getElementById('letter-live-content');
+        if (!container) return;
+
+        let html = `
+            <div style="text-align: center; border-bottom: 2px solid #0F172A; padding-bottom: 12px; margin-bottom: 20px;">
+                <h2 style="margin: 0; font-size: 1.4rem; letter-spacing: 0.05em; color: #0F172A; text-transform: uppercase;">MISSIONARIES OF CHRIST YOUTH</h2>
+                <h4 style="margin: 4px 0 0 0; font-size: 1rem; color: #475569; font-weight: 600;">Province of Tarlac Chapter</h4>
+                <p style="margin: 2px 0 0 0; font-size: 0.8rem; color: #64748B;">Diocese of Tarlac • Official Pastoral Office</p>
+            </div>
+            <div style="text-align: right; margin-bottom: 20px; font-size: 0.9rem; color: #334155;">
+                Date: ${new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
+            </div>
+        `;
+
+        if (type === 'parental') {
+            html += `
+                <div style="margin-bottom: 16px; font-weight: bold;">To: ${parentName}</div>
+                <h3 style="text-align: center; text-decoration: underline; margin-bottom: 20px;">PARENTAL CONSENT AND INDEMNITY WAIVER</h3>
+                <p>Dear Parent / Guardian,</p>
+                <p>Peace and grace in Christ!</p>
+                <p>This is to formally invite and request your permission for your son/daughter, <strong>${memberName}</strong>, to participate in the upcoming <strong>${eventTitle}</strong> organized by MFC Youth Tarlac. Details of the activity are as follows:</p>
+                <ul style="margin-left: 20px; margin-bottom: 16px;">
+                    <li><strong>Activity:</strong> ${eventTitle}</li>
+                    <li><strong>Date & Time:</strong> ${eventDate}</li>
+                    <li><strong>Venue:</strong> ${venue}</li>
+                </ul>
+                <p>Our team of youth coordinators and pastoral leaders will ensure full safety, spiritual guidance, and supervision throughout the activity.</p>
+                <div style="margin-top: 30px; border: 1px solid #94A3B8; padding: 16px; border-radius: 6px;">
+                    <p style="text-align: center; font-weight: bold; margin-top: 0;">PARENT / GUARDIAN AFFIRMATION</p>
+                    <p>I, <strong>${parentName}</strong>, hereby grant full permission for my son/daughter <strong>${memberName}</strong> to attend <strong>${eventTitle}</strong> on <strong>${eventDate}</strong> at <strong>${venue}</strong>.</p>
+                    <div style="margin-top: 40px; display: flex; justify-content: space-between;">
+                        <div>
+                            ___________________________<br>
+                            Signature Over Printed Name
+                        </div>
+                        <div>
+                            Date: _______________
+                        </div>
+                    </div>
+                </div>
+            `;
+        } else if (type === 'excuse') {
+            html += `
+                <div style="margin-bottom: 16px;">
+                    <strong>To:</strong> ${parentName}<br>
+                    <strong>Subject:</strong> Formal Pastoral Request for School / University Excuse
+                </div>
+                <h3 style="text-align: center; text-decoration: underline; margin-bottom: 20px;">PASTORAL EXCUSE LETTER</h3>
+                <p>Dear Sir / Ma'am,</p>
+                <p>Greetings of Peace!</p>
+                <p>We are writing on behalf of <strong>Missionaries of Christ Youth Tarlac</strong> to respectfully request your good office to excuse <strong>${memberName}</strong> from their scheduled classes/activities on <strong>${eventDate}</strong>.</p>
+                <p>The student will be serving as an official delegate/servant in our upcoming <strong>${eventTitle}</strong> located at <strong>${venue}</strong>. This spiritual conference forms an essential component of their leadership development and moral formation.</p>
+                <p>We assure you that <strong>${memberName}</strong> will be responsible for completing any missed coursework, quizzes, or assignments upon their return.</p>
+                <p>Thank you for your generous support of youth empowerment and spiritual formation.</p>
+            `;
+        } else if (type === 'sponsorship') {
+            html += `
+                <div style="margin-bottom: 16px;">
+                    <strong>To:</strong> ${parentName}<br>
+                    <strong>Subject:</strong> Sponsorship & Solicitation Appeal for Youth Outreach
+                </div>
+                <h3 style="text-align: center; text-decoration: underline; margin-bottom: 20px;">PARTNERSHIP & SPONSORSHIP APPEAL</h3>
+                <p>Dear Valued Partner & Benefactor,</p>
+                <p>Grace and peace to you and your family!</p>
+                <p>MFC Youth Tarlac is organizing <strong>${eventTitle}</strong> on <strong>${eventDate}</strong> at <strong>${venue}</strong> for over 200 young delegates across the province.</p>
+                <p>To ensure that underprivileged youth can attend this life-changing event without financial burden, we humbly appeal for your financial or in-kind sponsorship support for <strong>${memberName}</strong> and our team.</p>
+                <p>Your generosity will directly cover delegate kits, meals, transport, and camp materials. May God reward your loving heart abundantly!</p>
+            `;
+        } else if (type === 'lgu') {
+            html += `
+                <div style="margin-bottom: 16px;">
+                    <strong>To:</strong> Honorable ${parentName}<br>
+                    <strong>Subject:</strong> Request for Courtesy Clearance & Event Permit
+                </div>
+                <h3 style="text-align: center; text-decoration: underline; margin-bottom: 20px;">LGU & BARANGAY EVENT PERMIT REQUEST</h3>
+                <p>Dear Honorable Leader,</p>
+                <p>Greetings from Missionaries of Christ Youth Tarlac!</p>
+                <p>We respectfully request courtesy permission and safety clearance from your good office to hold our provincial activity, <strong>${eventTitle}</strong>, on <strong>${eventDate}</strong> at <strong>${venue}</strong>.</p>
+                <p>Our delegate coordinator <strong>${memberName}</strong> and servant leadership team will coordinate with local barangay officials to ensure peaceful conduct, cleanliness, and security.</p>
+                <p>Thank you for your public service and support of youth community initiatives.</p>
+            `;
+        } else if (type === 'transport') {
+            html += `
+                <div style="margin-bottom: 16px;">
+                    <strong>To:</strong> ${parentName}<br>
+                    <strong>Subject:</strong> Official Request for Vehicle Transportation & Shuttle Service
+                </div>
+                <h3 style="text-align: center; text-decoration: underline; margin-bottom: 20px;">TRANSPORTATION & SHUTTLE SERVICE REQUEST</h3>
+                <p>Dear Transportation Officer / Manager,</p>
+                <p>Peace be with you!</p>
+                <p>MFC Youth Tarlac is requesting official bus/shuttle assistance for delegate <strong>${memberName}</strong> and our team attending <strong>${eventTitle}</strong> on <strong>${eventDate}</strong> at <strong>${venue}</strong>.</p>
+                <p>Your support in providing safe travel arrangements for our delegates is greatly appreciated.</p>
+            `;
+        }
+
+        html += `
+            <div style="margin-top: 40px;">
+                <p>Yours in Christ,</p>
+                <br>
+                <strong>${servantName}</strong><br>
+                <span style="color: #475569;">Chapter Coordinator & Servant Team</span><br>
+                MFC Youth Tarlac Chapter
+            </div>
+        `;
+
+        container.innerHTML = html;
+    } catch (e) {
+        console.warn('updateLetterPreview error:', e);
+    }
+}
+window.updateLetterPreview = updateLetterPreview;
+
+function downloadLetterPDF() {
+    try {
+        const selectEl = document.getElementById('let-template-type');
+        const type = selectEl ? selectEl.value : 'parental';
+        const nameEl = document.getElementById('let-member-name');
+        const name = (nameEl && nameEl.value.trim()) ? nameEl.value.trim() : 'Delegate';
+        const element = document.getElementById('printable-letter-container');
+
+        if (!element) {
+            if (typeof showToast === 'function') showToast('⚠️ Letter container element not found.', 'warning');
+            return;
+        }
+
+        if (typeof html2pdf !== 'undefined') {
+            if (typeof showToast === 'function') {
+                showToast('📄 Generating official PDF letter document...', 'info');
+            }
+            const opt = {
+                margin:       [0.4, 0.4, 0.4, 0.4],
+                filename:     `MFC_Youth_Tarlac_${type.toUpperCase()}_Letter_${name.replace(/\s+/g, '_')}.pdf`,
+                image:        { type: 'jpeg', quality: 0.98 },
+                html2canvas:  { scale: 2, useCORS: true, logging: false },
+                jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
+            };
+            html2pdf().set(opt).from(element).save().then(() => {
+                if (typeof showToast === 'function') {
+                    showToast('✅ PDF Letter exported and downloaded successfully!', 'success');
+                }
+            }).catch(err => {
+                console.warn('html2pdf fallback to print:', err);
+                window.print();
+            });
+        } else {
+            window.print();
+        }
+    } catch (err) {
+        console.warn('PDF download error:', err);
+        window.print();
+    }
+}
+window.downloadLetterPDF = downloadLetterPDF;
+
+function printGeneratedLetter() {
+    window.print();
+}
+window.printGeneratedLetter = printGeneratedLetter;
+
+
+function printGeneratedLetter() {
+    window.print();
+}
+window.printGeneratedLetter = printGeneratedLetter;
+
+
+/* ==========================================================================
+   FEATURE 4: INTERACTIVE SONGBOOK & CHORD KEY TRANSPOSER
+   ========================================================================== */
+const SONGS_DATABASE = {
+    god_is_enough: {
+        title: "God is Enough",
+        key: "G",
+        chords: `[G]       [D]          [Em]      [C]
+I am found in Your grace, I am washed by Your blood
+[G]       [D]          [Em]      [C]
+No longer a slave, I am raised with the Son
+[Am]      [Em]         [D]
+Jesus, my Savior, You are enough!`
+    },
+    build_my_life: {
+        title: "Build My Life",
+        key: "D",
+        chords: `[D]       [G]          [Bm]      [A]
+Worthy of every song we could ever sing
+[D]       [G]          [Bm]      [A]
+Worthy of all the praise we could ever bring
+[G]       [Em]         [A]
+Holy, there is no one like You Jesus!`
+    },
+    nothing_more: {
+        title: "Nothing More",
+        key: "E",
+        chords: `[E]       [B]          [C#m]     [A]
+I want You Lord, nothing more, nothing less
+[E]       [B]          [C#m]     [A]
+My heart belongs to You alone in holiness
+[F#m]     [C#m]        [B]
+You are my all, my God and King!`
+    },
+    glorify: {
+        title: "Glorify Your Name",
+        key: "C",
+        chords: `[C]       [F]          [G]       [C]
+Father, we love You, we worship and adore You
+[C]       [F]          [G]       [C]
+Glorify Your Name in all the earth!`
+    },
+    gracious_god: {
+        title: "Gracious God",
+        key: "A",
+        chords: `[A]       [D]          [F#m]     [E]
+Gracious God, You have called us by name
+[A]       [D]          [F#m]     [E]
+Filled our hearts with Your holy flame!`
+    },
+    one_way: {
+        title: "One Way",
+        key: "B",
+        chords: `[B]       [G#m]        [F#]      [E]
+I lay my life down at Your feet, You're the only one I need
+[B]       [G#m]        [F#]      [E]
+One way, Jesus, You're the only one that I could live for!`
+    }
+};
+
+let currentTranspositionOffset = 0;
+let currentActiveSongKey = 'god_is_enough';
+
+const CHROMATIC_SCALE = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
+
+function transposeNote(note, semitones) {
+    let cleanNote = note.replace(/m|maj7|7|add9|sus4|dim|aug/gi, '');
+    let suffix = note.substring(cleanNote.length);
+    let index = CHROMATIC_SCALE.indexOf(cleanNote.toUpperCase());
+    if (index === -1) return note;
+    let newIndex = (index + semitones) % 12;
+    if (newIndex < 0) newIndex += 12;
+    return CHROMATIC_SCALE[newIndex] + suffix;
+}
+
+function openSongbookTransposerModal() {
+    const el = document.getElementById('songbook-transposer-backdrop');
+    if (el) el.style.display = 'flex';
+    loadSongForTransposer();
+}
+function closeSongbookTransposerModal() {
+    const el = document.getElementById('songbook-transposer-backdrop');
+    if (el) el.style.display = 'none';
+}
+window.openSongbookTransposerModal = openSongbookTransposerModal;
+window.closeSongbookTransposerModal = closeSongbookTransposerModal;
+
+function loadSongForTransposer() {
+    const sel = document.getElementById('song-select-dropdown');
+    if (sel) currentActiveSongKey = sel.value;
+    currentTranspositionOffset = 0;
+    renderTransposedSong();
+}
+window.loadSongForTransposer = loadSongForTransposer;
+
+function transposeSongKey(delta) {
+    currentTranspositionOffset += delta;
+    renderTransposedSong();
+}
+function resetSongKey() {
+    currentTranspositionOffset = 0;
+    renderTransposedSong();
+}
+window.transposeSongKey = transposeSongKey;
+window.resetSongKey = resetSongKey;
+
+function renderTransposedSong() {
+    const song = SONGS_DATABASE[currentActiveSongKey];
+    if (!song) return;
+
+    const baseKey = song.key;
+    const newKey = transposeNote(baseKey, currentTranspositionOffset);
+
+    const badge = document.getElementById('current-key-badge');
+    if (badge) badge.innerText = `Key: ${newKey}`;
+
+    const container = document.getElementById('songbook-chord-display');
+    if (!container) return;
+
+    const lines = song.chords.split('\n');
+    let html = `<h2 style="color: #38BDF8; margin: 0 0 16px 0; font-family: sans-serif; font-size: 1.3rem;">${song.title}</h2>`;
+
+    lines.forEach(line => {
+        if (line.includes('[')) {
+            let chordFormatted = line.replace(/\[([A-G][b#]?[a-zA-Z0-9]*)\]/g, (match, chord) => {
+                const transposed = transposeNote(chord, currentTranspositionOffset);
+                return `<span style="color: #38BDF8; font-weight: bold; background: rgba(56,189,248,0.15); padding: 1px 5px; border-radius: 4px;">${transposed}</span>`;
+            });
+            html += `<div style="margin-bottom: 8px;">${chordFormatted}</div>`;
+        } else {
+            html += `<div style="color: #E2E8F0; margin-bottom: 12px;">${line}</div>`;
+        }
+    });
+
+    container.innerHTML = html;
+}
+
+/* ==========================================================================
+   FEATURE 5: INTERACTIVE HOLY ROSARY PRAYER COUNTER
+   ========================================================================== */
+const ROSARY_MYSTERIES = {
+    joyful: {
+        name: "The Joyful Mysteries",
+        decades: [
+            { title: "First Mystery: The Annunciation", desc: "The Angel Gabriel announces to Mary that she will conceive the Son of God.", verse: "Do not be afraid, Mary, for you have found favor with God. — Luke 1:30" },
+            { title: "Second Mystery: The Visitation", desc: "Mary visits her cousin Elizabeth who is pregnant with John the Baptist.", verse: "Blessed are you among women, and blessed is the fruit of your womb! — Luke 1:42" },
+            { title: "Third Mystery: The Nativity", desc: "Jesus Christ is born in Bethlehem of Judea in a humble manger.", verse: "She gave birth to her firstborn son and wrapped him in swaddling clothes. — Luke 2:7" },
+            { title: "Fourth Mystery: The Presentation", desc: "Mary and Joseph present baby Jesus at the Temple in Jerusalem.", verse: "My eyes have seen your salvation which you prepared in the sight of all. — Luke 2:30" },
+            { title: "Fifth Mystery: Finding in the Temple", desc: "Jesus is found after 3 days teaching teachers in the Temple.", verse: "Did you not know that I must be in my Father's house? — Luke 2:49" }
+        ]
+    },
+    luminous: {
+        name: "The Luminous Mysteries",
+        decades: [
+            { title: "First Mystery: Baptism of Jesus", desc: "Jesus is baptized by John in the Jordan River as God's voice declares His Beloved Son.", verse: "This is my beloved Son, with whom I am well pleased. — Matthew 3:17" },
+            { title: "Second Mystery: Wedding at Cana", desc: "Jesus turns water into wine at Mary's request during the wedding feast.", verse: "Do whatever he tells you. — John 2:5" },
+            { title: "Third Mystery: Proclamation of the Kingdom", desc: "Jesus calls all to repentance and proclaims the Gospel of the Kingdom of God.", verse: "Repent and believe in the Gospel. — Mark 1:15" },
+            { title: "Fourth Mystery: The Transfiguration", desc: "Jesus shines with divine glory on Mount Tabor alongside Moses and Elijah.", verse: "His face shone like the sun and his clothes became white as light. — Matthew 17:2" },
+            { title: "Fifth Mystery: Institution of the Eucharist", desc: "Jesus offers His Body and Blood under the signs of bread and wine at the Last Supper.", verse: "This is my body, which is given for you; do this in remembrance of me. — Luke 22:19" }
+        ]
+    },
+    sorrowful: {
+        name: "The Sorrowful Mysteries",
+        decades: [
+            { title: "First Mystery: Agony in the Garden", desc: "Jesus prays in deep agony in the Garden of Gethsemane before His arrest.", verse: "Father, if you are willing, take this cup from me; yet not my will, but yours be done. — Luke 22:42" },
+            { title: "Second Mystery: Scourging at the Pillar", desc: "Jesus is brutally whipped and scourged by Roman soldiers.", verse: "He was pierced for our transgressions, he was crushed for our iniquities. — Isaiah 53:5" },
+            { title: "Third Mystery: Crowning with Thorns", desc: "Jesus is mocked as King and crowned with sharp thorns.", verse: "Hail, King of the Jews! — Matthew 27:29" },
+            { title: "Fourth Mystery: Carrying of the Cross", desc: "Jesus carries His heavy cross to Calvary for our salvation.", verse: "Whoever wants to be my disciple must deny themselves and take up their cross. — Matthew 16:24" },
+            { title: "Fifth Mystery: The Crucifixion", desc: "Jesus dies on the Cross for the sins of humanity.", verse: "Father, into your hands I commend my spirit. — Luke 23:46" }
+        ]
+    },
+    glorious: {
+        name: "The Glorious Mysteries",
+        decades: [
+            { title: "First Mystery: The Resurrection", desc: "Jesus rises triumphantly from the dead on Easter morning.", verse: "He is not here; he has risen, just as he said. — Matthew 28:6" },
+            { title: "Second Mystery: The Ascension", desc: "Jesus ascends gloriously into Heaven 40 days after resurrection.", verse: "Go into all the world and preach the gospel to all creation. — Mark 16:15" },
+            { title: "Third Mystery: Descent of the Holy Spirit", desc: "The Holy Spirit descends upon Mary and the Apostles as tongues of fire.", verse: "All of them were filled with the Holy Spirit. — Acts 2:4" },
+            { title: "Fourth Mystery: The Assumption", desc: "Mary is assumed body and soul into heavenly glory.", verse: "A great sign appeared in heaven: a woman clothed with the sun. — Revelation 12:1" },
+            { title: "Fifth Mystery: Coronation of Mary", desc: "Mary is crowned Queen of Heaven and Earth by Jesus Christ.", verse: "Blessed are you, O daughter, by the Most High God above all women. — Judith 13:18" }
+        ]
+    }
+};
+
+let activeRosaryMysteryKey = 'joyful';
+let currentDecadeIndex = 0;
+let currentBeadCount = 1;
+
+function openInteractiveRosaryModal() {
+    const el = document.getElementById('rosary-interactive-backdrop');
+    if (el) el.style.display = 'flex';
+    renderRosaryState();
+}
+function closeInteractiveRosaryModal() {
+    const el = document.getElementById('rosary-interactive-backdrop');
+    if (el) el.style.display = 'none';
+}
+window.openInteractiveRosaryModal = openInteractiveRosaryModal;
+window.closeInteractiveRosaryModal = closeInteractiveRosaryModal;
+
+function selectRosaryMystery(key) {
+    activeRosaryMysteryKey = key;
+    currentDecadeIndex = 0;
+    currentBeadCount = 1;
+
+    document.querySelectorAll('#rosary-mystery-tabs .ros-tab').forEach(b => {
+        b.style.borderColor = 'rgba(255,255,255,0.15)';
+        b.style.color = '#CBD5E1';
+        b.style.background = 'transparent';
+    });
+    const activeBtn = document.getElementById(`ros-tab-${key}`);
+    if (activeBtn) {
+        activeBtn.style.borderColor = '#38BDF8';
+        activeBtn.style.color = '#38BDF8';
+        activeBtn.style.background = 'rgba(56,189,248,0.15)';
+    }
+
+    renderRosaryState();
+}
+window.selectRosaryMystery = selectRosaryMystery;
+
+function nextRosaryBead() {
+    currentBeadCount++;
+    if (currentBeadCount > 10) {
+        currentBeadCount = 1;
+        currentDecadeIndex++;
+        if (currentDecadeIndex >= 5) {
+            currentDecadeIndex = 0;
+            showToast('🎉 Praise God! Holy Rosary Rosary completed successfully!', 'success');
+        }
+    }
+    renderRosaryState();
+}
+function prevRosaryBead() {
+    currentBeadCount--;
+    if (currentBeadCount < 1) {
+        if (currentDecadeIndex > 0) {
+            currentDecadeIndex--;
+            currentBeadCount = 10;
+        } else {
+            currentBeadCount = 1;
+        }
+    }
+    renderRosaryState();
+}
+window.nextRosaryBead = nextRosaryBead;
+window.prevRosaryBead = prevRosaryBead;
+
+function renderRosaryState() {
+    const mystery = ROSARY_MYSTERIES[activeRosaryMysteryKey];
+    if (!mystery) return;
+
+    const decade = mystery.decades[currentDecadeIndex];
+
+    const titleEl = document.getElementById('rosary-decade-title');
+    if (titleEl) titleEl.innerText = `Decade ${currentDecadeIndex + 1} of 5: ${decade.title}`;
+
+    const badgeEl = document.getElementById('rosary-bead-badge');
+    if (badgeEl) badgeEl.innerText = `Hail Mary #${currentBeadCount} / 10`;
+
+    const mTitle = document.getElementById('ros-meditation-title');
+    if (mTitle) mTitle.innerText = decade.title;
+
+    const mText = document.getElementById('ros-meditation-text');
+    if (mText) mText.innerText = decade.desc;
+
+    const mVerse = document.getElementById('ros-scripture-verse');
+    if (mVerse) mVerse.innerText = decade.verse;
+
+    const beadsContainer = document.getElementById('rosary-beads-container');
+    if (beadsContainer) {
+        let beadsHtml = '';
+        for (let i = 1; i <= 10; i++) {
+            let cls = 'rosary-bead';
+            if (i === currentBeadCount) cls += ' active';
+            else if (i < currentBeadCount) cls += ' completed';
+            beadsHtml += `<div class="${cls}" title="Bead ${i}"></div>`;
+        }
+        beadsContainer.innerHTML = beadsHtml;
+    }
+}
+
+/* ==========================================================================
+   FEATURE 1: DIGITAL YOUTH MEMBER ID CARD & QR GENERATOR
+   ========================================================================== */
+function openMemberIDCard(memberId) {
+    try {
+        const backdrop = document.getElementById('member-id-card-backdrop');
+        if (backdrop) {
+            backdrop.style.display = 'flex';
+            backdrop.style.zIndex = '100000';
+        }
+        
+        let member = null;
+        if (typeof state !== 'undefined' && state.members && state.members.length > 0) {
+            if (memberId) member = state.members.find(m => m.id === memberId || m.name === memberId);
+            if (!member) member = state.members[0];
+        }
+
+        const name = member ? member.name : 'Barney Tarlac';
+        const role = member ? (member.role || member.department || 'Youth Member') : 'Chapter Member';
+        const chapter = member ? (member.chapter || 'Central Chapter') : 'Central Chapter';
+        const idNum = member ? (member.id || 'MFC-TRC-2026-0042') : 'MFC-TRC-2026-0042';
+
+        const nameEl = document.getElementById('id-card-name');
+        const roleEl = document.getElementById('id-card-role');
+        const chapEl = document.getElementById('id-card-chapter');
+        const numEl = document.getElementById('id-card-number');
+        const qrEl = document.getElementById('id-card-qr-code');
+
+        if (nameEl) nameEl.innerText = name.toUpperCase();
+        if (roleEl) roleEl.innerText = role;
+        if (chapEl) chapEl.innerText = `${chapter} • Diocese of Tarlac`;
+        if (numEl) numEl.innerText = `ID: ${idNum}`;
+
+        if (qrEl) {
+            const qrData = encodeURIComponent(`MFC_MEMBER:${idNum}:${name}:${chapter}`);
+            qrEl.innerHTML = `<img src="https://api.qrserver.com/v1/create-qr-code/?size=90x90&data=${qrData}" alt="Member QR" style="width: 80px; height: 80px; display: block; border-radius: 4px;">`;
+        }
+    } catch (e) {
+        console.warn('openMemberIDCard error:', e);
+    }
+}
+function closeMemberIDCardModal() {
+    try {
+        const el = document.getElementById('member-id-card-backdrop');
+        if (el) el.style.display = 'none';
+    } catch (e) {}
+}
+function printMemberIDCard() {
+    window.print();
+}
+window.openMemberIDCard = openMemberIDCard;
+window.closeMemberIDCardModal = closeMemberIDCardModal;
+window.printMemberIDCard = printMemberIDCard;
+
+/* ==========================================================================
+   FEATURE 2: QR ATTENDANCE SCANNER
+   ========================================================================== */
+let html5QrScannerInstance = null;
+function openQRScannerModal() {
+    try {
+        const backdrop = document.getElementById('qr-scanner-backdrop');
+        if (backdrop) {
+            backdrop.style.display = 'flex';
+            backdrop.style.zIndex = '100000';
+        }
+        const resEl = document.getElementById('qr-scan-result');
+        if (resEl) resEl.innerText = '📷 Align member QR code inside scanner frame...';
+
+        if (typeof Html5QrcodeScanner !== 'undefined') {
+            if (!html5QrScannerInstance) {
+                html5QrScannerInstance = new Html5QrcodeScanner("qr-reader", { fps: 10, qrbox: 250 }, false);
+                html5QrScannerInstance.render((decodedText) => {
+                    if (resEl) resEl.innerText = `✅ Check-in Success: ${decodedText}`;
+                    if (typeof showToast === 'function') showToast(`✅ Scanned: ${decodedText}`, 'success');
+                    setTimeout(() => closeQRScannerModal(), 1500);
+                }, (err) => {});
+            }
+        } else {
+            if (resEl) resEl.innerText = '📷 Camera Scanner Active (Simulated Scan Ready)';
+        }
+    } catch (e) {
+        console.warn('openQRScannerModal error:', e);
+    }
+}
+function closeQRScannerModal() {
+    try {
+        const el = document.getElementById('qr-scanner-backdrop');
+        if (el) el.style.display = 'none';
+        if (html5QrScannerInstance) {
+            try { html5QrScannerInstance.clear(); } catch(err){}
+            html5QrScannerInstance = null;
+        }
+    } catch (e) {}
+}
+window.openQRScannerModal = openQRScannerModal;
+window.closeQRScannerModal = closeQRScannerModal;
+
+/* ==========================================================================
+   FEATURE 3: INTERACTIVE EVENT CALENDAR & RSVP HUB
+   ========================================================================== */
+let calendarCurrentDate = new Date();
+const rsvpStore = {};
+
+function renderEventCalendar() {
+    try {
+        const monthYearEl = document.getElementById('calendar-month-year-title');
+        const gridEl = document.getElementById('portal-calendar-grid');
+        if (!gridEl) return;
+
+        const year = calendarCurrentDate.getFullYear();
+        const month = calendarCurrentDate.getMonth();
+        const monthName = calendarCurrentDate.toLocaleString('default', { month: 'long' });
+
+        if (monthYearEl) monthYearEl.innerText = `📅 Event Calendar & RSVP — ${monthName} ${year}`;
+
+        const firstDay = new Date(year, month, 1).getDay();
+        const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+        let html = `
+            <div style="font-weight: 800; color: #38BDF8; font-size: 0.78rem; padding: 6px;">SUN</div>
+            <div style="font-weight: 800; color: #38BDF8; font-size: 0.78rem; padding: 6px;">MON</div>
+            <div style="font-weight: 800; color: #38BDF8; font-size: 0.78rem; padding: 6px;">TUE</div>
+            <div style="font-weight: 800; color: #38BDF8; font-size: 0.78rem; padding: 6px;">WED</div>
+            <div style="font-weight: 800; color: #38BDF8; font-size: 0.78rem; padding: 6px;">THU</div>
+            <div style="font-weight: 800; color: #38BDF8; font-size: 0.78rem; padding: 6px;">FRI</div>
+            <div style="font-weight: 800; color: #38BDF8; font-size: 0.78rem; padding: 6px;">SAT</div>
+        `;
+
+        for (let i = 0; i < firstDay; i++) {
+            html += `<div style="background: rgba(15,23,42,0.3); border-radius: 8px; min-height: 54px;"></div>`;
+        }
+
+        const events = (typeof state !== 'undefined' && state.activities) ? state.activities : [
+            { id: 1, title: 'Youth Camp 2026', date: '2026-07-28' },
+            { id: 2, title: 'Household Assembly', date: '2026-08-02' }
+        ];
+
+        for (let d = 1; d <= daysInMonth; d++) {
+            const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+            const dayEvents = events.filter(e => e.date && e.date.includes(dateStr));
+            const isToday = (d === new Date().getDate() && month === new Date().getMonth() && year === new Date().getFullYear());
+
+            let bg = isToday ? 'rgba(56, 189, 248, 0.25)' : 'rgba(15, 23, 42, 0.75)';
+            let border = isToday ? '1px solid #38BDF8' : '1px solid rgba(255,255,255,0.08)';
+
+            html += `
+                <div style="background: ${bg}; border: ${border}; border-radius: 10px; padding: 8px 4px; min-height: 64px; text-align: left; display: flex; flex-direction: column; justify-content: space-between;">
+                    <div style="font-weight: 800; font-size: 0.85rem; color: ${isToday ? '#38BDF8' : '#F8FAFC'}; margin-bottom: 4px; text-align: center;">${d}</div>
+            `;
+
+            if (dayEvents.length > 0) {
+                dayEvents.forEach(ev => {
+                    const isRSVP = rsvpStore[ev.id];
+                    html += `
+                        <div style="background: rgba(16, 185, 129, 0.25); border: 1px solid #10B981; border-radius: 6px; padding: 3px 6px; font-size: 0.7rem; color: #34D399; margin-top: 2px; text-overflow: ellipsis; overflow: hidden; whitespace: nowrap; cursor: pointer;" onclick="toggleEventRSVP('${ev.id}')" title="${ev.title}">
+                            ⭐ ${ev.title.substring(0, 10)}... ${isRSVP ? '✅ RSVP' : ''}
+                        </div>
+                    `;
+                });
+            }
+
+            html += `</div>`;
+        }
+
+        gridEl.innerHTML = html;
+    } catch (e) {
+        console.warn('renderEventCalendar error:', e);
+    }
+}
+function navigateCalendarMonth(delta) {
+    calendarCurrentDate.setMonth(calendarCurrentDate.getMonth() + delta);
+    renderEventCalendar();
+}
+function toggleEventRSVP(eventId) {
+    rsvpStore[eventId] = !rsvpStore[eventId];
+    if (typeof showToast === 'function') {
+        showToast(rsvpStore[eventId] ? '✅ RSVP Confirmed! You are registered for this event.' : 'ℹ️ RSVP cancelled.', 'info');
+    }
+    renderEventCalendar();
+}
+window.renderEventCalendar = renderEventCalendar;
+window.navigateCalendarMonth = navigateCalendarMonth;
+window.toggleEventRSVP = toggleEventRSVP;
+
+/* ==========================================================================
+   FEATURE 4: VISUAL FINANCIAL & ATTENDANCE CHARTS
+   ========================================================================== */
+let chartCompInstance = null;
+let chartPieInstance = null;
+
+function initPortalCharts() {
+    try {
+        if (typeof Chart === 'undefined') return;
+
+        // Funds Comparison Chart
+        const compCtx = document.getElementById('funds-comparison-canvas');
+        if (compCtx) {
+            if (chartCompInstance) chartCompInstance.destroy();
+            chartCompInstance = new Chart(compCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'],
+                    datasets: [
+                        { label: 'Income (₱)', data: [15000, 18000, 22000, 19500, 25000, 28000, 32000], backgroundColor: '#10B981', borderRadius: 6 },
+                        { label: 'Expenses (₱)', data: [12000, 14000, 16500, 15000, 18000, 21000, 23500], backgroundColor: '#EF4444', borderRadius: 6 }
+                    ]
+                },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { labels: { color: '#CBD5E1' } } }, scales: { x: { ticks: { color: '#94A3B8' } }, y: { ticks: { color: '#94A3B8' } } } }
+            });
+        }
+
+        // Funds Pie Chart
+        const pieCtx = document.getElementById('funds-pie-canvas');
+        if (pieCtx) {
+            if (chartPieInstance) chartPieInstance.destroy();
+            chartPieInstance = new Chart(pieCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Events & Camps', 'Pastoral Care', 'Transport & Meals', 'Materials & Supplies'],
+                    datasets: [{
+                        data: [45, 20, 20, 15],
+                        backgroundColor: ['#0284C7', '#A855F7', '#F59E0B', '#10B981'],
+                        borderWidth: 0
+                    }]
+                },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { color: '#CBD5E1', font: { size: 11 } } } } }
+            });
+        }
+    } catch (e) {
+        console.warn('initPortalCharts error:', e);
+    }
+}
+window.initPortalCharts = initPortalCharts;
+
+/* ==========================================================================
+   FEATURE 5: CHAPTER ANNOUNCEMENTS & PRAYER INTENTIONS WALL
+   ========================================================================== */
+const announcementsList = [
+    { id: 1, title: '📢 Provincial Youth Camp 2026 Registration Open', details: 'All members are invited to submit their registration and parental waivers before August 15.', date: 'Today', priority: 'URGENT' },
+    { id: 2, title: '⛪ Upper Core Leadership Household Meeting', details: 'Schedule on Friday, 7:00 PM at Tarlac Diocesan Pastoral Center.', date: 'Yesterday', priority: 'NORMAL' }
+];
+
+const prayersList = [
+    { id: 1, name: 'Youth Camp Delegates', intent: 'For safety, spiritual transformation, and open hearts during the upcoming camp.', category: 'Mission', count: 18 },
+    { id: 2, name: 'Bro. Mark & Family', intent: 'Prayers for complete healing, strength, and fast recovery.', category: 'Healing', count: 24 }
+];
+
+function renderAnnouncementsBoard() {
+    try {
+        const container = document.getElementById('dashboard-announcements-list');
+        if (!container) return;
+
+        let html = '';
+        announcementsList.forEach(item => {
+            const badgeColor = item.priority === 'URGENT' ? '#EF4444' : '#38BDF8';
+            html += `
+                <div style="background: rgba(15,23,42,0.8); border: 1px solid rgba(56,189,248,0.25); border-radius: 12px; padding: 12px 14px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+                        <span style="font-weight: 800; color: #F8FAFC; font-size: 0.9rem;">${item.title}</span>
+                        <span style="background: rgba(239,68,68,0.2); border: 1px solid ${badgeColor}; color: ${badgeColor}; padding: 2px 8px; border-radius: 10px; font-size: 0.68rem; font-weight: 800;">${item.priority}</span>
+                    </div>
+                    <p style="color: #94A3B8; font-size: 0.8rem; margin: 4px 0 6px 0; line-height: 1.4;">${item.details}</p>
+                    <span style="color: #64748B; font-size: 0.72rem;">Posted: ${item.date}</span>
+                </div>
+            `;
+        });
+        container.innerHTML = html;
+    } catch (e) {}
+}
+
+function renderPrayersBoard() {
+    try {
+        const container = document.getElementById('dashboard-prayers-list');
+        if (!container) return;
+
+        let html = '';
+        prayersList.forEach(item => {
+            html += `
+                <div style="background: rgba(15,23,42,0.8); border: 1px solid rgba(168,85,247,0.25); border-radius: 12px; padding: 12px 14px; display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <div style="font-weight: 800; color: #F8FAFC; font-size: 0.88rem;">Intention for: ${item.name}</div>
+                        <p style="color: #CBD5E1; font-size: 0.8rem; margin: 3px 0 4px 0; line-height: 1.4;">"${item.intent}"</p>
+                        <span style="background: rgba(168,85,247,0.2); border: 1px solid rgba(168,85,247,0.4); color: #D8B4FE; padding: 2px 8px; border-radius: 10px; font-size: 0.68rem;">${item.category}</span>
+                    </div>
+                    <button onclick="incrementPrayerCount(${item.id})" class="btn-secondary btn-sm" style="padding: 6px 10px; font-size: 0.75rem; border-color: rgba(168,85,247,0.5); color: #D8B4FE; font-weight: 800;">
+                        🙏 Praying (${item.count})
+                    </button>
+                </div>
+            `;
+        });
+        container.innerHTML = html;
+    } catch (e) {}
+}
+
+function incrementPrayerCount(id) {
+    const item = prayersList.find(p => p.id === id);
+    if (item) {
+        item.count++;
+        if (typeof showToast === 'function') showToast('🙏 Amen! You joined in prayer for this intention.', 'success');
+        renderPrayersBoard();
+    }
+}
+
+function openPostAnnouncementModal() {
+    const el = document.getElementById('post-announcement-backdrop');
+    if (el) el.style.display = 'flex';
+}
+function closePostAnnouncementModal() {
+    const el = document.getElementById('post-announcement-backdrop');
+    if (el) el.style.display = 'none';
+}
+function handlePostAnnouncement(e) {
+    e.preventDefault();
+    const title = document.getElementById('ann-title').value.trim();
+    const priority = document.getElementById('ann-priority').value;
+    const details = document.getElementById('ann-details').value.trim();
+
+    if (title && details) {
+        announcementsList.unshift({ id: Date.now(), title, priority, details, date: 'Just now' });
+        renderAnnouncementsBoard();
+        closePostAnnouncementModal();
+        const form = document.getElementById('form-post-announcement');
+        if (form) form.reset();
+        if (typeof showToast === 'function') showToast('📢 Advisory notice posted successfully!', 'success');
+    }
+}
+
+function openSubmitPrayerModal() {
+    const el = document.getElementById('submit-prayer-backdrop');
+    if (el) el.style.display = 'flex';
+}
+function closeSubmitPrayerModal() {
+    const el = document.getElementById('submit-prayer-backdrop');
+    if (el) el.style.display = 'none';
+}
+function handleSubmitPrayer(e) {
+    e.preventDefault();
+    const name = document.getElementById('pray-name').value.trim();
+    const category = document.getElementById('pray-category').value;
+    const intent = document.getElementById('pray-intent').value.trim();
+
+    if (name && intent) {
+        prayersList.unshift({ id: Date.now(), name, category, intent, count: 1 });
+        renderPrayersBoard();
+        closeSubmitPrayerModal();
+        const form = document.getElementById('form-submit-prayer');
+        if (form) form.reset();
+        if (typeof showToast === 'function') showToast('🙏 Prayer intention added to the Prayer Wall!', 'success');
+    }
+}
+
+function closeAllActiveModals() {
+    const backdropIds = [
+        'letter-generator-backdrop',
+        'member-id-card-backdrop',
+        'qr-scanner-backdrop',
+        'post-announcement-backdrop',
+        'submit-prayer-backdrop',
+        'ai-pastoral-chat-backdrop',
+        'certificate-generator-backdrop',
+        'pastoral-followup-backdrop',
+        'songbook-transposer-backdrop',
+        'holy-rosary-guide-backdrop',
+        'venue-map-modal-backdrop'
+    ];
+    backdropIds.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.style.display = 'none';
+    });
+}
+window.closeAllActiveModals = closeAllActiveModals;
+
+/* ==========================================================================
+   ADVANCED FEATURE 1: AI PASTORAL CHATBOT
+   ========================================================================== */
+function toggleAIPastoralChat() {
+    const backdrop = document.getElementById('ai-pastoral-chat-backdrop');
+    if (!backdrop) return;
+    if (backdrop.style.display === 'flex') {
+        backdrop.style.display = 'none';
+    } else {
+        backdrop.style.display = 'flex';
+        backdrop.style.zIndex = '100000';
+    }
+}
+function handleAIChatSubmit(e) {
+    e.preventDefault();
+    const input = document.getElementById('ai-chat-input');
+    const container = document.getElementById('ai-chat-messages');
+    if (!input || !container) return;
+
+    const userMsg = input.value.trim();
+    if (!userMsg) return;
+
+    container.innerHTML += `
+        <div style="background: rgba(15,23,42,0.8); border: 1px solid rgba(255,255,255,0.15); border-radius: 12px; padding: 10px 12px; color: #FFF; font-size: 0.85rem; align-self: flex-end; max-width: 85%;">
+            ${userMsg}
+        </div>
+    `;
+    input.value = '';
+
+    setTimeout(() => {
+        let response = "God bless your heart! Keep serving with love, humility, and joy in Christ.";
+        const lower = userMsg.toLowerCase();
+        if (lower.includes('bible') || lower.includes('verse') || lower.includes('scripture')) {
+            response = "📖 'Let no one look down on you because you are young, but set an example for the believers in speech, in conduct, in love, in faith and in purity.' — 1 Timothy 4:12";
+        } else if (lower.includes('camp') || lower.includes('event') || lower.includes('activity')) {
+            response = "⭐ Our next major provincial activity is the Provincial Youth Camp! Be sure to submit your parental consent form in the Letter Builder.";
+        } else if (lower.includes('prayer') || lower.includes('pray')) {
+            response = "🙏 Lord Jesus, fill our youth with Your Holy Spirit. Strengthen our families, bless our chapter leaders, and grant peace to every heart. Amen!";
+        }
+
+        container.innerHTML += `
+            <div style="background: rgba(56, 189, 248, 0.15); border: 1px solid rgba(56, 189, 248, 0.3); border-radius: 12px; padding: 10px 12px; color: #E2E8F0; font-size: 0.85rem; max-width: 88%;">
+                🤖 <strong>AI Companion:</strong> ${response}
+            </div>
+        `;
+        container.scrollTop = container.scrollHeight;
+    }, 600);
+}
+window.toggleAIPastoralChat = toggleAIPastoralChat;
+window.handleAIChatSubmit = handleAIChatSubmit;
+
+/* ==========================================================================
+   ADVANCED FEATURE 2: YOUTH GAMIFICATION & LEADERBOARD
+   ========================================================================== */
+function renderGamificationLeaderboard() {
+    try {
+        const container = document.getElementById('gamification-leaderboard-list');
+        if (!container) return;
+
+        const leaders = [
+            { name: 'Brother Mark Tarlac', role: 'Upper Core Leader', points: 1450, badge: '👑 Faith Champion', level: 'Level 5' },
+            { name: 'Sister Maria Santos', role: 'Worship Head', points: 1280, badge: '🎵 Worship Leader', level: 'Level 4' },
+            { name: 'Delegate Alex Cruz', role: 'Chapter Servant', points: 1120, badge: '🛡️ Servant Heart', level: 'Level 4' }
+        ];
+
+        let html = '';
+        leaders.forEach((item, index) => {
+            html += `
+                <div style="background: rgba(15,23,42,0.8); border: 1px solid rgba(251,191,36,0.3); border-radius: 14px; padding: 14px; display: flex; items-center; justify-content: space-between;">
+                    <div style="display: flex; align-items: center; gap: 12px;">
+                        <div style="width: 38px; height: 38px; border-radius: 50%; background: rgba(245,158,11,0.2); border: 1px solid #FBBF24; display: flex; align-items: center; justify-content: center; font-weight: 900; color: #FBBF24;">
+                            #${index + 1}
+                        </div>
+                        <div>
+                            <div style="font-weight: 800; color: #F8FAFC; font-size: 0.92rem;">${item.name}</div>
+                            <div style="color: #94A3B8; font-size: 0.75rem;">${item.role} • ${item.level}</div>
+                        </div>
+                    </div>
+                    <div style="text-align: right;">
+                        <span style="background: rgba(245,158,11,0.2); border: 1px solid #FBBF24; color: #FBBF24; padding: 2px 8px; border-radius: 10px; font-size: 0.72rem; font-weight: 800;">${item.badge}</span>
+                        <div style="color: #34D399; font-weight: 800; font-size: 0.85rem; margin-top: 4px;">⚡ ${item.points} pts</div>
+                    </div>
+                </div>
+            `;
+        });
+        container.innerHTML = html;
+    } catch (e) {}
+}
+window.renderGamificationLeaderboard = renderGamificationLeaderboard;
+
+/* ==========================================================================
+   ADVANCED FEATURE 4: PASTORAL AUDIO PODCAST PLAYER
+   ========================================================================== */
+function toggleAudioPlay() {
+    try {
+        const audio = document.getElementById('portal-audio-element');
+        const btn = document.getElementById('audio-play-btn');
+        if (!audio || !btn) return;
+
+        if (audio.paused) {
+            audio.play().then(() => {
+                btn.innerText = '⏸';
+                if (typeof showToast === 'function') showToast('🎵 Playing Chapter Worship Audio Track...', 'info');
+            }).catch(e => {
+                if (typeof showToast === 'function') showToast('🎵 Audio playback started.', 'info');
+            });
+        } else {
+            audio.pause();
+            btn.innerText = '▶';
+        }
+    } catch (e) {}
+}
+window.toggleAudioPlay = toggleAudioPlay;
+
+/* ==========================================================================
+   ADVANCED FEATURE 5: CERTIFICATE OF PARTICIPATION GENERATOR
+   ========================================================================== */
+function openCertificateModal(memberName) {
+    try {
+        const backdrop = document.getElementById('certificate-generator-backdrop');
+        if (backdrop) {
+            backdrop.style.display = 'flex';
+            backdrop.style.zIndex = '100000';
+        }
+        const nameEl = document.getElementById('cert-member-name');
+        if (nameEl) nameEl.innerText = (memberName || 'BARNEY TARLAC').toUpperCase();
+    } catch (e) {}
+}
+function closeCertificateModal() {
+    try {
+        const el = document.getElementById('certificate-generator-backdrop');
+        if (el) el.style.display = 'none';
+    } catch (e) {}
+}
+function downloadCertificatePDF() {
+    try {
+        const element = document.getElementById('printable-certificate-container');
+        const nameEl = document.getElementById('cert-member-name');
+        const name = nameEl ? nameEl.innerText.replace(/\s+/g, '_') : 'Delegate';
+
+        if (typeof html2pdf !== 'undefined' && element) {
+            if (typeof showToast === 'function') showToast('📜 Exporting Certificate of Participation PDF...', 'info');
+            const opt = {
+                margin:       [0.4, 0.4, 0.4, 0.4],
+                filename:     `MFC_Youth_Certificate_${name}.pdf`,
+                image:        { type: 'jpeg', quality: 0.98 },
+                html2canvas:  { scale: 2, useCORS: true, logging: false },
+                jsPDF:        { unit: 'in', format: 'letter', orientation: 'landscape' }
+            };
+            html2pdf().set(opt).from(element).save().then(() => {
+                if (typeof showToast === 'function') showToast('✅ Certificate PDF downloaded successfully!', 'success');
+            }).catch(err => {
+                window.print();
+            });
+        } else {
+            window.print();
+        }
+    } catch (e) {
+        window.print();
+    }
+}
+window.openCertificateModal = openCertificateModal;
+window.closeCertificateModal = closeCertificateModal;
+window.downloadCertificatePDF = downloadCertificatePDF;
+
+/* ==========================================================================
+   INTERACTIVE MAP VENUE PINNING & ROUTE NAVIGATOR (MODAL-BASED)
+   ========================================================================== */
+function pinVenueLocation(venueName) {
+    try {
+        const locQuery = (venueName && venueName.trim()) ? venueName.trim() : 'Tarlac City';
+        const encoded = encodeURIComponent(locQuery);
+
+        // Open the venue map modal
+        const backdrop = document.getElementById('venue-map-modal-backdrop');
+        const iframe = document.getElementById('venue-map-modal-iframe');
+        const label = document.getElementById('venue-map-modal-location-label');
+        const status = document.getElementById('venue-map-modal-pinned-status');
+        const dirBtn = document.getElementById('venue-map-modal-directions-btn');
+        const searchInput = document.getElementById('venue-map-modal-search-input');
+
+        if (!backdrop || !iframe) return;
+
+        // Update map iframe
+        iframe.src = `https://maps.google.com/maps?q=${encoded}&t=&z=15&ie=UTF8&iwloc=&output=embed`;
+
+        // Update labels and links
+        if (label) label.innerText = locQuery;
+        if (status) status.innerHTML = `✅ Pinned: ${locQuery}`;
+        if (dirBtn) dirBtn.href = `https://maps.google.com/?q=${encoded}`;
+        if (searchInput) searchInput.value = locQuery;
+
+        // Show modal
+        backdrop.style.display = 'flex';
+
+        if (typeof showToast === 'function') {
+            showToast(`📍 Pinned on Map: ${locQuery}`, 'success');
+        }
+    } catch (e) {
+        console.warn('pinVenueLocation error:', e);
+    }
+}
+
+function closeVenueMapModal() {
+    const backdrop = document.getElementById('venue-map-modal-backdrop');
+    if (backdrop) backdrop.style.display = 'none';
+    // Stop the iframe to save resources
+    const iframe = document.getElementById('venue-map-modal-iframe');
+    if (iframe) iframe.src = 'about:blank';
+}
+
+function handleVenueMapModalPin(e) {
+    if (e) e.preventDefault();
+    const input = document.getElementById('venue-map-modal-search-input');
+    if (input && input.value.trim()) {
+        const locQuery = input.value.trim();
+        const encoded = encodeURIComponent(locQuery);
+
+        const iframe = document.getElementById('venue-map-modal-iframe');
+        const label = document.getElementById('venue-map-modal-location-label');
+        const status = document.getElementById('venue-map-modal-pinned-status');
+        const dirBtn = document.getElementById('venue-map-modal-directions-btn');
+
+        if (iframe) iframe.src = `https://maps.google.com/maps?q=${encoded}&t=&z=15&ie=UTF8&iwloc=&output=embed`;
+        if (label) label.innerText = locQuery;
+        if (status) status.innerHTML = `✅ Pinned: ${locQuery}`;
+        if (dirBtn) dirBtn.href = `https://maps.google.com/?q=${encoded}`;
+
+        if (typeof showToast === 'function') {
+            showToast(`📌 Re-pinned: ${locQuery}`, 'success');
+        }
+    } else {
+        if (typeof showToast === 'function') {
+            showToast('Enter a location to pin on map.', 'info');
+        }
+    }
+}
+
+function handleCustomVenuePinSubmit(e) {
+    e.preventDefault();
+    const input = document.getElementById('custom-venue-search-input');
+    if (input && input.value.trim()) {
+        pinVenueLocation(input.value.trim());
+    }
+}
+window.pinVenueLocation = pinVenueLocation;
+window.closeVenueMapModal = closeVenueMapModal;
+window.handleVenueMapModalPin = handleVenueMapModalPin;
+window.handleCustomVenuePinSubmit = handleCustomVenuePinSubmit;
+
+/* ==========================================================================
+   GLOBAL KEYBOARD ACCESSIBILITY & BACKDROP CLICK HANDLERS
+   ========================================================================== */
+window.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+        closeAllActiveModals();
+    }
+});
+
+window.addEventListener('click', (e) => {
+    if (e.target && e.target.classList && e.target.classList.contains('modal-backdrop')) {
+        e.target.style.display = 'none';
+    }
+});
+
+/* ==========================================================================
+   INITIALIZATION HOOK
+   ========================================================================== */
+document.addEventListener('DOMContentLoaded', () => {
+    try {
+        renderCustomUploadedResources();
+        renderEventCalendar();
+        renderAnnouncementsBoard();
+        renderPrayersBoard();
+        renderGamificationLeaderboard();
+        setTimeout(initPortalCharts, 800);
+    } catch (e) {}
+});
+
+
+
+

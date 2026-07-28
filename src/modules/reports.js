@@ -10,6 +10,8 @@ export function renderDashboardCharts() {
     if (typeof Chart === 'undefined') return;
 
     // Safely destroy existing chart instances to prevent canvas memory leaks
+    if (!state.charts) state.charts = {};
+
     if (state.charts.attendance) {
         state.charts.attendance.destroy();
         state.charts.attendance = null;

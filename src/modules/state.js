@@ -38,12 +38,12 @@ export const state = (typeof window !== 'undefined' && window.state) ? window.st
     filterCategory: 'ALL',
     filterStatus: 'ALL',
     agendaSemester: 'all',
+    charts: {},
     agendaViewMode: 'grid',
     auditLog: [],
     currentRole: 'Super Admin',
     showOnlyDuplicates: false,
     sortOrder: 'ASC',
-    lastUpdated: 0,
     charts: {} // Active Chart.js instances registry to prevent memory leaks
 };
 if (typeof window !== 'undefined' && !window.state) {

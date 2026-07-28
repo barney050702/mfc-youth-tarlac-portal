@@ -1,5 +1,5 @@
 import { state } from './state.js';
-// Import all necessary functions here (to be manually added or handled in main.js)
+import { switchView, closeWhatsNewModal, openWhatsNewModal, closeMobileSidebar, toggleMobileSidebar } from './ui.js';
 
 export function initializeEventListeners() {
 
@@ -97,7 +97,7 @@ export function initializeEventListeners() {
     const el_menu_toggle_btn = document.getElementById('menu-toggle-btn');
     if (el_menu_toggle_btn) {
         el_menu_toggle_btn.addEventListener('click', function(event) {
-            toggleMainNavigation(event)
+            toggleMobileSidebar(event)
         });
     }
 
