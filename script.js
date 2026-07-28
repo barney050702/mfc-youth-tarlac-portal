@@ -6474,10 +6474,7 @@ function printBlankAttendanceSheet() {
 }
 
 // Initialize on DOM ready
-document.addEventListener('DOMContentLoaded', () => {
-    initApp();
-    initMobileNativeGestures();
-});
+// initApp block commented out
 
 
 function openHHFolderModal() {
