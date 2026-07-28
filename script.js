@@ -6,7 +6,7 @@
  */
 
 // Global State Store
-let state = {
+window.state = window.state || {
     activities: [],
     members: [],
     attendance: {}, // { activityId: { memberId: { status: 'present'|'absent'|'late', time: '10:00 AM', notes: '' } } }
@@ -25,6 +25,7 @@ let state = {
     sortOrder: 'ASC',
     lastUpdated: 0
 };
+const state = window.state;
 
 // Toggle Sort Order
 function toggleAgendaSort() {
