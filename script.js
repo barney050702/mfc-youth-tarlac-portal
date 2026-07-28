@@ -1039,7 +1039,6 @@ function renderDashboard() {
     let totalRateSum = 0;
     let ratedActivitiesCount = 0;
     let totalPresentSum = 0;
-    let totalLateSum = 0;
     let totalAbsentSum = 0;
 
     state.activities.forEach(act => {
@@ -1047,14 +1046,10 @@ function renderDashboard() {
         let presentCount = 0;
         state.members.forEach(m => {
             const st = attObj[m.id]?.status;
-            if (st === 'present') {
+            if (st === 'present' || st === 'late') {
                 presentCount++;
                 totalCheckins++;
                 totalPresentSum++;
-            } else if (st === 'late') {
-                presentCount++;
-                totalCheckins++;
-                totalLateSum++;
             } else {
                 totalAbsentSum++;
             }
@@ -1068,10 +1063,9 @@ function renderDashboard() {
     });
 
     const avgRate = ratedActivitiesCount > 0 ? Math.round(totalRateSum / ratedActivitiesCount) : 0;
-    const totalAttendanceRecords = totalPresentSum + totalLateSum + totalAbsentSum;
+    const totalAttendanceRecords = totalPresentSum + totalAbsentSum;
     const pctPresent = totalAttendanceRecords > 0 ? Math.round((totalPresentSum / totalAttendanceRecords) * 100) : 0;
-    const pctLate = totalAttendanceRecords > 0 ? Math.round((totalLateSum / totalAttendanceRecords) * 100) : 0;
-    const pctAbsent = totalAttendanceRecords > 0 ? Math.max(0, 100 - pctPresent - pctLate) : 0;
+    const pctAbsent = totalAttendanceRecords > 0 ? Math.max(0, 100 - pctPresent) : 0;
 
     // Update DOM metrics with Odometer animation & Gradients
     const elTotalActs = document.getElementById('stat-total-activities');
@@ -1088,17 +1082,13 @@ function renderDashboard() {
 
     // Update Overall Check-In Distribution Bar
     const segPresent = document.getElementById('bar-seg-present');
-    const segLate = document.getElementById('bar-seg-late');
     const segAbsent = document.getElementById('bar-seg-absent');
     const legPresent = document.getElementById('legend-present');
-    const legLate = document.getElementById('legend-late');
     const legAbsent = document.getElementById('legend-absent');
 
     if (segPresent) segPresent.style.width = `${pctPresent}%`;
-    if (segLate) segLate.style.width = `${pctLate}%`;
     if (segAbsent) segAbsent.style.width = `${pctAbsent}%`;
     if (legPresent) legPresent.textContent = `${pctPresent}% (${totalPresentSum})`;
-    if (legLate) legLate.textContent = `${pctLate}% (${totalLateSum})`;
     if (legAbsent) legAbsent.textContent = `${pctAbsent}% (${totalAbsentSum})`;
 
     // Render Recent Activities Table (Screenshot 2 exact clone)
@@ -2588,24 +2578,20 @@ function updateLiveProgress() {
     const totalMems = state.members.length;
 
     let pCount = 0;
-    let lCount = 0;
     let aCount = 0;
 
     state.members.forEach(mem => {
         const st = attMap[mem.id]?.status;
-        if (st === 'present') pCount++;
-        else if (st === 'late') lCount++;
+        if (st === 'present' || st === 'late') pCount++;
         else aCount++;
     });
 
-    const totalRecorded = pCount + lCount;
+    const totalRecorded = pCount;
     const rate = totalMems > 0 ? Math.round((totalRecorded / totalMems) * 100) : 0;
     const pPct = totalMems > 0 ? (pCount / totalMems) * 100 : 0;
-    const lPct = totalMems > 0 ? (lCount / totalMems) * 100 : 0;
     const aPct = totalMems > 0 ? (aCount / totalMems) * 100 : 0;
 
     const elP = document.getElementById('count-present');
-    const elL = document.getElementById('count-late');
     const elA = document.getElementById('count-absent');
     const elTotal = document.getElementById('count-total-checkins');
     const elRate = document.getElementById('attendance-live-rate');
@@ -2614,7 +2600,6 @@ function updateLiveProgress() {
     const barA = document.getElementById('bar-absent');
 
     if (elP) elP.textContent = pCount;
-    if (elL) elL.textContent = lCount;
     if (elA) elA.textContent = aCount;
     if (elRate) {
         elRate.textContent = `${rate}%`;
@@ -2625,7 +2610,7 @@ function updateLiveProgress() {
         }
     }
 
-    if (barP) barP.style.width = `${pPct + lPct}%`;
+    if (barP) barP.style.width = `${pPct}%`;
     if (barA) barA.style.width = `${aPct}%`;
 }
 
@@ -7714,6 +7699,11 @@ const MFCFirebaseCloud = {
             console.warn('Failed to load members from Firestore:', e);
         }
     }
+};
+
+// Placeholder for What's New modal
+window.openWhatsNewModal = function() {
+    alert("What's New in V3.4 modal coming soon!");
 };
 
 function openFirebaseConfigModal() {
