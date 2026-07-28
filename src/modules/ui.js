@@ -153,3 +153,56 @@ export function closeWhatsNewModal() {
         modal.style.display = 'none';
     }
 }
+
+export function switchResourceCategory(category) {
+    switchView('resources');
+
+    // Make sure subnav is open
+    const subnav = document.getElementById('subnav-resources');
+    const chevron = document.getElementById('chevron-resources');
+    if (subnav && subnav.style.display === 'none') {
+        subnav.style.display = 'flex';
+        if (chevron) chevron.style.transform = 'rotate(180deg)';
+    }
+
+    // Highlight sidebar subnav item
+    document.querySelectorAll('.nav-sub-item').forEach(el => {
+        el.style.color = '#94A3B8';
+        el.style.fontWeight = '500';
+    });
+    const activeSub = document.getElementById(`sub-${category}`);
+    if (activeSub) {
+        activeSub.style.color = '#60A5FA';
+        activeSub.style.fontWeight = '700';
+    }
+
+    // Highlight top tab buttons inside view-resources
+    document.querySelectorAll('.resource-tab-btn').forEach(btn => {
+        btn.classList.remove('active');
+        btn.style.borderColor = 'rgba(255, 255, 255, 0.1)';
+        btn.style.background = 'rgba(15, 23, 42, 0.4)';
+        btn.style.color = '#94A3B8';
+    });
+    const activeBtn = document.getElementById(`btn-res-${category}`);
+    if (activeBtn) {
+        activeBtn.classList.add('active');
+        activeBtn.style.borderColor = 'rgba(56, 189, 248, 0.4)';
+        activeBtn.style.background = 'rgba(56, 189, 248, 0.15)';
+        activeBtn.style.color = '#38BDF8';
+    }
+
+    // Show selected section cards
+    document.querySelectorAll('.resource-section').forEach(sec => {
+        sec.style.display = 'none';
+    });
+    const targetSec = document.getElementById(`res-section-${category}`);
+    if (targetSec) {
+        targetSec.style.display = 'grid';
+    }
+
+    // Show dynamic user-added cards for this category
+    ['youthcamp', 'trainings', 'songboard', 'holyrosary', 'letters'].forEach(cat => {
+        const dynDiv = document.getElementById(`res-dynamic-${cat}`);
+        if (dynDiv) dynDiv.style.display = cat === category ? 'grid' : 'none';
+    });
+}

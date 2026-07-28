@@ -1,5 +1,5 @@
 import { state } from './state.js';
-import { switchView, closeWhatsNewModal, openWhatsNewModal, closeMobileSidebar, toggleMobileSidebar } from './ui.js';
+import { switchView, closeWhatsNewModal, openWhatsNewModal, closeMobileSidebar, toggleMobileSidebar, switchResourceCategory } from './ui.js';
 
 export function initializeEventListeners() {
 
