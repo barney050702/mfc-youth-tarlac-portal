@@ -7,26 +7,31 @@ import { state, loadFromStorage, subscribeState } from './modules/state.js';
 import { switchView, toggleMobileSidebar, closeMobileSidebar, showToast, copyToClipboardText, openWhatsNewModal, closeWhatsNewModal } from './modules/ui.js';
 import { loginUser, logoutUser, initAuthWatchdog, sendPasswordReset } from './modules/auth.js';
 import { MFCFirebaseCloud } from './modules/firebase.js';
-import { renderMembersTable, openDigitalQRModal, closeDigitalQRModal } from './modules/members.js';
-import { renderAttendanceView, setMemberAttendance, startLiveQRScanner, stopLiveQRScanner } from './modules/attendance.js';
+import { renderMembersTable, openDigitalQRModal, closeDigitalQRModal, printMemberQRCard } from './modules/members.js';
+import { populateAttendanceDropdown, renderAttendanceRoster, toggleAttendance, triggerAbsenteeAutoGmailPrompt, filterAttendanceRoster, batchMarkChapterPresent, sendGmailToCurrentAbsentees, updateRemarks, updateLiveProgress, markAllPresent, markAllAbsent, resetAttendanceSheet, startLiveQRScanner, stopLiveQRScanner, simulateQRCheckIn } from './modules/attendance.js';
 import { renderActivitiesTable } from './modules/activities.js';
-import { renderDashboardCharts, generateExecutiveSummaryReport } from './modules/reports.js';
+import { renderDashboardCharts, generateExecutiveSummaryReport, renderAnalytics, exportToCSV, exportToPDF, exportMembersToPDF, exportMembersCSV, exportActivitiesCSV, exportAttendanceCSV, exportFundsCSV } from './modules/reports.js';
+import { renderDashboard, renderAgendaTimeline, updatePastoralCareWidget, jumpToAttendance } from './modules/dashboard.js';
+import { initializeEventListeners } from './modules/events.js';
 
 document.addEventListener('DOMContentLoaded', () => {
     // If script.js initialized the core app, bind additional navigation listeners safely
     setupNavigationListeners();
-
-    if (typeof window.initApp !== 'function') {
-        loadFromStorage();
-        initAuthWatchdog();
-        MFCFirebaseCloud.init();
-        renderAllViews();
-        subscribeState(() => {
-            renderAllViews();
-        });
+    initializeEventListeners();
+    
+    // Call legacy mobile gestures if present in script.js
+    if (typeof window.initMobileNativeGestures === 'function') {
+        window.initMobileNativeGestures();
     }
 
-    // Bind global window helpers for legacy inline event handlers
+    loadFromStorage();
+    initAuthWatchdog();
+    MFCFirebaseCloud.init();
+    renderAllViews();
+    subscribeState(() => {
+        renderAllViews();
+    });
+
     window.switchView = window.switchView || switchView;
     window.toggleMobileSidebar = window.toggleMobileSidebar || toggleMobileSidebar;
     window.closeMobileSidebar = window.closeMobileSidebar || closeMobileSidebar;
@@ -34,12 +39,45 @@ document.addEventListener('DOMContentLoaded', () => {
     window.logoutUser = window.logoutUser || logoutUser;
     window.openDigitalQRModal = window.openDigitalQRModal || openDigitalQRModal;
     window.closeDigitalQRModal = window.closeDigitalQRModal || closeDigitalQRModal;
+    window.printMemberQRCard = window.printMemberQRCard || printMemberQRCard;
     window.startLiveQRScanner = window.startLiveQRScanner || startLiveQRScanner;
     window.stopLiveQRScanner = window.stopLiveQRScanner || stopLiveQRScanner;
+    window.simulateQRCheckIn = window.simulateQRCheckIn || simulateQRCheckIn;
     window.generateExecutiveSummaryReport = window.generateExecutiveSummaryReport || generateExecutiveSummaryReport;
     window.sendPasswordReset = window.sendPasswordReset || sendPasswordReset;
     window.openWhatsNewModal = window.openWhatsNewModal || openWhatsNewModal;
     window.closeWhatsNewModal = window.closeWhatsNewModal || closeWhatsNewModal;
+    
+    // Dashboard & Reports exports
+    window.renderDashboard = window.renderDashboard || renderDashboard;
+    window.renderAgendaTimeline = window.renderAgendaTimeline || renderAgendaTimeline;
+    window.updatePastoralCareWidget = window.updatePastoralCareWidget || updatePastoralCareWidget;
+    window.jumpToAttendance = window.jumpToAttendance || jumpToAttendance;
+    window.renderDashboardCharts = window.renderDashboardCharts || renderDashboardCharts;
+    
+    // Attendance Engine exports
+    window.populateAttendanceDropdown = window.populateAttendanceDropdown || populateAttendanceDropdown;
+    window.renderAttendanceRoster = window.renderAttendanceRoster || renderAttendanceRoster;
+    window.toggleAttendance = window.toggleAttendance || toggleAttendance;
+    window.triggerAbsenteeAutoGmailPrompt = window.triggerAbsenteeAutoGmailPrompt || triggerAbsenteeAutoGmailPrompt;
+    window.filterAttendanceRoster = window.filterAttendanceRoster || filterAttendanceRoster;
+    window.batchMarkChapterPresent = window.batchMarkChapterPresent || batchMarkChapterPresent;
+    window.sendGmailToCurrentAbsentees = window.sendGmailToCurrentAbsentees || sendGmailToCurrentAbsentees;
+    window.updateRemarks = window.updateRemarks || updateRemarks;
+    window.updateLiveProgress = window.updateLiveProgress || updateLiveProgress;
+    window.markAllPresent = window.markAllPresent || markAllPresent;
+    window.markAllAbsent = window.markAllAbsent || markAllAbsent;
+    window.resetAttendanceSheet = window.resetAttendanceSheet || resetAttendanceSheet;
+    
+    // Dashboard & Reports exports
+    window.renderAnalytics = window.renderAnalytics || renderAnalytics;
+    window.exportToCSV = window.exportToCSV || exportToCSV;
+    window.exportToPDF = window.exportToPDF || exportToPDF;
+    window.exportMembersToPDF = window.exportMembersToPDF || exportMembersToPDF;
+    window.exportMembersCSV = window.exportMembersCSV || exportMembersCSV;
+    window.exportActivitiesCSV = window.exportActivitiesCSV || exportActivitiesCSV;
+    window.exportAttendanceCSV = window.exportAttendanceCSV || exportAttendanceCSV;
+    window.exportFundsCSV = window.exportFundsCSV || exportFundsCSV;
 });
 
 function setupNavigationListeners() {
@@ -58,8 +96,9 @@ function setupNavigationListeners() {
 }
 
 function renderAllViews() {
+    renderDashboard();
     renderMembersTable();
-    renderAttendanceView();
+    populateAttendanceDropdown();
+    renderAttendanceRoster();
     renderActivitiesTable();
-    renderDashboardCharts();
 }

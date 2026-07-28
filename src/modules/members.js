@@ -111,14 +111,14 @@ export function openDigitalQRModal(memberId) {
     const member = state.members.find(m => m.id === memberId);
     if (!member) return;
 
-    const modal = document.getElementById('digital-qr-modal');
-    const container = document.getElementById('qr-canvas-container');
-    const nameEl = document.getElementById('qr-member-name');
-    const chapterEl = document.getElementById('qr-member-chapter');
-    const codeEl = document.getElementById('qr-member-id');
+    const modal = document.getElementById('modal-member-qr-id');
+    const container = document.getElementById('qrcode-container');
+    const nameEl = document.getElementById('qr-badge-name');
+    const roleEl = document.getElementById('qr-badge-role');
+    const codeEl = document.getElementById('qr-badge-id-num');
 
     if (nameEl) nameEl.textContent = member.name;
-    if (chapterEl) chapterEl.textContent = `${member.chapter || 'CENTRAL'} CHAPTER`;
+    if (roleEl) roleEl.textContent = `${member.chapter || 'CENTRAL'} CHAPTER`;
     if (codeEl) codeEl.textContent = `ID: ${member.id}`;
 
     if (container) {
@@ -140,8 +140,40 @@ export function openDigitalQRModal(memberId) {
 }
 
 export function closeDigitalQRModal() {
-    const modal = document.getElementById('digital-qr-modal');
+    const modal = document.getElementById('modal-member-qr-id');
     if (modal) modal.style.display = 'none';
+}
+
+export function printMemberQRCard() {
+    const cardEl = document.getElementById('qr-id-badge-card');
+    if (!cardEl) return;
+    
+    showToast('Preparing digital QR ID badge for printing...', 'info');
+    
+    html2canvas(cardEl, {
+        scale: 3,
+        backgroundColor: '#0F172A'
+    }).then(canvas => {
+        const imgData = canvas.toDataURL('image/png');
+        const printWindow = window.open('', '_blank');
+        printWindow.document.write(`
+            <html>
+                <head><title>Print Member QR ID</title></head>
+                <body style="margin:0; display:flex; justify-content:center; align-items:center; height:100vh; background:#FFF;">
+                    <img src="${imgData}" style="max-width:100%; max-height:100vh;">
+                </body>
+            </html>
+        `);
+        printWindow.document.close();
+        printWindow.onload = () => {
+            printWindow.focus();
+            printWindow.print();
+        };
+        showToast('Sent digital QR ID badge to printer!', 'success');
+    }).catch(err => {
+        console.error('Printing error:', err);
+        showToast('Failed to generate printable ID.', 'error');
+    });
 }
 
 export function deleteMember(memberId) {

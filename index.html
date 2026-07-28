@@ -19,6 +19,7 @@
     <link rel="apple-touch-icon" href="mfc-logo.png">
     <!-- Custom Stylesheet -->
     <link rel="stylesheet" href="styles.css?v=4.24">
+    <link rel="stylesheet" href="aesthetic.css?v=1.0">
     <!-- jsPDF & AutoTable CDNs for PDF Export -->
     <script defer src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script defer src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
@@ -92,8 +93,24 @@
         </div>
     </div>
 
+    <!-- What's New Modal -->
+    <div id="whats-new-modal" class="modal" style="display:none; position:fixed; inset:0; z-index:99999; background:rgba(0,0,0,0.8); backdrop-filter:blur(8px); align-items:center; justify-content:center;">
+        <div class="modal-content" style="background:rgba(13,22,45,0.95); border:1px solid rgba(56,189,248,0.3); border-radius:24px; padding:30px; width:90%; max-width:500px; box-shadow:0 30px 60px rgba(0,0,0,0.8); position:relative;">
+            <button id="action-btn-1"  class="close-btn"  style="position:absolute; top:20px; right:20px; background:none; border:none; color:#94A3B8; font-size:24px; cursor:pointer;">&times;</button>
+            <h2 style="color:#FFF; font-size:24px; margin-bottom:10px; display:flex; align-items:center; gap:10px;"><span style="font-size:28px;">✨</span> What's New</h2>
+            <p style="color:#94A3B8; font-size:14px; margin-bottom:20px;">Latest updates and features in MFC Youth Tarlac Portal v4.2</p>
+            <ul style="color:#E2E8F0; font-size:15px; line-height:1.6; padding-left:20px; display:flex; flex-direction:column; gap:12px;">
+                <li><strong style="color:#38BDF8;">Modular Architecture:</strong> The app is now fully modularized for blazing fast performance and easier updates.</li>
+                <li><strong style="color:#34D399;">Glassmorphic UI:</strong> A stunning new dark theme with glassmorphism, blurs, and micro-animations.</li>
+                <li><strong style="color:#F59E0B;">Interactive Attendance:</strong> Brand new roster engine with real-time stats and batch operations.</li>
+                <li><strong style="color:#A78BFA;">Live QR Scanning:</strong> Enhanced camera handling for quicker QR check-ins.</li>
+            </ul>
+            <button id="action-btn-2"   style="width:100%; margin-top:30px; background:linear-gradient(135deg, #0284C7, #38BDF8); border:none; color:#FFF; font-weight:700; font-size:16px; padding:14px; border-radius:12px; cursor:pointer; box-shadow:0 10px 20px rgba(2,132,199,0.3);">Awesome!</button>
+        </div>
+    </div>
+
     <!-- Mobile Sidebar Backdrop -->
-    <div class="sidebar-backdrop" id="sidebar-backdrop" onclick="closeMobileSidebar()"></div>
+    <div class="sidebar-backdrop" id="sidebar-backdrop" ></div>
 
     <!-- Application Shell Layout -->
     <div class="app-shell">
@@ -119,7 +136,7 @@
 
             <!-- Navigation Links -->
             <nav class="sidebar-nav">
-                <a href="javascript:void(0)" class="nav-item active" data-view="dashboard" onclick="switchView('dashboard')">
+                <a id="action-btn-3"  href="javascript:void(0)" class="nav-item active" data-view="dashboard" >
                     <span class="nav-icon">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                             stroke-linecap="round" stroke-linejoin="round">
@@ -129,7 +146,7 @@
                     </span>
                     <span class="nav-label">Home</span>
                 </a>
-                <a href="javascript:void(0)" class="nav-item" data-view="activities" onclick="switchView('activities')">
+                <a id="action-btn-4"  href="javascript:void(0)" class="nav-item" data-view="activities" >
                     <span class="nav-icon">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                             stroke-linecap="round" stroke-linejoin="round">
@@ -139,7 +156,7 @@
                     </span>
                     <span class="nav-label">Activity Records</span>
                 </a>
-                <a href="javascript:void(0)" class="nav-item" data-view="members" onclick="switchView('members')">
+                <a id="action-btn-5"  href="javascript:void(0)" class="nav-item" data-view="members" >
                     <span class="nav-icon">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                             stroke-linecap="round" stroke-linejoin="round">
@@ -151,7 +168,7 @@
                     </span>
                     <span class="nav-label">Members</span>
                 </a>
-                <a href="javascript:void(0)" class="nav-item" data-view="attendance" onclick="switchView('attendance')">
+                <a id="action-btn-6"  href="javascript:void(0)" class="nav-item" data-view="attendance" >
                     <span class="nav-icon">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                             stroke-linecap="round" stroke-linejoin="round">
@@ -161,7 +178,7 @@
                     </span>
                     <span class="nav-label">Attendance Records</span>
                 </a>
-                <a href="javascript:void(0)" class="nav-item" data-view="funds" onclick="switchView('funds')">
+                <a id="action-btn-7"  href="javascript:void(0)" class="nav-item" data-view="funds" >
                     <span class="nav-icon">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                             stroke-linecap="round" stroke-linejoin="round">
@@ -172,7 +189,7 @@
                     </span>
                     <span class="nav-label">Funds & Expenses</span>
                 </a>
-                <a href="javascript:void(0)" class="nav-item" data-view="agenda" onclick="switchView('agenda')">
+                <a id="action-btn-8"  href="javascript:void(0)" class="nav-item" data-view="agenda" >
                     <span class="nav-icon">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                             stroke-linecap="round" stroke-linejoin="round">
@@ -185,7 +202,7 @@
                     </span>
                     <span class="nav-label">Agenda</span>
                 </a>
-                <a href="javascript:void(0)" class="nav-item" data-view="servants" onclick="switchView('servants')">
+                <a id="action-btn-9"  href="javascript:void(0)" class="nav-item" data-view="servants" >
                     <span class="nav-icon">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                             stroke-linecap="round" stroke-linejoin="round">
@@ -196,7 +213,7 @@
                     </span>
                     <span class="nav-label">Servant Leaders</span>
                 </a>
-                <a href="javascript:void(0)" class="nav-item" data-view="orgchart" onclick="switchView('orgchart')">
+                <a id="action-btn-10"  href="javascript:void(0)" class="nav-item" data-view="orgchart" >
                     <span class="nav-icon">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                             stroke-linecap="round" stroke-linejoin="round">
@@ -211,7 +228,7 @@
                     </span>
                     <span class="nav-label">Org Chart</span>
                 </a>
-                <a href="javascript:void(0)" class="nav-item" data-view="resources" onclick="switchView('resources')">
+                <a id="action-btn-11"  href="javascript:void(0)" class="nav-item" data-view="resources" >
                     <span class="nav-icon">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                             stroke-linecap="round" stroke-linejoin="round">
@@ -223,6 +240,16 @@
                     </span>
                     <span class="nav-label">Resources</span>
                 </a>
+                
+                <div style="margin: 16px 14px 8px 14px; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 12px;"></div>
+                <a id="action-btn-12"  href="javascript:void(0)" class="nav-item"  style="background: rgba(56, 189, 248, 0.1); border: 1px solid rgba(56, 189, 248, 0.2);">
+                    <span class="nav-icon" style="color: #38BDF8;">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                        </svg>
+                    </span>
+                    <span class="nav-label" style="color: #38BDF8; font-weight: 600;">What's New v4.2</span>
+                </a>
             </nav>
         </aside>
 
@@ -232,7 +259,7 @@
             <!-- Top App Bar (MFC Youth Tarlac Custom Executive Header) -->
             <header class="top-bar mfc-top-bar">
                 <div class="top-bar-left">
-                    <button class="menu-toggle-btn visible-toggle" id="menu-toggle-btn" onclick="toggleMainNavigation(event)" aria-label="Toggle Navigation"
+                    <button class="menu-toggle-btn visible-toggle" id="menu-toggle-btn"  aria-label="Toggle Navigation"
                         title="Toggle menu">
                         <svg id="menu-toggle-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                             stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"
@@ -252,7 +279,7 @@
                         <input type="text" id="global-top-search" placeholder="Quick search..."
                             oninput="handleGlobalSearch(this.value)" onkeydown="if(event.key==='Enter' && !this.value.trim()){ openCommandPalette(); }" autocomplete="off"
                             style="background: rgba(15, 23, 42, 0.75); border: 1px solid rgba(56, 189, 248, 0.3); border-radius: 20px; color: #F8FAFC; padding: 7px 70px 7px 36px; font-size: 0.85rem; width: 100%; outline: none; transition: all 0.2s;">
-                        <button onclick="openCommandPalette()" title="Click or Press Ctrl+K / Cmd+K for Command Palette"
+                        <button id="action-btn-13"   title="Click or Press Ctrl+K / Cmd+K for Command Palette"
                             style="position: absolute; right: 8px; top: 50%; transform: translateY(-50%); background: rgba(56, 189, 248, 0.15); border: 1px solid rgba(56, 189, 248, 0.4); color: #38BDF8; border-radius: 12px; padding: 2px 8px; font-size: 0.7rem; font-weight: 800; cursor: pointer; letter-spacing: 0.5px; transition: all 0.2s;"
                             onmouseover="this.style.background='rgba(56, 189, 248, 0.3)'; this.style.borderColor='#38BDF8'"
                             onmouseout="this.style.background='rgba(56, 189, 248, 0.15)'; this.style.borderColor='rgba(56, 189, 248, 0.4)'">Ctrl K</button>
@@ -264,14 +291,14 @@
                     style="display: flex; align-items: center; gap: 10px; flex-shrink: 0; white-space: nowrap;">
 
                     <!-- Firebase Cloud Sync Button -->
-                    <button id="firebase-cloud-status-btn" onclick="openFirebaseConfigModal()" title="Click to view or configure Firebase Cloud Sync"
+                    <button id="firebase-cloud-status-btn"  title="Click to view or configure Firebase Cloud Sync"
                         style="display: flex; align-items: center; gap: 6px; padding: 6px 14px; background: linear-gradient(135deg, rgba(16,185,129,0.2), rgba(5,150,105,0.15)); border: 1px solid rgba(16,185,129,0.45); border-radius: 20px; color: #34D399; font-size: 0.75rem; font-weight: 700; cursor: pointer; transition: all 0.2s; box-shadow: 0 0 12px rgba(16,185,129,0.15); max-width: 240px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; flex-shrink: 1;">
                         <span style="display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: #22C55E; box-shadow: 0 0 8px #22C55E; flex-shrink: 0;"></span>
                         <span id="firebase-status-label" style="overflow: hidden; text-overflow: ellipsis;">🔥 Firebase: Connected</span>
                     </button>
 
                     <!-- What's New Button -->
-                    <button id="whats-new-btn" onclick="openWhatsNewModal()" title="View What's New in V3.4"
+                    <button id="whats-new-btn"  title="View What's New in V3.4"
                         style="display: flex; align-items: center; gap: 8px; padding: 6px 16px; background: rgba(15, 23, 42, 0.75); border: 1px solid rgba(56, 189, 248, 0.4); border-radius: 24px; color: #F8FAFC; font-size: 0.75rem; font-weight: 800; letter-spacing: 0.05em; cursor: pointer; transition: all 0.2s ease; box-shadow: 0 0 15px rgba(56, 189, 248, 0.1); flex-shrink: 0;"
                         onmouseover="this.style.background='rgba(56, 189, 248, 0.1)'; this.style.borderColor='#38BDF8'"
                         onmouseout="this.style.background='rgba(15, 23, 42, 0.75)'; this.style.borderColor='rgba(56, 189, 248, 0.4)'">
@@ -283,13 +310,13 @@
                     </button>
 
                     <!-- PWA Install Button (shown dynamically when prompt available or manual instructions) -->
-                    <button id="install-pwa-btn" onclick="triggerPWAInstall()" title="Install Portal as Standalone App"
+                    <button id="install-pwa-btn"  title="Install Portal as Standalone App"
                         style="display: none; align-items: center; gap: 6px; padding: 6px 14px; background: linear-gradient(135deg, rgba(14,165,233,0.25), rgba(2,132,199,0.2)); border: 1px solid rgba(56,189,248,0.5); border-radius: 20px; color: #38BDF8; font-size: 0.75rem; font-weight: 700; cursor: pointer; transition: all 0.2s; box-shadow: 0 0 12px rgba(56,189,248,0.2); flex-shrink: 0;">
                         <span>📱 Install App</span>
                     </button>
 
                     <!-- Keyboard Shortcuts Help (?) -->
-                    <button id="cheatsheet-btn" onclick="openKeyboardCheatsheetModal()" title="Keyboard Shortcuts & Rapid Check-in Cheatsheet (Press ?)"
+                    <button id="cheatsheet-btn"  title="Keyboard Shortcuts & Rapid Check-in Cheatsheet (Press ?)"
                         style="display: flex; align-items: center; justify-content: center; width: 34px; height: 34px; background: rgba(15, 23, 42, 0.75); border: 1px solid rgba(255, 255, 255, 0.15); border-radius: 50%; color: #A855F7; cursor: pointer; transition: all 0.2s; box-shadow: 0 0 10px rgba(168, 85, 247, 0.1); flex-shrink: 0;"
                         aria-label="Keyboard Shortcuts Cheatsheet">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 17px; height: 17px;">
@@ -327,7 +354,7 @@
                     <div class="top-bar-divider"></div>
 
                     <!-- Offline / Cloud Sync Pill Badge -->
-                    <button id="portal-sync-badge" onclick="exportFullBackupJSON()" title="Click to download an instant JSON backup snapshot of all chapter data"
+                    <button id="portal-sync-badge"  title="Click to download an instant JSON backup snapshot of all chapter data"
                         style="background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.4); color: #34D399; padding: 6px 14px; border-radius: 20px; font-size: 0.78rem; font-weight: 700; display: inline-flex; align-items: center; gap: 6px; cursor: pointer; transition: all 0.2s;">
                         <span style="width: 8px; height: 8px; border-radius: 50%; background: #34D399; display: inline-block; box-shadow: 0 0 8px #34D399;"></span>
                         <span>All Data Saved Locally</span>
@@ -345,7 +372,7 @@
                     </button>
                     <!-- Profile Button -->
                     <button class="top-bar-icon-btn" title="User Profile & Security" id="profile-toggle-btn"
-                        onclick="openUserProfileModal(event)">
+                        >
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                             style="width: 18px; height: 18px;">
                             <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
@@ -354,7 +381,7 @@
                     </button>
 
                     <!-- Log Out Button -->
-                    <button class="btn-logout" onclick="logoutUser()">
+                    <button id="action-btn-14"  class="btn-logout" >
                         <span>Log Out</span>
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
@@ -382,10 +409,10 @@
                             </div>
                         </div>
                         <div id="dashboard-admin-actions" style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
-                            <button class="btn-primary glow-button" onclick="exportExecutiveSummaryPDF()" style="padding: 8px 16px; font-size: 0.82rem; display: inline-flex; align-items: center; gap: 6px;">
+                            <button id="action-btn-15"  class="btn-primary glow-button"  style="padding: 8px 16px; font-size: 0.82rem; display: inline-flex; align-items: center; gap: 6px;">
                                 <span>📄 Export Executive Report PDF</span>
                             </button>
-                            <button class="btn-secondary" onclick="exportFullBackupJSON()" style="padding: 8px 14px; font-size: 0.82rem; display: inline-flex; align-items: center; gap: 6px; border-color: rgba(16, 185, 129, 0.4); color: #34D399;">
+                            <button id="action-btn-16"  class="btn-secondary"  style="padding: 8px 14px; font-size: 0.82rem; display: inline-flex; align-items: center; gap: 6px; border-color: rgba(16, 185, 129, 0.4); color: #34D399;">
                                 <span>💾 Backup All Portal Data</span>
                             </button>
                             <label class="btn-secondary" style="padding: 8px 14px; font-size: 0.82rem; display: inline-flex; align-items: center; gap: 6px; cursor: pointer; border-color: rgba(56, 189, 248, 0.4); color: #38BDF8; margin: 0;">
@@ -587,7 +614,7 @@
                                         <div style="font-size: 0.78rem; color: #94A3B8;">Full printable overview report</div>
                                     </div>
                                 </div>
-                                <button onclick="generateExecutiveSummaryReport()" class="btn-primary glow-button w-full mt-3" style="width: 100%; justify-content: center; padding: 12px; background: linear-gradient(135deg, #8B5CF6, #6366F1); font-weight: 700;">
+                                <button id="action-btn-17"   class="btn-primary glow-button w-full mt-3" style="width: 100%; justify-content: center; padding: 12px; background: linear-gradient(135deg, #8B5CF6, #6366F1); font-weight: 700;">
                                     <span>📑 Generate Executive PDF Report</span>
                                 </button>
                             </div>
@@ -603,7 +630,7 @@
                                         <div style="font-size: 0.78rem; color: #FBBF24;">Card-by-card WhatsApp outreach</div>
                                     </div>
                                 </div>
-                                <button onclick="openAbsenteeSwiperModal()" class="btn-primary w-full mt-3" style="width: 100%; justify-content: center; padding: 12px; background: linear-gradient(135deg, #D97706, #F59E0B); font-weight: 700; border: none;">
+                                <button id="action-btn-18"   class="btn-primary w-full mt-3" style="width: 100%; justify-content: center; padding: 12px; background: linear-gradient(135deg, #D97706, #F59E0B); font-weight: 700; border: none;">
                                     <span>📲 Swipe Through Absentees</span>
                                 </button>
                             </div>
@@ -628,11 +655,11 @@
                         <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
                             <div class="semester-tabs"
                                 style="display: inline-flex; background: #F1F5F9; padding: 4px; border-radius: 10px; border: 1px solid #E2E8F0;">
-                                <button id="tab-s1" class="sem-tab-btn" onclick="setAgendaSemester('s1', this)"
+                                <button id="tab-s1" class="sem-tab-btn" 
                                     style="padding: 6px 14px; border-radius: 8px; border: none; font-weight: 700; font-size: 0.82rem; cursor: pointer; transition: all 0.2s; background: transparent; color: #475569;">1st Sem · Jan-Jun</button>
-                                <button id="tab-s2" class="sem-tab-btn" onclick="setAgendaSemester('s2', this)"
+                                <button id="tab-s2" class="sem-tab-btn" 
                                     style="padding: 6px 14px; border-radius: 8px; border: none; font-weight: 700; font-size: 0.82rem; cursor: pointer; transition: all 0.2s; background: transparent; color: #475569;">2nd Sem · Jul-Dec</button>
-                                <button id="tab-all" class="sem-tab-btn active" onclick="setAgendaSemester('all', this)"
+                                <button id="tab-all" class="sem-tab-btn active" 
                                     style="padding: 6px 14px; border-radius: 8px; border: none; font-weight: 700; font-size: 0.82rem; cursor: pointer; transition: all 0.2s; background: #1E3A8A; color: #FFF;">All Activities</button>
                             </div>
                         </div>
@@ -641,7 +668,7 @@
                     <!-- Toolbar & Controls -->
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; flex-wrap: wrap; gap: 16px;">
                         <div style="display: flex; align-items: center; gap: 14px; flex-wrap: wrap;">
-                            <button onclick="refreshAgendaHistory()" title="Refresh Records"
+                            <button id="action-btn-19"   title="Refresh Records"
                                 style="background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); color: #94A3B8; padding: 10px; border-radius: 12px; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; transition: all 0.2s; min-width: 44px; min-height: 44px;">
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
                                     style="width: 18px; height: 18px;">
@@ -651,7 +678,7 @@
                                     <path d="M16 16h5v5" />
                                 </svg>
                             </button>
-                            <button onclick="toggleAgendaSort()" id="agenda-sort-btn" title="Sort by Date"
+                            <button  id="agenda-sort-btn" title="Sort by Date"
                                 style="background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); color: #94A3B8; padding: 10px 14px; border-radius: 12px; font-weight: 700; font-size: 0.85rem; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; transition: all 0.2s; min-height: 44px;">
                                 <span>⇅ Date: Oldest</span>
                             </button>
@@ -697,7 +724,7 @@
                     <div
                         style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; flex-wrap: wrap; gap: 16px;">
                         <div style="display: flex; align-items: center; gap: 14px; flex-wrap: wrap;">
-                            <button onclick="refreshAgendaHistory()"
+                            <button id="action-btn-20"  
                                 style="background: rgba(15, 23, 42, 0.7); border: 1px solid rgba(59, 130, 246, 0.4); color: #60A5FA; padding: 10px 22px; border-radius: 10px; font-weight: 700; font-size: 0.85rem; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; transition: all 0.2s; box-shadow: 0 4px 15px rgba(0,0,0,0.2);">
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
                                     style="width: 16px; height: 16px;">
@@ -728,7 +755,7 @@
                                     <option value="MFC Conference">MFC Conference</option>
                                 </select>
                             </div>
-                            <button class="btn-primary glow-button" onclick="openAddModal()">
+                            <button id="action-btn-21"  class="btn-primary glow-button" >
                                 <span>+ Add Activity</span>
                             </button>
                         </div>
@@ -745,8 +772,8 @@
                                 </div>
                             </div>
                             <div style="display: flex; gap: 8px; align-items: center;">
-                                <button onclick="navigateCalendarMonth(-1)" class="btn-secondary btn-sm" style="padding: 6px 12px; font-weight: 800; color: #38BDF8;">◀ Prev</button>
-                                <button onclick="navigateCalendarMonth(1)" class="btn-secondary btn-sm" style="padding: 6px 12px; font-weight: 800; color: #38BDF8;">Next ▶</button>
+                                <button id="action-btn-22"   class="btn-secondary btn-sm" style="padding: 6px 12px; font-weight: 800; color: #38BDF8;">◀ Prev</button>
+                                <button id="action-btn-23"   class="btn-secondary btn-sm" style="padding: 6px 12px; font-weight: 800; color: #38BDF8;">Next ▶</button>
                             </div>
                         </div>
                         
@@ -797,7 +824,7 @@
 
                             <div class="attendance-quick-actions" id="attendance-action-buttons" style="display: none;">
                                 <button class="btn-primary btn-sm glow-button" id="btn-open-qr-scanner"
-                                    onclick="openQRScannerModal()">
+                                    >
                                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                                         style="width: 14px; height: 14px;">
                                         <path d="M3 7V5a2 2 0 0 1 2-2h2" />
@@ -815,7 +842,7 @@
                                     </svg>
                                     Mark All Present
                                 </button>
-                                <button class="btn-secondary btn-sm" onclick="markAllAbsent()" style="color: #F87171; border-color: rgba(248, 113, 113, 0.4);">
+                                <button id="action-btn-24"  class="btn-secondary btn-sm"  style="color: #F87171; border-color: rgba(248, 113, 113, 0.4);">
                                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                                         style="width: 14px; height: 14px;">
                                         <line x1="18" y1="6" x2="6" y2="18"></line>
@@ -823,7 +850,7 @@
                                     </svg>
                                     Mark All Absent
                                 </button>
-                                <button class="btn-secondary btn-sm" onclick="sendGmailToCurrentAbsentees()"
+                                <button id="action-btn-25"  class="btn-secondary btn-sm" 
                                     style="color: #F87171; border-color: rgba(248, 113, 113, 0.4);">
                                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                                         style="width: 14px; height: 14px;">
@@ -833,7 +860,7 @@
                                     </svg>
                                     Email Absentees (Gmail)
                                 </button>
-                                <button class="btn-secondary btn-sm" onclick="exportToPDF()"
+                                <button id="action-btn-26"  class="btn-secondary btn-sm" 
                                     style="color: #38BDF8; border-color: rgba(56, 189, 248, 0.4);">
                                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                                         style="width: 14px; height: 14px;">
@@ -842,7 +869,7 @@
                                     </svg>
                                     Export as PDF
                                 </button>
-                                <button class="btn-secondary btn-sm" onclick="copyAttendanceSummaryForChat()"
+                                <button id="action-btn-27"  class="btn-secondary btn-sm" 
                                     style="color: #34D399; border-color: rgba(52, 211, 153, 0.4);">
                                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                                         style="width: 14px; height: 14px;">
@@ -851,7 +878,7 @@
                                     </svg>
                                     Copy Summary for Chat
                                 </button>
-                                <button class="btn-secondary btn-sm" onclick="openPastoralFollowUpModal()"
+                                <button id="action-btn-28"  class="btn-secondary btn-sm" 
                                     style="color: #A855F7; border-color: rgba(168, 85, 247, 0.45);">
                                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                                         style="width: 14px; height: 14px;">
@@ -859,7 +886,7 @@
                                     </svg>
                                     Pastoral Follow-Up Report
                                 </button>
-                                <button class="btn-secondary btn-sm" onclick="openAttendanceMatrixModal()"
+                                <button id="action-btn-29"  class="btn-secondary btn-sm" 
                                     style="color: #38BDF8; border-color: rgba(56, 189, 248, 0.45);">
                                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                                         style="width: 14px; height: 14px;">
@@ -870,7 +897,7 @@
                                     </svg>
                                     Attendance Matrix Sheet
                                 </button>
-                                <button class="btn-secondary btn-sm" onclick="printBlankAttendanceSheet()"
+                                <button id="action-btn-30"  class="btn-secondary btn-sm" 
                                     style="color: #FBBF24; border-color: rgba(251, 191, 36, 0.45);" title="Print formatted paper clipboard sign-in sheet">
                                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                                         style="width: 14px; height: 14px;">
@@ -908,16 +935,16 @@
                             <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
                                 <span style="font-size: 0.78rem; font-weight: 700; color: #94A3B8;">Batch
                                     Check-In:</span>
-                                <button class="btn-secondary btn-sm"
-                                    onclick="batchMarkChapterPresent('Central Chapter')"
+                                <button id="action-btn-31"  class="btn-secondary btn-sm"
+                                    
                                     style="font-size: 0.75rem; padding: 5px 10px;">🏛️ Central</button>
-                                <button class="btn-secondary btn-sm" onclick="batchMarkChapterPresent('East Chapter')"
+                                <button id="action-btn-32"  class="btn-secondary btn-sm" 
                                     style="font-size: 0.75rem; padding: 5px 10px;">🏛️ East</button>
-                                <button class="btn-secondary btn-sm" onclick="batchMarkChapterPresent('North Chapter')"
+                                <button id="action-btn-33"  class="btn-secondary btn-sm" 
                                     style="font-size: 0.75rem; padding: 5px 10px;">🏛️ North</button>
-                                <button class="btn-secondary btn-sm" onclick="batchMarkChapterPresent('South Chapter')"
+                                <button id="action-btn-34"  class="btn-secondary btn-sm" 
                                     style="font-size: 0.75rem; padding: 5px 10px;">🏛️ South</button>
-                                <button class="btn-secondary btn-sm" onclick="batchMarkChapterPresent('West Chapter')"
+                                <button id="action-btn-35"  class="btn-secondary btn-sm" 
                                     style="font-size: 0.75rem; padding: 5px 10px;">🏛️ West</button>
                             </div>
                         </div>
@@ -990,38 +1017,38 @@
                                 🎯 CHAPTER BULLETS:
                             </span>
 
-                            <button type="button" class="chapter-bullet-btn active" data-chapter="ALL"
-                                onclick="filterByChapterBullet('ALL', this)"
+                            <button id="action-btn-36"  type="button" class="chapter-bullet-btn active" data-chapter="ALL"
+                                
                                 style="background: linear-gradient(135deg, #0284C7, #3B82F6); color: #FFF; border: 1px solid rgba(56,189,248,0.5); border-radius: 20px; padding: 7px 16px; font-size: 0.82rem; font-weight: 700; cursor: pointer; transition: all 0.2s; box-shadow: 0 4px 12px rgba(14,165,233,0.3);">
                                 🌐 All Chapters
                             </button>
 
-                            <button type="button" class="chapter-bullet-btn" data-chapter="Central Chapter"
-                                onclick="filterByChapterBullet('Central Chapter', this)"
+                            <button id="action-btn-37"  type="button" class="chapter-bullet-btn" data-chapter="Central Chapter"
+                                
                                 style="background: rgba(15, 23, 42, 0.65); color: #CBD5E1; border: 1px solid rgba(255,255,255,0.15); border-radius: 20px; padding: 7px 16px; font-size: 0.82rem; font-weight: 700; cursor: pointer; transition: all 0.2s;">
                                 📍 Central Chapter
                             </button>
 
-                            <button type="button" class="chapter-bullet-btn" data-chapter="East Chapter"
-                                onclick="filterByChapterBullet('East Chapter', this)"
+                            <button id="action-btn-38"  type="button" class="chapter-bullet-btn" data-chapter="East Chapter"
+                                
                                 style="background: rgba(15, 23, 42, 0.65); color: #CBD5E1; border: 1px solid rgba(255,255,255,0.15); border-radius: 20px; padding: 7px 16px; font-size: 0.82rem; font-weight: 700; cursor: pointer; transition: all 0.2s;">
                                 🌅 East Chapter
                             </button>
 
-                            <button type="button" class="chapter-bullet-btn" data-chapter="North Chapter"
-                                onclick="filterByChapterBullet('North Chapter', this)"
+                            <button id="action-btn-39"  type="button" class="chapter-bullet-btn" data-chapter="North Chapter"
+                                
                                 style="background: rgba(15, 23, 42, 0.65); color: #CBD5E1; border: 1px solid rgba(255,255,255,0.15); border-radius: 20px; padding: 7px 16px; font-size: 0.82rem; font-weight: 700; cursor: pointer; transition: all 0.2s;">
                                 🧭 North Chapter
                             </button>
 
-                            <button type="button" class="chapter-bullet-btn" data-chapter="South Chapter"
-                                onclick="filterByChapterBullet('South Chapter', this)"
+                            <button id="action-btn-40"  type="button" class="chapter-bullet-btn" data-chapter="South Chapter"
+                                
                                 style="background: rgba(15, 23, 42, 0.65); color: #CBD5E1; border: 1px solid rgba(255,255,255,0.15); border-radius: 20px; padding: 7px 16px; font-size: 0.82rem; font-weight: 700; cursor: pointer; transition: all 0.2s;">
                                 🌴 South Chapter
                             </button>
 
-                            <button type="button" class="chapter-bullet-btn" data-chapter="West Chapter"
-                                onclick="filterByChapterBullet('West Chapter', this)"
+                            <button id="action-btn-41"  type="button" class="chapter-bullet-btn" data-chapter="West Chapter"
+                                
                                 style="background: rgba(15, 23, 42, 0.65); color: #CBD5E1; border: 1px solid rgba(255,255,255,0.15); border-radius: 20px; padding: 7px 16px; font-size: 0.82rem; font-weight: 700; cursor: pointer; transition: all 0.2s;">
                                 🌄 West Chapter
                             </button>
@@ -1041,7 +1068,7 @@
                             </div>
 
                             <div class="toolbar-right" style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
-                                <button class="btn-secondary" onclick="exportMembersToPDF()"
+                                <button id="action-btn-42"  class="btn-secondary" 
                                     title="Export Members Directory to PDF"
                                     style="padding: 10px 16px; border-color: rgba(248, 113, 113, 0.4); color: #F87171; display: flex; align-items: center;">
                                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
@@ -1054,7 +1081,7 @@
                                     </svg>
                                     <span>Export PDF</span>
                                 </button>
-                                <button class="btn-secondary" onclick="exportMembersCSV()"
+                                <button id="action-btn-43"  class="btn-secondary" 
                                     title="Export Members Directory to Excel / CSV"
                                     style="padding: 10px 16px; border-color: rgba(34, 197, 94, 0.45); color: #4ADE80; display: flex; align-items: center;">
                                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 16px; height: 16px; margin-right: 6px;">
@@ -1065,31 +1092,31 @@
                                     </svg>
                                     <span>Export Excel/CSV</span>
                                 </button>
-                                <button class="btn-secondary" onclick="openMemberIDCard()"
+                                <button id="action-btn-44"  class="btn-secondary" 
                                      title="View & Print Digital Youth Member ID Card"
                                      style="padding: 10px 16px; border-color: rgba(56, 189, 248, 0.45); color: #38BDF8; display: flex; align-items: center; font-weight: 700;">
                                      <span style="margin-right: 6px; font-size: 1rem;">🆔</span>
                                      <span>Digital ID Card</span>
                                  </button>
-                                 <button class="btn-primary" onclick="openQRScannerModal()"
+                                 <button id="action-btn-45"  class="btn-primary" 
                                      title="Scan Member QR Code for Instant Check-in"
                                      style="padding: 10px 16px; background: linear-gradient(135deg, #10B981, #059669); border: none; display: flex; align-items: center; font-weight: 700;">
                                      <span style="margin-right: 6px; font-size: 1rem;">📷</span>
                                      <span>Scan QR Check-In</span>
                                  </button>
-                                 <button class="btn-secondary" onclick="openCertificateModal()"
+                                 <button id="action-btn-46"  class="btn-secondary" 
                                      title="Generate Official Certificate of Participation PDF"
                                      style="padding: 10px 16px; border-color: rgba(245, 158, 11, 0.45); color: #FBBF24; display: flex; align-items: center; font-weight: 700;">
                                      <span style="margin-right: 6px; font-size: 1rem;">📜</span>
                                      <span>Certificate PDF</span>
                                  </button>
-                                <button class="btn-secondary" onclick="openHouseholdTreeViewModal()"
+                                <button id="action-btn-47"  class="btn-secondary" 
                                     title="View Visual Pastoral Household & Leadership Mentoring Tree"
                                     style="padding: 10px 16px; border-color: rgba(168, 85, 247, 0.45); color: #C084FC; display: flex; align-items: center;">
                                     <span style="margin-right: 6px; font-size: 1rem;">🌳</span>
                                     <span>Household Tree</span>
                                 </button>
-                                <button class="btn-secondary" onclick="printBlankAttendanceSheet()"
+                                <button id="action-btn-48"  class="btn-secondary" 
                                     title="Print formatted paper clipboard sign-in sheet"
                                     style="padding: 10px 16px; border-color: rgba(251, 191, 36, 0.45); color: #FBBF24; display: flex; align-items: center;">
                                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
@@ -1100,7 +1127,7 @@
                                     </svg>
                                     <span>Print Printable Sheet</span>
                                 </button>
-                                <button class="btn-secondary" onclick="clearAllMembers()" title="Clear All Members"
+                                <button id="action-btn-49"  class="btn-secondary"  title="Clear All Members"
                                     style="padding: 10px 16px; border-color: rgba(244, 63, 94, 0.4); color: #F43F5E; display: flex; align-items: center;">
                                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                                         style="width: 16px; height: 16px; margin-right: 6px;">
@@ -1130,7 +1157,7 @@
                                     <div id="members-duplicate-banner-text" style="color: #FBBF24; font-size: 0.82rem; margin-top: 2px;">We found identical names in the roster. Please review highlighted rows below.</div>
                                 </div>
                             </div>
-                            <button onclick="filterDuplicateMembers()" id="btn-filter-duplicates" class="btn-secondary btn-sm" style="background: rgba(245, 158, 11, 0.25); border: 1px solid #F59E0B; color: #FFF; font-weight: 700; cursor: pointer; transition: all 0.2s;">
+                            <button  id="btn-filter-duplicates" class="btn-secondary btn-sm" style="background: rgba(245, 158, 11, 0.25); border: 1px solid #F59E0B; color: #FFF; font-weight: 700; cursor: pointer; transition: all 0.2s;">
                                 <span>🔍 Filter Only Duplicates</span>
                             </button>
                         </div>
@@ -1196,7 +1223,7 @@
                                 </svg>
                                 <span>Export PDF Report</span>
                             </button>
-                            <button class="btn-export" onclick="exportToGoogleSheetsTSV()"
+                            <button id="action-btn-50"  class="btn-export" 
                                 style="background: rgba(16, 185, 129, 0.15); color: #34D399; border: 1px solid rgba(16, 185, 129, 0.3);">
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                     <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
@@ -1207,7 +1234,7 @@
                                 </svg>
                                 <span>Google Sheets Sync</span>
                             </button>
-                            <button class="btn-export btn-backup" id="btn-backup-json" onclick="exportBackupJSON()"
+                            <button class="btn-export btn-backup" id="btn-backup-json" 
                                 style="background: rgba(56, 189, 248, 0.15); color: #38BDF8; border: 1px solid rgba(56, 189, 248, 0.3);">
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                     <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
@@ -1275,7 +1302,7 @@
                                     check-in.
                                 </p>
                             </div>
-                            <button class="btn-secondary" onclick="generatePastoralList()"
+                            <button id="action-btn-51"  class="btn-secondary" 
                                 style="border-color: rgba(244, 63, 94, 0.4); color: #F43F5E;">
                                 🔄 Refresh Follow-Up List
                             </button>
@@ -1360,7 +1387,7 @@
                                 </select>
                             </div>
                             <div class="view-mode-toggle">
-                                <button class="btn-toggle active" id="btn-org-tree" onclick="setOrgViewMode('tree')"
+                                <button class="btn-toggle active" id="btn-org-tree" 
                                     title="Tree Hierarchy View">
                                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                                         style="width: 16px; height: 16px;">
@@ -1372,7 +1399,7 @@
                                     </svg>
                                     <span>Tree View</span>
                                 </button>
-                                <button class="btn-toggle" id="btn-org-grid" onclick="setOrgViewMode('grid')"
+                                <button class="btn-toggle" id="btn-org-grid" 
                                     title="Department Grid View">
                                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                                         style="width: 16px; height: 16px;">
@@ -1383,7 +1410,7 @@
                                     </svg>
                                     <span>Grid View</span>
                                 </button>
-                                <button class="btn-toggle" id="btn-org-household" onclick="setOrgViewMode('household')"
+                                <button class="btn-toggle" id="btn-org-household" 
                                     title="Household Mentoring Groups">
                                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                                         style="width: 16px; height: 16px;">
@@ -1393,10 +1420,10 @@
                                     <span>Household View</span>
                                 </button>
                             </div>
-                            <button class="btn-secondary btn-sm" onclick="openBatchIDPrintModal()" style="color: #38BDF8; border-color: rgba(56, 189, 248, 0.4);">
+                            <button id="action-btn-52"  class="btn-secondary btn-sm"  style="color: #38BDF8; border-color: rgba(56, 189, 248, 0.4);">
                                 <span>🖨️ Print Batch IDs (A4)</span>
                             </button>
-                            <button class="btn-primary glow-button btn-sm" onclick="openAddMemberModal()">
+                            <button id="action-btn-53"  class="btn-primary glow-button btn-sm" >
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                                     style="width: 16px; height: 16px;">
                                     <line x1="12" y1="5" x2="12" y2="19" />
@@ -1566,7 +1593,7 @@
                                     <option value="Other Expense">Other Expense</option>
                                 </optgroup>
                             </select>
-                                              <button class="btn-secondary" onclick="resetFundsFilter()" title="Reset Filters" style="height: 42px; width: 42px; padding: 0; display: flex; justify-content: center; align-items: center; border-radius: 12px;">
+                                              <button id="action-btn-54"  class="btn-secondary"  title="Reset Filters" style="height: 42px; width: 42px; padding: 0; display: flex; justify-content: center; align-items: center; border-radius: 12px;">
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 16px; height: 16px;">
                                     <path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
                                     <path d="M3 3v5h5" />
@@ -1577,7 +1604,7 @@
                         </div>
 
                         <div class="toolbar-right" style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
-                            <button class="btn-secondary" onclick="exportFinancialLedgerCSV()"
+                            <button id="action-btn-55"  class="btn-secondary" 
                                 title="Export CSV Spreadsheet"
                                 style="height: 42px; padding: 0 16px; border-color: rgba(255, 255, 255, 0.15); color: #E2E8F0; display: flex; align-items: center; border-radius: 12px;">
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
@@ -1588,7 +1615,7 @@
                                 </svg>
                                 Export CSV
                             </button>
-                            <button class="btn-secondary" onclick="generateOfficialLedgerPDF()"
+                            <button id="action-btn-56"  class="btn-secondary" 
                                 title="Download Official Ledger PDF"
                                 style="height: 42px; padding: 0 16px; border-color: rgba(255, 255, 255, 0.15); color: #E2E8F0; display: flex; align-items: center; border-radius: 12px;">
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
@@ -1601,7 +1628,7 @@
                                 </svg>
                                 Official Ledger PDF
                             </button>
-                            <button class="btn-primary glow-button" onclick="openAddFundModal()" style="height: 42px; padding: 0 20px; border-radius: 12px; border: none; font-weight: 600;">
+                            <button id="action-btn-57"  class="btn-primary glow-button"  style="height: 42px; padding: 0 20px; border-radius: 12px; border: none; font-weight: 600;">
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
                                     style="width: 18px; height: 18px; margin-right: 8px;">
                                     <line x1="12" y1="5" x2="12" y2="19" />
@@ -1651,8 +1678,8 @@
                                 songboards, and chapter prayer guides</p>
                         </div>
                         <div style="display: flex; gap: 8px; flex-wrap: wrap;">
-                            <button class="btn-primary"
-                                onclick="openDownloadAllModal()"
+                            <button id="action-btn-58"  class="btn-primary"
+                                
                                 style="font-size: 0.85rem; display: flex; align-items: center; gap: 6px; background: linear-gradient(135deg, #10B981, #059669); border: none; box-shadow: 0 4px 14px rgba(16, 185, 129, 0.35); padding: 10px 18px; cursor: pointer;">
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
                                 <span style="font-weight: 700;">Download All Manuals</span>
@@ -1663,23 +1690,23 @@
                     <!-- Category Navigation Tabs inside Resources View -->
                     <div style="display: flex; gap: 10px; margin-bottom: 24px; flex-wrap: wrap;" id="resources-tab-bar">
                         <button class="resource-tab-btn active" id="btn-res-youthcamp"
-                            onclick="switchResourceCategory('youthcamp')"
+                            
                             style="padding: 10px 18px; border-radius: 12px; font-weight: 700; font-size: 0.85rem; border: 1px solid rgba(56, 189, 248, 0.4); background: rgba(56, 189, 248, 0.15); color: #38BDF8; cursor: pointer; transition: all 0.2s;">⛺
                             Youthcamp</button>
                         <button class="resource-tab-btn" id="btn-res-trainings"
-                            onclick="switchResourceCategory('trainings')"
+                            
                             style="padding: 10px 18px; border-radius: 12px; font-weight: 700; font-size: 0.85rem; border: 1px solid rgba(255, 255, 255, 0.1); background: rgba(15, 23, 42, 0.4); color: #94A3B8; cursor: pointer; transition: all 0.2s;">🎓
                             Trainings</button>
                         <button class="resource-tab-btn" id="btn-res-songboard"
-                            onclick="switchResourceCategory('songboard')"
+                            
                             style="padding: 10px 18px; border-radius: 12px; font-weight: 700; font-size: 0.85rem; border: 1px solid rgba(255, 255, 255, 0.1); background: rgba(15, 23, 42, 0.4); color: #94A3B8; cursor: pointer; transition: all 0.2s;">🎸
                             Songboard</button>
                         <button class="resource-tab-btn" id="btn-res-holyrosary"
-                            onclick="switchResourceCategory('holyrosary')"
+                            
                             style="padding: 10px 18px; border-radius: 12px; font-weight: 700; font-size: 0.85rem; border: 1px solid rgba(255, 255, 255, 0.1); background: rgba(15, 23, 42, 0.4); color: #94A3B8; cursor: pointer; transition: all 0.2s;">📿
                             Holy Rosary</button>
                         <button class="resource-tab-btn" id="btn-res-letters"
-                            onclick="switchResourceCategory('letters')"
+                            
                             style="padding: 10px 18px; border-radius: 12px; font-weight: 700; font-size: 0.85rem; border: 1px solid rgba(255, 255, 255, 0.1); background: rgba(15, 23, 42, 0.4); color: #94A3B8; cursor: pointer; transition: all 0.2s;">✉️
                             Letters</button>
                     </div>
@@ -1729,7 +1756,7 @@
                     <div class="resource-section" id="res-section-trainings"
                         style="display: none; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px;">
                         <!-- FOLDER CARD: Household Servants Training -->
-                        <div class="glass-card hover-glow" onclick="openHHFolderModal()" style="padding: 22px; border-radius: 16px; border: 1px solid rgba(56, 189, 248, 0.4); background: rgba(15, 23, 42, 0.85); position: relative; cursor: pointer; transition: transform 0.2s ease, box-shadow 0.2s ease;">
+                        <div id="action-btn-59"  class="glass-card hover-glow"  style="padding: 22px; border-radius: 16px; border: 1px solid rgba(56, 189, 248, 0.4); background: rgba(15, 23, 42, 0.85); position: relative; cursor: pointer; transition: transform 0.2s ease, box-shadow 0.2s ease;">
                             <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;">
                                 <div style="font-size: 2.2rem;">📁</div>
                                 <span style="background: rgba(16, 185, 129, 0.2); border: 1px solid rgba(16, 185, 129, 0.4); color: #34D399; padding: 3px 10px; border-radius: 12px; font-size: 0.72rem; font-weight: 800; display: inline-flex; align-items: center; gap: 4px;">7 FILES</span>
@@ -1744,7 +1771,7 @@
                         </div>
                         
                         <!-- FOLDER CARD: Chapter Servants Training -->
-                        <div class="glass-card hover-glow" onclick="openCSTFolderModal()" style="padding: 22px; border-radius: 16px; border: 1px solid rgba(56, 189, 248, 0.4); background: rgba(15, 23, 42, 0.85); position: relative; cursor: pointer; transition: transform 0.2s ease, box-shadow 0.2s ease;">
+                        <div id="action-btn-60"  class="glass-card hover-glow"  style="padding: 22px; border-radius: 16px; border: 1px solid rgba(56, 189, 248, 0.4); background: rgba(15, 23, 42, 0.85); position: relative; cursor: pointer; transition: transform 0.2s ease, box-shadow 0.2s ease;">
                             <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;">
                                 <div style="font-size: 2.2rem;">📁</div>
                                 <span style="background: rgba(16, 185, 129, 0.2); border: 1px solid rgba(16, 185, 129, 0.4); color: #34D399; padding: 3px 10px; border-radius: 12px; font-size: 0.72rem; font-weight: 800; display: inline-flex; align-items: center; gap: 4px;">6 FILES</span>
@@ -1762,21 +1789,21 @@
                             <h3 style="color: #F8FAFC; font-size: 1.1rem; font-weight: 800; margin: 0 0 8px 0;">Chapter Leadership Training (CLT)</h3>
                             <p style="color: #94A3B8; font-size: 0.82rem; line-height: 1.5; margin: 0 0 16px 0;">
                                 Comprehensive module for chapter officers, ministry coordinators, and aspiring servant leaders.</p>
-                            <button class="btn-secondary btn-sm" onclick="showToast('📄 Opened CLT Training Module', 'info')" style="width: 100%;">Open CLT Guide →</button>
+                            <button id="action-btn-61"  class="btn-secondary btn-sm"  style="width: 100%;">Open CLT Guide →</button>
                         </div>
                         <div class="glass-card" data-static-id="static-hht-guide" style="padding: 22px; border-radius: 16px;">
                             <div style="font-size: 1.8rem; margin-bottom: 12px;">🤝</div>
                             <h3 style="color: #F8FAFC; font-size: 1.1rem; font-weight: 800; margin: 0 0 8px 0;">Household Heads Training (HHT)</h3>
                             <p style="color: #94A3B8; font-size: 0.82rem; line-height: 1.5; margin: 0 0 16px 0;">
                                 Step-by-step guide on facilitating household meetings, one-on-ones, and pastoral care.</p>
-                            <button class="btn-secondary btn-sm" onclick="showToast('📄 Opened Household Heads Guide', 'info')" style="width: 100%;">Open HHT Guide →</button>
+                            <button id="action-btn-62"  class="btn-secondary btn-sm"  style="width: 100%;">Open HHT Guide →</button>
                         </div>
                         <div class="glass-card" data-static-id="static-speaker-workshop" style="padding: 22px; border-radius: 16px;">
                             <div style="font-size: 1.8rem; margin-bottom: 12px;">🗣️</div>
                             <h3 style="color: #F8FAFC; font-size: 1.1rem; font-weight: 800; margin: 0 0 8px 0;">Speaker's Workshop Guide</h3>
                             <p style="color: #94A3B8; font-size: 0.82rem; line-height: 1.5; margin: 0 0 16px 0;">
                                 Effective public speaking, testimony preparation, and spiritual grounding for speakers.</p>
-                            <button class="btn-secondary btn-sm" onclick="showToast('📄 Opened Speaker Workshop Manual', 'info')" style="width: 100%;">Open Workshop PDF →</button>
+                            <button id="action-btn-63"  class="btn-secondary btn-sm"  style="width: 100%;">Open Workshop PDF →</button>
                         </div>
                     </div>
 
@@ -1806,14 +1833,14 @@
                             <h3 style="color: #F8FAFC; font-size: 1.1rem; font-weight: 800; margin: 0 0 8px 0;">MFC Youth Official Songbook & Chord Transposer</h3>
                             <p style="color: #94A3B8; font-size: 0.82rem; line-height: 1.5; margin: 0 0 16px 0;">
                                 Complete lyrics & guitar chords with interactive live key transposition (+1/-1 semitones).</p>
-                            <button class="btn-primary btn-sm" onclick="openSongbookTransposerModal()" style="width: 100%; background: linear-gradient(135deg, #A855F7, #7E22CE); border: none;">🎸 Open Interactive Songbook & Transposer →</button>
+                            <button id="action-btn-64"  class="btn-primary btn-sm"  style="width: 100%; background: linear-gradient(135deg, #A855F7, #7E22CE); border: none;">🎸 Open Interactive Songbook & Transposer →</button>
                         </div>
                         <div class="glass-card" data-static-id="static-setlist-planner" style="padding: 22px; border-radius: 16px;">
                             <div style="font-size: 1.8rem; margin-bottom: 12px;">🎹</div>
                             <h3 style="color: #F8FAFC; font-size: 1.1rem; font-weight: 800; margin: 0 0 8px 0;">Worship Setlist Planner</h3>
                             <p style="color: #94A3B8; font-size: 0.82rem; line-height: 1.5; margin: 0 0 16px 0;">
                                 Template for structuring gathering praise, opening worship, and reflection songs for assemblies.</p>
-                            <button class="btn-secondary btn-sm" onclick="showToast('📋 Opened Setlist Planner Sheet', 'info')" style="width: 100%;">Plan Setlist →</button>
+                            <button id="action-btn-65"  class="btn-secondary btn-sm"  style="width: 100%;">Plan Setlist →</button>
                         </div>
                     </div>
 
@@ -1897,14 +1924,14 @@
                             <h3 style="color: #F8FAFC; font-size: 1.1rem; font-weight: 800; margin: 0 0 8px 0;">The Holy Rosary Interactive Guide & Bead Counter</h3>
                             <p style="color: #94A3B8; font-size: 0.82rem; line-height: 1.5; margin: 0 0 16px 0;">
                                 Guided mystery prayers, scripture verses, and interactive bead tracker (Joyful, Luminous, Sorrowful, Glorious).</p>
-                            <button class="btn-primary btn-sm" onclick="openInteractiveRosaryModal()" style="width: 100%; background: linear-gradient(135deg, #0284C7, #38BDF8); border: none;">📿 Start Interactive Rosary Prayer →</button>
+                            <button id="action-btn-66"  class="btn-primary btn-sm"  style="width: 100%; background: linear-gradient(135deg, #0284C7, #38BDF8); border: none;">📿 Start Interactive Rosary Prayer →</button>
                         </div>
                         <div class="glass-card" data-static-id="static-prayer-litany" style="padding: 22px; border-radius: 16px;">
                             <div style="font-size: 1.8rem; margin-bottom: 12px;">🕊️</div>
                             <h3 style="color: #F8FAFC; font-size: 1.1rem; font-weight: 800; margin: 0 0 8px 0;">Chapter Prayer & Litany Sheet</h3>
                             <p style="color: #94A3B8; font-size: 0.82rem; line-height: 1.5; margin: 0 0 16px 0;">
                                 Printable opening and closing prayers for household meetings and chapter assemblies.</p>
-                            <button class="btn-secondary btn-sm" onclick="showToast('📄 Opened Chapter Prayer Sheet PDF', 'info')" style="width: 100%;">Open Prayer Sheet →</button>
+                            <button id="action-btn-67"  class="btn-secondary btn-sm"  style="width: 100%;">Open Prayer Sheet →</button>
                         </div>
                     </div>
 
@@ -1921,7 +1948,7 @@
                             <h3 style="color: #F8FAFC; font-size: 1.2rem; font-weight: 800; margin: 0 0 8px 0;">Smart Fillable Chapter Letter & PDF Generator</h3>
                             <p style="color: #CBD5E1; font-size: 0.83rem; line-height: 1.5; margin: 0 0 16px 0;">
                                 Input the delegate name, parent name, event title, date & location to automatically generate and download an official formatted PDF letter with signature lines!</p>
-                            <button class="btn-primary btn-sm glow-button" onclick="openLetterGeneratorModal('parental')" style="width: 100%; background: linear-gradient(135deg, #0284C7, #38BDF8); border: none; font-weight: 800; display: flex; align-items: center; justify-content: center; gap: 8px; padding: 10px 16px; font-size: 0.9rem;">
+                            <button id="action-btn-68"  class="btn-primary btn-sm glow-button"  style="width: 100%; background: linear-gradient(135deg, #0284C7, #38BDF8); border: none; font-weight: 800; display: flex; align-items: center; justify-content: center; gap: 8px; padding: 10px 16px; font-size: 0.9rem;">
                                 <span>✍️ Fill Form & Download PDF →</span>
                             </button>
                         </div>
@@ -1936,7 +1963,7 @@
                             <p style="color: #94A3B8; font-size: 0.82rem; line-height: 1.5; margin: 0 0 16px 0;">
                                 Official parental indemnity waiver for youth camps, weekend retreats, and provincial mission trips.</p>
                             <div style="display: flex; flex-direction: column; gap: 8px;">
-                                <button class="btn-primary btn-sm" onclick="openLetterGeneratorModal('parental')" style="width: 100%; background: linear-gradient(135deg, #F59E0B, #D97706); border: none; font-weight: 800;">✍️ Fill & Export PDF</button>
+                                <button id="action-btn-69"  class="btn-primary btn-sm"  style="width: 100%; background: linear-gradient(135deg, #F59E0B, #D97706); border: none; font-weight: 800;">✍️ Fill & Export PDF</button>
                                 <div style="display: flex; gap: 8px;">
                                     <a href="resources/Parental Consent and Endorsement Letter.docx" target="_blank" class="btn-secondary btn-sm" style="flex: 1; text-align: center; text-decoration: none; font-size: 0.75rem;">📄 Open Doc</a>
                                     <a href="resources/Parental Consent and Endorsement Letter.docx" download class="btn-secondary btn-sm" style="flex: 1; text-align: center; text-decoration: none; font-size: 0.75rem;">📥 Word .docx</a>
@@ -1954,7 +1981,7 @@
                             <p style="color: #94A3B8; font-size: 0.82rem; line-height: 1.5; margin: 0 0 16px 0;">
                                 Formal excuse letter addressed to school deans, principals, and teachers for delegates and servants.</p>
                             <div style="display: flex; flex-direction: column; gap: 8px;">
-                                <button class="btn-primary btn-sm" onclick="openLetterGeneratorModal('excuse')" style="width: 100%; background: linear-gradient(135deg, #0284C7, #38BDF8); border: none; font-weight: 800;">📜 Fill & Export PDF</button>
+                                <button id="action-btn-70"  class="btn-primary btn-sm"  style="width: 100%; background: linear-gradient(135deg, #0284C7, #38BDF8); border: none; font-weight: 800;">📜 Fill & Export PDF</button>
                                 <div style="display: flex; gap: 8px;">
                                     <a href="resources/Pastoral Invitation and School Excuse Letter.docx" target="_blank" class="btn-secondary btn-sm" style="flex: 1; text-align: center; text-decoration: none; font-size: 0.75rem;">📄 Open Doc</a>
                                     <a href="resources/Pastoral Invitation and School Excuse Letter.docx" download class="btn-secondary btn-sm" style="flex: 1; text-align: center; text-decoration: none; font-size: 0.75rem;">📥 Word .docx</a>
@@ -1972,7 +1999,7 @@
                             <p style="color: #94A3B8; font-size: 0.82rem; line-height: 1.5; margin: 0 0 16px 0;">
                                 Fundraising appeal letter template for financial partners, donors, and sponsors for youth outreach.</p>
                             <div style="display: flex; flex-direction: column; gap: 8px;">
-                                <button class="btn-primary btn-sm" onclick="openLetterGeneratorModal('sponsorship')" style="width: 100%; background: linear-gradient(135deg, #10B981, #059669); border: none; font-weight: 800;">🤝 Fill & Export PDF</button>
+                                <button id="action-btn-71"  class="btn-primary btn-sm"  style="width: 100%; background: linear-gradient(135deg, #10B981, #059669); border: none; font-weight: 800;">🤝 Fill & Export PDF</button>
                                 <div style="display: flex; gap: 8px;">
                                     <a href="resources/Sponsorship and Solicitation Appeal Letter.docx" target="_blank" class="btn-secondary btn-sm" style="flex: 1; text-align: center; text-decoration: none; font-size: 0.75rem;">📄 Open Doc</a>
                                     <a href="resources/Sponsorship and Solicitation Appeal Letter.docx" download class="btn-secondary btn-sm" style="flex: 1; text-align: center; text-decoration: none; font-size: 0.75rem;">📥 Word .docx</a>
@@ -1990,7 +2017,7 @@
                             <p style="color: #94A3B8; font-size: 0.82rem; line-height: 1.5; margin: 0 0 16px 0;">
                                 Official chapter transportation request and shuttle coordination letter template for youth camps.</p>
                             <div style="display: flex; flex-direction: column; gap: 8px;">
-                                <button class="btn-primary btn-sm" onclick="openLetterGeneratorModal('transport')" style="width: 100%; background: linear-gradient(135deg, #0284C7, #38BDF8); border: none; font-weight: 800;">🚌 Fill & Export PDF</button>
+                                <button id="action-btn-72"  class="btn-primary btn-sm"  style="width: 100%; background: linear-gradient(135deg, #0284C7, #38BDF8); border: none; font-weight: 800;">🚌 Fill & Export PDF</button>
                                 <div style="display: flex; gap: 8px;">
                                     <a href="resources/Letter For Transportation.docx" target="_blank" class="btn-secondary btn-sm" style="flex: 1; text-align: center; text-decoration: none; font-size: 0.75rem;">📄 Open Doc</a>
                                     <a href="resources/Letter For Transportation.docx" download class="btn-secondary btn-sm" style="flex: 1; text-align: center; text-decoration: none; font-size: 0.75rem;">📥 Word .docx</a>
@@ -2011,7 +2038,7 @@
                 <!-- MODAL: DOWNLOAD ALL MANUALS -->
                 <div id="modal-download-all" class="modal-backdrop" style="display:none; z-index:100000; align-items:center; justify-content:center;">
                     <div class="glass-card" style="width:100%; max-width:580px; max-height:85vh; padding:32px; border-radius:20px; position:relative; display:flex; flex-direction:column;">
-                        <button onclick="closeDownloadAllModal()" style="position:absolute; top:16px; right:16px; background:none; border:none; color:#94A3B8; font-size:1.4rem; cursor:pointer; line-height:1;">&times;</button>
+                        <button id="action-btn-73"   style="position:absolute; top:16px; right:16px; background:none; border:none; color:#94A3B8; font-size:1.4rem; cursor:pointer; line-height:1;">&times;</button>
                         <div style="display:flex; align-items:center; gap:12px; margin-bottom:12px;">
                             <div style="font-size:2rem;">📦</div>
                             <div>
@@ -2030,8 +2057,8 @@
                         <div id="download-all-list" style="overflow-y:auto; flex:1; display:flex; flex-direction:column; gap:10px; margin:12px 0; padding-right:4px;"></div>
 
                         <div style="display:flex; gap:12px; justify-content:flex-end; margin-top:12px; flex-wrap:wrap;">
-                            <button onclick="closeDownloadAllModal()" class="btn-secondary btn-sm">Close</button>
-                            <button id="btn-start-batch-download" onclick="startBatchDownload()" class="btn-primary btn-sm" style="display:flex; align-items:center; gap:6px; background:linear-gradient(135deg, #10B981, #059669); border:none; cursor:pointer;">
+                            <button id="action-btn-74"   class="btn-secondary btn-sm">Close</button>
+                            <button id="btn-start-batch-download"  class="btn-primary btn-sm" style="display:flex; align-items:center; gap:6px; background:linear-gradient(135deg, #10B981, #059669); border:none; cursor:pointer;">
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width:15px;height:15px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
                                 <span>Start Batch Download (6 Files)</span>
                             </button>
@@ -2042,7 +2069,7 @@
                 <!-- MODAL: HH SERVANTS TRAINING FOLDER -->
                 <div id="modal-hh-folder" class="modal-backdrop" style="display:none; z-index:100000; align-items:center; justify-content:center;">
                     <div class="glass-card" style="width:100%; max-width:850px; max-height:85vh; padding:32px; border-radius:20px; position:relative; display:flex; flex-direction:column;">
-                        <button onclick="closeHHFolderModal()" style="position:absolute; top:16px; right:16px; background:none; border:none; color:#94A3B8; font-size:1.4rem; cursor:pointer; line-height:1;">&times;</button>
+                        <button id="action-btn-75"   style="position:absolute; top:16px; right:16px; background:none; border:none; color:#94A3B8; font-size:1.4rem; cursor:pointer; line-height:1;">&times;</button>
                         <div style="display:flex; align-items:center; gap:12px; margin-bottom:16px;">
                             <div style="font-size:2rem;">📁</div>
                             <div>
@@ -2111,7 +2138,7 @@
                         </div>
 
                         <div style="display:flex; justify-content:flex-end; margin-top:16px;">
-                            <button onclick="closeHHFolderModal()" class="btn-secondary btn-sm">Close Folder</button>
+                            <button id="action-btn-76"   class="btn-secondary btn-sm">Close Folder</button>
                         </div>
                     </div>
                 </div>
@@ -2119,7 +2146,7 @@
                 <!-- MODAL: CHAPTER SERVANTS TRAINING FOLDER -->
                 <div id="modal-cst-folder" class="modal-backdrop" style="display:none; z-index:100000; align-items:center; justify-content:center;">
                     <div class="glass-card" style="width:100%; max-width:850px; max-height:85vh; padding:32px; border-radius:20px; position:relative; display:flex; flex-direction:column;">
-                        <button onclick="closeCSTFolderModal()" style="position:absolute; top:16px; right:16px; background:none; border:none; color:#94A3B8; font-size:1.4rem; cursor:pointer; line-height:1;">&times;</button>
+                        <button id="action-btn-77"   style="position:absolute; top:16px; right:16px; background:none; border:none; color:#94A3B8; font-size:1.4rem; cursor:pointer; line-height:1;">&times;</button>
                         <div style="display:flex; align-items:center; gap:12px; margin-bottom:16px;">
                             <div style="font-size:2rem;">📁</div>
                             <div>
@@ -2186,7 +2213,7 @@
                         </div>
 
                         <div style="display:flex; justify-content:flex-end; margin-top:16px;">
-                            <button onclick="closeCSTFolderModal()" class="btn-secondary btn-sm">Close Folder</button>
+                            <button id="action-btn-78"   class="btn-secondary btn-sm">Close Folder</button>
                         </div>
                     </div>
                 </div>
@@ -2209,7 +2236,7 @@
                     </div>
 
                     <div style="display: flex; gap: 12px; align-items: center; flex-wrap: wrap;">
-                        <button class="btn-primary glow-button" onclick="openCreateAccountModal()"
+                        <button id="action-btn-79"  class="btn-primary glow-button" 
                             style="background: linear-gradient(135deg, #6366F1, #4F46E5); color: #FFF; font-weight: 600; padding: 10px 20px; border-radius: 10px; border: none; display: inline-flex; align-items: center; gap: 8px; cursor: pointer; box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4);">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
                                 style="width: 18px; height: 18px;">
@@ -2221,7 +2248,7 @@
                             <span>Create New Account</span>
                         </button>
 
-                        <button class="btn-secondary" onclick="exportBackupJSON()"
+                        <button id="action-btn-80"  class="btn-secondary" 
                             style="background: rgba(56, 189, 248, 0.12); color: #38BDF8; border: 1px solid rgba(56, 189, 248, 0.35); font-weight: 600; padding: 10px 18px; border-radius: 10px; display: inline-flex; align-items: center; gap: 8px; cursor: pointer;">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                                 style="width: 18px; height: 18px;">
@@ -2245,7 +2272,7 @@
                                 onchange="restoreBackupJSON(event)" style="display: none;">
                         </label>
 
-                        <button class="btn-secondary" onclick="restoreFromAutoRecoverySnapshot()"
+                        <button id="action-btn-81"  class="btn-secondary" 
                             style="background: rgba(139, 92, 246, 0.12); color: #C084FC; border: 1px solid rgba(139, 92, 246, 0.35); font-weight: 600; padding: 10px 18px; border-radius: 10px; display: inline-flex; align-items: center; gap: 8px; cursor: pointer;">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                                 style="width: 18px; height: 18px;">
@@ -2255,7 +2282,7 @@
                             <span>Restore Auto-Snapshot</span>
                         </button>
 
-                        <button class="btn-secondary" onclick="resetSystemToDefault()"
+                        <button id="action-btn-82"  class="btn-secondary" 
                             style="background: rgba(245, 158, 11, 0.12); color: #F59E0B; border: 1px solid rgba(245, 158, 11, 0.35); font-weight: 600; padding: 10px 18px; border-radius: 10px; display: inline-flex; align-items: center; gap: 8px; cursor: pointer;">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                                 style="width: 18px; height: 18px;">
@@ -2313,7 +2340,7 @@
         <div class="modal-card glass-card" role="dialog" aria-labelledby="modal-title">
             <div class="modal-header">
                 <h3 id="modal-title">Create New Activity</h3>
-                <button class="modal-close-btn" onclick="closeAddModal()" aria-label="Close modal">
+                <button id="action-btn-83"  class="modal-close-btn"  aria-label="Close modal">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <path d="M18 6L6 18M6 6l12 12" />
                     </svg>
@@ -2346,7 +2373,7 @@
                     <div class="form-group">
                         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
                             <label for="form-location" style="margin: 0;">Location / Platform *</label>
-                            <button type="button" onclick="previewFormLocationOnMap()" class="btn-secondary btn-sm" style="padding: 2px 8px; font-size: 0.72rem; color: #38BDF8; border-color: rgba(56, 189, 248, 0.4); border-radius: 6px; font-weight: 700; cursor: pointer;">📌 Pin Map</button>
+                            <button id="action-btn-84"  type="button"  class="btn-secondary btn-sm" style="padding: 2px 8px; font-size: 0.72rem; color: #38BDF8; border-color: rgba(56, 189, 248, 0.4); border-radius: 6px; font-weight: 700; cursor: pointer;">📌 Pin Map</button>
                         </div>
                         <input type="text" id="form-location" required placeholder="e.g. Tarlac Diocesan Pastoral Center / Fairlane San Vicente" oninput="updateFormMapPreview(this.value)">
                     </div>
@@ -2392,7 +2419,7 @@
                         placeholder="Provide event agenda or key details..."></textarea>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn-secondary" onclick="closeAddModal()">Cancel</button>
+                    <button id="action-btn-85"  type="button" class="btn-secondary" >Cancel</button>
                     <button type="submit" class="btn-primary glow-button">Save Activity</button>
                 </div>
             </form>
@@ -2409,7 +2436,7 @@
                 style="border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 16px; margin-bottom: 20px;">
                 <h3 id="create-account-title" style="color: #FFF; font-size: 1.35rem; font-weight: 800; margin: 0;">
                     Create Account</h3>
-                <button class="modal-close-btn" onclick="closeCreateAccountModal()" aria-label="Close modal">
+                <button id="action-btn-86"  class="modal-close-btn"  aria-label="Close modal">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <path d="M18 6L6 18M6 6l12 12" />
                     </svg>
@@ -2468,7 +2495,7 @@
         <div class="modal-card glass-card member-profile-modal" role="dialog" aria-labelledby="member-profile-name">
             <div class="modal-header" style="flex-shrink: 0; position: sticky; top: 0; z-index: 10;">
                 <h3>Member Profile & Stats</h3>
-                <button class="modal-close-btn" onclick="closeMemberModal()" aria-label="Close modal">
+                <button id="action-btn-87"  class="modal-close-btn"  aria-label="Close modal">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <path d="M18 6L6 18M6 6l12 12" />
                     </svg>
@@ -2483,7 +2510,7 @@
             </div>
             <div class="modal-footer member-modal-footer">
                 <div class="member-footer-actions">
-                    <button type="button" class="btn-action-pill btn-qr-badge" onclick="openMemberQRBadgeModal()">
+                    <button id="action-btn-88"  type="button" class="btn-action-pill btn-qr-badge" >
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
                             <rect x="3" y="3" width="7" height="7" rx="1.5"/>
                             <rect x="14" y="3" width="7" height="7" rx="1.5"/>
@@ -2495,14 +2522,14 @@
                         </svg>
                         <span>Printable QR ID Badge</span>
                     </button>
-                    <button type="button" class="btn-action-pill btn-report-card" onclick="printMemberReportCardFromModal()">
+                    <button id="action-btn-89"  type="button" class="btn-action-pill btn-report-card" >
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
                             <path d="M22 10v6M2 10l10-5 10 5-10 5z"/>
                             <path d="M6 12v5c0 2 2 3 6 3s6-1 6-3v-5"/>
                         </svg>
                         <span>Print Semester Report Card</span>
                     </button>
-                    <button type="button" class="btn-action-pill btn-award-cert" onclick="triggerMemberAutoAwardFromModal()">
+                    <button id="action-btn-90"  type="button" class="btn-action-pill btn-award-cert" >
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
                             <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/>
                             <path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/>
@@ -2514,7 +2541,7 @@
                         <span>Award Certificate</span>
                     </button>
                 </div>
-                <button type="button" class="btn-action-pill btn-close-modal" onclick="closeMemberModal()">
+                <button id="action-btn-91"  type="button" class="btn-action-pill btn-close-modal" >
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
                         <path d="M18 6L6 18M6 6l12 12" />
                     </svg>
@@ -2534,7 +2561,7 @@
                 style="border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 16px; margin-bottom: 20px;">
                 <h3 id="import-csv-title" style="color: #FFF; font-size: 1.3rem; font-weight: 800; margin: 0;">Bulk
                     Import Members (CSV)</h3>
-                <button class="modal-close-btn" onclick="closeImportCSVModal()" aria-label="Close modal">
+                <button id="action-btn-92"  class="modal-close-btn"  aria-label="Close modal">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <path d="M18 6L6 18M6 6l12 12" />
                     </svg>
@@ -2558,7 +2585,7 @@
                     <input type="file" id="import-csv-file" accept=".csv" onchange="handleCSVFileUpload(event)"
                         style="display: none;">
                 </label>
-                <button type="button" onclick="autoArrangeCSVContent()" class="btn-secondary"
+                <button id="action-btn-93"  type="button"  class="btn-secondary"
                     style="display: inline-flex; align-items: center; gap: 8px; background: linear-gradient(135deg, rgba(168,85,247,0.22), rgba(126,34,206,0.18)); border: 1px solid rgba(168,85,247,0.55); color: #D8B4FE; font-weight: 700; font-size: 0.88rem; padding: 8px 16px; border-radius: 8px; cursor: pointer; transition: all 0.2s; box-shadow: 0 4px 15px rgba(168,85,247,0.15);" title="Smartly auto-arrange and format pasted table rows according to detected headers">
                     <span>⚡ Auto Arrange Columns</span>
                 </button>
@@ -2567,10 +2594,10 @@
                 placeholder="Example:&#10;Juan Dela Cruz, East Chapter, Programs & Events, Youth Member, 09171234567, juan@mfcyouth.org&#10;Maria Santos, Central Chapter, EAST CHAPTER, Household Head, 09181234567, maria@mfcyouth.org"
                 style="width: 100%; background: #0F172A; color: #E2E8F0; border: 1px solid rgba(255,255,255,0.15); border-radius: 10px; padding: 12px; font-family: monospace; font-size: 0.85rem; outline: none; resize: vertical; margin-bottom: 20px;"></textarea>
             <div style="display: flex; justify-content: flex-end; gap: 10px; flex-wrap: wrap;">
-                <button type="button" class="btn-secondary" onclick="closeImportCSVModal()">Cancel</button>
-                <button type="button" onclick="autoArrangeCSVContent()" class="btn-secondary"
+                <button id="action-btn-94"  type="button" class="btn-secondary" >Cancel</button>
+                <button id="action-btn-95"  type="button"  class="btn-secondary"
                     style="background: rgba(168, 85, 247, 0.15); color: #C084FC; border: 1px solid rgba(168, 85, 247, 0.4); font-weight: 700;">⚡ Auto Arrange</button>
-                <button type="button" class="btn-primary glow-button" onclick="processCSVImport()"
+                <button id="action-btn-96"  type="button" class="btn-primary glow-button" 
                     style="background: linear-gradient(135deg, #0284C7, #38BDF8);">Import Members</button>
             </div>
         </div>
@@ -2591,7 +2618,7 @@
                         <span style="color: #A855F7; font-size: 0.8rem; font-weight: 600;">Chapter Hierarchy & Pastoral Mentoring Units</span>
                     </div>
                 </div>
-                <button class="modal-close-btn" onclick="closeHouseholdTreeViewModal()" aria-label="Close modal">
+                <button id="action-btn-97"  class="modal-close-btn"  aria-label="Close modal">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <path d="M18 6L6 18M6 6l12 12" />
                     </svg>
@@ -2601,7 +2628,7 @@
                 <!-- Populated dynamically via script.js -->
             </div>
             <div style="display: flex; justify-content: flex-end; padding-top: 16px; border-top: 1px solid rgba(255,255,255,0.08); margin-top: 16px; flex-shrink: 0;">
-                <button type="button" class="btn-primary" onclick="closeHouseholdTreeViewModal()">Close Tree View</button>
+                <button id="action-btn-98"  type="button" class="btn-primary" >Close Tree View</button>
             </div>
         </div>
     </div>
@@ -2618,7 +2645,7 @@
                 style="border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 16px; margin-bottom: 20px;">
                 <h3 id="qr-badge-title" style="color: #FFF; font-size: 1.25rem; font-weight: 800; margin: 0;">Member
                     Digital QR ID Card</h3>
-                <button class="modal-close-btn" onclick="closeMemberQRBadgeModal()" aria-label="Close modal">
+                <button id="action-btn-99"  class="modal-close-btn"  aria-label="Close modal">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <path d="M18 6L6 18M6 6l12 12" />
                     </svg>
@@ -2649,11 +2676,11 @@
                     ID: MFC-2026-0001</div>
             </div>
             <div style="display: flex; gap: 10px; justify-content: center;">
-                <button type="button" class="btn-primary glow-button" onclick="printMemberIDCard()"
+                <button id="action-btn-100"  type="button" class="btn-primary glow-button" 
                     style="flex: 1; background: linear-gradient(135deg, #6366F1, #3B82F6);">
                     Print / Download ID
                 </button>
-                <button type="button" class="btn-secondary" onclick="closeMemberQRBadgeModal()">Close</button>
+                <button id="action-btn-101"  type="button" class="btn-secondary" >Close</button>
             </div>
         </div>
     </div>
@@ -2666,7 +2693,7 @@
             style="max-width: 680px; max-height: 90vh; overflow-y: auto;">
             <div class="modal-header">
                 <h3 id="add-member-title">Edit Member</h3>
-                <button class="modal-close-btn" onclick="closeAddMemberModal()" aria-label="Close modal">
+                <button id="action-btn-102"  class="modal-close-btn"  aria-label="Close modal">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <path d="M18 6L6 18M6 6l12 12" />
                     </svg>
@@ -2677,8 +2704,8 @@
 
                 <!-- Avatar Upload Circle -->
                 <div style="display: flex; justify-content: center; margin-bottom: 24px;">
-                    <div class="photo-upload-circle"
-                        onclick="showToast('Photo upload ready! Using default avatar.', 'info')"
+                    <div id="action-btn-103"  class="photo-upload-circle"
+                        
                         title="Upload Member Photo"
                         style="width: 86px; height: 86px; border-radius: 50%; border: 2px dashed rgba(255, 255, 255, 0.2); background: rgba(255, 255, 255, 0.04); display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s ease;">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
@@ -2787,7 +2814,7 @@
                 </div>
 
                 <div class="modal-footer" style="margin-top: 24px;">
-                    <button type="button" class="btn-secondary" onclick="closeAddMemberModal()">Cancel</button>
+                    <button id="action-btn-104"  type="button" class="btn-secondary" >Cancel</button>
                     <button type="submit" class="btn-primary glow-button" id="mem-submit-btn-text">Save Member</button>
                 </div>
             </form>
@@ -2801,7 +2828,7 @@
         <div class="modal-card glass-card" role="dialog" aria-labelledby="modal-funds-title">
             <div class="modal-header">
                 <h3 id="modal-funds-title">Add Fund Record</h3>
-                <button class="btn-close" onclick="closeAddFundModal()" aria-label="Close modal">×</button>
+                <button id="action-btn-105"  class="btn-close"  aria-label="Close modal">×</button>
             </div>
             <form id="funds-form" onsubmit="saveFundRecord(event)">
                 <input type="hidden" id="fund-id">
@@ -2849,7 +2876,7 @@
                 <div class="form-group" style="margin-top: 16px;">
                     <label>Attach Receipt Image (Optional)</label>
                     <input type="hidden" id="fund-receipt-image-data">
-                    <div class="receipt-upload-box" id="receipt-upload-box" onclick="triggerReceiptUpload()"
+                    <div class="receipt-upload-box" id="receipt-upload-box" 
                         style="border: 2px dashed rgba(56, 189, 248, 0.4); border-radius: 12px; padding: 18px; text-align: center; cursor: pointer; background: rgba(15, 23, 42, 0.6); transition: all 0.2s;">
                         <input type="file" id="fund-receipt-file" accept="image/*" style="display: none;"
                             onchange="handleReceiptImageSelect(event)">
@@ -2872,14 +2899,14 @@
                                     <div style="font-size: 0.75rem; color: #94A3B8;">Click to replace image</div>
                                 </div>
                             </div>
-                            <button type="button" onclick="removeReceiptImage(event)"
+                            <button id="action-btn-106"  type="button" 
                                 style="background: rgba(239, 68, 68, 0.2); border: 1px solid rgba(239, 68, 68, 0.4); color: #F87171; padding: 6px 12px; border-radius: 8px; font-size: 0.75rem; font-weight: 700; cursor: pointer;">Remove</button>
                         </div>
                     </div>
                 </div>
 
                 <div class="modal-footer" style="margin-top: 24px;">
-                    <button type="button" class="btn-secondary" onclick="closeAddFundModal()">Cancel</button>
+                    <button id="action-btn-107"  type="button" class="btn-secondary" >Cancel</button>
                     <button type="submit" class="btn-primary glow-button">Save Record</button>
                 </div>
             </form>
@@ -2891,7 +2918,7 @@
          ========================================================================== -->
     <div class="modal-backdrop" id="user-profile-backdrop"
         style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 10000; background: transparent;"
-        onclick="if(event.target === this) closeUserProfileModal()">
+        >
         <div class="user-security-card" role="dialog" aria-labelledby="profile-modal-email">
             <!-- Header section -->
             <div class="user-security-header">
@@ -2906,7 +2933,7 @@
                     <div id="profile-modal-email" class="user-security-email">reyesbarney38@gmail.com</div>
                     <div id="profile-modal-role" class="user-security-role">Super Admin</div>
                 </div>
-                <button type="button" class="user-security-close" onclick="closeUserProfileModal()"
+                <button id="action-btn-108"  type="button" class="user-security-close" 
                     title="Close">✕</button>
             </div>
 
@@ -2915,7 +2942,7 @@
 
             <!-- View 1: Main Menu -->
             <div id="profile-modal-menu-view">
-                <div class="profile-security-item" onclick="switchProfileModalView('passcode')">
+                <div id="action-btn-109"  class="profile-security-item" >
                     <div class="profile-security-icon">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <path
@@ -2927,7 +2954,7 @@
 
                 <div class="user-security-divider" style="margin: 8px 0;"></div>
 
-                <div class="profile-security-item" onclick="switchProfileModalView('recovery')">
+                <div id="action-btn-110"  class="profile-security-item" >
                     <div class="profile-security-icon">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
@@ -2940,7 +2967,7 @@
 
                 <div class="user-security-divider" style="margin: 8px 0;"></div>
 
-                <div class="profile-security-item" onclick="switchProfileModalView('rbac')">
+                <div id="action-btn-111"  class="profile-security-item" >
                     <div class="profile-security-icon" style="background: rgba(168, 85, 247, 0.15); color: #C084FC;">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <path d="M12 2a10 10 0 1 0 10 10H12V2z" />
@@ -2952,7 +2979,7 @@
 
                 <div class="user-security-divider" style="margin: 8px 0;"></div>
 
-                <div class="profile-security-item" onclick="switchProfileModalView('audit')">
+                <div id="action-btn-112"  class="profile-security-item" >
                     <div class="profile-security-icon" style="background: rgba(14, 165, 233, 0.15); color: #38BDF8;">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
@@ -2970,7 +2997,7 @@
             <!-- View 2: Change Passcode Form -->
             <div id="profile-modal-passcode-view" style="display: none;">
                 <div class="user-security-subheader">
-                    <button type="button" class="btn-back-link" onclick="switchProfileModalView('menu')">← Back</button>
+                    <button id="action-btn-113"  type="button" class="btn-back-link" >← Back</button>
                     <h4>Change Passcode</h4>
                 </div>
                 <div class="form-group" style="margin-bottom: 12px;">
@@ -2992,17 +3019,17 @@
                         placeholder="Confirm new passcode" style="width: 100%; padding: 8px 12px;">
                 </div>
                 <div style="display: flex; justify-content: flex-end; gap: 8px;">
-                    <button type="button" class="btn-secondary" style="padding: 6px 14px; font-size: 0.85rem;"
-                        onclick="switchProfileModalView('menu')">Cancel</button>
-                    <button type="button" class="btn-primary" style="padding: 6px 14px; font-size: 0.85rem;"
-                        onclick="saveNewPasscode()">Save Passcode</button>
+                    <button id="action-btn-114"  type="button" class="btn-secondary" style="padding: 6px 14px; font-size: 0.85rem;"
+                        >Cancel</button>
+                    <button id="action-btn-115"  type="button" class="btn-primary" style="padding: 6px 14px; font-size: 0.85rem;"
+                        >Save Passcode</button>
                 </div>
             </div>
 
             <!-- View 3: Change Account Recovery Options Form -->
             <div id="profile-modal-recovery-view" style="display: none;">
                 <div class="user-security-subheader">
-                    <button type="button" class="btn-back-link" onclick="switchProfileModalView('menu')">← Back</button>
+                    <button id="action-btn-116"  type="button" class="btn-back-link" >← Back</button>
                     <h4>Recovery Options</h4>
                 </div>
                 <div class="form-group" style="margin-bottom: 12px;">
@@ -3034,17 +3061,17 @@
                         style="width: 100%; padding: 8px 12px;">
                 </div>
                 <div style="display: flex; justify-content: flex-end; gap: 8px;">
-                    <button type="button" class="btn-secondary" style="padding: 6px 14px; font-size: 0.85rem;"
-                        onclick="switchProfileModalView('menu')">Cancel</button>
-                    <button type="button" class="btn-primary" style="padding: 6px 14px; font-size: 0.85rem;"
-                        onclick="saveRecoveryOptions()">Save Options</button>
+                    <button id="action-btn-117"  type="button" class="btn-secondary" style="padding: 6px 14px; font-size: 0.85rem;"
+                        >Cancel</button>
+                    <button id="action-btn-118"  type="button" class="btn-primary" style="padding: 6px 14px; font-size: 0.85rem;"
+                        >Save Options</button>
                 </div>
             </div>
 
             <!-- View 4: Role-Based Access Control (RBAC) Simulator -->
             <div id="profile-modal-rbac-view" style="display: none;">
                 <div class="user-security-subheader">
-                    <button type="button" class="btn-back-link" onclick="switchProfileModalView('menu')">← Back</button>
+                    <button id="action-btn-119"  type="button" class="btn-back-link" >← Back</button>
                     <h4>Role-Based Access Control (RBAC)</h4>
                 </div>
                 <p style="font-size: 0.8rem; color: #94A3B8; margin-bottom: 14px; line-height: 1.4;">
@@ -3056,21 +3083,21 @@
                             <div style="color: #FFF; font-weight: 700; font-size: 0.88rem;">👑 Super Admin</div>
                             <div style="color: #94A3B8; font-size: 0.74rem;">Full system access, user management, and financial ledger</div>
                         </div>
-                        <button type="button" class="btn-primary" style="padding: 6px 12px; font-size: 0.78rem;" onclick="switchSimulatedRole('Super Admin')">Activate</button>
+                        <button id="action-btn-120"  type="button" class="btn-primary" style="padding: 6px 12px; font-size: 0.78rem;" >Activate</button>
                     </div>
                     <div style="display: flex; align-items: center; justify-content: space-between; padding: 12px; background: rgba(15,23,42,0.6); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px;">
                         <div>
                             <div style="color: #38BDF8; font-weight: 700; font-size: 0.88rem;">📋 Attendance Officer</div>
                             <div style="color: #94A3B8; font-size: 0.74rem;">Access to check-ins, QR scanning, and attendance sheets only</div>
                         </div>
-                        <button type="button" class="btn-secondary" style="padding: 6px 12px; font-size: 0.78rem;" onclick="switchSimulatedRole('Attendance Officer')">Activate</button>
+                        <button id="action-btn-121"  type="button" class="btn-secondary" style="padding: 6px 12px; font-size: 0.78rem;" >Activate</button>
                     </div>
                     <div style="display: flex; align-items: center; justify-content: space-between; padding: 12px; background: rgba(15,23,42,0.6); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px;">
                         <div>
                             <div style="color: #10B981; font-weight: 700; font-size: 0.88rem;">💰 Finance Officer</div>
                             <div style="color: #94A3B8; font-size: 0.74rem;">Access to chapter treasury, funds, collections, and budgeting</div>
                         </div>
-                        <button type="button" class="btn-secondary" style="padding: 6px 12px; font-size: 0.78rem;" onclick="switchSimulatedRole('Finance Officer')">Activate</button>
+                        <button id="action-btn-122"  type="button" class="btn-secondary" style="padding: 6px 12px; font-size: 0.78rem;" >Activate</button>
                     </div>
                 </div>
             </div>
@@ -3078,12 +3105,12 @@
             <!-- View 5: System Audit Activity Log Viewer -->
             <div id="profile-modal-audit-view" style="display: none;">
                 <div class="user-security-subheader">
-                    <button type="button" class="btn-back-link" onclick="switchProfileModalView('menu')">← Back</button>
+                    <button id="action-btn-123"  type="button" class="btn-back-link" >← Back</button>
                     <h4>System Audit Trail</h4>
                 </div>
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
                     <span style="font-size: 0.78rem; color: #94A3B8;">Tracking recent security & check-in events</span>
-                    <button type="button" class="btn-secondary" style="padding: 4px 10px; font-size: 0.75rem;" onclick="if(state.auditLog){state.auditLog=[]; localStorage.removeItem('ps_audit_log'); renderAuditLog(); showToast('Audit log cleared', 'info');}">Clear Log</button>
+                    <button id="action-btn-124"  type="button" class="btn-secondary" style="padding: 4px 10px; font-size: 0.75rem;" >Clear Log</button>
                 </div>
                 <div id="profile-audit-log-list" style="max-height: 280px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; padding-right: 4px;">
                     <!-- Populated via script.js -->
@@ -3111,7 +3138,7 @@
                     </svg>
                     Live QR / ID Scanner
                 </h3>
-                <button class="modal-close-btn" onclick="closeQRScannerModal()" aria-label="Close scanner">✕</button>
+                <button id="action-btn-125"  class="modal-close-btn"  aria-label="Close scanner">✕</button>
             </div>
             <p style="color: #94A3B8; font-size: 0.88rem; margin-bottom: 16px;">Position the member's digital QR ID or
                 barcode within the scanning frame.</p>
@@ -3122,7 +3149,7 @@
                         style="position: absolute; width: 100%; height: 2px; background: #38BDF8; box-shadow: 0 0 10px #38BDF8; top: 50%; animation: scanMove 2s infinite ease-in-out;">
                     </div>
                     <span style="color: #64748B; font-size: 0.85rem; z-index: 2; display: block; margin-bottom: 12px;">[ Camera Stream Standby / Ready ]</span>
-                    <button type="button" class="btn-primary btn-sm glow-button" onclick="startLiveCameraQRScanner()" style="font-size: 0.82rem; padding: 8px 16px;">📷 Start Live Camera Scan</button>
+                    <button id="action-btn-126"  type="button" class="btn-primary btn-sm glow-button"  style="font-size: 0.82rem; padding: 8px 16px;">📷 Start Live Camera Scan</button>
                 </div>
             </div>
             <div
@@ -3134,11 +3161,11 @@
                         style="flex: 1; font-size: 0.85rem; padding: 6px 10px;">
                         <!-- Populated with members via script.js -->
                     </select>
-                    <button type="button" class="btn-primary" style="padding: 6px 14px; font-size: 0.85rem;"
-                        onclick="simulateQRCheckIn()">Scan & Check-In</button>
+                    <button id="action-btn-127"  type="button" class="btn-primary" style="padding: 6px 14px; font-size: 0.85rem;"
+                        >Scan & Check-In</button>
                 </div>
             </div>
-            <button type="button" class="btn-secondary" style="width: 100%;" onclick="closeQRScannerModal()">Close
+            <button id="action-btn-128"  type="button" class="btn-secondary" style="width: 100%;" >Close
                 Scanner</button>
         </div>
     </div>
@@ -3149,7 +3176,7 @@
             <div class="modal-header" style="margin-bottom: 16px;">
                 <h3 style="color: #38BDF8; font-size: 1.25rem; font-weight: 800; margin: 0;">Receipt / Proof of
                     Transaction</h3>
-                <button class="btn-close" onclick="closeReceiptViewerModal()" aria-label="Close modal">×</button>
+                <button id="action-btn-129"  class="btn-close"  aria-label="Close modal">×</button>
             </div>
             <div
                 style="background: #0F172A; border-radius: 12px; padding: 12px; border: 1px solid rgba(255,255,255,0.1); margin-bottom: 16px; max-height: 70vh; overflow: auto; display: flex; justify-content: center;">
@@ -3159,7 +3186,7 @@
             <div
                 style="display: flex; justify-content: space-between; align-items: center; color: #94A3B8; font-size: 0.85rem;">
                 <span id="viewer-receipt-caption">Transaction Reference</span>
-                <button type="button" class="btn-secondary" onclick="closeReceiptViewerModal()">Close Window</button>
+                <button id="action-btn-130"  type="button" class="btn-secondary" >Close Window</button>
             </div>
         </div>
     </div>
@@ -3169,7 +3196,7 @@
         <div class="modal-card glass-card" style="max-width: 380px; width: 92%; padding: 24px; text-align: center;">
             <div class="modal-header" style="margin-bottom: 16px;">
                 <h3 style="color: #38BDF8; font-size: 1.15rem; font-weight: 800; margin: 0;">OFFICIAL MFC YOUTH ID</h3>
-                <button class="btn-close" onclick="closeMemberQRModal()">×</button>
+                <button id="action-btn-131"  class="btn-close" >×</button>
             </div>
             <div id="qr-id-badge-card"
                 style="background: linear-gradient(145deg, #0F172A, #1E293B); border: 2px solid rgba(56, 189, 248, 0.4); border-radius: 16px; padding: 22px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); position: relative;">
@@ -3184,8 +3211,8 @@
                 <div style="font-size: 0.72rem; color: #64748B;">Scan code at door for instant attendance check-in</div>
             </div>
             <div style="margin-top: 18px; display: flex; gap: 10px; justify-content: center;">
-                <button type="button" class="btn-primary glow-button" style="flex: 1;" onclick="printMemberQRCard()">🖨️ Print ID Card</button>
-                <button type="button" class="btn-secondary" style="flex: 1;" onclick="closeMemberQRModal()">Close</button>
+                <button id="action-btn-132"  type="button" class="btn-primary glow-button" style="flex: 1;" >🖨️ Print ID Card</button>
+                <button id="action-btn-133"  type="button" class="btn-secondary" style="flex: 1;" >Close</button>
             </div>
         </div>
     </div>
@@ -3196,7 +3223,7 @@
             <div class="modal-header" style="padding: 18px 24px; margin: 0; border-bottom: 1px solid rgba(255, 255, 255, 0.08); flex-shrink: 0; display: flex; align-items: center; justify-content: space-between; background: rgba(15, 23, 42, 0.98); z-index: 10;">
                 <h3 id="profile-modal-title" style="color: #F8FAFC; font-size: 1.25rem; font-weight: 800; margin: 0;">
                     Member Service Profile</h3>
-                <button class="btn-close" onclick="closeMemberProfileModal()" style="font-size: 1.6rem; line-height: 1; cursor: pointer; background: transparent; border: none; color: #94A3B8;">×</button>
+                <button id="action-btn-134"  class="btn-close"  style="font-size: 1.6rem; line-height: 1; cursor: pointer; background: transparent; border: none; color: #94A3B8;">×</button>
             </div>
             <div id="profile-modal-content" style="padding: 20px 24px; overflow-y: auto; flex: 1; min-height: 0;">
                 <!-- Populated dynamically via script.js -->
@@ -3219,7 +3246,7 @@
                             static hosting</p>
                     </div>
                 </div>
-                <button class="btn-close" onclick="closePublishModal()">×</button>
+                <button id="action-btn-135"  class="btn-close" >×</button>
             </div>
             <div style="display: flex; flex-direction: column; gap: 16px; max-height: 420px; overflow-y: auto;">
                 <div
@@ -3261,7 +3288,7 @@
                 </div>
             </div>
             <div style="margin-top: 20px; display: flex; justify-content: flex-end;">
-                <button type="button" class="btn-secondary btn-sm" onclick="closePublishModal()">Got It, Let's
+                <button id="action-btn-136"  type="button" class="btn-secondary btn-sm" >Got It, Let's
                     Publish!</button>
             </div>
         </div>
@@ -3278,7 +3305,7 @@
                         <p style="color: #94A3B8; font-size: 0.8rem; margin: 0;">Automatic bidirectional cloud sync & instant backups</p>
                     </div>
                 </div>
-                <button type="button" onclick="closeFirebaseConfigModal()" style="background: none; border: none; color: #94A3B8; font-size: 1.5rem; cursor: pointer;">&times;</button>
+                <button id="action-btn-137"  type="button"  style="background: none; border: none; color: #94A3B8; font-size: 1.5rem; cursor: pointer;">&times;</button>
             </div>
 
             <div style="background: rgba(249,115,22,0.1); border: 1px solid rgba(249,115,22,0.3); border-radius: 14px; padding: 14px 18px; margin-bottom: 22px; display: flex; align-items: center; justify-content: space-between;">
@@ -3290,13 +3317,13 @@
             </div>
 
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 24px;">
-                <button type="button" onclick="triggerFirebaseForceSync()" style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; padding: 16px; border-radius: 16px; background: linear-gradient(135deg, #F97316, #EA580C); border: none; color: #FFF; font-weight: 700; font-size: 0.85rem; cursor: pointer; box-shadow: 0 4px 15px rgba(249,115,22,0.3); transition: transform 0.15s;">
+                <button id="action-btn-138"  type="button"  style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; padding: 16px; border-radius: 16px; background: linear-gradient(135deg, #F97316, #EA580C); border: none; color: #FFF; font-weight: 700; font-size: 0.85rem; cursor: pointer; box-shadow: 0 4px 15px rgba(249,115,22,0.3); transition: transform 0.15s;">
                     <span style="font-size: 1.4rem;">📤</span>
                     <span>Push Local to Cloud</span>
                     <span style="font-size: 0.7rem; font-weight: 500; opacity: 0.9;">Save & backup current data</span>
                 </button>
 
-                <button type="button" onclick="triggerFirebasePull()" style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; padding: 16px; border-radius: 16px; background: rgba(30,41,59,0.9); border: 1px solid rgba(56,189,248,0.4); color: #38BDF8; font-weight: 700; font-size: 0.85rem; cursor: pointer; transition: transform 0.15s;">
+                <button id="action-btn-139"  type="button"  style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; padding: 16px; border-radius: 16px; background: rgba(30,41,59,0.9); border: 1px solid rgba(56,189,248,0.4); color: #38BDF8; font-weight: 700; font-size: 0.85rem; cursor: pointer; transition: transform 0.15s;">
                     <span style="font-size: 1.4rem;">📥</span>
                     <span>Pull from Cloud</span>
                     <span style="font-size: 0.7rem; font-weight: 500; color: #94A3B8;">Restore latest remote data</span>
@@ -3318,8 +3345,8 @@
             </div>
 
             <div style="display: flex; justify-content: flex-end; gap: 12px;">
-                <button type="button" onclick="closeFirebaseConfigModal()" class="btn-secondary btn-sm">Close</button>
-                <button type="button" onclick="saveFirebaseConfigSettings()" class="btn-primary btn-sm" style="background: linear-gradient(135deg, #F97316, #EA580C);">Save Configuration</button>
+                <button id="action-btn-140"  type="button"  class="btn-secondary btn-sm">Close</button>
+                <button id="action-btn-141"  type="button"  class="btn-primary btn-sm" style="background: linear-gradient(135deg, #F97316, #EA580C);">Save Configuration</button>
             </div>
         </div>
     </div>
@@ -3340,20 +3367,20 @@
                         <div style="color: #A855F7; font-size: 0.75rem; font-weight: 600;">Attendance & Absentees Summary for Leaders</div>
                     </div>
                 </div>
-                <button onclick="closePastoralFollowUpModal()"
+                <button id="action-btn-142"  
                     style="background: transparent; border: none; color: #94A3B8; font-size: 1.4rem; cursor: pointer;">&times;</button>
             </div>
             <div style="padding: 24px; overflow-y: auto; flex: 1;">
                 <textarea id="pastoral-report-textarea" readonly
                     style="width: 100%; height: 260px; background: rgba(15,23,42,0.9); border: 1px solid rgba(255,255,255,0.15); border-radius: 12px; color: #E2E8F0; padding: 14px; font-family: 'Courier New', monospace; font-size: 0.82rem; line-height: 1.5; resize: vertical; outline: none;"></textarea>
                 <div style="margin-top: 14px; display: flex; gap: 10px; flex-wrap: wrap;">
-                    <button onclick="copyPastoralReportText()" class="btn-primary btn-sm glow-button" style="background: linear-gradient(135deg, #A855F7, #7C3AED); border: none;">
+                    <button id="action-btn-143"   class="btn-primary btn-sm glow-button" style="background: linear-gradient(135deg, #A855F7, #7C3AED); border: none;">
                         📋 Copy Report Text
                     </button>
-                    <button onclick="sharePastoralReportWhatsApp()" class="btn-secondary btn-sm" style="color: #22C55E; border-color: rgba(34,197,94,0.4);">
+                    <button id="action-btn-144"   class="btn-secondary btn-sm" style="color: #22C55E; border-color: rgba(34,197,94,0.4);">
                         💬 Share on WhatsApp
                     </button>
-                    <button onclick="copyAbsenteesOnlyList()" class="btn-secondary btn-sm" style="color: #F87171; border-color: rgba(248,113,113,0.4);">
+                    <button id="action-btn-145"   class="btn-secondary btn-sm" style="color: #F87171; border-color: rgba(248,113,113,0.4);">
                         ❌ Copy Absentees List Only
                     </button>
                 </div>
@@ -3365,7 +3392,7 @@
                 </div>
             </div>
             <div style="padding: 16px 24px; border-top: 1px solid rgba(255,255,255,0.08); display: flex; justify-content: flex-end;">
-                <button type="button" onclick="closePastoralFollowUpModal()" class="btn-secondary btn-sm">Close</button>
+                <button id="action-btn-146"  type="button"  class="btn-secondary btn-sm">Close</button>
             </div>
         </div>
     </div>
@@ -3384,7 +3411,7 @@
                         <div style="color: #FBBF24; font-size: 0.75rem; font-weight: 600;">Certificate of Recognition & Faithful Participation</div>
                     </div>
                 </div>
-                <button onclick="closeCertificateModal()"
+                <button id="action-btn-147"  
                     style="background: transparent; border: none; color: #94A3B8; font-size: 1.4rem; cursor: pointer;">&times;</button>
             </div>
 
@@ -3410,8 +3437,8 @@
             </div>
 
             <div style="padding: 16px 24px; border-top: 1px solid rgba(255,255,255,0.08); display: flex; justify-content: flex-end; gap: 12px; background: rgba(15,23,42,0.95);">
-                <button type="button" onclick="closeCertificateModal()" class="btn-secondary btn-sm">Close</button>
-                <button type="button" onclick="printOfficialCertificate()" class="btn-primary btn-sm glow-button" style="background: linear-gradient(135deg, #F59E0B, #D97706); border: none;">
+                <button id="action-btn-148"  type="button"  class="btn-secondary btn-sm">Close</button>
+                <button id="action-btn-149"  type="button"  class="btn-primary btn-sm glow-button" style="background: linear-gradient(135deg, #F59E0B, #D97706); border: none;">
                     🖨️ Print Certificate
                 </button>
             </div>
@@ -3434,7 +3461,7 @@
                         <div style="color: #38BDF8; font-size: 0.75rem; font-weight: 600;">Chapter Members × All Activities Attendance Record</div>
                     </div>
                 </div>
-                <button onclick="closeAttendanceMatrixModal()"
+                <button id="action-btn-150"  
                     style="background: transparent; border: none; color: #94A3B8; font-size: 1.4rem; cursor: pointer;">&times;</button>
             </div>
             <div style="padding: 20px; overflow: auto; flex: 1;" id="attendance-matrix-printable-area">
@@ -3447,11 +3474,11 @@
                 </table>
             </div>
             <div style="padding: 16px 24px; border-top: 1px solid rgba(255,255,255,0.08); display: flex; justify-content: flex-end; gap: 12px; background: rgba(15,23,42,0.95);">
-                <button type="button" onclick="closeAttendanceMatrixModal()" class="btn-secondary btn-sm">Close</button>
-                <button type="button" onclick="exportAttendanceMatrixCSV()" class="btn-primary btn-sm glow-button" style="background: linear-gradient(135deg, #10B981, #059669); border: none;">
+                <button id="action-btn-151"  type="button"  class="btn-secondary btn-sm">Close</button>
+                <button id="action-btn-152"  type="button"  class="btn-primary btn-sm glow-button" style="background: linear-gradient(135deg, #10B981, #059669); border: none;">
                     📥 Export Matrix CSV
                 </button>
-                <button type="button" onclick="window.print()" class="btn-primary btn-sm glow-button" style="background: linear-gradient(135deg, #38BDF8, #0284C7); border: none;">
+                <button id="action-btn-153"  type="button"  class="btn-primary btn-sm glow-button" style="background: linear-gradient(135deg, #38BDF8, #0284C7); border: none;">
                     🖨️ Print Matrix Sheet
                 </button>
             </div>
@@ -3469,7 +3496,7 @@
                     <span style="font-size: 1.4rem;">🎂</span>
                     <h3 style="margin: 0; color: #FFF; font-size: 1.05rem; font-weight: 800;">Digital Celebration Card</h3>
                 </div>
-                <button onclick="closeBirthdayCardModal()"
+                <button id="action-btn-154"  
                     style="background: transparent; border: none; color: #94A3B8; font-size: 1.4rem; cursor: pointer;">&times;</button>
             </div>
 
@@ -3487,8 +3514,8 @@
             </div>
 
             <div style="padding: 16px 24px; border-top: 1px solid rgba(255,255,255,0.08); display: flex; justify-content: flex-end; gap: 12px; background: rgba(15,23,42,0.95);">
-                <button type="button" onclick="closeBirthdayCardModal()" class="btn-secondary btn-sm">Close</button>
-                <button type="button" onclick="copyBirthdayCardMessage()" class="btn-primary btn-sm glow-button" style="background: linear-gradient(135deg, #EC4899, #BE185D); border: none;">
+                <button id="action-btn-155"  type="button"  class="btn-secondary btn-sm">Close</button>
+                <button id="action-btn-156"  type="button"  class="btn-primary btn-sm glow-button" style="background: linear-gradient(135deg, #EC4899, #BE185D); border: none;">
                     📋 Copy Greeting Message
                 </button>
             </div>
@@ -3510,15 +3537,15 @@
                         <span style="font-size: 0.78rem; color: #FDE68A;" id="swiper-counter">Card 1 of 1</span>
                     </div>
                 </div>
-                <button type="button" class="modal-close" onclick="closeAbsenteeSwiperModal()">&times;</button>
+                <button id="action-btn-157"  type="button" class="modal-close" >&times;</button>
             </div>
             <div class="modal-body" style="padding: 24px; text-align: center;" id="absentee-swiper-content">
                 <!-- Dynamically rendered absentee card -->
             </div>
             <div class="modal-footer" style="display: flex; justify-content: space-between; align-items: center; background: rgba(15,23,42,0.95);">
-                <button type="button" class="btn-secondary" id="swiper-prev-btn" onclick="prevAbsenteeSlide()">◀ Previous</button>
-                <button type="button" class="btn-secondary" onclick="closeAbsenteeSwiperModal()">Close</button>
-                <button type="button" class="btn-primary" id="swiper-next-btn" onclick="nextAbsenteeSlide()">Next ▶</button>
+                <button type="button" class="btn-secondary" id="swiper-prev-btn" >◀ Previous</button>
+                <button id="action-btn-158"  type="button" class="btn-secondary" >Close</button>
+                <button type="button" class="btn-primary" id="swiper-next-btn" >Next ▶</button>
             </div>
         </div>
     </div>
@@ -3534,7 +3561,7 @@
                 <input type="text" id="cmd-palette-input" placeholder="Type a command, search member, or find resource..."
                     oninput="handleCommandPaletteSearch(this.value)" autocomplete="off"
                     style="background:none; border:none; color:#FFF; font-size:1.05rem; width:100%; outline:none; font-weight:600;">
-                <button onclick="closeCommandPalette()" style="background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.15); color:#94A3B8; border-radius:8px; padding:4px 10px; font-size:0.75rem; font-weight:700; cursor:pointer;">ESC</button>
+                <button id="action-btn-159"   style="background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.15); color:#94A3B8; border-radius:8px; padding:4px 10px; font-size:0.75rem; font-weight:700; cursor:pointer;">ESC</button>
             </div>
             <div id="cmd-palette-results" style="overflow-y:auto; flex:1; margin-top:14px; display:flex; flex-direction:column; gap:8px;">
                 <!-- Dynamically populated results -->
@@ -3565,10 +3592,10 @@
                     </svg>
                     <h3 style="margin:0; font-size:1.15rem; font-weight:800; color:#F8FAFC;">Keyboard Cheatsheet</h3>
                 </div>
-                <button onclick="closeKeyboardCheatsheetModal()" style="background:none; border:none; color:#94A3B8; font-size:1.5rem; cursor:pointer;">&times;</button>
+                <button id="action-btn-160"   style="background:none; border:none; color:#94A3B8; font-size:1.5rem; cursor:pointer;">&times;</button>
             </div>
             <div style="display:flex; flex-direction:column; gap:12px; font-size:0.85rem;">
-                <div onclick="closeKeyboardCheatsheetModal(); openCommandPalette();" title="Click to launch Command Palette" style="display:flex; justify-content:space-between; align-items:center; padding:10px 14px; background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.06); border-radius:12px; cursor:pointer; transition:all 0.15s;" onmouseover="this.style.background='rgba(56,189,248,0.15)'; this.style.borderColor='rgba(56,189,248,0.4)'" onmouseout="this.style.background='rgba(255,255,255,0.04)'; this.style.borderColor='rgba(255,255,255,0.06)'">
+                <div id="action-btn-161"   title="Click to launch Command Palette" style="display:flex; justify-content:space-between; align-items:center; padding:10px 14px; background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.06); border-radius:12px; cursor:pointer; transition:all 0.15s;" onmouseover="this.style.background='rgba(56,189,248,0.15)'; this.style.borderColor='rgba(56,189,248,0.4)'" onmouseout="this.style.background='rgba(255,255,255,0.04)'; this.style.borderColor='rgba(255,255,255,0.06)'">
                     <span style="color:#CBD5E1; font-weight:600;">Open Global Command Palette <span style="font-size:0.75rem; color:#38BDF8;">(Click to run ⚡)</span></span>
                     <span style="background:rgba(56,189,248,0.2); border:1px solid rgba(56,189,248,0.4); color:#38BDF8; padding:3px 8px; border-radius:6px; font-weight:700;">Ctrl + K / Cmd + K</span>
                 </div>
@@ -3588,11 +3615,11 @@
                     <span style="color:#CBD5E1; font-weight:600;">Mark Highlighted Member <strong style="color:#FBBF24;">Late</strong></span>
                     <span style="background:rgba(251,191,36,0.2); border:1px solid rgba(251,191,36,0.4); color:#FBBF24; padding:3px 10px; border-radius:6px; font-weight:700;">L</span>
                 </div>
-                <div onclick="closeKeyboardCheatsheetModal(); openQRScannerModal();" title="Click to launch QR Scanner" style="display:flex; justify-content:space-between; align-items:center; padding:10px 14px; background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.06); border-radius:12px; cursor:pointer; transition:all 0.15s;" onmouseover="this.style.background='rgba(56,189,248,0.15)'; this.style.borderColor='rgba(56,189,248,0.4)'" onmouseout="this.style.background='rgba(255,255,255,0.04)'; this.style.borderColor='rgba(255,255,255,0.06)'">
+                <div id="action-btn-162"   title="Click to launch QR Scanner" style="display:flex; justify-content:space-between; align-items:center; padding:10px 14px; background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.06); border-radius:12px; cursor:pointer; transition:all 0.15s;" onmouseover="this.style.background='rgba(56,189,248,0.15)'; this.style.borderColor='rgba(56,189,248,0.4)'" onmouseout="this.style.background='rgba(255,255,255,0.04)'; this.style.borderColor='rgba(255,255,255,0.06)'">
                     <span style="color:#CBD5E1; font-weight:600;">Open Live QR Camera Scanner <span style="font-size:0.75rem; color:#38BDF8;">(Click to run ⚡)</span></span>
                     <span style="background:rgba(56,189,248,0.2); border:1px solid rgba(56,189,248,0.4); color:#38BDF8; padding:3px 8px; border-radius:6px; font-weight:700;">Alt + Q</span>
                 </div>
-                <div onclick="closeKeyboardCheatsheetModal(); openAddMemberModal();" title="Click to open Add Member modal" style="display:flex; justify-content:space-between; align-items:center; padding:10px 14px; background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.06); border-radius:12px; cursor:pointer; transition:all 0.15s;" onmouseover="this.style.background='rgba(56,189,248,0.15)'; this.style.borderColor='rgba(56,189,248,0.4)'" onmouseout="this.style.background='rgba(255,255,255,0.04)'; this.style.borderColor='rgba(255,255,255,0.06)'">
+                <div id="action-btn-163"   title="Click to open Add Member modal" style="display:flex; justify-content:space-between; align-items:center; padding:10px 14px; background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.06); border-radius:12px; cursor:pointer; transition:all 0.15s;" onmouseover="this.style.background='rgba(56,189,248,0.15)'; this.style.borderColor='rgba(56,189,248,0.4)'" onmouseout="this.style.background='rgba(255,255,255,0.04)'; this.style.borderColor='rgba(255,255,255,0.06)'">
                     <span style="color:#CBD5E1; font-weight:600;">Open Add New Member Modal <span style="font-size:0.75rem; color:#38BDF8;">(Click to run ⚡)</span></span>
                     <span style="background:rgba(56,189,248,0.2); border:1px solid rgba(56,189,248,0.4); color:#38BDF8; padding:3px 8px; border-radius:6px; font-weight:700;">Alt + N</span>
                 </div>
@@ -3602,7 +3629,7 @@
                 </div>
             </div>
             <div style="margin-top:20px; text-align:right;">
-                <button onclick="closeKeyboardCheatsheetModal()" class="btn-primary glow-button" style="padding:8px 20px;">Got It</button>
+                <button id="action-btn-164"   class="btn-primary glow-button" style="padding:8px 20px;">Got It</button>
             </div>
         </div>
     </div>
@@ -3615,15 +3642,15 @@
             <p id="pastoral-greeting-desc" style="color:#94A3B8; font-size:0.85rem; margin:0 0 20px 0; line-height:1.5;">Choose a channel below to send a personalized birthday and pastoral blessing to this member.</p>
             
             <div style="display:flex; flex-direction:column; gap:12px;">
-                <button id="btn-send-whatsapp-greeting" onclick="sendPastoralGreetingVia('whatsapp')" style="display:flex; align-items:center; justify-content:center; gap:10px; padding:12px; background:linear-gradient(135deg, #10B981, #059669); border:none; border-radius:14px; color:#FFF; font-weight:700; font-size:0.92rem; cursor:pointer; box-shadow:0 6px 20px rgba(16,185,129,0.3); transition:all 0.2s;">
+                <button id="btn-send-whatsapp-greeting"  style="display:flex; align-items:center; justify-content:center; gap:10px; padding:12px; background:linear-gradient(135deg, #10B981, #059669); border:none; border-radius:14px; color:#FFF; font-weight:700; font-size:0.92rem; cursor:pointer; box-shadow:0 6px 20px rgba(16,185,129,0.3); transition:all 0.2s;">
                     <span style="font-size:1.2rem;">💬</span> Send via WhatsApp
                 </button>
-                <button id="btn-send-gmail-greeting" onclick="sendPastoralGreetingVia('gmail')" style="display:flex; align-items:center; justify-content:center; gap:10px; padding:12px; background:linear-gradient(135deg, #EF4444, #DC2626); border:none; border-radius:14px; color:#FFF; font-weight:700; font-size:0.92rem; cursor:pointer; box-shadow:0 6px 20px rgba(239,68,68,0.3); transition:all 0.2s;">
+                <button id="btn-send-gmail-greeting"  style="display:flex; align-items:center; justify-content:center; gap:10px; padding:12px; background:linear-gradient(135deg, #EF4444, #DC2626); border:none; border-radius:14px; color:#FFF; font-weight:700; font-size:0.92rem; cursor:pointer; box-shadow:0 6px 20px rgba(239,68,68,0.3); transition:all 0.2s;">
                     <span style="font-size:1.2rem;">✉️</span> Send via Gmail
                 </button>
             </div>
             
-            <button onclick="closePastoralGreetingModal()" style="margin-top:18px; background:none; border:1px solid rgba(255,255,255,0.15); color:#94A3B8; border-radius:12px; padding:6px 18px; font-size:0.8rem; font-weight:600; cursor:pointer;">Cancel</button>
+            <button id="action-btn-165"   style="margin-top:18px; background:none; border:1px solid rgba(255,255,255,0.15); color:#94A3B8; border-radius:12px; padding:6px 18px; font-size:0.8rem; font-weight:600; cursor:pointer;">Cancel</button>
         </div>
     </div>
 
@@ -3639,21 +3666,21 @@
          NATIVE MOBILE USER EXPERIENCE: FIXED BOTTOM NAVIGATION & FAB
          ========================================================================== -->
     <nav class="mobile-bottom-nav" aria-label="Mobile Bottom Navigation">
-        <a href="javascript:void(0)" class="mobile-nav-item active" data-view="dashboard" onclick="switchView('dashboard')">
+        <a id="action-btn-166"  href="javascript:void(0)" class="mobile-nav-item active" data-view="dashboard" >
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
                 <polyline points="9 22 9 12 15 12 15 22" />
             </svg>
             <span>Home</span>
         </a>
-        <a href="javascript:void(0)" class="mobile-nav-item" data-view="attendance" onclick="switchView('attendance')">
+        <a id="action-btn-167"  href="javascript:void(0)" class="mobile-nav-item" data-view="attendance" >
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M9 11l3 3L22 4" />
                 <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" />
             </svg>
             <span>Attendance</span>
         </a>
-        <a href="javascript:void(0)" class="mobile-nav-item" data-view="members" onclick="switchView('members')">
+        <a id="action-btn-168"  href="javascript:void(0)" class="mobile-nav-item" data-view="members" >
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
                 <circle cx="9" cy="7" r="4" />
@@ -3662,7 +3689,7 @@
             </svg>
             <span>Members</span>
         </a>
-        <a href="javascript:void(0)" class="mobile-nav-item" data-view="funds" onclick="switchView('funds')">
+        <a id="action-btn-169"  href="javascript:void(0)" class="mobile-nav-item" data-view="funds" >
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M20 12V8H6a2 2 0 0 1-2-2c0-1.1.9-2 2-2h12v4" />
                 <path d="M4 6v12c0 1.1.9 2 2 2h14v-4" />
@@ -3670,7 +3697,7 @@
             </svg>
             <span>Funds</span>
         </a>
-        <a href="javascript:void(0)" class="mobile-nav-item" onclick="toggleMobileSidebar()" title="More Menu">
+        <a id="action-btn-170"  href="javascript:void(0)" class="mobile-nav-item"  title="More Menu">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <line x1="3" y1="12" x2="21" y2="12" />
                 <line x1="3" y1="6" x2="21" y2="6" />
@@ -3682,7 +3709,7 @@
 
     <!-- Mobile Quick Action Floating Button (FAB) -->
     <div class="mobile-fab-container">
-        <button type="button" class="mobile-fab-btn" onclick="openAddMemberModal()" title="Quick Add Member / Record" aria-label="Quick action">
+        <button id="action-btn-171"  type="button" class="mobile-fab-btn"  title="Quick Add Member / Record" aria-label="Quick action">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width: 24px; height: 24px;">
                 <line x1="12" y1="5" x2="12" y2="19" />
                 <line x1="5" y1="12" x2="19" y2="12" />
@@ -3692,19 +3719,19 @@
 
     <!-- Mobile App Bottom Navigation -->
     <nav class="mobile-bottom-nav">
-        <div class="bottom-nav-item active" data-view="dashboard" onclick="switchView('dashboard')">
+        <div id="action-btn-172"  class="bottom-nav-item active" data-view="dashboard" >
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
             <span>Home</span>
         </div>
-        <div class="bottom-nav-item" data-view="members" onclick="switchView('members')">
+        <div id="action-btn-173"  class="bottom-nav-item" data-view="members" >
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
             <span>Members</span>
         </div>
-        <div class="bottom-nav-item" data-view="activities" onclick="switchView('activities')">
+        <div id="action-btn-174"  class="bottom-nav-item" data-view="activities" >
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
             <span>Logs</span>
         </div>
-        <div class="bottom-nav-item" data-view="funds" onclick="switchView('funds')">
+        <div id="action-btn-175"  class="bottom-nav-item" data-view="funds" >
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
             <span>Funds</span>
         </div>
@@ -3719,7 +3746,7 @@
                 <h3 id="upload-resource-title" style="color: #FFF; font-size: 1.3rem; font-weight: 800; margin: 0; display: flex; align-items: center; gap: 8px;">
                     <span>📤 Upload Custom Resource Document</span>
                 </h3>
-                <button class="modal-close-btn" onclick="closeUploadResourceModal()" aria-label="Close modal">
+                <button id="action-btn-176"  class="modal-close-btn"  aria-label="Close modal">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12" /></svg>
                 </button>
             </div>
@@ -3747,7 +3774,7 @@
                     <input type="file" id="res-upload-file" required accept=".pdf,.docx,.doc,.pptx,.ppt,.png,.jpg,.jpeg" style="width: 100%; background: #0F172A; color: #38BDF8; border: 1px dashed rgba(56, 189, 248, 0.4); border-radius: 8px; padding: 12px; font-size: 0.88rem; outline: none; cursor: pointer;">
                 </div>
                 <div style="display: flex; justify-content: flex-end; gap: 10px;">
-                    <button type="button" class="btn-secondary" onclick="closeUploadResourceModal()">Cancel</button>
+                    <button id="action-btn-177"  type="button" class="btn-secondary" >Cancel</button>
                     <button type="submit" class="btn-primary glow-button" style="background: linear-gradient(135deg, #0284C7, #38BDF8);">Save & Upload File</button>
                 </div>
             </form>
@@ -3763,7 +3790,7 @@
                 <h3 id="letter-gen-title" style="color: #FFF; font-size: 1.3rem; font-weight: 800; margin: 0; display: flex; align-items: center; gap: 8px;">
                     <span>💌 Fillable Chapter Letter Generator</span>
                 </h3>
-                <button class="modal-close-btn" onclick="closeLetterGeneratorModal()" aria-label="Close modal">
+                <button id="action-btn-178"  class="modal-close-btn"  aria-label="Close modal">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12" /></svg>
                 </button>
             </div>
@@ -3816,11 +3843,11 @@
             </div>
 
             <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 16px; border-top: 1px solid rgba(255,255,255,0.08); padding-top: 14px;">
-                <button type="button" class="btn-secondary" onclick="closeLetterGeneratorModal()">Close</button>
-                <button type="button" class="btn-primary glow-button" onclick="downloadLetterPDF()" style="background: linear-gradient(135deg, #0284C7, #38BDF8); border: none; display: flex; align-items: center; gap: 6px; font-weight: 800;">
+                <button id="action-btn-179"  type="button" class="btn-secondary" >Close</button>
+                <button id="action-btn-180"  type="button" class="btn-primary glow-button"  style="background: linear-gradient(135deg, #0284C7, #38BDF8); border: none; display: flex; align-items: center; gap: 6px; font-weight: 800;">
                     <span>📥 Download PDF Letter</span>
                 </button>
-                <button type="button" class="btn-secondary" onclick="printGeneratedLetter()" style="display: flex; align-items: center; gap: 6px;">
+                <button id="action-btn-181"  type="button" class="btn-secondary"  style="display: flex; align-items: center; gap: 6px;">
                     <span>🖨️ Print</span>
                 </button>
             </div>
@@ -3839,7 +3866,7 @@
                     </h3>
                     <p style="color: #94A3B8; font-size: 0.82rem; margin: 0;">Transposes guitar chords live in real-time for worship assemblies.</p>
                 </div>
-                <button class="modal-close-btn" onclick="closeSongbookTransposerModal()" aria-label="Close modal">
+                <button id="action-btn-182"  class="modal-close-btn"  aria-label="Close modal">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12" /></svg>
                 </button>
             </div>
@@ -3859,10 +3886,10 @@
 
                 <div style="display: flex; align-items: center; gap: 8px;">
                     <span style="color: #94A3B8; font-size: 0.82rem; font-weight: 700;">KEY:</span>
-                    <button class="btn-secondary btn-sm" onclick="transposeSongKey(-1)" style="padding: 6px 12px; font-weight: 800; color: #38BDF8;">-1 Key</button>
+                    <button id="action-btn-183"  class="btn-secondary btn-sm"  style="padding: 6px 12px; font-weight: 800; color: #38BDF8;">-1 Key</button>
                     <span id="current-key-badge" style="background: rgba(168,85,247,0.2); border: 1px solid rgba(168,85,247,0.5); color: #D8B4FE; padding: 4px 12px; border-radius: 20px; font-weight: 800; font-size: 0.9rem;">Key: G</span>
-                    <button class="btn-secondary btn-sm" onclick="transposeSongKey(1)" style="padding: 6px 12px; font-weight: 800; color: #38BDF8;">+1 Key</button>
-                    <button class="btn-secondary btn-sm" onclick="resetSongKey()" style="padding: 6px 10px; font-size: 0.78rem;">Reset</button>
+                    <button id="action-btn-184"  class="btn-secondary btn-sm"  style="padding: 6px 12px; font-weight: 800; color: #38BDF8;">+1 Key</button>
+                    <button id="action-btn-185"  class="btn-secondary btn-sm"  style="padding: 6px 10px; font-size: 0.78rem;">Reset</button>
                 </div>
             </div>
 
@@ -3872,7 +3899,7 @@
             </div>
 
             <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 14px;">
-                <button type="button" class="btn-secondary" onclick="closeSongbookTransposerModal()">Close Songbook</button>
+                <button id="action-btn-186"  type="button" class="btn-secondary" >Close Songbook</button>
             </div>
         </div>
     </div>
@@ -3889,17 +3916,17 @@
                     </h3>
                     <p style="color: #94A3B8; font-size: 0.82rem; margin: 0;">Step-by-step bead counter, mystery meditations, and scripture reflections.</p>
                 </div>
-                <button class="modal-close-btn" onclick="closeInteractiveRosaryModal()" aria-label="Close modal">
+                <button id="action-btn-187"  class="modal-close-btn"  aria-label="Close modal">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12" /></svg>
                 </button>
             </div>
 
             <!-- MYSTERY SELECTOR -->
             <div style="display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap;" id="rosary-mystery-tabs">
-                <button class="btn-secondary btn-sm ros-tab active" onclick="selectRosaryMystery('joyful')" id="ros-tab-joyful" style="border-color: #38BDF8; color: #38BDF8; background: rgba(56,189,248,0.15);">✨ Joyful (Mon/Sat)</button>
-                <button class="btn-secondary btn-sm ros-tab" onclick="selectRosaryMystery('luminous')" id="ros-tab-luminous">🌟 Luminous (Thu)</button>
-                <button class="btn-secondary btn-sm ros-tab" onclick="selectRosaryMystery('sorrowful')" id="ros-tab-sorrowful">✝️ Sorrowful (Tue/Fri)</button>
-                <button class="btn-secondary btn-sm ros-tab" onclick="selectRosaryMystery('glorious')" id="ros-tab-glorious">👑 Glorious (Wed/Sun)</button>
+                <button class="btn-secondary btn-sm ros-tab active"  id="ros-tab-joyful" style="border-color: #38BDF8; color: #38BDF8; background: rgba(56,189,248,0.15);">✨ Joyful (Mon/Sat)</button>
+                <button class="btn-secondary btn-sm ros-tab"  id="ros-tab-luminous">🌟 Luminous (Thu)</button>
+                <button class="btn-secondary btn-sm ros-tab"  id="ros-tab-sorrowful">✝️ Sorrowful (Tue/Fri)</button>
+                <button class="btn-secondary btn-sm ros-tab"  id="ros-tab-glorious">👑 Glorious (Wed/Sun)</button>
             </div>
 
             <!-- BEAD PROGRESS TRACKER -->
@@ -3926,10 +3953,10 @@
 
             <!-- CONTROLS -->
             <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 16px; gap: 10px; flex-wrap: wrap;">
-                <button type="button" class="btn-secondary" onclick="prevRosaryBead()" style="display: flex; align-items: center; gap: 6px;">
+                <button id="action-btn-188"  type="button" class="btn-secondary"  style="display: flex; align-items: center; gap: 6px;">
                     <span>◀ Previous Bead</span>
                 </button>
-                <button type="button" class="btn-primary glow-button" onclick="nextRosaryBead()" style="display: flex; align-items: center; gap: 6px; background: linear-gradient(135deg, #0284C7, #38BDF8);">
+                <button id="action-btn-189"  type="button" class="btn-primary glow-button"  style="display: flex; align-items: center; gap: 6px; background: linear-gradient(135deg, #0284C7, #38BDF8);">
                     <span>Next Bead ▶</span>
                 </button>
             </div>
@@ -3944,7 +3971,7 @@
                     <h3 style="color: #F8FAFC; font-size: 1.2rem; font-weight: 800; margin: 0;">🆔 Digital Youth Member ID</h3>
                     <p style="color: #94A3B8; font-size: 0.8rem; margin: 2px 0 0 0;">Official MFC Youth Tarlac Chapter Membership Credential</p>
                 </div>
-                <button class="modal-close-btn" onclick="closeMemberIDCardModal()">✕</button>
+                <button id="action-btn-190"  class="modal-close-btn" >✕</button>
             </div>
             
             <!-- PRINTABLE GLASS ID CARD DESIGN -->
@@ -3988,8 +4015,8 @@
             </div>
 
             <div style="display: flex; gap: 10px; margin-top: 18px; justify-content: flex-end;">
-                <button class="btn-secondary" onclick="closeMemberIDCardModal()">Close</button>
-                <button class="btn-primary glow-button" onclick="printMemberIDCard()">🖨️ Print Member ID Pass</button>
+                <button id="action-btn-191"  class="btn-secondary" >Close</button>
+                <button id="action-btn-192"  class="btn-primary glow-button" >🖨️ Print Member ID Pass</button>
             </div>
         </div>
     </div>
@@ -4002,7 +4029,7 @@
                     <h3 style="color: #F8FAFC; font-size: 1.2rem; font-weight: 800; margin: 0;">📷 QR Attendance Scanner</h3>
                     <p style="color: #94A3B8; font-size: 0.8rem; margin: 2px 0 0 0;">Scan Member Digital ID QR code for instant check-in</p>
                 </div>
-                <button class="modal-close-btn" onclick="closeQRScannerModal()">✕</button>
+                <button id="action-btn-193"  class="modal-close-btn" >✕</button>
             </div>
             
             <div style="margin-top: 16px; text-align: center;">
@@ -4011,7 +4038,7 @@
             </div>
 
             <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 18px;">
-                <button class="btn-secondary" onclick="closeQRScannerModal()">Close Camera</button>
+                <button id="action-btn-194"  class="btn-secondary" >Close Camera</button>
             </div>
         </div>
     </div>
@@ -4024,7 +4051,7 @@
                     <h3 style="color: #F8FAFC; font-size: 1.2rem; font-weight: 800; margin: 0;">📢 Post Advisory Announcement</h3>
                     <p style="color: #94A3B8; font-size: 0.8rem; margin: 2px 0 0 0;">Broadcast official notice to all chapter members</p>
                 </div>
-                <button class="modal-close-btn" onclick="closePostAnnouncementModal()">✕</button>
+                <button id="action-btn-195"  class="modal-close-btn" >✕</button>
             </div>
             
             <form id="form-post-announcement" onsubmit="handlePostAnnouncement(event)" style="margin-top: 16px;">
@@ -4045,7 +4072,7 @@
                     <textarea id="ann-details" required rows="4" placeholder="Enter announcement body..." style="width: 100%; background: #0F172A; border: 1px solid rgba(255,255,255,0.15); border-radius: 8px; padding: 10px 12px; color: #FFF; resize: vertical;"></textarea>
                 </div>
                 <div style="display: flex; gap: 10px; justify-content: flex-end;">
-                    <button type="button" class="btn-secondary" onclick="closePostAnnouncementModal()">Cancel</button>
+                    <button id="action-btn-196"  type="button" class="btn-secondary" >Cancel</button>
                     <button type="submit" class="btn-primary glow-button">📢 Broadcast Notice</button>
                 </div>
             </form>
@@ -4060,7 +4087,7 @@
                     <h3 style="color: #F8FAFC; font-size: 1.2rem; font-weight: 800; margin: 0;">🙏 Submit Prayer Intention</h3>
                     <p style="color: #94A3B8; font-size: 0.8rem; margin: 2px 0 0 0;">Add intercessory prayer request to chapter prayer wall</p>
                 </div>
-                <button class="modal-close-btn" onclick="closeSubmitPrayerModal()">✕</button>
+                <button id="action-btn-197"  class="modal-close-btn" >✕</button>
             </div>
             
             <form id="form-submit-prayer" onsubmit="handleSubmitPrayer(event)" style="margin-top: 16px;">
@@ -4083,7 +4110,7 @@
                     <textarea id="pray-intent" required rows="3" placeholder="Specify your prayer request..." style="width: 100%; background: #0F172A; border: 1px solid rgba(255,255,255,0.15); border-radius: 8px; padding: 10px 12px; color: #FFF; resize: vertical;"></textarea>
                 </div>
                 <div style="display: flex; gap: 10px; justify-content: flex-end;">
-                    <button type="button" class="btn-secondary" onclick="closeSubmitPrayerModal()">Cancel</button>
+                    <button id="action-btn-198"  type="button" class="btn-secondary" >Cancel</button>
                     <button type="submit" class="btn-primary glow-button" style="background: linear-gradient(135deg, #A855F7, #7C3AED); border: none;">🙏 Submit Intention</button>
                 </div>
             </form>
@@ -4091,7 +4118,7 @@
     </div>
 
     <!-- ADVANCED FEATURE 1: FLOATING AI PASTORAL CHATBOT BUTTON & WIDGET -->
-    <button id="ai-chat-trigger-btn" onclick="toggleAIPastoralChat()" style="position: fixed; bottom: 24px; right: 24px; z-index: 9999; background: linear-gradient(135deg, #0284C7, #38BDF8); color: #FFF; border: 2px solid rgba(255,255,255,0.4); border-radius: 30px; padding: 12px 20px; font-weight: 800; font-size: 0.92rem; display: flex; align-items: center; gap: 8px; box-shadow: 0 10px 25px rgba(2, 132, 199, 0.5); cursor: pointer; transition: all 0.3s ease;">
+    <button id="ai-chat-trigger-btn"  style="position: fixed; bottom: 24px; right: 24px; z-index: 9999; background: linear-gradient(135deg, #0284C7, #38BDF8); color: #FFF; border: 2px solid rgba(255,255,255,0.4); border-radius: 30px; padding: 12px 20px; font-weight: 800; font-size: 0.92rem; display: flex; align-items: center; gap: 8px; box-shadow: 0 10px 25px rgba(2, 132, 199, 0.5); cursor: pointer; transition: all 0.3s ease;">
         <span style="font-size: 1.3rem;">🤖</span>
         <span>AI Pastoral Companion</span>
     </button>
@@ -4106,7 +4133,7 @@
                         <span style="color: #38BDF8; font-size: 0.75rem; font-weight: 700;">Powered by Gemini AI • Youth Guidance & Scripture</span>
                     </div>
                 </div>
-                <button class="modal-close-btn" onclick="toggleAIPastoralChat()">✕</button>
+                <button id="action-btn-199"  class="modal-close-btn" >✕</button>
             </div>
 
             <!-- CHAT LOG CONTAINER -->
@@ -4127,7 +4154,7 @@
     <!-- ADVANCED FEATURE 4: PERSISTENT PASTORAL AUDIO PODCAST PLAYER BAR -->
     <div id="portal-audio-player-bar" style="position: fixed; bottom: 0; left: 0; width: 100vw; background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(12px); border-top: 1px solid rgba(56, 189, 248, 0.3); padding: 10px 24px; z-index: 9998; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; box-shadow: 0 -4px 20px rgba(0,0,0,0.5);">
         <div style="display: flex; align-items: center; gap: 12px;">
-            <button onclick="toggleAudioPlay()" id="audio-play-btn" style="background: linear-gradient(135deg, #10B981, #059669); color: #FFF; border: none; border-radius: 50%; width: 40px; height: 40px; font-size: 1.2rem; cursor: pointer; display: flex; align-items: center; justify-content: center;">▶</button>
+            <button  id="audio-play-btn" style="background: linear-gradient(135deg, #10B981, #059669); color: #FFF; border: none; border-radius: 50%; width: 40px; height: 40px; font-size: 1.2rem; cursor: pointer; display: flex; align-items: center; justify-content: center;">▶</button>
             <div>
                 <div style="font-size: 0.88rem; font-weight: 800; color: #F8FAFC;" id="audio-track-title">🎙️ Homily Talk: "Christ is Alive in the Youth"</div>
                 <div style="font-size: 0.72rem; color: #94A3B8;">MFC Youth Tarlac Pastoral Audio Series</div>
@@ -4145,7 +4172,7 @@
                     <h3 style="color: #F8FAFC; font-size: 1.2rem; font-weight: 800; margin: 0;">📜 Certificate of Participation Generator</h3>
                     <p style="color: #94A3B8; font-size: 0.8rem; margin: 2px 0 0 0;">Export official signed credential for delegates</p>
                 </div>
-                <button class="modal-close-btn" onclick="closeCertificateModal()">✕</button>
+                <button id="action-btn-200"  class="modal-close-btn" >✕</button>
             </div>
 
             <!-- PRINTABLE CERTIFICATE CONTAINER -->
@@ -4169,8 +4196,8 @@
             </div>
 
             <div style="display: flex; gap: 10px; margin-top: 18px; justify-content: flex-end;">
-                <button class="btn-secondary" onclick="closeCertificateModal()">Close</button>
-                <button class="btn-primary glow-button" onclick="downloadCertificatePDF()">📥 Export PDF Certificate</button>
+                <button id="action-btn-201"  class="btn-secondary" >Close</button>
+                <button id="action-btn-202"  class="btn-primary glow-button" >📥 Export PDF Certificate</button>
             </div>
         </div>
     </div>
@@ -4219,7 +4246,7 @@
                     </h3>
                     <p id="venue-map-modal-location-label" style="color: #38BDF8; font-size: 0.82rem; font-weight: 700; margin: 4px 0 0 0;">Tarlac City</p>
                 </div>
-                <button onclick="closeVenueMapModal()" style="background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.4); color: #F87171; width: 34px; height: 34px; border-radius: 10px; cursor: pointer; font-size: 1.1rem; display: flex; align-items: center; justify-content: center; transition: all 0.2s ease;" onmouseover="this.style.background='rgba(239, 68, 68, 0.3)'" onmouseout="this.style.background='rgba(239, 68, 68, 0.15)'" title="Close Map">✕</button>
+                <button id="action-btn-203"   style="background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.4); color: #F87171; width: 34px; height: 34px; border-radius: 10px; cursor: pointer; font-size: 1.1rem; display: flex; align-items: center; justify-content: center; transition: all 0.2s ease;" onmouseover="this.style.background='rgba(239, 68, 68, 0.3)'" onmouseout="this.style.background='rgba(239, 68, 68, 0.15)'" title="Close Map">✕</button>
             </div>
 
             <!-- Custom Pin Search Bar -->
@@ -4248,7 +4275,7 @@
                         class="btn-primary" style="padding: 8px 16px; background: linear-gradient(135deg, #059669, #10B981); color: #FFF; border: none; text-decoration: none; font-size: 0.82rem; font-weight: 800; border-radius: 10px; display: inline-flex; align-items: center; gap: 6px;">
                         🗺️ Get Directions ↗
                     </a>
-                    <button onclick="closeVenueMapModal()" class="btn-secondary" style="padding: 8px 16px; font-size: 0.82rem; border-radius: 10px;">Close</button>
+                    <button id="action-btn-204"   class="btn-secondary" style="padding: 8px 16px; font-size: 0.82rem; border-radius: 10px;">Close</button>
                 </div>
             </div>
         </div>
@@ -4257,7 +4284,7 @@
     <!-- ==========================================================================
          MODAL: WHAT'S NEW IN V3.4
          ========================================================================== -->
-    <div class="modal-backdrop" id="whats-new-modal-backdrop" style="display: none; align-items: center; justify-content: center; z-index: 99999;" onclick="if(event.target===this) closeWhatsNewModal()">
+    <div class="modal-backdrop" id="whats-new-modal-backdrop" style="display: none; align-items: center; justify-content: center; z-index: 99999;" >
         <div class="modal-card glass-card" role="dialog" aria-labelledby="whats-new-modal-title"
             style="width: 96vw; max-width: 680px; max-height: 92vh; border-radius: 12px; overflow-y: auto; overflow-x: hidden; border: 1px solid rgba(56, 189, 248, 0.2); background: #151C2C; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);">
             <!-- Header -->
@@ -4269,7 +4296,7 @@
                     </svg>
                     WHAT'S NEW IN V3.4
                 </h3>
-                <button onclick="closeWhatsNewModal()" style="background: rgba(255, 255, 255, 0.05); border: none; color: #94A3B8; width: 32px; height: 32px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s ease;" onmouseover="this.style.background='rgba(255, 255, 255, 0.1)'; this.style.color='#F8FAFC';" onmouseout="this.style.background='rgba(255, 255, 255, 0.05)'; this.style.color='#94A3B8';">
+                <button id="action-btn-205"   style="background: rgba(255, 255, 255, 0.05); border: none; color: #94A3B8; width: 32px; height: 32px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s ease;" onmouseover="this.style.background='rgba(255, 255, 255, 0.1)'; this.style.color='#F8FAFC';" onmouseout="this.style.background='rgba(255, 255, 255, 0.05)'; this.style.color='#94A3B8';">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 18px; height: 18px;">
                         <path d="M18 6L6 18M6 6l12 12" />
                     </svg>
