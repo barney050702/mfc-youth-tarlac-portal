@@ -9253,45 +9253,8 @@ function generateOfficialLedgerPDF() {
 /* ==========================================================================
    FEATURE 1: MEMBER DIRECTORY CSV EXPORT
    ========================================================================== */
-function exportMembersCSV_V2() {
-    try {
-        const membersList = (state && state.members) ? state.members : [];
-        if (!membersList || membersList.length === 0) {
-            showToast('⚠️ No members available to export.', 'warning');
-            return;
-        }
 
-        const headers = ['Full Name', 'Chapter Area', 'Ministry / Dept', 'Designation / Role', 'Phone', 'Email', 'Status', 'Camp Batch'];
-        const csvRows = [headers.join(',')];
 
-        membersList.forEach(m => {
-            const row = [
-                `"${(m.name || '').replace(/"/g, '""')}"`,
-                `"${(m.chapterArea || m.chapter || 'Central').replace(/"/g, '""')}"`,
-                `"${(m.ministry || 'Programs').replace(/"/g, '""')}"`,
-                `"${(m.role || 'Member').replace(/"/g, '""')}"`,
-                `"${(m.phone || '').replace(/"/g, '""')}"`,
-                `"${(m.email || '').replace(/"/g, '""')}"`,
-                `"${(m.status || 'Active').replace(/"/g, '""')}"`,
-                `"${(m.campBatch || '2025').replace(/"/g, '""')}"`
-            ];
-            csvRows.push(row.join(','));
-        });
-
-        const csvContent = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csvRows.join('\n'));
-        const link = document.createElement('a');
-        link.setAttribute('href', csvContent);
-        link.setAttribute('download', `MFC_Youth_Tarlac_Member_Roster_${Date.now()}.csv`);
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-
-        showToast('📥 Member Roster exported to Excel/CSV successfully!', 'success');
-    } catch (err) {
-        showToast(`CSV Export Error: ${err.message}`, 'error');
-    }
-}
-window.exportMembersCSV_V2 = exportMembersCSV_V2;
 
 /* ==========================================================================
    FEATURE 2: UPLOAD CUSTOM RESOURCE DOCUMENT
@@ -9929,55 +9892,19 @@ function closeMemberIDCardModal() {
         if (el) el.style.display = 'none';
     } catch (e) {}
 }
-function printMemberIDCard_V2() {
-    window.print();
-}
+
 window.openMemberIDCard = openMemberIDCard;
 window.closeMemberIDCardModal = closeMemberIDCardModal;
-window.printMemberIDCard_V2 = printMemberIDCard_V2;
+
 
 /* ==========================================================================
    FEATURE 2: QR ATTENDANCE SCANNER
    ========================================================================== */
 let html5QrScannerInstance = null;
-function openQRScannerModal_V2() {
-    try {
-        const backdrop = document.getElementById('qr-scanner-backdrop');
-        if (backdrop) {
-            backdrop.style.display = 'flex';
-            backdrop.style.zIndex = '100000';
-        }
-        const resEl = document.getElementById('qr-scan-result');
-        if (resEl) resEl.innerText = '📷 Align member QR code inside scanner frame...';
 
-        if (typeof Html5QrcodeScanner !== 'undefined') {
-            if (!html5QrScannerInstance) {
-                html5QrScannerInstance = new Html5QrcodeScanner("qr-reader", { fps: 10, qrbox: 250 }, false);
-                html5QrScannerInstance.render((decodedText) => {
-                    if (resEl) resEl.innerText = `✅ Check-in Success: ${decodedText}`;
-                    if (typeof showToast === 'function') showToast(`✅ Scanned: ${decodedText}`, 'success');
-                    setTimeout(() => closeQRScannerModal_V2(), 1500);
-                }, (err) => {});
-            }
-        } else {
-            if (resEl) resEl.innerText = '📷 Camera Scanner Active (Simulated Scan Ready)';
-        }
-    } catch (e) {
-        console.warn('openQRScannerModal_V2 error:', e);
-    }
-}
-function closeQRScannerModal_V2() {
-    try {
-        const el = document.getElementById('qr-scanner-backdrop');
-        if (el) el.style.display = 'none';
-        if (html5QrScannerInstance) {
-            try { html5QrScannerInstance.clear(); } catch(err){}
-            html5QrScannerInstance = null;
-        }
-    } catch (e) {}
-}
-window.openQRScannerModal_V2 = openQRScannerModal_V2;
-window.closeQRScannerModal_V2 = closeQRScannerModal_V2;
+
+
+
 
 /* ==========================================================================
    FEATURE 3: INTERACTIVE EVENT CALENDAR & RSVP HUB
@@ -10371,23 +10298,8 @@ window.toggleAudioPlay = toggleAudioPlay;
 /* ==========================================================================
    ADVANCED FEATURE 5: CERTIFICATE OF PARTICIPATION GENERATOR
    ========================================================================== */
-function openCertificateModal_V2(memberName) {
-    try {
-        const backdrop = document.getElementById('certificate-generator-backdrop');
-        if (backdrop) {
-            backdrop.style.display = 'flex';
-            backdrop.style.zIndex = '100000';
-        }
-        const nameEl = document.getElementById('cert-member-name');
-        if (nameEl) nameEl.innerText = (memberName || 'BARNEY TARLAC').toUpperCase();
-    } catch (e) {}
-}
-function closeCertificateModal_V2() {
-    try {
-        const el = document.getElementById('certificate-generator-backdrop');
-        if (el) el.style.display = 'none';
-    } catch (e) {}
-}
+
+
 function downloadCertificatePDF() {
     try {
         const element = document.getElementById('printable-certificate-container');
@@ -10415,8 +10327,8 @@ function downloadCertificatePDF() {
         window.print();
     }
 }
-window.openCertificateModal_V2 = openCertificateModal_V2;
-window.closeCertificateModal_V2 = closeCertificateModal_V2;
+
+
 window.downloadCertificatePDF = downloadCertificatePDF;
 
 /* ==========================================================================
