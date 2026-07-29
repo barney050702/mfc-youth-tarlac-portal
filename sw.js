@@ -1,4 +1,4 @@
-const CACHE_NAME = 'mfc-youth-tarlac-portal-v4.39';
+const CACHE_NAME = 'mfc-youth-tarlac-portal-v4.40';
 const ASSETS_TO_CACHE = [
     './',
     './index.html',
@@ -32,9 +32,14 @@ self.addEventListener('install', (event) => {
             .open(CACHE_NAME)
             .then((cache) => {
                 console.log('[SW] Caching core MFC Youth Tarlac Portal assets');
-                return cache.addAll(ASSETS_TO_CACHE).catch((err) => {
-                    console.warn('[SW] Some CDN assets could not be cached offline:', err);
-                });
+                // Cache assets individually to prevent the entire caching process from failing if one fails
+                return Promise.allSettled(
+                    ASSETS_TO_CACHE.map((url) =>
+                        cache.add(url).catch((err) => {
+                            console.warn(`[SW] Failed to cache: ${url}`, err);
+                        })
+                    )
+                );
             })
             .then(() => self.skipWaiting())
     );
@@ -65,24 +70,30 @@ self.addEventListener('fetch', (event) => {
 
     event.respondWith(
         caches.match(event.request).then((cachedResponse) => {
-            const fetchPromise = fetch(event.request)
-                .then((networkResponse) => {
-                    if (
-                        networkResponse &&
-                        networkResponse.status === 200 &&
-                        networkResponse.type === 'basic'
-                    ) {
-                        const responseClone = networkResponse.clone();
-                        caches.open(CACHE_NAME).then((cache) => {
-                            cache.put(event.request, responseClone);
-                        });
-                    }
-                    return networkResponse;
+            const fetchPromise = fetch(event.request).then((networkResponse) => {
+                if (
+                    networkResponse &&
+                    networkResponse.status === 200 &&
+                    (networkResponse.type === 'basic' || networkResponse.type === 'cors')
+                ) {
+                    const responseClone = networkResponse.clone();
+                    caches.open(CACHE_NAME).then((cache) => {
+                        cache.put(event.request, responseClone);
+                    });
+                }
+                return networkResponse;
+            });
+
+            return (
+                cachedResponse ||
+                fetchPromise.catch(() => {
+                    // Fallback to prevent TypeError if network fails and no cache exists
+                    return new Response('Network Error', {
+                        status: 503,
+                        statusText: 'Service Unavailable'
+                    });
                 })
-                .catch(() => {
-                    // If fetch fails, we just return the cached response (if available)
-                });
-            return cachedResponse || fetchPromise;
+            );
         })
     );
 });
