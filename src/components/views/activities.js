@@ -1,3 +1,4 @@
+export default `
 <div id="view-activities" class="view-panel">
                         <!-- Semester Banner Card -->
                         <div
@@ -278,3 +279,4 @@
                             <!-- Populated dynamically by script.js -->
                         </div>
                     </div>
+`;

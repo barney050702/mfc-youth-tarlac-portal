@@ -1,3 +1,4 @@
+export default `
 <div class="modal-backdrop" id="modal-backdrop" style="display: none">
             <div class="modal-card glass-card" role="dialog" aria-labelledby="modal-title">
                 <div class="modal-header">
@@ -188,3 +189,4 @@
                 </form>
             </div>
         </div>
+`;

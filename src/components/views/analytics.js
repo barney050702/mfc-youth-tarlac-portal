@@ -1,3 +1,4 @@
+export default `
 <div id="view-analytics" class="view-panel">
                         <!-- Export Callout Banner -->
                         <div class="export-banner glass-card">
@@ -284,3 +285,4 @@
                             </div>
                         </div>
                     </div>
+`;

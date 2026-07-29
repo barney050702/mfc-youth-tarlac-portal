@@ -1,3 +1,4 @@
+export default `
 <div class="modal-backdrop" id="letter-generator-backdrop" style="display: none">
                 <div
                     class="modal-card glass-card"
@@ -330,3 +331,4 @@
                     </div>
                 </div>
             </div>
+`;

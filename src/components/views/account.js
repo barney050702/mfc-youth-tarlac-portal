@@ -1,3 +1,4 @@
+export default `
 <div id="view-account" class="view-panel">
                         <div
                             style="
@@ -269,3 +270,4 @@
                             </div>
                         </div>
                     </div>
+`;

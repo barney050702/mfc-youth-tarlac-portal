@@ -1,3 +1,4 @@
+export default `
 <div id="view-members" class="view-panel">
                         <div class="glass-panel">
                             <!-- Interactive Chapter Bullet / Pill Bar -->
@@ -495,3 +496,4 @@
                             </div>
                         </div>
                     </div>
+`;

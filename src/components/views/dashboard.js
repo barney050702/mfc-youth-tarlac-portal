@@ -1,3 +1,4 @@
+export default `
 <div id="view-dashboard" class="view-panel active">
                         <!-- Executive Dashboard Actions Bar -->
                         <div
@@ -559,3 +560,4 @@
                             </div>
                         </div>
                     </div>
+`;

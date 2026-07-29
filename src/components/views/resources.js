@@ -1,3 +1,4 @@
+export default `
 <div id="view-resources" class="view-panel">
                         <div
                             class="glass-card"
@@ -1818,3 +1819,4 @@
                             "
                         ></div>
                     </div>
+`;

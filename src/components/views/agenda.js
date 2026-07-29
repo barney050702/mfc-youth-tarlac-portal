@@ -1,3 +1,4 @@
+export default `
 <div id="view-agenda" class="view-panel">
                         <!-- Toolbar & Controls -->
                         <div
@@ -222,3 +223,4 @@
                             </div>
                         </div>
                     </div>
+`;

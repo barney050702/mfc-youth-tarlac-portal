@@ -1,3 +1,4 @@
+export default `
 <div class="modal-backdrop" id="add-member-backdrop" style="display: none">
             <div
                 class="modal-card glass-card"
@@ -219,3 +220,4 @@
                 </form>
             </div>
         </div>
+`;

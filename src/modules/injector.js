@@ -1,20 +1,20 @@
 // Modals
-import addMemberHtml from '../components/modals/add-member.html?raw';
-import letterGeneratorHtml from '../components/modals/letter-generator.html?raw';
-import rosaryInteractiveHtml from '../components/modals/rosary-interactive.html?raw';
-import venueMapHtml from '../components/modals/venue-map.html?raw';
-import modalHtml from '../components/modals/modal.html?raw';
+import addMemberHtml from '../components/modals/add-member.js';
+import letterGeneratorHtml from '../components/modals/letter-generator.js';
+import rosaryInteractiveHtml from '../components/modals/rosary-interactive.js';
+import venueMapHtml from '../components/modals/venue-map.js';
+import modalHtml from '../components/modals/modal.js';
 
 // Views
-import resourcesHtml from '../components/views/resources.html?raw';
-import dashboardHtml from '../components/views/dashboard.html?raw';
-import attendanceHtml from '../components/views/attendance.html?raw';
-import fundsHtml from '../components/views/funds.html?raw';
-import membersHtml from '../components/views/members.html?raw';
-import analyticsHtml from '../components/views/analytics.html?raw';
-import activitiesHtml from '../components/views/activities.html?raw';
-import accountHtml from '../components/views/account.html?raw';
-import agendaHtml from '../components/views/agenda.html?raw';
+import resourcesHtml from '../components/views/resources.js';
+import dashboardHtml from '../components/views/dashboard.js';
+import attendanceHtml from '../components/views/attendance.js';
+import fundsHtml from '../components/views/funds.js';
+import membersHtml from '../components/views/members.js';
+import analyticsHtml from '../components/views/analytics.js';
+import activitiesHtml from '../components/views/activities.js';
+import accountHtml from '../components/views/account.js';
+import agendaHtml from '../components/views/agenda.js';
 
 export function injectComponents() {
     const components = [

@@ -1,3 +1,4 @@
+export default `
 <div id="view-attendance" class="view-panel">
                         <div class="glass-panel">
                             <!-- Top Selector Bar -->
@@ -526,3 +527,4 @@
                             </div>
                         </div>
                     </div>
+`;

@@ -1,3 +1,4 @@
+export default `
 <div id="view-funds" class="view-panel">
                         <!-- Top 4 Summary Metric Cards Grid -->
                         <div class="metrics-grid">
@@ -513,3 +514,4 @@
                             backups at any time.
                         </div>
                     </div>
+`;
