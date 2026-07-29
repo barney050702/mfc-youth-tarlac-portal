@@ -7,7 +7,7 @@ import { state, loadFromStorage, subscribeState } from './modules/state.js';
 import { switchView, toggleMobileSidebar, closeMobileSidebar, showToast, copyToClipboardText, openWhatsNewModal, closeWhatsNewModal } from './modules/ui.js';
 import { loginUser, logoutUser, initAuthWatchdog, sendPasswordReset } from './modules/auth.js';
 import { MFCFirebaseCloud } from './modules/firebase.js';
-import { renderMembersTable, openDigitalQRModal, closeDigitalQRModal, printMemberQRCard } from './modules/members.js';
+import { openDigitalQRModal, closeDigitalQRModal, printMemberQRCard } from './modules/members.js';
 import { populateAttendanceDropdown, renderAttendanceRoster, toggleAttendance, triggerAbsenteeAutoGmailPrompt, filterAttendanceRoster, batchMarkChapterPresent, sendGmailToCurrentAbsentees, updateRemarks, updateLiveProgress, markAllPresent, markAllAbsent, resetAttendanceSheet, startLiveQRScanner, stopLiveQRScanner, simulateQRCheckIn } from './modules/attendance.js';
 import { renderActivitiesTable } from './modules/activities.js';
 import { renderDashboardCharts, generateExecutiveSummaryReport, renderAnalytics, exportToCSV, exportToPDF, exportMembersToPDF, exportMembersCSV, exportActivitiesCSV, exportAttendanceCSV, exportFundsCSV } from './modules/reports.js';
@@ -97,7 +97,7 @@ function setupNavigationListeners() {
 
 function renderAllViews() {
     renderDashboard();
-    renderMembersTable();
+    if (window.renderMembersTable) window.renderMembersTable();
     populateAttendanceDropdown();
     renderAttendanceRoster();
     renderActivitiesTable();
