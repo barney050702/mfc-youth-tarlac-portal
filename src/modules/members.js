@@ -188,6 +188,48 @@ export function deleteMember(memberId) {
         notifyStateChange('member-deleted');
         renderMembersTable();
         showToast(`Member "${member.name}" removed from roster.`, 'info');
-        triggerHaptic('medium');
+    }
+}
+
+export function syncChapterBullets(val) {
+    const btns = document.querySelectorAll('#members-chapter-bullets .chapter-bullet-btn');
+    btns.forEach(btn => {
+        const c = btn.getAttribute('data-chapter');
+        if (c === val) {
+            btn.classList.add('active');
+            btn.style.background = 'linear-gradient(135deg, #0284C7, #3B82F6)';
+            btn.style.color = '#FFF';
+            btn.style.borderColor = 'rgba(56, 189, 248, 0.5)';
+            btn.style.boxShadow = '0 4px 12px rgba(14, 165, 233, 0.3)';
+        } else {
+            btn.classList.remove('active');
+            btn.style.background = 'rgba(15, 23, 42, 0.65)';
+            btn.style.color = '#CBD5E1';
+            btn.style.borderColor = 'rgba(255, 255, 255, 0.15)';
+            btn.style.boxShadow = 'none';
+        }
+    });
+}
+
+export function filterByChapterBullet(chapterValue, clickedBtn) {
+    syncChapterBullets(chapterValue);
+    
+    // Store in global state since the dropdown doesn't exist
+    state.activeChapterFilter = chapterValue;
+
+    // Sync with the Chapter select dropdown if it exists
+    const chapterSelect = document.getElementById('members-filter-chapter');
+    if (chapterSelect) {
+        chapterSelect.value = chapterValue;
+    }
+
+    // Immediately filter and re-render the Members table
+    renderMembersTable();
+
+    // Notify user with feedback toast
+    if (chapterValue === 'ALL') {
+        showToast('Showing members from All Chapters', 'info');
+    } else {
+        showToast(`Showing members for ${chapterValue}`, 'info');
     }
 }

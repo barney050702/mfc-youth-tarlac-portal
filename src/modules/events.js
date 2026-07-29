@@ -1,5 +1,6 @@
 import { state } from './state.js';
 import { switchView, closeWhatsNewModal, openWhatsNewModal, closeMobileSidebar, toggleMobileSidebar, switchResourceCategory } from './ui.js';
+import { filterByChapterBullet } from './members.js';
 
 export function initializeEventListeners() {
 
