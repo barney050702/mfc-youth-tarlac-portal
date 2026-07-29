@@ -703,6 +703,18 @@ function selectActivityForAttendance(actId) {
     showToast('Switched to live attendance roster!', 'success');
 }
 
+window.updateBadgeCount = function() {
+    const badgeAct = document.getElementById('badge-activities-count');
+    if (badgeAct && window.state && window.state.activities) badgeAct.textContent = window.state.activities.length;
+    const badgeAgenda = document.getElementById('badge-agenda-count');
+    if (badgeAgenda && window.state && window.state.activities) badgeAgenda.textContent = window.state.activities.length;
+    const badgeMem = document.getElementById('badge-members-count');
+    if (badgeMem && window.state && window.state.members) badgeMem.textContent = window.state.members.length;
+};
+function updateBadgeCount() {
+    if (window.updateBadgeCount) window.updateBadgeCount();
+}
+
 function renderActivitiesTable() {
     const tableBody = document.getElementById('activities-table-body');
     const gridCont = document.getElementById('agenda-grid-container');
