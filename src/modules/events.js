@@ -4,6 +4,13 @@ import { filterByChapterBullet } from './members.js';
 
 export function initializeEventListeners() {
 
+    const attSelect = document.getElementById('attendance-activity-select');
+    if (attSelect) {
+        attSelect.addEventListener('change', (e) => {
+            state.selectedActivityId = e.target.value;
+            if (window.renderAttendanceRoster) window.renderAttendanceRoster();
+        });
+    }
     const el_action_btn_1 = document.getElementById('action-btn-1');
     if (el_action_btn_1) {
         el_action_btn_1.addEventListener('click', function(event) {
