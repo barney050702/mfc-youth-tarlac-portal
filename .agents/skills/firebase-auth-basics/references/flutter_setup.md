@@ -27,13 +27,13 @@ platform-specific quirks.
 - **Common Workaround**: If you intend to use Firebase Auth's
   `signInWithPopup(GoogleAuthProvider())` for the web, you can conditionally
   skip the local `GoogleSignIn` package initialization entirely:
-  ```dart
-  import 'package:flutter/foundation.dart' show kIsWeb;
+    ```dart
+    import 'package:flutter/foundation.dart' show kIsWeb;
 
-  if (!kIsWeb) {
-    await GoogleSignIn.instance.initialize();
-  }
-  ```
+    if (!kIsWeb) {
+      await GoogleSignIn.instance.initialize();
+    }
+    ```
 
 ## 3. Web Logout Crashes
 
@@ -44,17 +44,17 @@ platform-specific quirks.
   environment, crashing the app.
 - **Solution**: Conditionally separate the logout logic for Web to rely entirely
   on `FirebaseAuth`:
-  ```dart
-  if (!kIsWeb) {
-      await GoogleSignIn.instance.signOut();
-  }
-  await FirebaseAuth.instance.signOut();
-  ```
+    ```dart
+    if (!kIsWeb) {
+        await GoogleSignIn.instance.signOut();
+    }
+    await FirebaseAuth.instance.signOut();
+    ```
 
 ## 4. Prototyping Workaround: Bypassing Firestore Composite Indices
 
-*Note: This is a Firestore consideration frequently encountered while fetching
-user-specific auth data.*
+_Note: This is a Firestore consideration frequently encountered while fetching
+user-specific auth data._
 
 When querying data via `FirebaseFirestore.instance`, using
 `.where('userId', isEqualTo: uid)` combined with a sort on a different field
@@ -103,11 +103,11 @@ class AuthService {
         if (googleUser == null) return null; // Cancelled
 
         final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
-        
+
         final AuthCredential credential = GoogleAuthProvider.credential(
           idToken: googleAuth.idToken,
         );
-        
+
         return await _auth.signInWithCredential(credential);
       }
     } catch (e) {

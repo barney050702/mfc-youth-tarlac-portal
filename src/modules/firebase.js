@@ -10,13 +10,13 @@ export const MFCFirebaseCloud = {
     initialized: false,
     enabled: false,
     config: {
-        apiKey: "",
-        authDomain: "mfc-youth-data.firebaseapp.com",
-        projectId: "mfc-youth-data",
-        storageBucket: "mfc-youth-data.firebasestorage.app",
-        messagingSenderId: "874772116969",
-        appId: "1:874772116969:web:ca6916b9c0470b54890778",
-        databaseURL: "https://mfc-youth-data-default-rtdb.firebaseio.com"
+        apiKey: '',
+        authDomain: 'mfc-youth-data.firebaseapp.com',
+        projectId: 'mfc-youth-data',
+        storageBucket: 'mfc-youth-data.firebasestorage.app',
+        messagingSenderId: '874772116969',
+        appId: '1:874772116969:web:ca6916b9c0470b54890778',
+        databaseURL: 'https://mfc-youth-data-default-rtdb.firebaseio.com',
     },
 
     init: function () {
@@ -32,20 +32,23 @@ export const MFCFirebaseCloud = {
                 if (!firebase.apps || firebase.apps.length === 0) {
                     firebase.initializeApp(this.config);
                 }
-                
+
                 // Enable Offline Persistence (modern API)
                 if (firebase.firestore) {
                     try {
                         const db = firebase.firestore();
                         db.settings({
-                            cache: firebase.firestore.persistentLocalCache ? 
-                                   firebase.firestore.persistentLocalCache({
-                                       tabManager: firebase.firestore.persistentMultipleTabManager ? firebase.firestore.persistentMultipleTabManager() : undefined
-                                   }) : undefined,
+                            cache: firebase.firestore.persistentLocalCache
+                                ? firebase.firestore.persistentLocalCache({
+                                      tabManager: firebase.firestore.persistentMultipleTabManager
+                                          ? firebase.firestore.persistentMultipleTabManager()
+                                          : undefined,
+                                  })
+                                : undefined,
                             cacheSizeBytes: firebase.firestore.CACHE_SIZE_UNLIMITED,
-                            merge: true
+                            merge: true,
                         });
-                    } catch(e) {
+                    } catch (e) {
                         console.warn('[Firestore] Persistence setup notice:', e);
                     }
                 }
@@ -65,12 +68,15 @@ export const MFCFirebaseCloud = {
 
                 // Listen to live database changes at atomic node paths
                 if (firebase.database) {
-                    firebase.database().ref('mfc_portal_live_data').on('value', (snapshot) => {
-                        const data = snapshot.val();
-                        if (data) {
-                            this.handleLiveSyncUpdate(data);
-                        }
-                    });
+                    firebase
+                        .database()
+                        .ref('mfc_portal_live_data')
+                        .on('value', (snapshot) => {
+                            const data = snapshot.val();
+                            if (data) {
+                                this.handleLiveSyncUpdate(data);
+                            }
+                        });
                 }
             }
 
@@ -95,7 +101,7 @@ export const MFCFirebaseCloud = {
             const snapshot = await db.collection('members').get();
             if (!snapshot.empty) {
                 const cloudMembers = [];
-                snapshot.forEach(doc => {
+                snapshot.forEach((doc) => {
                     cloudMembers.push({ id: doc.id, ...doc.data() });
                 });
                 state.members = cloudMembers;
@@ -107,7 +113,14 @@ export const MFCFirebaseCloud = {
     },
 
     syncMemberToFirestore: async function (member) {
-        if (!this.initialized || !member || !member.id || typeof firebase === 'undefined' || !firebase.firestore) return;
+        if (
+            !this.initialized ||
+            !member ||
+            !member.id ||
+            typeof firebase === 'undefined' ||
+            !firebase.firestore
+        )
+            return;
         try {
             const db = firebase.firestore();
             await db.collection('members').doc(member.id).set(member, { merge: true });
@@ -117,7 +130,13 @@ export const MFCFirebaseCloud = {
     },
 
     deleteMemberFromFirestore: async function (memberId) {
-        if (!this.initialized || !memberId || typeof firebase === 'undefined' || !firebase.firestore) return;
+        if (
+            !this.initialized ||
+            !memberId ||
+            typeof firebase === 'undefined' ||
+            !firebase.firestore
+        )
+            return;
         try {
             const db = firebase.firestore();
             await db.collection('members').doc(memberId).delete();
@@ -135,9 +154,12 @@ export const MFCFirebaseCloud = {
             updates[`mfc_portal_live_data/${path}`] = data;
             updates['mfc_portal_live_data/lastUpdated'] = timestamp;
 
-            firebase.database().ref().update(updates)
+            firebase
+                .database()
+                .ref()
+                .update(updates)
                 .then(() => this.updateStatusBadge('🔥 Firebase: Live Synced'))
-                .catch(err => console.warn('Atomic update warning:', err));
+                .catch((err) => console.warn('Atomic update warning:', err));
         } catch (e) {
             console.warn('Atomic sync error:', e);
         }
@@ -151,7 +173,8 @@ export const MFCFirebaseCloud = {
 
         if (cloudTime > localTime) {
             if (Array.isArray(data.activities)) state.activities = data.activities;
-            if (data.attendance && typeof data.attendance === 'object') state.attendance = data.attendance;
+            if (data.attendance && typeof data.attendance === 'object')
+                state.attendance = data.attendance;
             if (Array.isArray(data.funds)) state.funds = data.funds;
             if (Array.isArray(data.accounts)) state.accounts = data.accounts;
 
@@ -163,5 +186,5 @@ export const MFCFirebaseCloud = {
 
             this.updateStatusBadge('🔥 Firebase: Live Sync Received');
         }
-    }
+    },
 };

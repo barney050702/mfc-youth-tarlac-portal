@@ -75,18 +75,18 @@ Define a dense index:
 
 ```json
 {
-  "indexes": [
-    {
-      "collectionGroup": "cities",
-      "queryScope": "COLLECTION",
-      "density": "DENSE",
-      "fields": [
-        { "fieldPath": "country", "order": "ASCENDING" },
-        { "fieldPath": "population", "order": "DESCENDING" }
-      ]
-    }
-  ],
-  "fieldOverrides": []
+    "indexes": [
+        {
+            "collectionGroup": "cities",
+            "queryScope": "COLLECTION",
+            "density": "DENSE",
+            "fields": [
+                { "fieldPath": "country", "order": "ASCENDING" },
+                { "fieldPath": "population", "order": "DESCENDING" }
+            ]
+        }
+    ],
+    "fieldOverrides": []
 }
 ```
 
@@ -94,18 +94,18 @@ Define a sparse-any index:
 
 ```json
 {
-  "indexes": [
-    {
-      "collectionGroup": "cities",
-      "queryScope": "COLLECTION",
-      "density": "SPARSE_ANY",
-      "fields": [
-        { "fieldPath": "country", "order": "ASCENDING" },
-        { "fieldPath": "population", "order": "DESCENDING" }
-      ]
-    }
-  ],
-  "fieldOverrides": []
+    "indexes": [
+        {
+            "collectionGroup": "cities",
+            "queryScope": "COLLECTION",
+            "density": "SPARSE_ANY",
+            "fields": [
+                { "fieldPath": "country", "order": "ASCENDING" },
+                { "fieldPath": "population", "order": "DESCENDING" }
+            ]
+        }
+    ],
+    "fieldOverrides": []
 }
 ```
 
@@ -113,19 +113,19 @@ Define a unique index:
 
 ```json
 {
-  "indexes": [
-    {
-      "collectionGroup": "cities",
-      "queryScope": "COLLECTION",
-      "density": "SPARSE_ANY",
-      "unique": true,
-      "fields": [
-        { "fieldPath": "country", "order": "ASCENDING" },
-        { "fieldPath": "population", "order": "DESCENDING" }
-      ]
-    }
-  ],
-  "fieldOverrides": []
+    "indexes": [
+        {
+            "collectionGroup": "cities",
+            "queryScope": "COLLECTION",
+            "density": "SPARSE_ANY",
+            "unique": true,
+            "fields": [
+                { "fieldPath": "country", "order": "ASCENDING" },
+                { "fieldPath": "population", "order": "DESCENDING" }
+            ]
+        }
+    ],
+    "fieldOverrides": []
 }
 ```
 

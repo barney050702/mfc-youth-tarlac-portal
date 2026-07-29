@@ -1,11 +1,11 @@
-
+import { showToast } from './ui-modals.js';
 
 export function triggerConfettiBurst() {
     if (typeof confetti === 'function') {
         confetti({
             particleCount: 85,
             spread: 75,
-            origin: { y: 0.6 }
+            origin: { y: 0.6 },
         });
     } else {
         // Fallback or lightweight visual burst if external confetti not present
@@ -25,7 +25,7 @@ export function triggerConfettiBurst() {
         badge.style.transition = 'all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
         badge.innerHTML = '🎉 Celebration & Milestone Burst! 🕊️';
         document.body.appendChild(badge);
-        setTimeout(() => badge.style.transform = 'translate(-50%, -50%) scale(1)', 50);
+        setTimeout(() => (badge.style.transform = 'translate(-50%, -50%) scale(1)'), 50);
         setTimeout(() => {
             badge.style.opacity = '0';
             badge.style.transform = 'translate(-50%, -50%) scale(1.3)';
@@ -88,7 +88,7 @@ export function renderTransposedSong() {
     const lines = song.chords.split('\n');
     let html = `<h2 style="color: #38BDF8; margin: 0 0 16px 0; font-family: sans-serif; font-size: 1.3rem;">${song.title}</h2>`;
 
-    lines.forEach(line => {
+    lines.forEach((line) => {
         if (line.includes('[')) {
             let chordFormatted = line.replace(/\[([A-G][b#]?[a-zA-Z0-9]*)\]/g, (match, chord) => {
                 const transposed = transposeNote(chord, currentTranspositionOffset);
@@ -119,7 +119,7 @@ export function selectRosaryMystery(key) {
     currentDecadeIndex = 0;
     currentBeadCount = 1;
 
-    document.querySelectorAll('#rosary-mystery-tabs .ros-tab').forEach(b => {
+    document.querySelectorAll('#rosary-mystery-tabs .ros-tab').forEach((b) => {
         b.style.borderColor = 'rgba(255,255,255,0.15)';
         b.style.color = '#CBD5E1';
         b.style.background = 'transparent';
@@ -200,9 +200,27 @@ export function renderGamificationLeaderboard() {
         if (!container) return;
 
         const leaders = [
-            { name: 'Brother Mark Tarlac', role: 'Upper Core Leader', points: 1450, badge: '👑 Faith Champion', level: 'Level 5' },
-            { name: 'Sister Maria Santos', role: 'Worship Head', points: 1280, badge: '🎵 Worship Leader', level: 'Level 4' },
-            { name: 'Delegate Alex Cruz', role: 'Chapter Servant', points: 1120, badge: '🛡️ Servant Heart', level: 'Level 4' }
+            {
+                name: 'Brother Mark Tarlac',
+                role: 'Upper Core Leader',
+                points: 1450,
+                badge: '👑 Faith Champion',
+                level: 'Level 5',
+            },
+            {
+                name: 'Sister Maria Santos',
+                role: 'Worship Head',
+                points: 1280,
+                badge: '🎵 Worship Leader',
+                level: 'Level 4',
+            },
+            {
+                name: 'Delegate Alex Cruz',
+                role: 'Chapter Servant',
+                points: 1120,
+                badge: '🛡️ Servant Heart',
+                level: 'Level 4',
+            },
         ];
 
         let html = '';
@@ -236,12 +254,17 @@ export function toggleAudioPlay() {
         if (!audio || !btn) return;
 
         if (audio.paused) {
-            audio.play().then(() => {
-                btn.innerText = '⏸';
-                if (typeof showToast === 'function') showToast('🎵 Playing Chapter Worship Audio Track...', 'info');
-            }).catch(e => {
-                if (typeof showToast === 'function') showToast('🎵 Audio playback started.', 'info');
-            });
+            audio
+                .play()
+                .then(() => {
+                    btn.innerText = '⏸';
+                    if (typeof showToast === 'function')
+                        showToast('🎵 Playing Chapter Worship Audio Track...', 'info');
+                })
+                .catch((e) => {
+                    if (typeof showToast === 'function')
+                        showToast('🎵 Audio playback started.', 'info');
+                });
         } else {
             audio.pause();
             btn.innerText = '▶';
@@ -256,19 +279,26 @@ export function downloadCertificatePDF() {
         const name = nameEl ? nameEl.innerText.replace(/\s+/g, '_') : 'Delegate';
 
         if (typeof html2pdf !== 'undefined' && element) {
-            if (typeof showToast === 'function') showToast('📜 Exporting Certificate of Participation PDF...', 'info');
+            if (typeof showToast === 'function')
+                showToast('📜 Exporting Certificate of Participation PDF...', 'info');
             const opt = {
-                margin:       [0.4, 0.4, 0.4, 0.4],
-                filename:     `MFC_Youth_Certificate_${name}.pdf`,
-                image:        { type: 'jpeg', quality: 0.98 },
-                html2canvas:  { scale: 2, useCORS: true, logging: false },
-                jsPDF:        { unit: 'in', format: 'letter', orientation: 'landscape' }
+                margin: [0.4, 0.4, 0.4, 0.4],
+                filename: `MFC_Youth_Certificate_${name}.pdf`,
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { scale: 2, useCORS: true, logging: false },
+                jsPDF: { unit: 'in', format: 'letter', orientation: 'landscape' },
             };
-            html2pdf().set(opt).from(element).save().then(() => {
-                if (typeof showToast === 'function') showToast('✅ Certificate PDF downloaded successfully!', 'success');
-            }).catch(err => {
-                window.print();
-            });
+            html2pdf()
+                .set(opt)
+                .from(element)
+                .save()
+                .then(() => {
+                    if (typeof showToast === 'function')
+                        showToast('✅ Certificate PDF downloaded successfully!', 'success');
+                })
+                .catch((err) => {
+                    window.print();
+                });
         } else {
             window.print();
         }
@@ -276,3 +306,12 @@ export function downloadCertificatePDF() {
         window.print();
     }
 }
+
+export const CHROMATIC_SCALE = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
+export let currentActiveSongKey = '1';
+export let currentTranspositionOffset = 0;
+export let activeRosaryMysteryKey = 'joyful';
+export let currentDecadeIndex = 0;
+export let currentBeadCount = 0;
+export const SONGS_DATABASE = {};
+export const ROSARY_MYSTERIES = {};

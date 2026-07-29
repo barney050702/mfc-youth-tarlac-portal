@@ -8,7 +8,7 @@
 - [Data Types](#data-types)
 - [Enumerations](#enumerations)
 
-______________________________________________________________________
+---
 
 ## Defining Types
 
@@ -17,10 +17,10 @@ implicit `id: UUID!` primary key.
 
 ```graphql
 type Movie @table {
-  # id: UUID! is auto-added
-  title: String!
-  releaseYear: Int
-  genre: String
+    # id: UUID! is auto-added
+    title: String!
+    releaseYear: Int
+    genre: String
 }
 ```
 
@@ -28,10 +28,10 @@ type Movie @table {
 
 ```graphql
 type Movie @table(name: "movies", key: "id", singular: "movie", plural: "movies") {
-  id: UUID! @col(name: "movie_id") @default(expr: "uuidV4()")
-  title: String!
-  releaseYear: Int @col(name: "release_year")
-  genre: String @col(dataType: "varchar(20)")
+    id: UUID! @col(name: "movie_id") @default(expr: "uuidV4()")
+    title: String!
+    releaseYear: Int @col(name: "release_year")
+    genre: String @col(dataType: "varchar(20)")
 }
 ```
 
@@ -39,14 +39,14 @@ type Movie @table(name: "movies", key: "id", singular: "movie", plural: "movies"
 
 ```graphql
 type User @table(key: "uid") {
-  uid: String! @default(expr: "auth.uid")
-  email: String! @unique
-  displayName: String @col(dataType: "varchar(100)")
-  createdAt: Timestamp! @default(expr: "request.time")
+    uid: String! @default(expr: "auth.uid")
+    email: String! @unique
+    displayName: String @col(dataType: "varchar(100)")
+    createdAt: Timestamp! @default(expr: "request.time")
 }
 ```
 
-______________________________________________________________________
+---
 
 ## Core Directives
 
@@ -93,14 +93,14 @@ Adds unique constraint.
 
 ```graphql
 type User @table {
-  email: String! @unique
+    email: String! @unique
 }
 
 # Composite unique
 type Review @table @unique(fields: ["movie", "user"]) {
-  movie: Movie!
-  user: User!
-  rating: Int
+    movie: Movie!
+    user: User!
+    rating: Int
 }
 ```
 
@@ -110,9 +110,9 @@ Creates database index for query performance.
 
 ```graphql
 type Movie @table @index(fields: ["genre", "releaseYear"], order: [ASC, DESC]) {
-  title: String! @index
-  genre: String
-  releaseYear: Int
+    title: String! @index
+    genre: String
+    releaseYear: Int
 }
 ```
 
@@ -128,17 +128,21 @@ Enables full-text search on String fields.
 
 ```graphql
 type Post @table {
-  title: String! @searchable
-  body: String! @searchable(language: "english")
+    title: String! @searchable
+    body: String! @searchable(language: "english")
 }
 
 # Usage
 query SearchPosts($q: String!) @auth(level: PUBLIC) {
-  posts_search(query: $q) { id title body }
+    posts_search(query: $q) {
+        id
+        title
+        body
+    }
 }
 ```
 
-______________________________________________________________________
+---
 
 ## Relationships
 
@@ -146,15 +150,15 @@ ______________________________________________________________________
 
 ```graphql
 type Post @table {
-  id: UUID! @default(expr: "uuidV4()")
-  author: User!  # Creates authorId foreign key
-  title: String!
+    id: UUID! @default(expr: "uuidV4()")
+    author: User! # Creates authorId foreign key
+    title: String!
 }
 
 type User @table {
-  id: UUID! @default(expr: "uuidV4()")
-  name: String!
-  # Auto-generated: posts_on_author: [Post!]!
+    id: UUID! @default(expr: "uuidV4()")
+    name: String!
+    # Auto-generated: posts_on_author: [Post!]!
 }
 ```
 
@@ -164,8 +168,8 @@ Customizes foreign key reference.
 
 ```graphql
 type Post @table {
-  author: User! @ref(fields: "authorId", references: "id")
-  authorId: UUID!  # Explicit FK field
+    author: User! @ref(fields: "authorId", references: "id")
+    authorId: UUID! # Explicit FK field
 }
 ```
 
@@ -185,12 +189,15 @@ type Post @table {
 Use `@unique` on the reference field:
 
 ```graphql
-type User @table { id: UUID! name: String! }
+type User @table {
+    id: UUID!
+    name: String!
+}
 
 type UserProfile @table {
-  user: User! @unique  # One profile per user
-  bio: String
-  avatarUrl: String
+    user: User! @unique # One profile per user
+    bio: String
+    avatarUrl: String
 }
 
 # Query: user.userProfile_on_user
@@ -201,13 +208,19 @@ type UserProfile @table {
 Use a join table with composite primary key:
 
 ```graphql
-type Movie @table { id: UUID! title: String! }
-type Actor @table { id: UUID! name: String! }
+type Movie @table {
+    id: UUID!
+    title: String!
+}
+type Actor @table {
+    id: UUID!
+    name: String!
+}
 
 type MovieActor @table(key: ["movie", "actor"]) {
-  movie: Movie!
-  actor: Actor!
-  role: String!  # Extra data on relationship
+    movie: Movie!
+    actor: Actor!
+    role: String! # Extra data on relationship
 }
 
 # Generated fields:
@@ -216,7 +229,7 @@ type MovieActor @table(key: ["movie", "actor"]) {
 # - movie.movieActors_on_movie: [MovieActor!]!
 ```
 
-______________________________________________________________________
+---
 
 ## Data Types
 
@@ -234,20 +247,20 @@ ______________________________________________________________________
 | `Vector`     | `vector`           | Requires `@col(size: N)`    |
 | `[Type]`     | Array              | e.g., `[String]` → `text[]` |
 
-______________________________________________________________________
+---
 
 ## Enumerations
 
 ```graphql
 enum Status {
-  DRAFT
-  PUBLISHED
-  ARCHIVED
+    DRAFT
+    PUBLISHED
+    ARCHIVED
 }
 
 type Post @table {
-  status: Status! @default(value: DRAFT)
-  allowedStatuses: [Status!]
+    status: Status! @default(value: DRAFT)
+    allowedStatuses: [Status!]
 }
 ```
 
@@ -258,33 +271,37 @@ type Post @table {
 - Values are ordered (for comparison operations)
 - Changing order or removing values is a breaking change
 
-______________________________________________________________________
+---
 
 ## Views (Advanced)
 
 Map custom SQL queries to GraphQL types:
 
 ```graphql
-type MovieStats @view(sql: """
-  SELECT
-    movie_id,
-    COUNT(*) as review_count,
-    AVG(rating) as avg_rating
-  FROM review
-  GROUP BY movie_id
-""") {
-  movie: Movie @unique
-  reviewCount: Int
-  avgRating: Float
+type MovieStats
+    @view(
+        sql: """
+        SELECT
+          movie_id,
+          COUNT(*) as review_count,
+          AVG(rating) as avg_rating
+        FROM review
+        GROUP BY movie_id
+        """
+    ) {
+    movie: Movie @unique
+    reviewCount: Int
+    avgRating: Float
 }
 
 # Query movies with stats
 query TopMovies @auth(level: PUBLIC) {
-  movies(orderBy: [{ rating: DESC }]) {
-    title
-    stats: movieStats_on_movie {
-      reviewCount avgRating
+    movies(orderBy: [{ rating: DESC }]) {
+        title
+        stats: movieStats_on_movie {
+            reviewCount
+            avgRating
+        }
     }
-  }
 }
 ```

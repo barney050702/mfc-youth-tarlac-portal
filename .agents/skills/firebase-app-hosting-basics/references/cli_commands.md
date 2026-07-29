@@ -15,9 +15,9 @@ using the Firebase Console.
 
 - **Effect**:
 
-  - Detects your web framework.
-  - Creates/updates `apphosting.yaml`.
-  - Can optionally create a backend if one doesn't exist.
+    - Detects your web framework.
+    - Creates/updates `apphosting.yaml`.
+    - Can optionally create a backend if one doesn't exist.
 
 ## Backend Management
 
@@ -65,8 +65,8 @@ deployments via GitHub. If you are managing deployments using
 
 - **Purpose**: Manually triggers a new rollout (deployment).
 - **Options**:
-  - `--git-branch <branch>`: Deploy the latest commit from a specific branch.
-  - `--git-commit <commit-hash>`: Deploy a specific commit.
+    - `--git-branch <branch>`: Deploy the latest commit from a specific branch.
+    - `--git-commit <commit-hash>`: Deploy a specific commit.
 - **Use Case**: Useful for redeploying without code changes, or rolling back to
   a specific commit.
 
@@ -75,11 +75,11 @@ deployments via GitHub. If you are managing deployments using
 - **Purpose**: Creates a new App Hosting backend. Use this when setting up
   automated deployments via GitHub.
 - **Options**:
-  - `--app <webAppId>`: The ID of an existing Firebase web app to associate with
-    the backend.
-  - `--backend <backendId>`: The ID of the new backend.
-  - `--primary-region <location>`: The primary region for the backend.
-  - `--root-dir <rootDir>`: The root directory for the backend. If omitted,
-    defaults to the root directory of the project.
-  - `--service-account <service-account>`: The service account used to run the
-    server. If omitted, defaults to the default service account.
+    - `--app <webAppId>`: The ID of an existing Firebase web app to associate with
+      the backend.
+    - `--backend <backendId>`: The ID of the new backend.
+    - `--primary-region <location>`: The primary region for the backend.
+    - `--root-dir <rootDir>`: The root directory for the backend. If omitted,
+      defaults to the root directory of the project.
+    - `--service-account <service-account>`: The service account used to run the
+      server. If omitted, defaults to the default service account.

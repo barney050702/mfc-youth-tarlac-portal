@@ -23,11 +23,18 @@ export function populateAttendanceDropdown() {
 
     selectEl.innerHTML = `
         <option value="">-- Choose an Activity to Check Attendance --</option>
-        ${sorted.map(act => {
-        const dateStr = act.date ? new Date(act.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : 'No Date';
-        const displayTitle = act.title || act.name || 'Untitled Activity';
-        return `<option value="${act.id}" ${act.id === currentVal ? 'selected' : ''}>[${dateStr}] ${displayTitle} (${act.status || 'Upcoming'})</option>`;
-    }).join('')}
+        ${sorted
+            .map((act) => {
+                const dateStr = act.date
+                    ? new Date(act.date).toLocaleDateString('en-US', {
+                          month: 'short',
+                          day: 'numeric',
+                      })
+                    : 'No Date';
+                const displayTitle = act.title || act.name || 'Untitled Activity';
+                return `<option value="${act.id}" ${act.id === currentVal ? 'selected' : ''}>[${dateStr}] ${displayTitle} (${act.status || 'Upcoming'})</option>`;
+            })
+            .join('')}
     `;
 }
 
@@ -42,7 +49,10 @@ export function renderAttendanceRoster() {
 
     const actId = state.selectedActivityId;
     if (!actId || !state.activities || state.activities.length === 0) {
-        if (pill) { pill.className = 'status-pill-grey'; pill.innerHTML = '● Select an activity above'; }
+        if (pill) {
+            pill.className = 'status-pill-grey';
+            pill.innerHTML = '● Select an activity above';
+        }
         if (actions) actions.style.display = 'none';
         if (banner) banner.style.display = 'none';
         if (filterBar) filterBar.style.display = 'none';
@@ -66,7 +76,7 @@ export function renderAttendanceRoster() {
         return;
     }
 
-    const act = state.activities.find(a => a.id === actId);
+    const act = state.activities.find((a) => a.id === actId);
     if (!act) return;
 
     const displayTitle = act.title || act.name || 'Untitled Activity';
@@ -99,12 +109,13 @@ export function renderAttendanceRoster() {
                 </tr>
             `;
         } else {
-            tbody.innerHTML = state.members.map((mem, idx) => {
-                const memAtt = attMap[mem.id] || { status: 'absent', notes: '' };
-                const st = memAtt.status;
-                const notesStr = memAtt.notes || '';
+            tbody.innerHTML = state.members
+                .map((mem, idx) => {
+                    const memAtt = attMap[mem.id] || { status: 'absent', notes: '' };
+                    const st = memAtt.status;
+                    const notesStr = memAtt.notes || '';
 
-                return `
+                    return `
                 <tr id="row-${mem.id}">
                     <td data-label="#" style="font-weight:700; color:var(--text-muted);">${idx + 1}</td>
                     <td data-label="Member">
@@ -136,7 +147,8 @@ export function renderAttendanceRoster() {
                     </td>
                 </tr>
             `;
-            }).join('');
+                })
+                .join('');
         }
     }
 
@@ -150,18 +162,22 @@ export function toggleAttendance(actId, memId, status) {
     state.attendance[actId][memId] = {
         status: status,
         notes: state.attendance[actId][memId]?.notes || '',
-        time: currentTime
+        time: currentTime,
     };
 
     saveToStorage();
-    MFCFirebaseCloud.pushAtomicUpdate(`attendance/${actId}/${memId}`, state.attendance[actId][memId]);
+    MFCFirebaseCloud.pushAtomicUpdate(
+        `attendance/${actId}/${memId}`,
+        state.attendance[actId][memId]
+    );
 
     // Update row DOM without re-rendering entire table
     const groupEl = document.getElementById(`group-${memId}`);
 
     if (groupEl) {
         const btns = groupEl.querySelectorAll('.status-btn');
-        if (btns[0]) btns[0].className = `status-btn ${status === 'present' ? 'active-present' : ''}`;
+        if (btns[0])
+            btns[0].className = `status-btn ${status === 'present' ? 'active-present' : ''}`;
         if (btns[1]) btns[1].className = `status-btn ${status === 'absent' ? 'active-absent' : ''}`;
     }
 
@@ -175,17 +191,21 @@ export function toggleAttendance(actId, memId, status) {
     }
 
     if (status === 'absent') {
-        const mem = state.members.find(m => m.id === memId);
-        const act = state.activities.find(a => a.id === actId);
+        const mem = state.members.find((m) => m.id === memId);
+        const act = state.activities.find((a) => a.id === actId);
         if (mem) {
             triggerAbsenteeAutoGmailPrompt(mem, act);
         }
     }
-    if (window.logAuditAction) window.logAuditAction(`Updated check-in status for member to ${status.toUpperCase()}`, 'attendance');
+    if (window.logAuditAction)
+        window.logAuditAction(
+            `Updated check-in status for member to ${status.toUpperCase()}`,
+            'attendance'
+        );
 }
 
 export function triggerAbsenteeAutoGmailPrompt(mem, act) {
-    const actName = act ? (act.title || act.name || 'MFC Youth Activity') : 'MFC Youth Activity';
+    const actName = act ? act.title || act.name || 'MFC Youth Activity' : 'MFC Youth Activity';
     const targetEmail = encodeURIComponent(mem.email || '');
     const subject = encodeURIComponent(`MFC Youth Tarlac - Pastoral Check-In: ${actName} 💛`);
     const bodyText = `Hi Bro/Sis ${mem.name}!\n\nWe noticed you missed our activity "${actName}". Hope everything is well with you! Let us know if you need any prayers or support.\n\nGod bless! 💛\n- MFC Youth Tarlac Chapter`;
@@ -197,7 +217,8 @@ export function triggerAbsenteeAutoGmailPrompt(mem, act) {
 
     const toast = document.createElement('div');
     toast.className = 'toast toast-error';
-    toast.style.cssText = 'display: flex; align-items: center; justify-content: space-between; gap: 10px; border-left: 4px solid #EA4335;';
+    toast.style.cssText =
+        'display: flex; align-items: center; justify-content: space-between; gap: 10px; border-left: 4px solid #EA4335;';
 
     toast.innerHTML = `
         <span class="toast-icon">💛</span>
@@ -209,14 +230,19 @@ export function triggerAbsenteeAutoGmailPrompt(mem, act) {
     const sendBtn = document.createElement('button');
     sendBtn.type = 'button';
     sendBtn.className = 'btn-primary';
-    sendBtn.style.cssText = 'padding: 5px 12px; font-size: 0.75rem; font-weight: 700; background: linear-gradient(135deg, #EA4335, #DB4437); border: none; color: #FFF; cursor: pointer; border-radius: 6px; white-space: nowrap;';
+    sendBtn.style.cssText =
+        'padding: 5px 12px; font-size: 0.75rem; font-weight: 700; background: linear-gradient(135deg, #EA4335, #DB4437); border: none; color: #FFF; cursor: pointer; border-radius: 6px; white-space: nowrap;';
     sendBtn.textContent = '📧 Auto-Send Gmail';
     sendBtn.onclick = (e) => {
         e.stopPropagation();
         window.open(gmailUrl, '_blank');
         toast.remove();
         showToast(`Opened Gmail check-in for ${mem.name}!`, 'success');
-        if (window.logAuditAction) window.logAuditAction(`Sent pastoral absentee check-in to ${mem.name} via Gmail`, 'pastoral');
+        if (window.logAuditAction)
+            window.logAuditAction(
+                `Sent pastoral absentee check-in to ${mem.name} via Gmail`,
+                'pastoral'
+            );
     };
 
     toast.appendChild(sendBtn);
@@ -237,7 +263,7 @@ export function filterAttendanceRoster() {
     const tbody = document.getElementById('attendance-roster-body');
     if (!tbody) return;
 
-    Array.from(tbody.getElementsByTagName('tr')).forEach(row => {
+    Array.from(tbody.getElementsByTagName('tr')).forEach((row) => {
         const text = row.textContent.toLowerCase();
         row.style.display = text.includes(query) ? '' : 'none';
     });
@@ -253,14 +279,21 @@ export function batchMarkChapterPresent(chapterName) {
 
     let count = 0;
     const cleanChapter = chapterName.toLowerCase().replace(' chapter', '');
-    state.members.forEach(mem => {
+    state.members.forEach((mem) => {
         const memChap = (mem.chapter || 'EAST').toLowerCase();
         if (memChap.includes(cleanChapter) || cleanChapter.includes(memChap)) {
             if (!state.attendance[actId][mem.id]) {
-                state.attendance[actId][mem.id] = { status: 'present', notes: '', time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) };
+                state.attendance[actId][mem.id] = {
+                    status: 'present',
+                    notes: '',
+                    time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+                };
             } else {
                 state.attendance[actId][mem.id].status = 'present';
-                state.attendance[actId][mem.id].time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                state.attendance[actId][mem.id].time = new Date().toLocaleTimeString([], {
+                    hour: '2-digit',
+                    minute: '2-digit',
+                });
             }
             count++;
         }
@@ -270,7 +303,11 @@ export function batchMarkChapterPresent(chapterName) {
     renderAttendanceRoster();
     updateLiveProgress();
     showToast(`Checked in ${count} members of ${chapterName}!`, 'success');
-    if (window.logAuditAction) window.logAuditAction(`Batch Check-in for ${chapterName} (${count} members present)`, 'attendance');
+    if (window.logAuditAction)
+        window.logAuditAction(
+            `Batch Check-in for ${chapterName} (${count} members present)`,
+            'attendance'
+        );
 }
 
 export function sendGmailToCurrentAbsentees() {
@@ -278,14 +315,14 @@ export function sendGmailToCurrentAbsentees() {
         showToast('Please select an activity first.', 'error');
         return;
     }
-    const act = state.activities.find(a => a.id === state.selectedActivityId);
-    const actName = act ? (act.title || act.name || 'MFC Youth Activity') : 'MFC Youth Activity';
+    const act = state.activities.find((a) => a.id === state.selectedActivityId);
+    const actName = act ? act.title || act.name || 'MFC Youth Activity' : 'MFC Youth Activity';
     const attMap = state.attendance[state.selectedActivityId] || {};
 
     const absentEmails = [];
     const absentNames = [];
 
-    state.members.forEach(mem => {
+    state.members.forEach((mem) => {
         const st = attMap[mem.id]?.status || 'absent';
         if (st === 'absent') {
             absentNames.push(mem.name);
@@ -303,18 +340,25 @@ export function sendGmailToCurrentAbsentees() {
     const bccList = absentEmails.join(',');
     const msgBodyText = `Hi Brothers and Sisters!\n\nWe missed you at our activity "${actName}". Hope you are doing well! Please let your household heads know if you need any prayers or assistance.\n\nSee you at our next activity! God bless! 💛\n\n- MFC Youth Tarlac Chapter`;
     const encodedBody = encodeURIComponent(msgBodyText);
-    const encodedSubject = encodeURIComponent(`MFC Youth Tarlac - Missed Activity Check-In: ${actName} 💛`);
+    const encodedSubject = encodeURIComponent(
+        `MFC Youth Tarlac - Missed Activity Check-In: ${actName} 💛`
+    );
 
     const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&bcc=${encodeURIComponent(bccList)}&su=${encodedSubject}&body=${encodedBody}`;
     window.open(gmailUrl, '_blank');
 
     showToast(`Batch Gmail check-in opened for ${absentNames.length} absent member(s)!`, 'success');
-    if (window.logAuditAction) window.logAuditAction(`Sent batch absentee email via Gmail for activity "${actName}" (${absentNames.length} members)`, 'pastoral');
+    if (window.logAuditAction)
+        window.logAuditAction(
+            `Sent batch absentee email via Gmail for activity "${actName}" (${absentNames.length} members)`,
+            'pastoral'
+        );
 }
 
 export function updateRemarks(actId, memId, notes) {
     if (!state.attendance[actId]) state.attendance[actId] = {};
-    if (!state.attendance[actId][memId]) state.attendance[actId][memId] = { status: 'absent', time: '-' };
+    if (!state.attendance[actId][memId])
+        state.attendance[actId][memId] = { status: 'absent', time: '-' };
     state.attendance[actId][memId].notes = notes;
     saveToStorage();
     showToast('Remark saved.', 'info');
@@ -335,7 +379,7 @@ export function updateLiveProgress() {
     let pCount = 0;
     let aCount = 0;
 
-    state.members.forEach(mem => {
+    state.members.forEach((mem) => {
         const st = attMap[mem.id]?.status;
         if (st === 'present' || st === 'late') pCount++;
         else aCount++;
@@ -358,10 +402,15 @@ export function updateLiveProgress() {
     if (elA) elA.textContent = aCount;
     if (elRate) {
         elRate.textContent = `${rate}%`;
-        if (rate === 100 && totalMems > 0 && (!window._lastConfettiActId || window._lastConfettiActId !== actId + '_100')) {
+        if (
+            rate === 100 &&
+            totalMems > 0 &&
+            (!window._lastConfettiActId || window._lastConfettiActId !== actId + '_100')
+        ) {
             window._lastConfettiActId = actId + '_100';
             if (typeof window.triggerConfettiBurst === 'function') window.triggerConfettiBurst();
-            if (typeof showToast === 'function') showToast('🎉 100% Attendance Reached! Incredible chapter turnout!', 'success');
+            if (typeof showToast === 'function')
+                showToast('🎉 100% Attendance Reached! Incredible chapter turnout!', 'success');
         }
     }
 
@@ -374,20 +423,24 @@ export function markAllPresent() {
     if (!actId) return;
 
     if (confirm('Are you sure you want to mark all members as Present for this activity?')) {
-        const currentTime = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        const currentTime = new Date().toLocaleTimeString([], {
+            hour: '2-digit',
+            minute: '2-digit',
+        });
         if (!state.attendance[actId]) state.attendance[actId] = {};
 
-        state.members.forEach(mem => {
+        state.members.forEach((mem) => {
             state.attendance[actId][mem.id] = {
                 status: 'present',
                 time: currentTime,
-                notes: 'Marked present (bulk)'
+                notes: 'Marked present (bulk)',
             };
         });
 
         saveToStorage();
         renderAttendanceRoster();
-        if (window.logAuditAction) window.logAuditAction('Marked ALL members present in bulk check-in', 'attendance');
+        if (window.logAuditAction)
+            window.logAuditAction('Marked ALL members present in bulk check-in', 'attendance');
         showToast('All members marked Present.', 'success');
     }
 }
@@ -399,17 +452,18 @@ export function markAllAbsent() {
     if (confirm('Are you sure you want to mark all members as Absent for this activity?')) {
         if (!state.attendance[actId]) state.attendance[actId] = {};
 
-        state.members.forEach(mem => {
+        state.members.forEach((mem) => {
             state.attendance[actId][mem.id] = {
                 status: 'absent',
                 time: '',
-                notes: 'Marked absent (bulk)'
+                notes: 'Marked absent (bulk)',
             };
         });
 
         saveToStorage();
         renderAttendanceRoster();
-        if (window.logAuditAction) window.logAuditAction('Marked ALL members absent in bulk check-in', 'attendance');
+        if (window.logAuditAction)
+            window.logAuditAction('Marked ALL members absent in bulk check-in', 'attendance');
         showToast('All members marked Absent.', 'success');
     }
 }
@@ -418,20 +472,25 @@ export function resetAttendanceSheet() {
     const actId = state.selectedActivityId;
     if (!actId) return;
 
-    if (confirm('Are you sure you want to reset all attendance check-ins for this activity to Absent?')) {
+    if (
+        confirm(
+            'Are you sure you want to reset all attendance check-ins for this activity to Absent?'
+        )
+    ) {
         if (!state.attendance[actId]) state.attendance[actId] = {};
 
-        state.members.forEach(mem => {
+        state.members.forEach((mem) => {
             state.attendance[actId][mem.id] = {
                 status: 'absent',
                 time: '-',
-                notes: ''
+                notes: '',
             };
         });
 
         saveToStorage();
         renderAttendanceRoster();
-        if (window.logAuditAction) window.logAuditAction('Reset attendance check-in sheet to Absent', 'attendance');
+        if (window.logAuditAction)
+            window.logAuditAction('Reset attendance check-in sheet to Absent', 'attendance');
         showToast('Attendance sheet reset to Absent.', 'info');
     }
 }
@@ -442,36 +501,43 @@ export function startLiveQRScanner() {
 
     if (typeof window.Html5Qrcode !== 'undefined') {
         if (!html5QrScanner) {
-            html5QrScanner = new window.Html5Qrcode("qr-reader");
+            html5QrScanner = new window.Html5Qrcode('qr-reader');
         }
-        html5QrScanner.start(
-            { facingMode: "environment" },
-            { fps: 10, qrbox: { width: 250, height: 250 } },
-            (decodedText) => {
-                triggerHaptic('success');
-                handleScannedQRCode(decodedText);
-            },
-            (errorMessage) => {
-                // Ignore frame parse noise
-            }
-        ).catch(err => {
-            showToast('Camera access permission required for QR scanning.', 'error');
-        });
+        html5QrScanner
+            .start(
+                { facingMode: 'environment' },
+                { fps: 10, qrbox: { width: 250, height: 250 } },
+                (decodedText) => {
+                    triggerHaptic('success');
+                    handleScannedQRCode(decodedText);
+                },
+                (errorMessage) => {
+                    // Ignore frame parse noise
+                }
+            )
+            .catch((err) => {
+                showToast('Camera access permission required for QR scanning.', 'error');
+            });
     }
 }
 
 export function stopLiveQRScanner() {
     if (html5QrScanner) {
-        html5QrScanner.stop().then(() => {
-            html5QrScanner.clear();
-        }).catch(err => console.warn('QR scanner stop notice:', err));
+        html5QrScanner
+            .stop()
+            .then(() => {
+                html5QrScanner.clear();
+            })
+            .catch((err) => console.warn('QR scanner stop notice:', err));
     }
     const modal = document.getElementById('qr-scanner-backdrop');
     if (modal) modal.style.display = 'none';
 }
 
 function handleScannedQRCode(qrData) {
-    const member = state.members.find(m => m.id === qrData || m.name.toLowerCase() === qrData.toLowerCase());
+    const member = state.members.find(
+        (m) => m.id === qrData || m.name.toLowerCase() === qrData.toLowerCase()
+    );
     if (member) {
         toggleAttendance(state.selectedActivityId, member.id, 'present');
         stopLiveQRScanner();
@@ -490,7 +556,7 @@ export function simulateQRCheckIn() {
     }
 
     const memId = selectEl.value;
-    const member = state.members.find(m => m.id === memId);
+    const member = state.members.find((m) => m.id === memId);
     if (!member) return;
 
     if (!state.attendance[actId]) state.attendance[actId] = {};
@@ -499,13 +565,13 @@ export function simulateQRCheckIn() {
     state.attendance[actId][memId] = {
         status: 'present',
         time: currentTime,
-        notes: '⚡ QR Check-In Verified'
+        notes: '⚡ QR Check-In Verified',
     };
 
     saveToStorage();
     if (typeof window.triggerConfettiBurst === 'function') window.triggerConfettiBurst();
     showToast(`⚡ QR Verified: ${member.name} marked Present at ${currentTime}!`, 'success');
-    
+
     notifyStateChange('attendance-updated');
     renderAttendanceRoster();
     stopLiveQRScanner();

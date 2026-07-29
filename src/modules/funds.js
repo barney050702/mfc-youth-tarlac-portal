@@ -1,10 +1,12 @@
-
+import { saveToStorage, state } from './state.js';
+import { showToast } from './ui-modals.js';
+import { logAuditAction } from './legacy.js';
 
 export function exportFinancialStatementPDF() {
     const records = state.funds || [];
     let totalIncome = 0;
     let totalExpense = 0;
-    records.forEach(r => {
+    records.forEach((r) => {
         const amt = parseFloat(r.amount) || 0;
         if (r.type === 'Income') totalIncome += amt;
         else if (r.type === 'Expense') totalExpense += amt;
@@ -33,16 +35,28 @@ export function exportFinancialStatementPDF() {
         doc.setTextColor(15, 23, 42);
         doc.setFont('helvetica', 'bold');
         doc.setFontSize(11);
-        doc.text(`Total Income: P${totalIncome.toLocaleString('en-PH', { minimumFractionDigits: 2 })}`, 14, 52);
-        doc.text(`Total Expenses: P${totalExpense.toLocaleString('en-PH', { minimumFractionDigits: 2 })}`, 80, 52);
-        doc.text(`Net Balance: P${netBalance.toLocaleString('en-PH', { minimumFractionDigits: 2 })}`, 145, 52);
+        doc.text(
+            `Total Income: P${totalIncome.toLocaleString('en-PH', { minimumFractionDigits: 2 })}`,
+            14,
+            52
+        );
+        doc.text(
+            `Total Expenses: P${totalExpense.toLocaleString('en-PH', { minimumFractionDigits: 2 })}`,
+            80,
+            52
+        );
+        doc.text(
+            `Net Balance: P${netBalance.toLocaleString('en-PH', { minimumFractionDigits: 2 })}`,
+            145,
+            52
+        );
 
-        const rows = records.map(r => [
+        const rows = records.map((r) => [
             r.date || '-',
             r.type || '-',
             r.category || '-',
             r.description || '-',
-            `P${(parseFloat(r.amount) || 0).toLocaleString('en-PH', { minimumFractionDigits: 2 })}`
+            `P${(parseFloat(r.amount) || 0).toLocaleString('en-PH', { minimumFractionDigits: 2 })}`,
         ]);
 
         doc.autoTable({
@@ -51,24 +65,32 @@ export function exportFinancialStatementPDF() {
             body: rows,
             styles: { fontSize: 9 },
             headStyles: { fillColor: [2, 132, 199] },
-            alternateRowStyles: { fillColor: [241, 245, 249] }
+            alternateRowStyles: { fillColor: [241, 245, 249] },
         });
 
-        const finalY = (doc.lastAutoTable && doc.lastAutoTable.finalY) ? doc.lastAutoTable.finalY : 120;
+        const finalY =
+            doc.lastAutoTable && doc.lastAutoTable.finalY ? doc.lastAutoTable.finalY : 120;
         doc.setFontSize(9);
         doc.setFont('helvetica', 'italic');
         doc.setTextColor(100, 116, 139);
-        doc.text('Certified Official Document - Missionary Families of Christ Youth Tarlac', 14, finalY + 18);
+        doc.text(
+            'Certified Official Document - Missionary Families of Christ Youth Tarlac',
+            14,
+            finalY + 18
+        );
 
-        doc.save(`MFC_Youth_Tarlac_Financial_Statement_${new Date().toISOString().slice(0, 10)}.pdf`);
+        doc.save(
+            `MFC_Youth_Tarlac_Financial_Statement_${new Date().toISOString().slice(0, 10)}.pdf`
+        );
         showToast('Financial Statement PDF exported successfully!', 'success');
         return;
     }
 
-    const rowsHtml = records.map(r => {
-        const amt = parseFloat(r.amount) || 0;
-        const color = r.type === 'Income' ? '#059669' : '#DC2626';
-        return `
+    const rowsHtml = records
+        .map((r) => {
+            const amt = parseFloat(r.amount) || 0;
+            const color = r.type === 'Income' ? '#059669' : '#DC2626';
+            return `
             <tr>
                 <td style="padding: 10px 12px; border-bottom: 1px solid #E2E8F0;">${r.date || '-'}</td>
                 <td style="padding: 10px 12px; border-bottom: 1px solid #E2E8F0; font-weight: 600; color: ${color};">${r.type}</td>
@@ -77,7 +99,8 @@ export function exportFinancialStatementPDF() {
                 <td style="padding: 10px 12px; border-bottom: 1px solid #E2E8F0; text-align: right; font-weight: 700; color: ${color};">₱${amt.toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
             </tr>
         `;
-    }).join('');
+        })
+        .join('');
 
     const printWin = window.open('', '_blank', 'width=900,height=800');
     printWin.document.write(`
@@ -136,19 +159,24 @@ export function exportFinancialLedgerCSV() {
         return;
     }
     const headers = ['Date', 'Type', 'Category', 'Description', 'Amount (PHP)', 'Receipt Ref'];
-    const rows = records.map(r => [
+    const rows = records.map((r) => [
         `"${r.date || ''}"`,
         `"${r.type || ''}"`,
         `"${r.category || ''}"`,
         `"${(r.description || '').replace(/"/g, '""')}"`,
         r.amount || 0,
-        `"${(r.receipt || '').replace(/"/g, '""')}"`
+        `"${(r.receipt || '').replace(/"/g, '""')}"`,
     ]);
-    const csvContent = 'data:text/csv;charset=utf-8,\uFEFF' + [headers.join(','), ...rows.map(e => e.join(','))].join('\n');
+    const csvContent =
+        'data:text/csv;charset=utf-8,\uFEFF' +
+        [headers.join(','), ...rows.map((e) => e.join(','))].join('\n');
     const encodedUri = encodeURI(csvContent);
     const link = document.createElement('a');
     link.setAttribute('href', encodedUri);
-    link.setAttribute('download', `MFC_Youth_Tarlac_Financial_Ledger_${new Date().toISOString().split('T')[0]}.csv`);
+    link.setAttribute(
+        'download',
+        `MFC_Youth_Tarlac_Financial_Ledger_${new Date().toISOString().split('T')[0]}.csv`
+    );
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -169,19 +197,22 @@ export function renderFundsTable() {
     const selectedCategory = categoryFilter ? categoryFilter.value : 'ALL';
     const query = searchInput ? searchInput.value.toLowerCase().trim() : '';
 
-    const filtered = funds.filter(item => {
-        const matchType = selectedType === 'ALL' || item.type === selectedType;
-        const matchCategory = selectedCategory === 'ALL' || item.category === selectedCategory;
-        const matchQuery = !query ||
-            item.description.toLowerCase().includes(query) ||
-            item.category.toLowerCase().includes(query) ||
-            (item.receipt && item.receipt.toLowerCase().includes(query));
-        return matchType && matchCategory && matchQuery;
-    }).sort((a, b) => new Date(b.date) - new Date(a.date));
+    const filtered = funds
+        .filter((item) => {
+            const matchType = selectedType === 'ALL' || item.type === selectedType;
+            const matchCategory = selectedCategory === 'ALL' || item.category === selectedCategory;
+            const matchQuery =
+                !query ||
+                item.description.toLowerCase().includes(query) ||
+                item.category.toLowerCase().includes(query) ||
+                (item.receipt && item.receipt.toLowerCase().includes(query));
+            return matchType && matchCategory && matchQuery;
+        })
+        .sort((a, b) => new Date(b.date) - new Date(a.date));
 
     let totalIncome = 0;
     let totalExpenses = 0;
-    funds.forEach(item => {
+    funds.forEach((item) => {
         const amt = parseFloat(item.amount) || 0;
         if (item.type === 'Income') totalIncome += amt;
         else if (item.type === 'Expense') totalExpenses += amt;
@@ -201,7 +232,7 @@ export function renderFundsTable() {
     }
     if (elRec) elRec.textContent = funds.length;
 
-    const targetBudget = 50000.00;
+    const targetBudget = 50000.0;
     const achievedPct = Math.min(100, Math.max(0, Math.round((totalIncome / targetBudget) * 100)));
     const elBudgetTxt = document.getElementById('budget-achieved-text');
     const elBudgetFill = document.getElementById('budget-progress-fill');
@@ -221,18 +252,25 @@ export function renderFundsTable() {
             </tr>
         `;
     } else {
-        tbody.innerHTML = filtered.map(item => {
-            const isIncome = item.type === 'Income';
-            const badgeBg = isIncome ? 'rgba(16, 185, 129, 0.15)' : 'rgba(239, 68, 68, 0.15)';
-            const badgeColor = isIncome ? '#10B981' : '#EF4444';
-            const badgeBorder = isIncome ? 'rgba(16, 185, 129, 0.3)' : 'rgba(239, 68, 68, 0.3)';
-            const amountPrefix = isIncome ? '+' : '-';
-            const amountColor = isIncome ? '#10B981' : '#EF4444';
+        tbody.innerHTML = filtered
+            .map((item) => {
+                const isIncome = item.type === 'Income';
+                const badgeBg = isIncome ? 'rgba(16, 185, 129, 0.15)' : 'rgba(239, 68, 68, 0.15)';
+                const badgeColor = isIncome ? '#10B981' : '#EF4444';
+                const badgeBorder = isIncome ? 'rgba(16, 185, 129, 0.3)' : 'rgba(239, 68, 68, 0.3)';
+                const amountPrefix = isIncome ? '+' : '-';
+                const amountColor = isIncome ? '#10B981' : '#EF4444';
 
-            const dObj = new Date(item.date);
-            const dateStr = isNaN(dObj.getTime()) ? item.date : dObj.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+                const dObj = new Date(item.date);
+                const dateStr = isNaN(dObj.getTime())
+                    ? item.date
+                    : dObj.toLocaleDateString('en-US', {
+                          month: 'short',
+                          day: 'numeric',
+                          year: 'numeric',
+                      });
 
-            return `
+                return `
                 <tr style="border-bottom: 1px solid rgba(255, 255, 255, 0.05); transition: background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.03)'" onmouseout="this.style.background='transparent'">
                     <td style="padding: 16px 20px; color: #E2E8F0; font-weight: 600; font-size: 0.88rem;">${dateStr}</td>
                     <td style="padding: 16px 20px;">
@@ -252,11 +290,15 @@ export function renderFundsTable() {
                     <td style="padding: 16px 20px; color: #64748B; font-size: 0.85rem;">
                         <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
                             <span>${item.receipt || '<span style="font-style:italic; opacity:0.5;">None</span>'}</span>
-                            ${item.receiptImg ? `
+                            ${
+                                item.receiptImg
+                                    ? `
                                 <button type="button" onclick="openReceiptViewerModal('${item.id}')" style="background: rgba(16, 185, 129, 0.18); color: #10B981; border: 1px solid rgba(16, 185, 129, 0.4); padding: 3px 8px; border-radius: 6px; font-size: 0.72rem; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; gap: 4px;">
                                     📎 Photo
                                 </button>
-                            ` : ''}
+                            `
+                                    : ''
+                            }
                         </div>
                     </td>
                     <td style="padding: 16px 20px; text-align: right;">
@@ -269,13 +311,25 @@ export function renderFundsTable() {
                     </td>
                 </tr>
             `;
-        }).join('');
+            })
+            .join('');
     }
 }
 
+export const formatPHP = (num) =>
+    '₱' +
+    (parseFloat(num) || 0).toLocaleString('en-PH', {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+    });
+
 export function openReceiptViewerModal(recordId) {
-    const item = state.funds && state.funds.find(f => f.id === recordId);
+    const item = state.funds && state.funds.find((f) => f.id === recordId);
     if (!item || !item.receiptImg) return;
+
+    const modal = document.getElementById('modal-receipt-viewer');
+    const imgEl = document.getElementById('viewer-receipt-img');
+    const capEl = document.getElementById('viewer-receipt-caption');
 
     if (imgEl) imgEl.src = item.receiptImg;
     if (capEl) capEl.textContent = `${item.description} (${item.receipt || 'Receipt Photo'})`;
@@ -294,15 +348,35 @@ export function filterFunds() {
     const catFilter = document.getElementById('funds-category-filter');
     if (typeFilter && catFilter) {
         const currentCat = catFilter.value;
-        const incomeCats = ['Tithe & Offering', 'Donation / Sponsorship', 'Fundraising Event', 'Registration Fees', 'Other Income'];
-        const expenseCats = ['Assembly & Event Supplies', 'Youth Camp Food & Venue', 'Transportation & Logistics', 'Honorarium & Speakers', 'Administrative / Office', 'Other Expense'];
+        const incomeCats = [
+            'Tithe & Offering',
+            'Donation / Sponsorship',
+            'Fundraising Event',
+            'Registration Fees',
+            'Other Income',
+        ];
+        const expenseCats = [
+            'Assembly & Event Supplies',
+            'Youth Camp Food & Venue',
+            'Transportation & Logistics',
+            'Honorarium & Speakers',
+            'Administrative / Office',
+            'Other Expense',
+        ];
 
         let catsToShow = [];
         if (typeFilter.value === 'Income') catsToShow = incomeCats;
         else if (typeFilter.value === 'Expense') catsToShow = expenseCats;
         else catsToShow = [...incomeCats, ...expenseCats];
 
-        const optionsHtml = `<option value="ALL">All Categories</option>` + catsToShow.map(c => `<option value="${c}" ${currentCat === c ? 'selected' : ''}>${c}</option>`).join('');
+        const optionsHtml =
+            `<option value="ALL">All Categories</option>` +
+            catsToShow
+                .map(
+                    (c) =>
+                        `<option value="${c}" ${currentCat === c ? 'selected' : ''}>${c}</option>`
+                )
+                .join('');
         if (catFilter.innerHTML !== optionsHtml) {
             catFilter.innerHTML = optionsHtml;
         }
@@ -327,11 +401,24 @@ export function updateFundCategories() {
     if (!typeEl || !catEl) return;
 
     const isIncome = typeEl.value === 'Income';
-    const incomeCats = ['Tithe & Offering', 'Donation / Sponsorship', 'Fundraising Event', 'Registration Fees', 'Other Income'];
-    const expenseCats = ['Assembly & Event Supplies', 'Youth Camp Food & Venue', 'Transportation & Logistics', 'Honorarium & Speakers', 'Administrative / Office', 'Other Expense'];
+    const incomeCats = [
+        'Tithe & Offering',
+        'Donation / Sponsorship',
+        'Fundraising Event',
+        'Registration Fees',
+        'Other Income',
+    ];
+    const expenseCats = [
+        'Assembly & Event Supplies',
+        'Youth Camp Food & Venue',
+        'Transportation & Logistics',
+        'Honorarium & Speakers',
+        'Administrative / Office',
+        'Other Expense',
+    ];
 
     const cats = isIncome ? incomeCats : expenseCats;
-    catEl.innerHTML = cats.map(c => `<option value="${c}">${c}</option>`).join('');
+    catEl.innerHTML = cats.map((c) => `<option value="${c}">${c}</option>`).join('');
 }
 
 export function triggerReceiptUpload() {
@@ -400,13 +487,16 @@ export function openAddFundModal(editId = null) {
     const descEl = document.getElementById('fund-description');
     const recEl = document.getElementById('fund-receipt');
 
-    const isEdit = (typeof editId === 'string' && editId.trim() !== '' && !editId.includes('Event'));
+    const isEdit = typeof editId === 'string' && editId.trim() !== '' && !editId.includes('Event');
     if (isEdit) {
-        const item = state.funds.find(f => f.id === editId);
+        const item = state.funds.find((f) => f.id === editId);
         if (item) {
             if (titleEl) titleEl.textContent = 'Edit Fund Record';
             if (idEl) idEl.value = item.id;
-            if (typeEl) { typeEl.value = item.type; updateFundCategories(); }
+            if (typeEl) {
+                typeEl.value = item.type;
+                updateFundCategories();
+            }
             if (catEl) catEl.value = item.category;
             if (amtEl) amtEl.value = item.amount;
             if (dateEl) dateEl.value = item.date;
@@ -420,7 +510,10 @@ export function openAddFundModal(editId = null) {
 
     if (titleEl) titleEl.textContent = 'Add Fund Record';
     if (idEl) idEl.value = '';
-    if (typeEl) { typeEl.value = 'Income'; updateFundCategories(); }
+    if (typeEl) {
+        typeEl.value = 'Income';
+        updateFundCategories();
+    }
     if (amtEl) amtEl.value = '';
     if (dateEl) dateEl.value = new Date().toISOString().split('T')[0];
     if (descEl) descEl.value = '';
@@ -459,11 +552,11 @@ export function saveFundRecord(e) {
         date: dateEl ? dateEl.value : new Date().toISOString().split('T')[0],
         description: descEl ? descEl.value.trim() : '',
         receipt: recEl ? recEl.value.trim() : '',
-        receiptImg: imgDataEl ? imgDataEl.value : ''
+        receiptImg: imgDataEl ? imgDataEl.value : '',
     };
 
     if (idEl && idEl.value) {
-        const idx = state.funds.findIndex(f => f.id === idEl.value);
+        const idx = state.funds.findIndex((f) => f.id === idEl.value);
         if (idx !== -1) {
             state.funds[idx] = { ...state.funds[idx], ...recordData };
             showToast('Fund record updated successfully!', 'success');
@@ -471,7 +564,7 @@ export function saveFundRecord(e) {
     } else {
         const newRecord = {
             id: 'f-' + Date.now(),
-            ...recordData
+            ...recordData,
         };
         state.funds.push(newRecord);
         showToast('New fund record saved to ledger!', 'success');
@@ -479,22 +572,28 @@ export function saveFundRecord(e) {
 
     saveToStorage();
     renderFundsTable();
-    logAuditAction(`Saved fund record (${recordData.type}): ${formatPHP(recordData.amount)}`, 'finance');
+    logAuditAction(
+        `Saved fund record (${recordData.type}): ${formatPHP(recordData.amount)}`,
+        'finance'
+    );
     closeAddFundModal();
 }
 
 export function deleteFundRecord(id) {
-    const fRec = state.funds.find(f => f.id === id);
+    const fRec = state.funds.find((f) => f.id === id);
     if (!fRec) return;
     if (!confirm('Are you sure you want to delete this financial record?')) return;
     const deletedCopy = { ...fRec };
-    state.funds = state.funds.filter(f => f.id !== id);
+    state.funds = state.funds.filter((f) => f.id !== id);
     saveToStorage();
     renderFundsTable();
     showToast('Fund record deleted', 'info', () => {
         state.funds.push(deletedCopy);
         saveToStorage();
         renderFundsTable();
-        logAuditAction(`Restored fund record (${deletedCopy.type}): ${formatPHP(deletedCopy.amount)} via Undo`, 'finance');
+        logAuditAction(
+            `Restored fund record (${deletedCopy.type}): ${formatPHP(deletedCopy.amount)} via Undo`,
+            'finance'
+        );
     });
 }

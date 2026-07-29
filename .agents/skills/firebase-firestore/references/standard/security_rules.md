@@ -20,18 +20,18 @@ Follow this structured workflow strictly:
 #### Phase-1: Codebase Analysis
 
 1. **Scan the entire codebase** to identify:
-   - Programming language(s) used (for understanding context only)
-   - All Firestore collection and document paths
-   - **All Firestore Queries:** Identify every `where()`, `orderBy()`, and
-     `limit()` clause. The security rules **MUST** allow these specific queries.
-   - Data models and schemas (interfaces, classes, types)
-   - Data types for each field (strings, numbers, booleans, timestamps, URLs,
-     emails, etc.)
-   - Required vs. optional fields
-   - Field constraints (min/max length, format patterns, allowed values)
-   - CRUD operations (create, read, update, delete)
-   - Authentication patterns (Firebase Auth, custom tokens, anonymous)
-   - Access patterns and business logic rules
+    - Programming language(s) used (for understanding context only)
+    - All Firestore collection and document paths
+    - **All Firestore Queries:** Identify every `where()`, `orderBy()`, and
+      `limit()` clause. The security rules **MUST** allow these specific queries.
+    - Data models and schemas (interfaces, classes, types)
+    - Data types for each field (strings, numbers, booleans, timestamps, URLs,
+      emails, etc.)
+    - Required vs. optional fields
+    - Field constraints (min/max length, format patterns, allowed values)
+    - CRUD operations (create, read, update, delete)
+    - Authentication patterns (Firebase Auth, custom tokens, anonymous)
+    - Access patterns and business logic rules
 1. **Document your findings** in a untracked file. Refer to this file when
    generating the security rules.
 
@@ -47,20 +47,20 @@ Generate Firebase Security Rules following these principles:
 - **Least privilege:** Grant minimum permissions required
 - **Validate data:** Check data types, allowed fields, and constraints on both
   creates and updates.
-  - **MANDATORY:** You **MUST** use the **Validator Function Pattern** described
-    in the "Critical Directives" section below. This involves defining a
-    specific validation function (e.g., `isValidUser`) and calling it in
-    **BOTH** `create` and `update` rules.
-  - **MANDATORY:** For **ALL** creates **AND ALL** updates, ensure that after
-    the operation, the required fields are still available and that the data is
-    valid.
+    - **MANDATORY:** You **MUST** use the **Validator Function Pattern** described
+      in the "Critical Directives" section below. This involves defining a
+      specific validation function (e.g., `isValidUser`) and calling it in
+      **BOTH** `create` and `update` rules.
+    - **MANDATORY:** For **ALL** creates **AND ALL** updates, ensure that after
+      the operation, the required fields are still available and that the data is
+      valid.
 - **Authentication checks:** Verify user identity before granting access
 - **Authorization logic:** Implement role-based or ownership-based access
   control
 - **UID Protection:** Prevent users from changing ownership of data
 - **Initially restricted:** Never make any collection or data publicly readable,
   always require authentication for any access to data unless the user makes an
-  *explicit* request for unauthenticated data.
+  _explicit_ request for unauthenticated data.
 
 This means the first firestore.rules file you generate must never have any
 "allow read: true" statements.
@@ -227,12 +227,12 @@ function isRecent(time) {
   (allow read: if isOwner(userId);).
 - If the application requires public profiles (e.g., showing user names/avatars
   on posts):
-  - 1. Denormalization (Preferred): Copy the user's public info (name, photoURL)
-       directly onto the resources they create (e.g., store authorName and
-       authorPhoto inside the posts document).
-  - 2. Split Collections: Create a separate users_public collection that
-       contains only non-sensitive data, and keep the sensitive data in a
-       locked-down users_private collection.
+    -   1. Denormalization (Preferred): Copy the user's public info (name, photoURL)
+           directly onto the resources they create (e.g., store authorName and
+           authorPhoto inside the posts document).
+    -   2. Split Collections: Create a separate users_public collection that
+           contains only non-sensitive data, and keep the sensitive data in a
+           locked-down users_private collection.
 - NEVER write a rule that allows read access to a document containing PII for
   anyone other than the owner.
 
@@ -283,14 +283,14 @@ match /users/{userId} {
 
 - **Date and Timestamp Validation:**
 
-  - **Prefer Timestamps:** ALWAYS prefer the `timestamp` type for date fields.
-    Firestore automatically ensures they are logically valid dates.
-  - **String Date Risks:** If using strings for dates (e.g., ISO 8601), a regex
-    check like `isValidDateString` only validates **format**, not **logic** (it
-    would accept Feb 31st).
-  - **Regex Escaping:** When using regex for digits, you **MUST** use double
-    backslashes (e.g., `\\\\d`) in the rules string. Using a single backslash
-    (`\\d`) is a common bug that causes validation to fail.
+    - **Prefer Timestamps:** ALWAYS prefer the `timestamp` type for date fields.
+      Firestore automatically ensures they are logically valid dates.
+    - **String Date Risks:** If using strings for dates (e.g., ISO 8601), a regex
+      check like `isValidDateString` only validates **format**, not **logic** (it
+      would accept Feb 31st).
+    - **Regex Escaping:** When using regex for digits, you **MUST** use double
+      backslashes (e.g., `\\\\d`) in the rules string. Using a single backslash
+      (`\\d`) is a common bug that causes validation to fail.
 
 - **Immutable Fields:** Fields like `createdAt`, `authorUID`, or any other field
   that should not change after creation must be explicitly protected in `update`
@@ -304,14 +304,14 @@ match /users/{userId} {
 - **Identity Integrity:** When storing denormalized user identity (e.g.
   `authorName`, `authorPhoto`), you **MUST** validate this data.
 
-  - **Prefer Auth Token:** If possible, check if
-    `request.resource.data.authorName == request.auth.token.name`.
-  - **Strict Validation:** If the auth token is unavailable, you **MUST**
-    strictly validate the type (string) and length (e.g. < 50 chars) to prevent
-    spoofing with massive or malicious payloads.
-  - **Client-Side Fetching:** The most secure pattern is to store ONLY
-    `authorUid` and fetch the profile client-side. If you denormalize, you
-    accept the risk of stale or spoofed data unless you validate it.
+    - **Prefer Auth Token:** If possible, check if
+      `request.resource.data.authorName == request.auth.token.name`.
+    - **Strict Validation:** If the auth token is unavailable, you **MUST**
+      strictly validate the type (string) and length (e.g. < 50 chars) to prevent
+      spoofing with massive or malicious payloads.
+    - **Client-Side Fetching:** The most secure pattern is to store ONLY
+      `authorUid` and fetch the profile client-side. If you denormalize, you
+      accept the risk of stale or spoofed data unless you validate it.
 
 - **Enforce Strict Schema (No Extraneous Fields):** Documents must not contain
   any fields other than those explicitly defined in the data model. This
@@ -421,7 +421,7 @@ has not already performed the action (e.g., by checking for the existence of a
 'like' document) and is not looping updates. * **CRITICAL:** Relying solely on
 `!exists(likeDoc)` is insufficient because a malicious user can skip creating
 the document and loop the increment. * **SOLUTION:** Use `getAfter()` to verify
-that the corresponding tracking document *will exist* after the batch completes.
+that the corresponding tracking document _will exist_ after the batch completes.
 
 **Example:**
 

@@ -28,7 +28,7 @@ flutter pub add firebase_data_connect
 ```dart
 import 'package:firebase_data_connect/firebase_data_connect.dart';
 // Import generated connector
-import 'generated/movies.dart'; 
+import 'generated/movies.dart';
 ```
 
 ### Initialization
@@ -51,9 +51,9 @@ print(response.data.movies);
 
 ```dart
 await MoviesConnector.instance.createMovie(
-  title: 'Empire Strikes Back', 
-  releaseYear: 1980, 
-  genre: 'Sci-Fi' 
+  title: 'Empire Strikes Back',
+  releaseYear: 1980,
+  genre: 'Sci-Fi'
 ).rating(5).execute();
 ```
 
@@ -94,12 +94,12 @@ scenarios.
 
 ```yaml
 generate:
-  dartSdk: # Or the appropriate block for your project
-    outputDir: ../dart/
-    package: "dataconnect_generated"
-    clientCache:
-      maxAge: 5s
-      storage: memory # Or persistent for native
+    dartSdk: # Or the appropriate block for your project
+        outputDir: ../dart/
+        package: 'dataconnect_generated'
+        clientCache:
+            maxAge: 5s
+            storage: memory # Or persistent for native
 ```
 
 Use policies in code:

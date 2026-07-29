@@ -1,3 +1,6 @@
+import { getRoleRank } from './members.js';
+import { logAuditAction } from './legacy.js';
+
 /**
  * MFC YOUTH TARLAC | REPORTS, ANALYTICS & EXECUTIVE EXPORTS
  * Memory-Safe Chart.js Graph Rendering & Executive Summary PDF Exporter
@@ -5,7 +8,6 @@
 
 import { state } from './state.js';
 import { showToast, triggerHaptic } from './ui.js';
-
 
 let activeAttendanceChart = null;
 let activeCategoryChart = null;
@@ -15,11 +17,11 @@ export function renderInteractiveCharts() {
     const catCanvas = document.getElementById('chart-category-breakdown');
 
     const totalMems = state.members.length;
-    const labels = state.activities.map(a => (a.name || a.title || 'Event').substring(0, 18));
-    const dataRates = state.activities.map(act => {
+    const labels = state.activities.map((a) => (a.name || a.title || 'Event').substring(0, 18));
+    const dataRates = state.activities.map((act) => {
         const attObj = state.attendance[act.id] || {};
         let pCount = 0;
-        state.members.forEach(m => {
+        state.members.forEach((m) => {
             const st = attObj[m.id]?.status;
             if (st === 'present' || st === 'late') pCount++;
         });
@@ -30,13 +32,17 @@ export function renderInteractiveCharts() {
         // Fallback HTML/CSS Chart if Chart CDN unavailable
         trendCanvas.parentElement.innerHTML = `
             <div style="display:flex; align-items:flex-end; justify-content:space-around; height:100%; padding:20px 0; gap:10px;">
-                ${state.activities.map((act, idx) => `
+                ${state.activities
+                    .map(
+                        (act, idx) => `
                     <div style="display:flex; flex-direction:column; align-items:center; flex:1; height:100%; justify-content:flex-end;">
                         <span style="font-size:0.75rem; color:#38BDF8; font-weight:700; margin-bottom:4px;">${dataRates[idx]}%</span>
                         <div style="width:100%; max-width:40px; height:${Math.max(10, dataRates[idx])}%; background:linear-gradient(180deg, #38BDF8, #0284C7); border-radius:6px 6px 0 0;"></div>
                         <span style="font-size:0.7rem; color:#94A3B8; margin-top:6px; text-align:center; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:60px;">${(act.name || 'Act').substring(0, 8)}</span>
                     </div>
-                `).join('')}
+                `
+                    )
+                    .join('')}
             </div>
         `;
     } else if (trendCanvas && window.Chart) {
@@ -50,18 +56,20 @@ export function renderInteractiveCharts() {
             type: 'line',
             data: {
                 labels: labels.length ? labels : ['No Activities'],
-                datasets: [{
-                    label: 'Attendance Rate (%)',
-                    data: dataRates.length ? dataRates : [0],
-                    borderColor: '#38BDF8',
-                    backgroundColor: gradientTrend,
-                    borderWidth: 3,
-                    fill: true,
-                    tension: 0.35,
-                    pointBackgroundColor: '#38BDF8',
-                    pointRadius: 5,
-                    pointHoverRadius: 7
-                }]
+                datasets: [
+                    {
+                        label: 'Attendance Rate (%)',
+                        data: dataRates.length ? dataRates : [0],
+                        borderColor: '#38BDF8',
+                        backgroundColor: gradientTrend,
+                        borderWidth: 3,
+                        fill: true,
+                        tension: 0.35,
+                        pointBackgroundColor: '#38BDF8',
+                        pointRadius: 5,
+                        pointHoverRadius: 7,
+                    },
+                ],
             },
             options: {
                 responsive: true,
@@ -70,24 +78,24 @@ export function renderInteractiveCharts() {
                     y: {
                         beginAtZero: true,
                         max: 100,
-                        ticks: { color: '#94A3B8', callback: val => val + '%' },
-                        grid: { color: 'rgba(255,255,255,0.06)' }
+                        ticks: { color: '#94A3B8', callback: (val) => val + '%' },
+                        grid: { color: 'rgba(255,255,255,0.06)' },
                     },
                     x: {
                         ticks: { color: '#94A3B8' },
-                        grid: { color: 'rgba(255,255,255,0.06)' }
-                    }
+                        grid: { color: 'rgba(255,255,255,0.06)' },
+                    },
                 },
                 plugins: {
-                    legend: { labels: { color: '#F8FAFC', font: { weight: 'bold' } } }
-                }
-            }
+                    legend: { labels: { color: '#F8FAFC', font: { weight: 'bold' } } },
+                },
+            },
         });
     }
 
     if (catCanvas && window.Chart) {
         const catMap = {};
-        state.activities.forEach(a => {
+        state.activities.forEach((a) => {
             const cat = a.type || a.category || 'General';
             catMap[cat] = (catMap[cat] || 0) + 1;
         });
@@ -107,30 +115,35 @@ export function renderInteractiveCharts() {
             type: 'doughnut',
             data: {
                 labels: catLabels.length ? catLabels : ['General Assembly'],
-                datasets: [{
-                    data: catCounts.length ? catCounts : [1],
-                    backgroundColor: [
-                        makeGrad('#38BDF8', '#0284C7'),
-                        makeGrad('#10B981', '#047857'),
-                        makeGrad('#F59E0B', '#B45309'),
-                        makeGrad('#8B5CF6', '#6D28D9'),
-                        makeGrad('#F43F5E', '#BE123C'),
-                        makeGrad('#EC4899', '#BE185D')
-                    ],
-                    borderColor: '#0F172A',
-                    borderWidth: 2
-                }]
+                datasets: [
+                    {
+                        data: catCounts.length ? catCounts : [1],
+                        backgroundColor: [
+                            makeGrad('#38BDF8', '#0284C7'),
+                            makeGrad('#10B981', '#047857'),
+                            makeGrad('#F59E0B', '#B45309'),
+                            makeGrad('#8B5CF6', '#6D28D9'),
+                            makeGrad('#F43F5E', '#BE123C'),
+                            makeGrad('#EC4899', '#BE185D'),
+                        ],
+                        borderColor: '#0F172A',
+                        borderWidth: 2,
+                    },
+                ],
             },
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
                 plugins: {
-                    legend: { position: 'right', labels: { color: '#F8FAFC', font: { size: 11, weight: 'bold' } } }
-                }
-            }
+                    legend: {
+                        position: 'right',
+                        labels: { color: '#F8FAFC', font: { size: 11, weight: 'bold' } },
+                    },
+                },
+            },
         });
     }
-    
+
     renderFundsCharts();
 }
 
@@ -150,11 +163,29 @@ export function renderFundsCharts() {
                 data: {
                     labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'],
                     datasets: [
-                        { label: 'Income (₱)', data: [15000, 18000, 22000, 19500, 25000, 28000, 32000], backgroundColor: '#10B981', borderRadius: 6 },
-                        { label: 'Expenses (₱)', data: [12000, 14000, 16500, 15000, 18000, 21000, 23500], backgroundColor: '#EF4444', borderRadius: 6 }
-                    ]
+                        {
+                            label: 'Income (₱)',
+                            data: [15000, 18000, 22000, 19500, 25000, 28000, 32000],
+                            backgroundColor: '#10B981',
+                            borderRadius: 6,
+                        },
+                        {
+                            label: 'Expenses (₱)',
+                            data: [12000, 14000, 16500, 15000, 18000, 21000, 23500],
+                            backgroundColor: '#EF4444',
+                            borderRadius: 6,
+                        },
+                    ],
                 },
-                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { labels: { color: '#CBD5E1' } } }, scales: { x: { ticks: { color: '#94A3B8' } }, y: { ticks: { color: '#94A3B8' } } } }
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { labels: { color: '#CBD5E1' } } },
+                    scales: {
+                        x: { ticks: { color: '#94A3B8' } },
+                        y: { ticks: { color: '#94A3B8' } },
+                    },
+                },
             });
         }
 
@@ -165,14 +196,30 @@ export function renderFundsCharts() {
             chartPieInstance = new Chart(pieCtx, {
                 type: 'doughnut',
                 data: {
-                    labels: ['Events & Camps', 'Pastoral Care', 'Transport & Meals', 'Materials & Supplies'],
-                    datasets: [{
-                        data: [45, 20, 20, 15],
-                        backgroundColor: ['#0284C7', '#A855F7', '#F59E0B', '#10B981'],
-                        borderWidth: 0
-                    }]
+                    labels: [
+                        'Events & Camps',
+                        'Pastoral Care',
+                        'Transport & Meals',
+                        'Materials & Supplies',
+                    ],
+                    datasets: [
+                        {
+                            data: [45, 20, 20, 15],
+                            backgroundColor: ['#0284C7', '#A855F7', '#F59E0B', '#10B981'],
+                            borderWidth: 0,
+                        },
+                    ],
                 },
-                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { color: '#CBD5E1', font: { size: 11 } } } } }
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: { color: '#CBD5E1', font: { size: 11 } },
+                        },
+                    },
+                },
             });
         }
     } catch (e) {
@@ -200,12 +247,12 @@ export function generateExecutiveSummaryReport() {
         doc.text('Executive Chapter Summary & Roster Report', 14, 28);
         doc.text(`Generated: ${new Date().toLocaleDateString()}`, 14, 34);
 
-        const tableData = state.members.map(m => [
+        const tableData = state.members.map((m) => [
             m.name || 'Unnamed',
             m.chapter || 'Central',
             m.age ? `${m.age} yrs` : 'N/A',
             m.contactNum || m.parentsContact || 'N/A',
-            m.address || 'Tarlac'
+            m.address || 'Tarlac',
         ]);
 
         if (doc.autoTable) {
@@ -214,7 +261,7 @@ export function generateExecutiveSummaryReport() {
                 head: [['Member Name', 'Chapter', 'Age', 'Contact', 'Address']],
                 body: tableData,
                 headStyles: { fillColor: [2, 132, 199] },
-                alternateRowStyles: { fillColor: [241, 245, 249] }
+                alternateRowStyles: { fillColor: [241, 245, 249] },
             });
         }
 
@@ -226,7 +273,6 @@ export function generateExecutiveSummaryReport() {
     }
 }
 
-
 export function renderAnalytics() {
     const monthlyBody = document.getElementById('analytics-monthly-body');
     if (!monthlyBody) return;
@@ -234,12 +280,20 @@ export function renderAnalytics() {
     const totalMems = state.members.length;
     const monthlyMap = {};
 
-    state.activities.forEach(act => {
+    state.activities.forEach((act) => {
         const dateObj = new Date(act.date);
-        const monthKey = !isNaN(dateObj) ? dateObj.toLocaleDateString('en-US', { month: 'long', year: 'numeric' }) : 'General Event';
+        const monthKey = !isNaN(dateObj)
+            ? dateObj.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })
+            : 'General Event';
 
         if (!monthlyMap[monthKey]) {
-            monthlyMap[monthKey] = { totalActs: 0, completed: 0, presentSum: 0, absentSum: 0, rateSum: 0 };
+            monthlyMap[monthKey] = {
+                totalActs: 0,
+                completed: 0,
+                presentSum: 0,
+                absentSum: 0,
+                rateSum: 0,
+            };
         }
 
         monthlyMap[monthKey].totalActs++;
@@ -248,7 +302,7 @@ export function renderAnalytics() {
         const attObj = state.attendance[act.id] || {};
         let pCount = 0;
         let aCount = 0;
-        state.members.forEach(m => {
+        state.members.forEach((m) => {
             const st = attObj[m.id]?.status;
             if (st === 'present' || st === 'late') pCount++;
             else aCount++;
@@ -264,14 +318,17 @@ export function renderAnalytics() {
     if (keys.length === 0) {
         monthlyBody.innerHTML = `<tr><td colspan="7" style="text-align:center; padding:30px; color:var(--text-muted);">No activity records available yet. Create an activity to view monthly performance metrics.</td></tr>`;
     } else {
-        monthlyBody.innerHTML = keys.map(mKey => {
-            const data = monthlyMap[mKey];
-            const avgRate = data.totalActs > 0 ? Math.round(data.rateSum / data.totalActs) : 0;
-            let evalBadge = `<span class="trend badge-green">Excellent (≥80%)</span>`;
-            if (avgRate < 50) evalBadge = `<span class="trend badge-rose" style="background:rgba(251,113,133,0.15); color:var(--accent-rose);">Needs Attention</span>`;
-            else if (avgRate < 80) evalBadge = `<span class="trend badge-emerald" style="background:rgba(251,191,36,0.15); color:var(--accent-amber);">Satisfactory</span>`;
+        monthlyBody.innerHTML = keys
+            .map((mKey) => {
+                const data = monthlyMap[mKey];
+                const avgRate = data.totalActs > 0 ? Math.round(data.rateSum / data.totalActs) : 0;
+                let evalBadge = `<span class="trend badge-green">Excellent (≥80%)</span>`;
+                if (avgRate < 50)
+                    evalBadge = `<span class="trend badge-rose" style="background:rgba(251,113,133,0.15); color:var(--accent-rose);">Needs Attention</span>`;
+                else if (avgRate < 80)
+                    evalBadge = `<span class="trend badge-emerald" style="background:rgba(251,191,36,0.15); color:var(--accent-amber);">Satisfactory</span>`;
 
-            return `
+                return `
                 <tr>
                     <td data-label="Month" style="font-weight:700; color:#FFF;">${mKey}</td>
                     <td data-label="Total Acts">${data.totalActs}</td>
@@ -286,7 +343,8 @@ export function renderAnalytics() {
                     <td data-label="Evaluation">${evalBadge}</td>
                 </tr>
             `;
-        }).join('');
+            })
+            .join('');
     }
 
     renderInteractiveCharts();
@@ -294,17 +352,18 @@ export function renderAnalytics() {
 }
 
 export function exportToCSV() {
-    let csvContent = "data:text/csv;charset=utf-8,";
-    csvContent += "MFC YOUTH TARLAC ATTENDANCE & ACTIVITY MASTER REPORT\n\n";
-    csvContent += "ACTIVITY TITLE,DATE,LOCATION,CATEGORY,STATUS,PRESENT COUNT,ABSENT COUNT,ATTENDANCE RATE (%)\n";
+    let csvContent = 'data:text/csv;charset=utf-8,';
+    csvContent += 'MFC YOUTH TARLAC ATTENDANCE & ACTIVITY MASTER REPORT\n\n';
+    csvContent +=
+        'ACTIVITY TITLE,DATE,LOCATION,CATEGORY,STATUS,PRESENT COUNT,ABSENT COUNT,ATTENDANCE RATE (%)\n';
 
     const totalMems = state.members.length;
 
-    state.activities.forEach(act => {
+    state.activities.forEach((act) => {
         const attObj = state.attendance[act.id] || {};
         let pCount = 0;
         let aCount = 0;
-        state.members.forEach(m => {
+        state.members.forEach((m) => {
             const st = attObj[m.id]?.status;
             if (st === 'present' || st === 'late') pCount++;
             else aCount++;
@@ -318,22 +377,30 @@ export function exportToCSV() {
         csvContent += `${cleanTitle},${act.date},${cleanLoc},${safeType},${act.status},${pCount},${aCount},${rate}%\n`;
     });
 
-    csvContent += "\n\nDETAILED MEMBER ROSTER ATTENDANCE\n";
-    csvContent += "MEMBER NAME,ROLE,DEPARTMENT," + state.activities.map(a => `"${(a.name || a.title || 'Event').substring(0, 20)}..."`).join(",") + "\n";
+    csvContent += '\n\nDETAILED MEMBER ROSTER ATTENDANCE\n';
+    csvContent +=
+        'MEMBER NAME,ROLE,DEPARTMENT,' +
+        state.activities
+            .map((a) => `"${(a.name || a.title || 'Event').substring(0, 20)}..."`)
+            .join(',') +
+        '\n';
 
-    state.members.forEach(mem => {
-        const rowData = state.activities.map(act => {
+    state.members.forEach((mem) => {
+        const rowData = state.activities.map((act) => {
             const st = state.attendance[act.id]?.[mem.id]?.status || 'absent';
             return st.toUpperCase();
         });
         const cleanName = `"${mem.name.replace(/"/g, '""')}"`;
-        csvContent += `${cleanName},"${mem.role}","${mem.dept}",${rowData.join(",")}\n`;
+        csvContent += `${cleanName},"${mem.role}","${mem.dept}",${rowData.join(',')}\n`;
     });
 
     const encodedUri = encodeURI(csvContent);
-    const link = document.createElement("a");
-    link.setAttribute("href", encodedUri);
-    link.setAttribute("download", `mfc_youth_tarlac_master_report_${new Date().toISOString().slice(0, 10)}.csv`);
+    const link = document.createElement('a');
+    link.setAttribute('href', encodedUri);
+    link.setAttribute(
+        'download',
+        `mfc_youth_tarlac_master_report_${new Date().toISOString().slice(0, 10)}.csv`
+    );
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -359,14 +426,14 @@ export function exportToPDF() {
         doc.setFillColor(11, 15, 25);
         doc.rect(0, 0, 210, 38, 'F');
 
-        doc.setFont("helvetica", "bold");
+        doc.setFont('helvetica', 'bold');
         doc.setFontSize(20);
         doc.setTextColor(56, 189, 248);
-        doc.text("MFC YOUTH TARLAC PORTAL", 14, 18);
+        doc.text('MFC YOUTH TARLAC PORTAL', 14, 18);
 
         doc.setFontSize(11);
         doc.setTextColor(248, 250, 252);
-        doc.text("Official Attendance & Activity Master Report", 14, 26);
+        doc.text('Official Attendance & Activity Master Report', 14, 26);
 
         doc.setFontSize(9);
         doc.setTextColor(148, 163, 184);
@@ -375,19 +442,30 @@ export function exportToPDF() {
         // Section 1: Activities Summary Table
         doc.setFontSize(13);
         doc.setTextColor(11, 15, 25);
-        doc.text("1. Activity Performance Summary", 14, 48);
+        doc.text('1. Activity Performance Summary', 14, 48);
 
-        const actHeaders = [["Activity Title", "Category", "Date", "Status", "Present", "Rate"]];
+        const actHeaders = [['Activity Title', 'Category', 'Date', 'Status', 'Present', 'Rate']];
         const totalMems = state.members.length;
-        const actRows = state.activities.map(act => {
+        const actRows = state.activities.map((act) => {
             const attObj = state.attendance[act.id] || {};
             let pCount = 0;
-            state.members.forEach(m => {
+            state.members.forEach((m) => {
                 if (attObj[m.id]?.status === 'present' || attObj[m.id]?.status === 'late') pCount++;
             });
             const rate = totalMems > 0 ? Math.round((pCount / totalMems) * 100) : 0;
-            const dateStr = new Date(act.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-            return [act.name || act.title || 'Untitled', act.type || act.category || 'Event', dateStr, act.status, `${pCount}/${totalMems}`, `${rate}%`];
+            const dateStr = new Date(act.date).toLocaleDateString('en-US', {
+                month: 'short',
+                day: 'numeric',
+                year: 'numeric',
+            });
+            return [
+                act.name || act.title || 'Untitled',
+                act.type || act.category || 'Event',
+                dateStr,
+                act.status,
+                `${pCount}/${totalMems}`,
+                `${rate}%`,
+            ];
         });
 
         doc.autoTable({
@@ -395,27 +473,46 @@ export function exportToPDF() {
             head: actHeaders,
             body: actRows,
             theme: 'grid',
-            headStyles: { fillColor: [59, 130, 246], textColor: [255, 255, 255], fontStyle: 'bold' },
+            headStyles: {
+                fillColor: [59, 130, 246],
+                textColor: [255, 255, 255],
+                fontStyle: 'bold',
+            },
             styles: { fontSize: 8.5, cellPadding: 3 },
-            columnStyles: { 0: { cellWidth: 65 }, 5: { fontStyle: 'bold', textColor: [5, 150, 105] } }
+            columnStyles: {
+                0: { cellWidth: 65 },
+                5: { fontStyle: 'bold', textColor: [5, 150, 105] },
+            },
         });
 
         let nextY = doc.lastAutoTable.finalY + 12;
 
         // Section 2: Active Roster Check (if selected activity exists)
         if (state.selectedActivityId) {
-            const selAct = state.activities.find(a => a.id === state.selectedActivityId);
+            const selAct = state.activities.find((a) => a.id === state.selectedActivityId);
             if (selAct) {
-                if (nextY > 230) { doc.addPage(); nextY = 20; }
+                if (nextY > 230) {
+                    doc.addPage();
+                    nextY = 20;
+                }
                 doc.setFontSize(13);
                 doc.setTextColor(11, 15, 25);
                 doc.text(`2. Detailed Attendance Sheet: ${selAct.title}`, 14, nextY);
 
-                const rosHeaders = [["#", "Member Name", "Department / Role", "Status", "Time Check", "Remarks"]];
+                const rosHeaders = [
+                    ['#', 'Member Name', 'Department / Role', 'Status', 'Time Check', 'Remarks'],
+                ];
                 const attMap = state.attendance[selAct.id] || {};
                 const rosRows = state.members.map((mem, idx) => {
                     const att = attMap[mem.id] || { status: 'absent', time: '-', notes: '' };
-                    return [idx + 1, mem.name, `${mem.dept} (${mem.role})`, att.status.toUpperCase(), att.time, att.notes || '-'];
+                    return [
+                        idx + 1,
+                        mem.name,
+                        `${mem.dept} (${mem.role})`,
+                        att.status.toUpperCase(),
+                        att.time,
+                        att.notes || '-',
+                    ];
                 });
 
                 doc.autoTable({
@@ -423,16 +520,22 @@ export function exportToPDF() {
                     head: rosHeaders,
                     body: rosRows,
                     theme: 'striped',
-                    headStyles: { fillColor: [15, 23, 42], textColor: [56, 189, 248], fontStyle: 'bold' },
+                    headStyles: {
+                        fillColor: [15, 23, 42],
+                        textColor: [56, 189, 248],
+                        fontStyle: 'bold',
+                    },
                     styles: { fontSize: 8, cellPadding: 2.5 },
                     didParseCell: function (data) {
                         if (data.section === 'body' && data.column.index === 3) {
-                            if (data.cell.raw === 'PRESENT') data.cell.styles.textColor = [5, 150, 105];
-                            else if (data.cell.raw === 'LATE') data.cell.styles.textColor = [217, 119, 6];
+                            if (data.cell.raw === 'PRESENT')
+                                data.cell.styles.textColor = [5, 150, 105];
+                            else if (data.cell.raw === 'LATE')
+                                data.cell.styles.textColor = [217, 119, 6];
                             else data.cell.styles.textColor = [225, 29, 72];
                             data.cell.styles.fontStyle = 'bold';
                         }
-                    }
+                    },
                 });
             }
         }
@@ -447,15 +550,20 @@ export function exportToPDF() {
 
 export function generatePrintablePDFSheet() {
     const totalMems = state.members.length;
-    const actRows = state.activities.map(act => {
-        const attObj = state.attendance[act.id] || {};
-        let pCount = 0;
-        state.members.forEach(m => {
-            if (attObj[m.id]?.status === 'present' || attObj[m.id]?.status === 'late') pCount++;
-        });
-        const rate = totalMems > 0 ? Math.round((pCount / totalMems) * 100) : 0;
-        const dateStr = new Date(act.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-        return `<tr>
+    const actRows = state.activities
+        .map((act) => {
+            const attObj = state.attendance[act.id] || {};
+            let pCount = 0;
+            state.members.forEach((m) => {
+                if (attObj[m.id]?.status === 'present' || attObj[m.id]?.status === 'late') pCount++;
+            });
+            const rate = totalMems > 0 ? Math.round((pCount / totalMems) * 100) : 0;
+            const dateStr = new Date(act.date).toLocaleDateString('en-US', {
+                month: 'short',
+                day: 'numeric',
+                year: 'numeric',
+            });
+            return `<tr>
             <td data-label="Activity" style="padding: 8px; border-bottom: 1px solid #ddd;">${act.name || act.title || 'Untitled'}</td>
             <td data-label="Category" style="padding: 8px; border-bottom: 1px solid #ddd;">${act.type || act.category || 'Event'}</td>
             <td data-label="Date" style="padding: 8px; border-bottom: 1px solid #ddd;">${dateStr}</td>
@@ -463,17 +571,24 @@ export function generatePrintablePDFSheet() {
             <td data-label="Present/Total" style="padding: 8px; border-bottom: 1px solid #ddd;">${pCount}/${totalMems}</td>
             <td data-label="Attendance Rate" style="padding: 8px; border-bottom: 1px solid #ddd; font-weight: bold; color: #059669;">${rate}%</td>
         </tr>`;
-    }).join('');
+        })
+        .join('');
 
     let detailedSheetHtml = '';
     if (state.selectedActivityId) {
-        const selAct = state.activities.find(a => a.id === state.selectedActivityId);
+        const selAct = state.activities.find((a) => a.id === state.selectedActivityId);
         if (selAct) {
             const attMap = state.attendance[selAct.id] || {};
-            const rows = state.members.map((mem, idx) => {
-                const att = attMap[mem.id] || { status: 'absent', time: '-', notes: '' };
-                const color = att.status === 'present' ? '#059669' : att.status === 'late' ? '#D97706' : '#E11D48';
-                return `<tr>
+            const rows = state.members
+                .map((mem, idx) => {
+                    const att = attMap[mem.id] || { status: 'absent', time: '-', notes: '' };
+                    const color =
+                        att.status === 'present'
+                            ? '#059669'
+                            : att.status === 'late'
+                              ? '#D97706'
+                              : '#E11D48';
+                    return `<tr>
                     <td data-label="#" style="padding: 6px; border-bottom: 1px solid #eee;">${idx + 1}</td>
                     <td data-label="Member Name" style="padding: 6px; border-bottom: 1px solid #eee; font-weight: 600;">${mem.name}</td>
                     <td data-label="Dept / Role" style="padding: 6px; border-bottom: 1px solid #eee;">${mem.dept} (${mem.role})</td>
@@ -481,7 +596,8 @@ export function generatePrintablePDFSheet() {
                     <td data-label="Time" style="padding: 6px; border-bottom: 1px solid #eee;">${att.time}</td>
                     <td data-label="Remarks" style="padding: 6px; border-bottom: 1px solid #eee;">${att.notes || '-'}</td>
                 </tr>`;
-            }).join('');
+                })
+                .join('');
 
             detailedSheetHtml = `
                 <h2 style="margin-top: 30px; color: #0f172a; font-size: 16px;">2. Detailed Attendance Roster: ${selAct.title || selAct.name}</h2>
@@ -578,18 +694,22 @@ export function exportMembersToPDF() {
         doc.setFillColor(11, 15, 25);
         doc.rect(0, 0, 210, 36, 'F');
 
-        doc.setFont("helvetica", "bold");
+        doc.setFont('helvetica', 'bold');
         doc.setFontSize(18);
         doc.setTextColor(56, 189, 248);
-        doc.text("MFC YOUTH TARLAC PORTAL", 14, 16);
+        doc.text('MFC YOUTH TARLAC PORTAL', 14, 16);
 
         doc.setFontSize(11);
         doc.setTextColor(248, 250, 252);
-        doc.text("Official Members Directory & Pastoral Roster", 14, 24);
+        doc.text('Official Members Directory & Pastoral Roster', 14, 24);
 
         doc.setFontSize(9);
         doc.setTextColor(148, 163, 184);
-        doc.text(`Total Members: ${state.members.length} • Generated on: ${new Date().toLocaleString()}`, 14, 30);
+        doc.text(
+            `Total Members: ${state.members.length} • Generated on: ${new Date().toLocaleString()}`,
+            14,
+            30
+        );
 
         const sortedMems = [...state.members].sort((a, b) => {
             const chapA = (a.chapter || 'EAST CHAPTER').toUpperCase();
@@ -601,7 +721,9 @@ export function exportMembersToPDF() {
             return a.name.localeCompare(b.name);
         });
 
-        const memHeaders = [["#", "Member Name", "Chapter", "Department", "Role", "Email", "Status"]];
+        const memHeaders = [
+            ['#', 'Member Name', 'Chapter', 'Department', 'Role', 'Email', 'Status'],
+        ];
         const memRows = sortedMems.map((m, idx) => [
             idx + 1,
             m.name || 'Untitled',
@@ -609,7 +731,7 @@ export function exportMembersToPDF() {
             m.dept || 'General',
             m.role || 'Member',
             m.email || '-',
-            m.status || 'Active'
+            m.status || 'Active',
         ]);
 
         doc.autoTable({
@@ -619,12 +741,15 @@ export function exportMembersToPDF() {
             theme: 'grid',
             headStyles: { fillColor: [15, 23, 42], textColor: [56, 189, 248], fontStyle: 'bold' },
             styles: { fontSize: 8.5, cellPadding: 2.8 },
-            columnStyles: { 1: { fontStyle: 'bold' } }
+            columnStyles: { 1: { fontStyle: 'bold' } },
         });
 
         doc.save(`mfc_youth_tarlac_members_directory_${new Date().toISOString().slice(0, 10)}.pdf`);
         showToast('Members Directory exported as PDF successfully!', 'success');
-        logAuditAction(`Exported Members Directory PDF (${state.members.length} members)`, 'export');
+        logAuditAction(
+            `Exported Members Directory PDF (${state.members.length} members)`,
+            'export'
+        );
     } catch (err) {
         console.warn('jsPDF export members fallback triggered:', err);
         generatePrintableMembersPDF();
@@ -642,8 +767,9 @@ export function generatePrintableMembersPDF() {
         return a.name.localeCompare(b.name);
     });
 
-    const memRows = sortedMems.map((m, idx) => {
-        return `<tr>
+    const memRows = sortedMems
+        .map((m, idx) => {
+            return `<tr>
             <td data-label="#" style="padding: 8px; border-bottom: 1px solid #ddd;">${idx + 1}</td>
             <td data-label="Name" style="padding: 8px; border-bottom: 1px solid #ddd; font-weight: 600;">${m.name}</td>
             <td data-label="Chapter" style="padding: 8px; border-bottom: 1px solid #ddd;">${m.chapter || 'Central Chapter'}</td>
@@ -652,7 +778,8 @@ export function generatePrintableMembersPDF() {
             <td data-label="Email" style="padding: 8px; border-bottom: 1px solid #ddd;">${m.email || '-'}</td>
             <td data-label="Status" style="padding: 8px; border-bottom: 1px solid #ddd; font-weight: bold; color: #059669;">${m.status || 'Active'}</td>
         </tr>`;
-    }).join('');
+        })
+        .join('');
 
     const printWin = window.open('', '_blank', 'width=900,height=700');
     if (!printWin) {
@@ -703,7 +830,10 @@ export function generatePrintableMembersPDF() {
     `);
     printWin.document.close();
     showToast('Members Directory PDF opened ready to Save as PDF!', 'success');
-    logAuditAction(`Exported Members Directory Printable PDF (${state.members.length} members)`, 'export');
+    logAuditAction(
+        `Exported Members Directory Printable PDF (${state.members.length} members)`,
+        'export'
+    );
 }
 
 // ============================================================================
@@ -718,8 +848,10 @@ export function downloadExcelFile(dataArray, filename, sheetName) {
         XLSX.writeFile(wb, filename + '.xlsx');
     } else {
         // Fallback to CSV if SheetJS failed to load
-        const bom = '\uFEFF'; 
-        const csvContent = dataArray.map(r => r.map(c => `"${(c||'').toString().replace(/"/g, '""')}"`).join(',')).join('\n');
+        const bom = '\uFEFF';
+        const csvContent = dataArray
+            .map((r) => r.map((c) => `"${(c || '').toString().replace(/"/g, '""')}"`).join(','))
+            .join('\n');
         const blob = new Blob([bom + csvContent], { type: 'text/csv;charset=utf-8;' });
         const link = document.createElement('a');
         const url = URL.createObjectURL(blob);
@@ -738,8 +870,20 @@ export function exportMembersCSV() {
         return;
     }
 
-    const headers = ['Member ID', 'Full Name', 'Chapter', 'Department', 'Role', 'Phone Number', 'Email Address', 'Birthdate', 'Parent Contact', 'Youth Camp Date', 'Status'];
-    const rows = state.members.map(m => [
+    const headers = [
+        'Member ID',
+        'Full Name',
+        'Chapter',
+        'Department',
+        'Role',
+        'Phone Number',
+        'Email Address',
+        'Birthdate',
+        'Parent Contact',
+        'Youth Camp Date',
+        'Status',
+    ];
+    const rows = state.members.map((m) => [
         m.id || '',
         m.name || '',
         m.chapter || '',
@@ -750,12 +894,19 @@ export function exportMembersCSV() {
         m.birthdate || '',
         m.parentContact || '',
         m.youthCampDate || '',
-        m.status || 'Active'
+        m.status || 'Active',
     ]);
 
-    downloadExcelFile([headers, ...rows], `MFC_Youth_Members_Directory_${new Date().toISOString().slice(0, 10)}`, 'Members');
+    downloadExcelFile(
+        [headers, ...rows],
+        `MFC_Youth_Members_Directory_${new Date().toISOString().slice(0, 10)}`,
+        'Members'
+    );
     showToast('📊 Members directory exported successfully as Excel/CSV file!', 'success');
-    logAuditAction(`Exported Members Directory to CSV/Excel (${state.members.length} rows)`, 'export');
+    logAuditAction(
+        `Exported Members Directory to CSV/Excel (${state.members.length} rows)`,
+        'export'
+    );
 }
 
 export function exportActivitiesCSV() {
@@ -765,32 +916,36 @@ export function exportActivitiesCSV() {
     }
 
     const headers = ['Activity ID', 'Activity Name', 'Date', 'Location', 'Type', 'Status', 'Notes'];
-    const rows = state.activities.map(a => [
+    const rows = state.activities.map((a) => [
         a.id || '',
         a.name || '',
         a.date || '',
         a.location || '',
         a.type || '',
         a.status || '',
-        a.notes || ''
+        a.notes || '',
     ]);
 
-    downloadExcelFile([headers, ...rows], `MFC_Youth_Activity_Records_${new Date().toISOString().slice(0, 10)}`, 'Activities');
+    downloadExcelFile(
+        [headers, ...rows],
+        `MFC_Youth_Activity_Records_${new Date().toISOString().slice(0, 10)}`,
+        'Activities'
+    );
     showToast('📊 Activity records exported successfully as Excel/CSV!', 'success');
 }
 
 export function exportAttendanceCSV() {
     const attendanceRecords = [];
-    Object.keys(state.attendance || {}).forEach(actId => {
-        const act = state.activities.find(a => a.id === actId) || { name: actId };
+    Object.keys(state.attendance || {}).forEach((actId) => {
+        const act = state.activities.find((a) => a.id === actId) || { name: actId };
         const records = state.attendance[actId] || [];
-        records.forEach(rec => {
+        records.forEach((rec) => {
             attendanceRecords.push([
                 act.name,
                 rec.memberId || '',
                 rec.name || '',
                 rec.timestamp || '',
-                rec.status || 'Present'
+                rec.status || 'Present',
             ]);
         });
     });
@@ -800,8 +955,18 @@ export function exportAttendanceCSV() {
         return;
     }
 
-    const headers = ['Activity Event Name', 'Member ID', 'Member Name', 'Check-in Timestamp', 'Status'];
-    downloadExcelFile([headers, ...attendanceRecords], `MFC_Youth_Attendance_Logs_${new Date().toISOString().slice(0, 10)}`, 'Attendance');
+    const headers = [
+        'Activity Event Name',
+        'Member ID',
+        'Member Name',
+        'Check-in Timestamp',
+        'Status',
+    ];
+    downloadExcelFile(
+        [headers, ...attendanceRecords],
+        `MFC_Youth_Attendance_Logs_${new Date().toISOString().slice(0, 10)}`,
+        'Attendance'
+    );
     showToast('📊 Attendance logs exported successfully as Excel/CSV!', 'success');
 }
 
@@ -812,16 +977,20 @@ export function exportFundsCSV() {
     }
 
     const headers = ['Transaction ID', 'Date', 'Description', 'Category', 'Type', 'Amount (PHP)'];
-    const rows = state.funds.map(f => [
+    const rows = state.funds.map((f) => [
         f.id || '',
         f.date || '',
         f.description || '',
         f.category || '',
         f.type || '',
-        f.amount || 0
+        f.amount || 0,
     ]);
 
-    downloadExcelFile([headers, ...rows], `MFC_Youth_Finance_Ledger_${new Date().toISOString().slice(0, 10)}`, 'Finance');
+    downloadExcelFile(
+        [headers, ...rows],
+        `MFC_Youth_Finance_Ledger_${new Date().toISOString().slice(0, 10)}`,
+        'Finance'
+    );
     showToast('📊 Finance ledger exported successfully as Excel/CSV!', 'success');
 }
 
@@ -833,9 +1002,9 @@ export function generatePastoralList() {
     const recentActs = state.activities.slice(-3);
     const absentMembers = [];
 
-    state.members.forEach(mem => {
+    state.members.forEach((mem) => {
         let missedCount = 0;
-        recentActs.forEach(act => {
+        recentActs.forEach((act) => {
             const status = state.attendance[act.id]?.[mem.id]?.status;
             if (status !== 'present') missedCount++;
         });
@@ -861,15 +1030,18 @@ export function generatePastoralList() {
         </div>
     `;
 
-    const cardsHtml = absentMembers.map(item => {
-        const mem = item.mem;
-        const msgBodyText = `Hi Bro/Sis ${mem.name}!\n\nWe missed you at our recent MFC Youth Tarlac activities. Hope you are doing well! Let us know if you need any prayers or support.\n\nGod bless! 💛\n- MFC Youth Tarlac Chapter`;
-        const encodedBody = encodeURIComponent(msgBodyText);
-        const encodedSubject = encodeURIComponent(`MFC Youth Tarlac - Pastoral Check-In 💛 (${mem.name})`);
-        const targetEmail = encodeURIComponent(mem.email || '');
-        const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=${targetEmail}&su=${encodedSubject}&body=${encodedBody}`;
+    const cardsHtml = absentMembers
+        .map((item) => {
+            const mem = item.mem;
+            const msgBodyText = `Hi Bro/Sis ${mem.name}!\n\nWe missed you at our recent MFC Youth Tarlac activities. Hope you are doing well! Let us know if you need any prayers or support.\n\nGod bless! 💛\n- MFC Youth Tarlac Chapter`;
+            const encodedBody = encodeURIComponent(msgBodyText);
+            const encodedSubject = encodeURIComponent(
+                `MFC Youth Tarlac - Pastoral Check-In 💛 (${mem.name})`
+            );
+            const targetEmail = encodeURIComponent(mem.email || '');
+            const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=${targetEmail}&su=${encodedSubject}&body=${encodedBody}`;
 
-        return `
+            return `
             <div style="background: rgba(15, 23, 42, 0.7); border: 1px solid rgba(244, 63, 94, 0.35); border-radius: 12px; padding: 16px; display: flex; flex-direction: column; justify-content: space-between; gap: 12px; margin-bottom: 10px;">
                 <div>
                     <div style="display: flex; justify-content: space-between; align-items: center;">
@@ -888,19 +1060,20 @@ export function generatePastoralList() {
                 </div>
             </div>
         `;
-    }).join('');
+        })
+        .join('');
 
     listEl.innerHTML = headerHtml + cardsHtml;
 }
 
-window.autoSendBatchPastoralGmail = function() {
+window.autoSendBatchPastoralGmail = function () {
     const recentActs = state.activities.slice(-3);
     const absentEmails = [];
     const absentNames = [];
 
-    state.members.forEach(mem => {
+    state.members.forEach((mem) => {
         let missedCount = 0;
-        recentActs.forEach(act => {
+        recentActs.forEach((act) => {
             const status = state.attendance[act.id]?.[mem.id]?.status;
             if (status !== 'present') missedCount++;
         });
@@ -923,11 +1096,14 @@ window.autoSendBatchPastoralGmail = function() {
     showToast(`Automated batch check-in triggered for ${absentNames.length} member(s)!`, 'success');
 };
 
-window.copyPastoralMessage = function(name) {
+window.copyPastoralMessage = function (name) {
     const text = `Hi Bro/Sis ${name}! We missed you at our recent MFC Youth Tarlac activities. Hope you are doing well! Let us know if you need any prayers or support. God bless! 💛`;
-    navigator.clipboard.writeText(text).then(() => {
-        showToast('Message copied to clipboard!', 'success');
-    }).catch(() => {
-        showToast('Failed to copy text', 'error');
-    });
+    navigator.clipboard
+        .writeText(text)
+        .then(() => {
+            showToast('Message copied to clipboard!', 'success');
+        })
+        .catch(() => {
+            showToast('Failed to copy text', 'error');
+        });
 };

@@ -24,11 +24,11 @@ Add the necessary Firebase dependencies to your `pubspec.yaml`:
 
 ```yaml
 dependencies:
-  flutter:
-    sdk: flutter
-  firebase_core: ^4.0.0
-  firebase_auth: ^6.0.0
-  firebase_ai: ^3.0.0
+    flutter:
+        sdk: flutter
+    firebase_core: ^4.0.0
+    firebase_auth: ^6.0.0
+    firebase_ai: ^3.0.0
 ```
 
 Run `flutter pub get` to install the packages.
@@ -74,7 +74,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 
 Future<String> generateText(String prompt) async {
   final googleAI = FirebaseAI.googleAI(auth: FirebaseAuth.instance);
-  
+
   // [AGENT] Replace '<latest_supported_model>' with the latest model from https://firebase.google.com/docs/ai-logic/models.md.txt
   final model = googleAI.generativeModel(model: '<latest_supported_model>');
 

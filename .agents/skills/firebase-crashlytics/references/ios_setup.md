@@ -42,9 +42,9 @@ upload dSYM files for crash symbolication.
    Settings must be set to `DWARF with dSYM File`.
 1. **Run Script Content**: A new "Run Script Phase" should be added to the
    target's "Build Phases" with the following content:
-   ```bash
-   ${BUILD_DIR%/Build/*}/SourcePackages/checkouts/firebase-ios-sdk/Crashlytics/run
-   ```
+    ```bash
+    ${BUILD_DIR%/Build/*}/SourcePackages/checkouts/firebase-ios-sdk/Crashlytics/run
+    ```
 
 When using the `xcode-project-setup` skills, the above two steps will be done as
 part of adding the `FirebaseCrashlytics` package. Once the skill has been

@@ -1,4 +1,7 @@
-
+import { loadFromStorage } from './state.js';
+import { closeMobileSidebar } from './ui.js';
+import { MFCFirebaseCloud } from './firebase.js';
+import { applyStoredTheme, initPWAInstallListener } from './legacy.js';
 
 export function setupSpotlights() {
     document.addEventListener('mousemove', (e) => {
@@ -61,7 +64,10 @@ export function initApp() {
     const overlay = document.getElementById('auth-login-overlay');
     if (overlay) overlay.style.display = 'flex';
     if (typeof firebase !== 'undefined' && firebase.auth) {
-        firebase.auth().signOut().catch(e => console.warn(e));
+        firebase
+            .auth()
+            .signOut()
+            .catch((e) => console.warn(e));
     }
 }
 

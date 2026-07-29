@@ -42,28 +42,28 @@ plugins {
 
 1. Add the Google Services plugin to the `plugins` block:
 
-   ```kotlin
-   plugins {
-       // ... other plugins
-       id("com.google.gms.google-services")
-   }
-   ```
+    ```kotlin
+    plugins {
+        // ... other plugins
+        id("com.google.gms.google-services")
+    }
+    ```
 
 1. Add the Firebase Remote Config and Analytics dependencies. Using the Firebase
    Bill of Materials (BoM) is the best practice for version management.
 
-   ```kotlin
-   dependencies {
-       // ... other dependencies
+    ```kotlin
+    dependencies {
+        // ... other dependencies
 
-       // Import the Firebase BoM
-       implementation(platform("com.google.firebase:firebase-bom:32.7.0"))
+        // Import the Firebase BoM
+        implementation(platform("com.google.firebase:firebase-bom:32.7.0"))
 
-       // Add the dependencies for Remote Config and Analytics
-       implementation("com.google.firebase:firebase-config-ktx")
-       implementation("com.google.firebase:firebase-analytics-ktx")
-   }
-   ```
+        // Add the dependencies for Remote Config and Analytics
+        implementation("com.google.firebase:firebase-config-ktx")
+        implementation("com.google.firebase:firebase-analytics-ktx")
+    }
+    ```
 
 ## Follow up Steps
 

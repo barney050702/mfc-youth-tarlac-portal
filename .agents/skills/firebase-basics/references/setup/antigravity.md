@@ -12,19 +12,19 @@ Check if the skills are already installed before proceeding:
    are already installed locally.
 1. **Check Global skills**: If not found locally, check the global installation
    by running:
-   ```bash
-   npx skills list --global --agent antigravity
-   ```
-   If the output includes `firebase-basics`, the skills are already installed
-   globally.
+    ```bash
+    npx skills list --global --agent antigravity
+    ```
+    If the output includes `firebase-basics`, the skills are already installed
+    globally.
 1. **Install Skills**: If both checks fail, run the following command to install
    the Firebase agent skills:
-   ```bash
-   npx skills add firebase/agent-skills --agent antigravity --skill "*"
-   ```
-   *Note: Omit `--yes` and `--global` to choose the installation location
-   manually. If prompted interactively in the terminal, ensure you send the
-   appropriate user choices via standard input to complete the installation.*
+    ```bash
+    npx skills add firebase/agent-skills --agent antigravity --skill "*"
+    ```
+    _Note: Omit `--yes` and `--global` to choose the installation location
+    manually. If prompted interactively in the terminal, ensure you send the
+    appropriate user choices via standard input to complete the installation._
 1. **Verify Installation**: Re-run the checks in steps 1 or 2 to confirm that
    `firebase-basics` is now available.
 
@@ -37,55 +37,55 @@ functionality.
 1. **Locate `mcp_config.json`**: Find the configuration file for your operating
    system:
 
-   - macOS / Linux: `~/.gemini/antigravity/mcp_config.json`
-   - Windows: `%USERPROFILE%\\.gemini\\antigravity\\mcp_config.json`
+    - macOS / Linux: `~/.gemini/antigravity/mcp_config.json`
+    - Windows: `%USERPROFILE%\\.gemini\\antigravity\\mcp_config.json`
 
-   *Note: If the `.gemini/antigravity/` directory or `mcp_config.json` file does
-   not exist, create them and initialize the file with `{ "mcpServers": {} }`
-   before proceeding.*
+    _Note: If the `.gemini/antigravity/` directory or `mcp_config.json` file does
+    not exist, create them and initialize the file with `{ "mcpServers": {} }`
+    before proceeding._
 
 1. **Check Existing Configuration**: Open `mcp_config.json` and check the
    `mcpServers` section for a `firebase` entry.
 
-   - It is already configured if the `command` is `"firebase"` OR if the
-     `command` is `"npx"` with `"firebase-tools"` and `"mcp"` in the `args`.
-   - **Important**: If a valid `firebase` entry is found, the MCP server is
-     already configured. **Skip step 3** and proceed directly to step 4.
+    - It is already configured if the `command` is `"firebase"` OR if the
+      `command` is `"npx"` with `"firebase-tools"` and `"mcp"` in the `args`.
+    - **Important**: If a valid `firebase` entry is found, the MCP server is
+      already configured. **Skip step 3** and proceed directly to step 4.
 
-   **Example valid configurations**:
+    **Example valid configurations**:
 
-   ```json
-   "firebase": {
-     "command": "npx",
-     "args": ["-y", "firebase-tools@latest", "mcp"]
-   }
-   ```
+    ```json
+    "firebase": {
+      "command": "npx",
+      "args": ["-y", "firebase-tools@latest", "mcp"]
+    }
+    ```
 
-   OR
+    OR
 
-   ```json
-   "firebase": {
-     "command": "firebase",
-     "args": ["mcp"]
-   }
-   ```
+    ```json
+    "firebase": {
+      "command": "firebase",
+      "args": ["mcp"]
+    }
+    ```
 
 1. **Add or Update Configuration**: If the `firebase` block is missing or
    incorrect, add it to the `mcpServers` object:
 
-   ```json
-   "firebase": {
-     "command": "npx",
-     "args": [
-       "-y",
-       "firebase-tools@latest",
-       "mcp"
-     ]
-   }
-   ```
+    ```json
+    "firebase": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "firebase-tools@latest",
+        "mcp"
+      ]
+    }
+    ```
 
-   *CRITICAL: Merge this configuration into the existing `mcp_config.json` file.
-   You MUST preserve any other existing servers inside the `mcpServers` object.*
+    _CRITICAL: Merge this configuration into the existing `mcp_config.json` file.
+    You MUST preserve any other existing servers inside the `mcpServers` object._
 
 1. **Verify Configuration**: Save the file and confirm the `firebase` block is
    present and properly formatted JSON.

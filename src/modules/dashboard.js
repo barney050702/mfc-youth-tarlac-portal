@@ -11,10 +11,10 @@ export function renderDashboard() {
     let totalPresentSum = 0;
     let totalAbsentSum = 0;
 
-    state.activities.forEach(act => {
+    state.activities.forEach((act) => {
         const attObj = state.attendance[act.id] || {};
         let presentCount = 0;
-        state.members.forEach(m => {
+        state.members.forEach((m) => {
             const st = attObj[m.id]?.status;
             if (st === 'present' || st === 'late') {
                 presentCount++;
@@ -34,7 +34,10 @@ export function renderDashboard() {
 
     const avgRate = ratedActivitiesCount > 0 ? Math.round(totalRateSum / ratedActivitiesCount) : 0;
     const totalAttendanceRecords = totalPresentSum + totalAbsentSum;
-    const pctPresent = totalAttendanceRecords > 0 ? Math.round((totalPresentSum / totalAttendanceRecords) * 100) : 0;
+    const pctPresent =
+        totalAttendanceRecords > 0
+            ? Math.round((totalPresentSum / totalAttendanceRecords) * 100)
+            : 0;
     const pctAbsent = totalAttendanceRecords > 0 ? Math.max(0, 100 - pctPresent) : 0;
 
     // Update DOM metrics with Odometer animation & Gradients
@@ -44,11 +47,23 @@ export function renderDashboard() {
     const elTotalMems = document.getElementById('stat-total-members');
     const elTotalCheckins = document.getElementById('stat-total-checkins');
 
-    if (elTotalActs && window.animateCounter) { elTotalActs.className = 'metric-value stat-number-gradient'; window.animateCounter(elTotalActs, totalActs); }
-    if (elAvgRate && window.animateCounter) { elAvgRate.className = 'metric-value stat-number-emerald'; window.animateCounter(elAvgRate, avgRate, 650, '', '%'); }
+    if (elTotalActs && window.animateCounter) {
+        elTotalActs.className = 'metric-value stat-number-gradient';
+        window.animateCounter(elTotalActs, totalActs);
+    }
+    if (elAvgRate && window.animateCounter) {
+        elAvgRate.className = 'metric-value stat-number-emerald';
+        window.animateCounter(elAvgRate, avgRate, 650, '', '%');
+    }
     if (elRateBar) elRateBar.style.width = `${avgRate}%`;
-    if (elTotalMems && window.animateCounter) { elTotalMems.className = 'metric-value stat-number-gradient'; window.animateCounter(elTotalMems, totalMems); }
-    if (elTotalCheckins && window.animateCounter) { elTotalCheckins.className = 'metric-value stat-number-amber'; window.animateCounter(elTotalCheckins, totalCheckins); }
+    if (elTotalMems && window.animateCounter) {
+        elTotalMems.className = 'metric-value stat-number-gradient';
+        window.animateCounter(elTotalMems, totalMems);
+    }
+    if (elTotalCheckins && window.animateCounter) {
+        elTotalCheckins.className = 'metric-value stat-number-amber';
+        window.animateCounter(elTotalCheckins, totalCheckins);
+    }
 
     // Update Overall Check-In Distribution Bar
     const segPresent = document.getElementById('bar-seg-present');
@@ -65,9 +80,13 @@ export function renderDashboard() {
     const recentTable = document.getElementById('dashboard-recent-table');
     if (recentTable) {
         const curatedIds = ['act-5', 'act-4', 'act-3', 'act-2', 'act-1'];
-        let recentActs = curatedIds.map(id => state.activities.find(a => a.id === id)).filter(Boolean);
+        let recentActs = curatedIds
+            .map((id) => state.activities.find((a) => a.id === id))
+            .filter(Boolean);
         if (recentActs.length === 0) {
-            recentActs = [...state.activities].sort((a, b) => new Date(b.date) - new Date(a.date)).slice(0, 5);
+            recentActs = [...state.activities]
+                .sort((a, b) => new Date(b.date) - new Date(a.date))
+                .slice(0, 5);
         }
 
         if (recentActs.length === 0) {
@@ -79,20 +98,28 @@ export function renderDashboard() {
                 </tr>
             `;
         } else {
-            recentTable.innerHTML = recentActs.map(act => {
-                const attObj = state.attendance[act.id] || {};
-                let pCount = 0;
-                state.members.forEach(m => {
-                    const st = attObj[m.id]?.status;
-                    if (st === 'present' || st === 'late') pCount++;
-                });
-                const rate = totalMems > 0 ? Math.round((pCount / totalMems) * 100) : 0;
-                const dateObj = new Date(act.date);
-                const dateStr = dateObj.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-                const timeStr = dateObj.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
-                const isCompleted = act.status === 'Completed';
+            recentTable.innerHTML = recentActs
+                .map((act) => {
+                    const attObj = state.attendance[act.id] || {};
+                    let pCount = 0;
+                    state.members.forEach((m) => {
+                        const st = attObj[m.id]?.status;
+                        if (st === 'present' || st === 'late') pCount++;
+                    });
+                    const rate = totalMems > 0 ? Math.round((pCount / totalMems) * 100) : 0;
+                    const dateObj = new Date(act.date);
+                    const dateStr = dateObj.toLocaleDateString('en-US', {
+                        month: 'short',
+                        day: 'numeric',
+                        year: 'numeric',
+                    });
+                    const timeStr = dateObj.toLocaleTimeString('en-US', {
+                        hour: '2-digit',
+                        minute: '2-digit',
+                    });
+                    const isCompleted = act.status === 'Completed';
 
-                return `
+                    return `
                     <tr style="border-bottom: 1px solid rgba(255, 255, 255, 0.05); transition: background 0.2s ease;" onmouseover="this.style.background='rgba(255,255,255,0.02)'" onmouseout="this.style.background='transparent'">
                         <td data-label="Activity" style="padding: 16px 20px;">
                             <div style="font-weight: 800; color: #F8FAFC; font-size: 0.95rem; margin-bottom: 6px;">
@@ -127,19 +154,28 @@ export function renderDashboard() {
                         </td>
                     </tr>
                 `;
-            }).join('');
+                })
+                .join('');
         }
     }
 
     // Render Category Breakdown
     const catContainer = document.getElementById('dashboard-category-breakdown');
     if (catContainer) {
-        const categories = ['Chapter Assembly', 'Chapter Household', 'Area Assembly', 'General Assembly', 'Upper Core Household', 'MFC Conference'];
-        catContainer.innerHTML = categories.map(cat => {
-            const count = state.activities.filter(a => a.category === cat).length;
-            const pct = totalActs > 0 ? Math.round((count / totalActs) * 100) : 0;
-            const fillClass = `fill-${cat.toLowerCase().replace(/\s+/g, '-')}`;
-            return `
+        const categories = [
+            'Chapter Assembly',
+            'Chapter Household',
+            'Area Assembly',
+            'General Assembly',
+            'Upper Core Household',
+            'MFC Conference',
+        ];
+        catContainer.innerHTML = categories
+            .map((cat) => {
+                const count = state.activities.filter((a) => a.category === cat).length;
+                const pct = totalActs > 0 ? Math.round((count / totalActs) * 100) : 0;
+                const fillClass = `fill-${cat.toLowerCase().replace(/\s+/g, '-')}`;
+                return `
                 <div class="cat-item">
                     <div class="cat-info">
                         <span class="cat-name">${cat}</span>
@@ -150,7 +186,8 @@ export function renderDashboard() {
                     </div>
                 </div>
             `;
-        }).join('');
+            })
+            .join('');
     }
 
     renderDashboardCelebrants();
@@ -172,12 +209,24 @@ export function renderAgendaTimeline() {
             </div>
         `;
     } else {
-        htmlContent = sortedActs.map((act, idx) => {
-            const isLast = idx === sortedActs.length - 1;
-            const dateObj = new Date(act.date);
-            const dateStr = !isNaN(dateObj) ? dateObj.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : 'TBA';
-            const statusColor = act.status === 'Completed' ? '#10B981' : (act.status === 'Upcoming' ? '#38BDF8' : '#F59E0B');
-            return `
+        htmlContent = sortedActs
+            .map((act, idx) => {
+                const isLast = idx === sortedActs.length - 1;
+                const dateObj = new Date(act.date);
+                const dateStr = !isNaN(dateObj)
+                    ? dateObj.toLocaleDateString('en-US', {
+                          month: 'short',
+                          day: 'numeric',
+                          year: 'numeric',
+                      })
+                    : 'TBA';
+                const statusColor =
+                    act.status === 'Completed'
+                        ? '#10B981'
+                        : act.status === 'Upcoming'
+                          ? '#38BDF8'
+                          : '#F59E0B';
+                return `
                 <div style="display: flex; align-items: flex-start; gap: 16px; padding: 14px 0; ${!isLast ? 'border-bottom: 1px solid rgba(255, 255, 255, 0.06);' : ''}">
                     <div style="background: rgba(30, 58, 138, 0.45); color: #38BDF8; border: 1px solid rgba(56, 189, 248, 0.35); padding: 6px 14px; border-radius: 20px; font-weight: 700; font-size: 0.8rem; white-space: nowrap; min-width: 95px; text-align: center; box-shadow: 0 4px 10px rgba(0,0,0,0.2);">
                         ${dateStr}
@@ -191,7 +240,8 @@ export function renderAgendaTimeline() {
                     </div>
                 </div>
             `;
-        }).join('');
+            })
+            .join('');
     }
 
     renderDashboardAgenda();
@@ -208,15 +258,17 @@ export function updatePastoralCareWidget() {
     const subEl = document.getElementById('pastoral-care-subtitle');
     if (!listEl) return;
 
-    const flaggedMembers = (state.members || []).filter(m => {
+    const flaggedMembers = (state.members || []).filter((m) => {
         const rate = (window.getMemberAttendanceRate && window.getMemberAttendanceRate(m.id)) || 0;
         return rate < 60;
     });
 
     if (badgeEl) badgeEl.textContent = `${flaggedMembers.length} Member(s) Flagged`;
-    if (subEl) subEl.textContent = flaggedMembers.length > 0
-        ? `Found ${flaggedMembers.length} member(s) with <60% attendance needing pastoral reach-out`
-        : `All youth members currently maintain healthy attendance rates (≥60%)`;
+    if (subEl)
+        subEl.textContent =
+            flaggedMembers.length > 0
+                ? `Found ${flaggedMembers.length} member(s) with <60% attendance needing pastoral reach-out`
+                : `All youth members currently maintain healthy attendance rates (≥60%)`;
 
     if (flaggedMembers.length === 0) {
         listEl.innerHTML = `
@@ -225,10 +277,12 @@ export function updatePastoralCareWidget() {
             </div>
         `;
     } else {
-        listEl.innerHTML = flaggedMembers.map(m => {
-            const rate = (window.getMemberAttendanceRate && window.getMemberAttendanceRate(m.id)) || 0;
-            const initial = (m.name || '?').charAt(0).toUpperCase();
-            return `
+        listEl.innerHTML = flaggedMembers
+            .map((m) => {
+                const rate =
+                    (window.getMemberAttendanceRate && window.getMemberAttendanceRate(m.id)) || 0;
+                const initial = (m.name || '?').charAt(0).toUpperCase();
+                return `
                 <div style="background: rgba(15, 23, 42, 0.85); border: 1px solid rgba(244, 63, 94, 0.35); border-radius: 12px; padding: 14px; display: flex; align-items: center; justify-content: space-between; gap: 12px;">
                     <div style="display: flex; align-items: center; gap: 10px; min-width: 0;">
                         <div style="width: 38px; height: 38px; border-radius: 50%; background: rgba(244, 63, 94, 0.2); color: #FDA4AF; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 1rem; flex-shrink: 0;">
@@ -245,7 +299,8 @@ export function updatePastoralCareWidget() {
                     </div>
                 </div>
             `;
-        }).join('');
+            })
+            .join('');
     }
 }
 
@@ -266,26 +321,37 @@ export function renderDashboardCelebrants() {
     if (!listEl) return;
 
     const currentMonthIdx = new Date().getMonth();
-    let celebrants = state.members.filter(m => {
-        if (!m.birthdate && !m.birthday) return false;
-        const b = new Date(m.birthdate || m.birthday);
-        return !isNaN(b) && b.getMonth() === currentMonthIdx;
-    }).slice(0, 4);
+    let celebrants = state.members
+        .filter((m) => {
+            if (!m.birthdate && !m.birthday) return false;
+            const b = new Date(m.birthdate || m.birthday);
+            return !isNaN(b) && b.getMonth() === currentMonthIdx;
+        })
+        .slice(0, 4);
 
     if (celebrants.length === 0 && state.members.length > 0) {
         celebrants = state.members.slice(0, 3);
     }
 
     if (celebrants.length === 0) {
-        listEl.innerHTML = '<div style="color: #64748B; font-size: 0.82rem; padding: 10px 0;">No birthdays recorded for this month.</div>';
+        listEl.innerHTML =
+            '<div style="color: #64748B; font-size: 0.82rem; padding: 10px 0;">No birthdays recorded for this month.</div>';
         return;
     }
 
-    listEl.innerHTML = celebrants.map(m => {
-        const initials = (m.name || 'M').split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase();
-        const bdate = m.birthdate || m.birthday;
-        const dateStr = bdate ? new Date(bdate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : 'Milestone Celebration';
-        return `
+    listEl.innerHTML = celebrants
+        .map((m) => {
+            const initials = (m.name || 'M')
+                .split(' ')
+                .map((n) => n[0])
+                .join('')
+                .slice(0, 2)
+                .toUpperCase();
+            const bdate = m.birthdate || m.birthday;
+            const dateStr = bdate
+                ? new Date(bdate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+                : 'Milestone Celebration';
+            return `
             <div style="display: flex; align-items: center; justify-content: space-between; padding: 8px 12px; background: rgba(30, 41, 59, 0.6); border: 1px solid rgba(255,255,255,0.06); border-radius: 12px;">
                 <div style="display: flex; align-items: center; gap: 10px; min-width: 0;">
                     <div style="width: 34px; height: 34px; border-radius: 50%; background: linear-gradient(135deg, #EC4899, #8B5CF6); display: flex; align-items: center; justify-content: center; font-weight: 800; color: #FFF; font-size: 0.8rem; flex-shrink: 0;">
@@ -301,7 +367,8 @@ export function renderDashboardCelebrants() {
                 </button>
             </div>
         `;
-    }).join('');
+        })
+        .join('');
 }
 
 export function renderDashboardAgenda() {
@@ -310,14 +377,16 @@ export function renderDashboardAgenda() {
 
     const upcomingActs = state.activities.slice(0, 4);
     if (upcomingActs.length === 0) {
-        listEl.innerHTML = '<div style="color: #64748B; font-size: 0.82rem; padding: 10px 0;">No upcoming activities recorded.</div>';
+        listEl.innerHTML =
+            '<div style="color: #64748B; font-size: 0.82rem; padding: 10px 0;">No upcoming activities recorded.</div>';
         return;
     }
 
-    listEl.innerHTML = upcomingActs.map(act => {
-        const dateStr = act.date || 'TBA';
-        const typeBadge = act.type || 'Assembly';
-        return `
+    listEl.innerHTML = upcomingActs
+        .map((act) => {
+            const dateStr = act.date || 'TBA';
+            const typeBadge = act.type || 'Assembly';
+            return `
             <div style="display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; background: rgba(30, 41, 59, 0.6); border: 1px solid rgba(255,255,255,0.06); border-radius: 12px; transition: all 0.2s;">
                 <div style="display: flex; align-items: center; gap: 12px; min-width: 0;">
                     <div style="width: 38px; height: 38px; border-radius: 10px; background: rgba(56, 189, 248, 0.15); border: 1px solid rgba(56, 189, 248, 0.3); display: flex; align-items: center; justify-content: center; font-size: 1.1rem; flex-shrink: 0;">
@@ -331,7 +400,8 @@ export function renderDashboardAgenda() {
                 <span class="badge badge-purple" style="flex-shrink: 0; font-size: 0.72rem;">${typeBadge}</span>
             </div>
         `;
-    }).join('');
+        })
+        .join('');
 }
 
 let dashboardGrowthChartInstance = null;
@@ -359,12 +429,16 @@ function renderDashboardGrowthChart() {
         let actsInMonth = 0;
         let checkinsInMonth = 0;
 
-        state.activities.forEach(act => {
+        state.activities.forEach((act) => {
             const actDate = new Date(act.date);
-            if (!isNaN(actDate) && actDate.getFullYear() === targetYear && actDate.getMonth() === targetMonth) {
+            if (
+                !isNaN(actDate) &&
+                actDate.getFullYear() === targetYear &&
+                actDate.getMonth() === targetMonth
+            ) {
                 actsInMonth++;
                 const attObj = state.attendance[act.id] || {};
-                Object.values(attObj).forEach(val => {
+                Object.values(attObj).forEach((val) => {
                     if (val && (val.status === 'present' || val.status === 'late')) {
                         checkinsInMonth++;
                     }
@@ -373,7 +447,12 @@ function renderDashboardGrowthChart() {
         });
 
         const simulatedBaseActs = Math.max(actsInMonth, Math.round(3 + Math.sin(i) * 2));
-        const simulatedBaseCheckins = Math.max(checkinsInMonth, Math.round(simulatedBaseActs * (state.members.length > 0 ? state.members.length * 0.7 : 18)));
+        const simulatedBaseCheckins = Math.max(
+            checkinsInMonth,
+            Math.round(
+                simulatedBaseActs * (state.members.length > 0 ? state.members.length * 0.7 : 18)
+            )
+        );
 
         activityCounts.push(actsInMonth > 0 ? actsInMonth : simulatedBaseActs);
         attendanceCounts.push(checkinsInMonth > 0 ? checkinsInMonth : simulatedBaseCheckins);
@@ -408,7 +487,7 @@ function renderDashboardGrowthChart() {
                     pointBorderColor: '#0F172A',
                     pointBorderWidth: 2,
                     pointRadius: 4,
-                    pointHoverRadius: 6
+                    pointHoverRadius: 6,
                 },
                 {
                     label: 'Activities Completed',
@@ -422,9 +501,9 @@ function renderDashboardGrowthChart() {
                     pointBorderColor: '#0F172A',
                     pointBorderWidth: 2,
                     pointRadius: 4,
-                    pointHoverRadius: 6
-                }
-            ]
+                    pointHoverRadius: 6,
+                },
+            ],
         },
         options: {
             responsive: true,
@@ -441,8 +520,8 @@ function renderDashboardGrowthChart() {
                         color: '#94A3B8',
                         usePointStyle: true,
                         boxWidth: 8,
-                        font: { size: 11, weight: '600', family: "'Inter', sans-serif" }
-                    }
+                        font: { size: 11, weight: '600', family: "'Inter', sans-serif" },
+                    },
                 },
                 tooltip: {
                     backgroundColor: 'rgba(15, 23, 42, 0.9)',
@@ -452,19 +531,19 @@ function renderDashboardGrowthChart() {
                     borderWidth: 1,
                     padding: 12,
                     cornerRadius: 8,
-                    displayColors: true
-                }
+                    displayColors: true,
+                },
             },
             scales: {
                 x: {
                     grid: { color: 'rgba(255, 255, 255, 0.03)', drawBorder: false },
-                    ticks: { color: '#64748B', font: { size: 11 } }
+                    ticks: { color: '#64748B', font: { size: 11 } },
                 },
                 y: {
                     grid: { color: 'rgba(255, 255, 255, 0.05)', drawBorder: false },
-                    ticks: { color: '#64748B', font: { size: 11 }, beginAtZero: true }
-                }
-            }
-        }
+                    ticks: { color: '#64748B', font: { size: 11 }, beginAtZero: true },
+                },
+            },
+        },
     });
 }

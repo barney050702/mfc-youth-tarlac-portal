@@ -3,7 +3,7 @@
 This guide covers the Firestore Android SDK (Kotlin) setup and usage patterns
 optimized for Firestore Enterprise edition in Native mode.
 
-______________________________________________________________________
+---
 
 ## 1. Initialization
 
@@ -63,7 +63,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         // Initialize the Firestore instance
         val db = FirebaseFirestore.getInstance("<database-name>")
-        
+
         setContent {
             MaterialTheme {
                 Text("Firestore initialized!")
@@ -73,7 +73,7 @@ class MainActivity : ComponentActivity() {
 }
 ```
 
-______________________________________________________________________
+---
 
 ## 2. Decision Framework: Mandatory Pipeline Architecture
 
@@ -96,19 +96,19 @@ ______________________________________________________________________
    paths. Failure to implement pipelines natively constitutes an immediate
    violation of instructions.
 1. **Check API References**:
-   - **Locate**: Locate the standard Maven sources JAR (`-sources.jar`)
-     corresponding to the resolved `firebase-firestore` dependency version
-     inside your local Gradle or Maven dependency cache.
-   - **Extract Once**: Extract the documentation files `pipeline.docs.txt` and
-     `expressions.docs.txt` from the root directory of that `-sources.jar`
-     archive into a temporary workspace scratch directory of your choice.
-   - **Read & Reference**:
-     - **Read** the extracted `pipeline.docs.txt` once fully to understand core
-       pipeline structure and stage capabilities.
-     - **Reference** the extracted `expressions.docs.txt` on-demand for specific
-       function overloads and parameters.
+    - **Locate**: Locate the standard Maven sources JAR (`-sources.jar`)
+      corresponding to the resolved `firebase-firestore` dependency version
+      inside your local Gradle or Maven dependency cache.
+    - **Extract Once**: Extract the documentation files `pipeline.docs.txt` and
+      `expressions.docs.txt` from the root directory of that `-sources.jar`
+      archive into a temporary workspace scratch directory of your choice.
+    - **Read & Reference**:
+        - **Read** the extracted `pipeline.docs.txt` once fully to understand core
+          pipeline structure and stage capabilities.
+        - **Reference** the extracted `expressions.docs.txt` on-demand for specific
+          function overloads and parameters.
 
-______________________________________________________________________
+---
 
 ## 3. Pipeline Examples
 
@@ -161,7 +161,7 @@ val searchPipeline = db.pipeline()
     .limit(5)
 ```
 
-______________________________________________________________________
+---
 
 ## 4. Real-Time Listener & Document Operations
 

@@ -9,7 +9,7 @@
 - [Emulator](#emulator)
 - [Deployment](#deployment)
 
-______________________________________________________________________
+---
 
 ## Project Structure
 
@@ -26,25 +26,25 @@ project-root/
         └── mutations.gql   # Mutation operations (optional separate file)
 ```
 
-______________________________________________________________________
+---
 
 ## dataconnect.yaml
 
 Main SQL Connect service configuration:
 
 ```yaml
-specVersion: "v1"
-serviceId: "my-service"
-location: "us-central1"
-schemaValidation: "STRICT" # or "COMPATIBLE"
+specVersion: 'v1'
+serviceId: 'my-service'
+location: 'us-central1'
+schemaValidation: 'STRICT' # or "COMPATIBLE"
 schema:
-  source: "./schema"
-  datasource:
-    postgresql:
-      database: "fdcdb"
-      cloudSql:
-        instanceId: "my-instance"
-connectorDirs: ["./connector"]
+    source: './schema'
+    datasource:
+        postgresql:
+            database: 'fdcdb'
+            cloudSql:
+                instanceId: 'my-instance'
+connectorDirs: ['./connector']
 ```
 
 | Field               | Description                                                                              |
@@ -61,30 +61,30 @@ connectorDirs: ["./connector"]
 
 ```yaml
 schema:
-  datasource:
-    postgresql:
-      database: "my-database"      # Database name
-      cloudSql:
-        instanceId: "my-instance"  # Cloud SQL instance ID
+    datasource:
+        postgresql:
+            database: 'my-database' # Database name
+            cloudSql:
+                instanceId: 'my-instance' # Cloud SQL instance ID
 ```
 
-______________________________________________________________________
+---
 
 ## connector.yaml
 
 Connector configuration and SDK generation:
 
 ```yaml
-connectorId: "default"
+connectorId: 'default'
 generate:
-  javascriptSdk:
-    outputDir: "../web/src/lib/dataconnect"
-    package: "@myapp/dataconnect"
-  kotlinSdk:
-    outputDir: "../android/app/src/main/kotlin/com/myapp/dataconnect"
-    package: "com.myapp.dataconnect"
-  swiftSdk:
-    outputDir: "../ios/MyApp/DataConnect"
+    javascriptSdk:
+        outputDir: '../web/src/lib/dataconnect'
+        package: '@myapp/dataconnect'
+    kotlinSdk:
+        outputDir: '../android/app/src/main/kotlin/com/myapp/dataconnect'
+        package: 'com.myapp.dataconnect'
+    swiftSdk:
+        outputDir: '../ios/MyApp/DataConnect'
 ```
 
 ### SDK Generation Options
@@ -96,7 +96,7 @@ generate:
 | `swiftSdk`      | `outputDir`                            |
 | `nodeAdminSdk`  | `outputDir`, `package` (for Admin SDK) |
 
-______________________________________________________________________
+---
 
 ## Firebase CLI Commands
 
@@ -150,7 +150,7 @@ npx -y firebase-tools@latest deploy --only dataconnect:connector-id
 npx -y firebase-tools@latest deploy --only dataconnect --force
 ```
 
-______________________________________________________________________
+---
 
 ## Emulator
 
@@ -169,11 +169,11 @@ Default ports:
 
 ```json
 {
-  "emulators": {
-    "dataconnect": {
-      "port": 9399
+    "emulators": {
+        "dataconnect": {
+            "port": 9399
+        }
     }
-  }
 }
 ```
 
@@ -205,7 +205,7 @@ npx -y firebase-tools@latest emulators:export ./seed-data
 npx -y firebase-tools@latest emulators:start --only dataconnect --import=./seed-data
 ```
 
-______________________________________________________________________
+---
 
 ## Deployment
 
@@ -247,10 +247,10 @@ Use `--force` flag to acknowledge breaking changes during deploy.
 # GitHub Actions example
 - name: Deploy SQL Connect
   run: |
-    npx -y firebase-tools@latest deploy --only dataconnect --token ${{ secrets.FIREBASE_TOKEN }} --force
+      npx -y firebase-tools@latest deploy --only dataconnect --token ${{ secrets.FIREBASE_TOKEN }} --force
 ```
 
-______________________________________________________________________
+---
 
 ## VS Code Extension
 
@@ -265,7 +265,7 @@ Install "Firebase SQL Connect" extension for:
 
 ```json
 {
-  "firebase.dataConnect.autoGenerateSdk": true,
-  "firebase.dataConnect.emulator.port": 9399
+    "firebase.dataConnect.autoGenerateSdk": true,
+    "firebase.dataConnect.emulator.port": 9399
 }
 ```

@@ -22,34 +22,40 @@ const ASSETS_TO_CACHE = [
     'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js',
     'https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js',
     'https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js',
-    'https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js'
+    'https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js',
 ];
 
 // Install Event - Precache essential assets
 self.addEventListener('install', (event) => {
     event.waitUntil(
-        caches.open(CACHE_NAME).then((cache) => {
-            console.log('[SW] Caching core MFC Youth Tarlac Portal assets');
-            return cache.addAll(ASSETS_TO_CACHE).catch(err => {
-                console.warn('[SW] Some CDN assets could not be cached offline:', err);
-            });
-        }).then(() => self.skipWaiting())
+        caches
+            .open(CACHE_NAME)
+            .then((cache) => {
+                console.log('[SW] Caching core MFC Youth Tarlac Portal assets');
+                return cache.addAll(ASSETS_TO_CACHE).catch((err) => {
+                    console.warn('[SW] Some CDN assets could not be cached offline:', err);
+                });
+            })
+            .then(() => self.skipWaiting())
     );
 });
 
 // Activate Event - Clean up outdated caches
 self.addEventListener('activate', (event) => {
     event.waitUntil(
-        caches.keys().then((cacheNames) => {
-            return Promise.all(
-                cacheNames.map((name) => {
-                    if (name !== CACHE_NAME) {
-                        console.log('[SW] Deleting old cache:', name);
-                        return caches.delete(name);
-                    }
-                })
-            );
-        }).then(() => self.clients.claim())
+        caches
+            .keys()
+            .then((cacheNames) => {
+                return Promise.all(
+                    cacheNames.map((name) => {
+                        if (name !== CACHE_NAME) {
+                            console.log('[SW] Deleting old cache:', name);
+                            return caches.delete(name);
+                        }
+                    })
+                );
+            })
+            .then(() => self.clients.claim())
     );
 });
 
@@ -59,17 +65,23 @@ self.addEventListener('fetch', (event) => {
 
     event.respondWith(
         caches.match(event.request).then((cachedResponse) => {
-            const fetchPromise = fetch(event.request).then((networkResponse) => {
-                if (networkResponse && networkResponse.status === 200 && networkResponse.type === 'basic') {
-                    const responseClone = networkResponse.clone();
-                    caches.open(CACHE_NAME).then((cache) => {
-                        cache.put(event.request, responseClone);
-                    });
-                }
-                return networkResponse;
-            }).catch(() => {
-                // If fetch fails, we just return the cached response (if available)
-            });
+            const fetchPromise = fetch(event.request)
+                .then((networkResponse) => {
+                    if (
+                        networkResponse &&
+                        networkResponse.status === 200 &&
+                        networkResponse.type === 'basic'
+                    ) {
+                        const responseClone = networkResponse.clone();
+                        caches.open(CACHE_NAME).then((cache) => {
+                            cache.put(event.request, responseClone);
+                        });
+                    }
+                    return networkResponse;
+                })
+                .catch(() => {
+                    // If fetch fails, we just return the cached response (if available)
+                });
             return cachedResponse || fetchPromise;
         })
     );

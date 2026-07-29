@@ -7,7 +7,7 @@
 - [CEL Bindings in Conditions](#cel-bindings-in-conditions)
 - [Implicit Entity Refresh signals](#implicit-entity-refresh-signals)
 
-______________________________________________________________________
+---
 
 ## When to Use What
 
@@ -26,7 +26,7 @@ affect the result set.
 Clients consume all three using `subscribe()` instead of `execute()`. See
 [sdks.md](sdks.md) for per-platform subscribe patterns.
 
-______________________________________________________________________
+---
 
 ## The @refresh Directive
 
@@ -40,12 +40,12 @@ Keep the query fresh with a recommended refresh interval. Note that `every` and
 trigger the refresh.
 
 ```graphql
-query MovieLeaderboard
-  @auth(level: PUBLIC)
-  @refresh(every: { seconds: 30 }) {
-  movies(orderBy: [{ rating: DESC }], limit: 10) {
-    id title rating
-  }
+query MovieLeaderboard @auth(level: PUBLIC) @refresh(every: { seconds: 30 }) {
+    movies(orderBy: [{ rating: DESC }], limit: 10) {
+        id
+        title
+        rating
+    }
 }
 ```
 
@@ -67,23 +67,29 @@ common pattern for keeping lists in sync.
 
 ```graphql
 # Example with condition (refreshes only when the condition is met)
-query ChatRoom($roomId: UUID!) @auth(level: PUBLIC)
-  @refresh(onMutationExecuted: {
-    operation: "SendMessage",
-    condition: "mutation.variables.roomId == request.variables.roomId"
-  }) {
-  messages(where: {roomId: {eq: $roomId}}, orderBy: [{createTime: DESC}], limit: 50) {
-    author content createTime
-  }
+query ChatRoom($roomId: UUID!)
+@auth(level: PUBLIC)
+@refresh(
+    onMutationExecuted: {
+        operation: "SendMessage"
+        condition: "mutation.variables.roomId == request.variables.roomId"
+    }
+) {
+    messages(where: { roomId: { eq: $roomId } }, orderBy: [{ createTime: DESC }], limit: 50) {
+        author
+        content
+        createTime
+    }
 }
 
 # Example without condition (refreshes on any execution of the named mutation)
 query ListAllMessages
-  @auth(level: PUBLIC)
-  @refresh(onMutationExecuted: {
-    operation: "SendMessage"
-  }) {
-  messages { id content }
+@auth(level: PUBLIC)
+@refresh(onMutationExecuted: { operation: "SendMessage" }) {
+    messages {
+        id
+        content
+    }
 }
 ```
 
@@ -108,23 +114,28 @@ Since `@refresh` is repeatable, you can combine strategies on a single query:
 
 ```graphql
 query ActiveOrders($userId: UUID!)
-  @auth(level: USER)
-  @refresh(onMutationExecuted: {
-    operation: "UpdateOrderStatus",
-    condition: "request.variables.userId == mutation.variables.userId"
-  })
-  @refresh(every: { seconds: 60 }) {
-  orders(where: { user: { id: { eq: $userId }}, status: { ne: DELIVERED }}) {
-    id status total updatedAt
-  }
+@auth(level: USER)
+@refresh(
+    onMutationExecuted: {
+        operation: "UpdateOrderStatus"
+        condition: "request.variables.userId == mutation.variables.userId"
+    }
+)
+@refresh(every: { seconds: 60 }) {
+    orders(where: { user: { id: { eq: $userId } }, status: { ne: DELIVERED } }) {
+        id
+        status
+        total
+        updatedAt
+    }
 }
 ```
 
-This query refreshes whenever an order status changes for this user, *and* polls
+This query refreshes whenever an order status changes for this user, _and_ polls
 every 60 seconds as a fallback to catch any updates that might not have a direct
 mutation trigger.
 
-______________________________________________________________________
+---
 
 ## CEL Bindings in Conditions
 
@@ -166,7 +177,7 @@ The mutation that just executed.
 "mutation.variables.isPublic == true"
 ```
 
-______________________________________________________________________
+---
 
 ## Implicit Entity Refresh signals
 
@@ -179,10 +190,10 @@ automatically — no `@refresh` directive needed.
   `user(key: { uid: $uid })`
 - If a single-entity mutation modifies that specific entity, all active
   subscribers automatically receive the update. Supported operations include:
-  - `_insert(data)` or `_insertMany(data)`
-  - `_upsert(data)` or `_upsertMany(data)`
-  - `_update(id)` or `_update(key)`
-  - `_delete(id)` or `_delete(key)`
+    - `_insert(data)` or `_insertMany(data)`
+    - `_upsert(data)` or `_upsertMany(data)`
+    - `_update(id)` or `_update(key)`
+    - `_delete(id)` or `_delete(key)`
 - **Note**: Bulk operations like `_updateMany` and `_deleteMany` do **not**
   trigger automatic entity refreshes.
 
@@ -198,10 +209,19 @@ automatically — no `@refresh` directive needed.
 ```graphql
 # When subscribed to, this query auto-refreshes when movie data changes — no @refresh needed
 query GetMovie($id: UUID!) @auth(level: PUBLIC) {
-  movie(id: $id) {
-    id title rating description
-    reviews_on_movie { rating text user { displayName } }
-  }
+    movie(id: $id) {
+        id
+        title
+        rating
+        description
+        reviews_on_movie {
+            rating
+            text
+            user {
+                displayName
+            }
+        }
+    }
 }
 ```
 

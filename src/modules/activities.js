@@ -1,3 +1,7 @@
+import { switchView } from './ui.js';
+import { renderAttendanceRoster } from './attendance.js';
+import { closeAddModal } from './ui-modals.js';
+
 /**
  * MFC YOUTH TARLAC | ACTIVITY AGENDA & LEDGER MODULE
  * Event Planning, Sorting, Semester Filtering & Status Updates
@@ -10,11 +14,12 @@ import { MFCFirebaseCloud } from './firebase.js';
 export function renderActivitiesTable() {
     const tableBody = document.getElementById('activities-table-body');
     if (!tableBody) return;
-    
+
     // Hide 'Add Activity' button if Chapter Head
     const addActivityBtn = document.getElementById('action-btn-21');
     if (addActivityBtn) {
-        addActivityBtn.style.display = localStorage.getItem('ps_role') === 'CHAPTER HEAD' ? 'none' : 'flex';
+        addActivityBtn.style.display =
+            localStorage.getItem('ps_role') === 'CHAPTER HEAD' ? 'none' : 'flex';
     }
 
     let items = [...state.activities];
@@ -36,7 +41,7 @@ export function renderActivitiesTable() {
         return;
     }
 
-    items.forEach(act => {
+    items.forEach((act) => {
         const tr = document.createElement('tr');
         tr.style.cssText = 'border-bottom: 1px solid rgba(255, 255, 255, 0.05);';
 
@@ -64,7 +69,8 @@ export function renderActivitiesTable() {
         statusTd.setAttribute('data-label', 'Status');
         statusTd.style.cssText = 'padding: 14px 16px;';
         const badge = document.createElement('span');
-        badge.style.cssText = 'background: rgba(16, 185, 129, 0.2); color: #34D399; padding: 4px 10px; border-radius: 12px; font-size: 12px; font-weight: 600;';
+        badge.style.cssText =
+            'background: rgba(16, 185, 129, 0.2); color: #34D399; padding: 4px 10px; border-radius: 12px; font-size: 12px; font-weight: 600;';
         badge.textContent = (act.status || 'UPCOMING').toUpperCase();
         statusTd.appendChild(badge);
 
@@ -72,14 +78,16 @@ export function renderActivitiesTable() {
         actionsTd.setAttribute('data-label', 'Actions');
         actionsTd.style.cssText = 'padding: 14px 16px; text-align: right;';
         const emailBtn = document.createElement('button');
-        emailBtn.style.cssText = 'background: rgba(56, 189, 248, 0.15); border: 1px solid rgba(56, 189, 248, 0.3); color: #38BDF8; padding: 6px 10px; border-radius: 8px; font-size: 12px; cursor: pointer; margin-right: 8px;';
+        emailBtn.style.cssText =
+            'background: rgba(56, 189, 248, 0.15); border: 1px solid rgba(56, 189, 248, 0.3); color: #38BDF8; padding: 6px 10px; border-radius: 8px; font-size: 12px; cursor: pointer; margin-right: 8px;';
         emailBtn.textContent = '✉️ Remind';
         emailBtn.addEventListener('click', () => sendActivityEmailReminder(act));
         actionsTd.appendChild(emailBtn);
 
         if (localStorage.getItem('ps_role') !== 'CHAPTER HEAD') {
             const delBtn = document.createElement('button');
-            delBtn.style.cssText = 'background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.3); color: #F87171; padding: 6px 10px; border-radius: 8px; font-size: 12px; cursor: pointer;';
+            delBtn.style.cssText =
+                'background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.3); color: #F87171; padding: 6px 10px; border-radius: 8px; font-size: 12px; cursor: pointer;';
             delBtn.textContent = '🗑️';
             delBtn.addEventListener('click', () => deleteActivity(act.id));
             actionsTd.appendChild(delBtn);
@@ -102,7 +110,7 @@ export function deleteActivity(actId) {
         return;
     }
     if (confirm('Are you sure you want to delete this activity?')) {
-        state.activities = state.activities.filter(a => a.id !== actId);
+        state.activities = state.activities.filter((a) => a.id !== actId);
         saveToStorage();
         MFCFirebaseCloud.pushAtomicUpdate('activities', state.activities);
         notifyStateChange('activity-deleted');
@@ -119,11 +127,13 @@ export async function sendActivityEmailReminder(act) {
         return;
     }
 
-    const conf = confirm(`Are you sure you want to send email reminders for: ${act.title || act.name}?`);
+    const conf = confirm(
+        `Are you sure you want to send email reminders for: ${act.title || act.name}?`
+    );
     if (!conf) return;
 
     if (window.showToast) window.showToast('Sending reminders...', 'info');
-    
+
     // Using a generic template approach, the user will need to configure this in EmailJS
     try {
         // Mocking the call since we don't have keys yet.
@@ -133,12 +143,15 @@ export async function sendActivityEmailReminder(act) {
         //     activity_venue: act.venue,
         //     to_email: "member@example.com"
         // });
-        
+
         setTimeout(() => {
-            if (window.showToast) window.showToast(`Reminders sent for ${act.title || act.name}! (Demo Mode)`, 'success');
+            if (window.showToast)
+                window.showToast(
+                    `Reminders sent for ${act.title || act.name}! (Demo Mode)`,
+                    'success'
+                );
             else alert(`Reminders sent for ${act.title || act.name}! (Demo Mode)`);
         }, 1500);
-        
     } catch (err) {
         console.error('Email error:', err);
         if (window.showToast) window.showToast('Failed to send emails.', 'error');
@@ -146,12 +159,14 @@ export async function sendActivityEmailReminder(act) {
 }
 window.sendActivityEmailReminder = sendActivityEmailReminder;
 
-
 export function toggleAgendaSort() {
     state.sortOrder = state.sortOrder === 'ASC' ? 'DESC' : 'ASC';
     const sortBtn = document.getElementById('agenda-sort-btn');
     if (sortBtn) {
-        sortBtn.innerHTML = state.sortOrder === 'ASC' ? '<span>⇅ Date: Oldest</span>' : '<span>⇅ Date: Newest</span>';
+        sortBtn.innerHTML =
+            state.sortOrder === 'ASC'
+                ? '<span>⇅ Date: Oldest</span>'
+                : '<span>⇅ Date: Newest</span>';
     }
     renderActivitiesTable();
 }
@@ -159,7 +174,7 @@ export function toggleAgendaSort() {
 export function setAgendaSemester(sem, btnEl) {
     state.agendaSemester = sem;
     const tabs = document.querySelectorAll('.sem-tab-btn');
-    tabs.forEach(t => {
+    tabs.forEach((t) => {
         t.style.background = 'transparent';
         t.style.color = '#475569';
         t.classList.remove('active');
@@ -176,10 +191,13 @@ export function setAgendaSemester(sem, btnEl) {
         if (descEl) descEl.textContent = 'Activities accomplished during the first semester.';
     } else if (sem === 's2') {
         if (titleEl) titleEl.textContent = 'Second Semester (Jul - Dec)';
-        if (descEl) descEl.textContent = 'Activities scheduled or completed during the second semester.';
+        if (descEl)
+            descEl.textContent = 'Activities scheduled or completed during the second semester.';
     } else {
         if (titleEl) titleEl.textContent = 'All Activities History';
-        if (descEl) descEl.textContent = 'Comprehensive record of all organizational events and gatherings.';
+        if (descEl)
+            descEl.textContent =
+                'Comprehensive record of all organizational events and gatherings.';
     }
     renderActivitiesTable();
 }
@@ -192,13 +210,25 @@ export function setAgendaViewMode(mode) {
     const tableCont = document.getElementById('agenda-table-container');
 
     if (mode === 'grid') {
-        if (gridBtn) { gridBtn.style.background = 'var(--accent-blue)'; gridBtn.style.color = '#FFF'; }
-        if (tableBtn) { tableBtn.style.background = 'transparent'; tableBtn.style.color = '#94A3B8'; }
+        if (gridBtn) {
+            gridBtn.style.background = 'var(--accent-blue)';
+            gridBtn.style.color = '#FFF';
+        }
+        if (tableBtn) {
+            tableBtn.style.background = 'transparent';
+            tableBtn.style.color = '#94A3B8';
+        }
         if (gridCont) gridCont.style.display = 'grid';
         if (tableCont) tableCont.style.display = 'none';
     } else {
-        if (tableBtn) { tableBtn.style.background = 'var(--accent-blue)'; tableBtn.style.color = '#FFF'; }
-        if (gridBtn) { gridBtn.style.background = 'transparent'; gridBtn.style.color = '#94A3B8'; }
+        if (tableBtn) {
+            tableBtn.style.background = 'var(--accent-blue)';
+            tableBtn.style.color = '#FFF';
+        }
+        if (gridBtn) {
+            gridBtn.style.background = 'transparent';
+            gridBtn.style.color = '#94A3B8';
+        }
         if (gridCont) gridCont.style.display = 'none';
         if (tableCont) tableCont.style.display = 'block';
     }
@@ -210,7 +240,7 @@ export function refreshAgendaHistory() {
 }
 
 export function downloadActivityPDF(actId, title) {
-    const act = state.activities.find(a => a.id === actId);
+    const act = state.activities.find((a) => a.id === actId);
     if (!act) return;
 
     if (!window.jsPDF || !window.jspdf || !window.jspdf.jsPDF) {
@@ -226,12 +256,14 @@ export function downloadActivityPDF(actId, title) {
     const displayVenue = act.venue || act.location || 'Venue TBA';
     const displayHeldIn = act.heldIn || 'Face to Face';
     const dateObj = new Date(act.date);
-    const dateStr = !isNaN(dateObj) ? `${dateObj.toLocaleDateString()} at ${dateObj.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}` : act.date;
+    const dateStr = !isNaN(dateObj)
+        ? `${dateObj.toLocaleDateString()} at ${dateObj.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`
+        : act.date;
 
     const attObj = state.attendance[act.id] || {};
     const totalMems = state.members.length;
     let pCount = 0;
-    state.members.forEach(m => {
+    state.members.forEach((m) => {
         if (attObj[m.id]?.status === 'present') pCount++;
     });
     const rate = totalMems > 0 ? Math.round((pCount / totalMems) * 100) : 0;
@@ -240,17 +272,17 @@ export function downloadActivityPDF(actId, title) {
     doc.setFillColor(15, 23, 42);
     doc.rect(0, 0, 210, 42, 'F');
 
-    doc.setFont("helvetica", "bold");
+    doc.setFont('helvetica', 'bold');
     doc.setFontSize(18);
     doc.setTextColor(56, 189, 248);
-    doc.text("MFC YOUTH TARLAC", 14, 16);
+    doc.text('MFC YOUTH TARLAC', 14, 16);
 
     doc.setFontSize(12);
     doc.setTextColor(248, 250, 252);
-    doc.text("OFFICIAL ACTIVITY ATTENDANCE REPORT", 14, 25);
+    doc.text('OFFICIAL ACTIVITY ATTENDANCE REPORT', 14, 25);
 
     doc.setFontSize(9);
-    doc.setFont("helvetica", "normal");
+    doc.setFont('helvetica', 'normal');
     doc.setTextColor(148, 163, 184);
     doc.text(`Generated on: ${new Date().toLocaleString()}`, 14, 34);
 
@@ -258,24 +290,30 @@ export function downloadActivityPDF(actId, title) {
     doc.setFillColor(241, 245, 249);
     doc.roundedRect(14, 48, 182, 38, 3, 3, 'F');
 
-    doc.setFont("helvetica", "bold");
+    doc.setFont('helvetica', 'bold');
     doc.setFontSize(13);
     doc.setTextColor(15, 23, 42);
     doc.text(`Activity: ${displayTitle}`, 20, 58);
 
     doc.setFontSize(9.5);
-    doc.setFont("helvetica", "normal");
+    doc.setFont('helvetica', 'normal');
     doc.setTextColor(71, 85, 105);
     doc.text(`Category: ${displayCategory}   |   Held In: ${displayHeldIn}`, 20, 66);
     doc.text(`Date & Time: ${dateStr}`, 20, 73);
     doc.text(`Venue / Location: ${displayVenue}`, 20, 80);
 
-    doc.setFont("helvetica", "bold");
+    doc.setFont('helvetica', 'bold');
     doc.setTextColor(16, 185, 129);
-    doc.text(`Attendance Rate: ${rate}% (${pCount} Present / ${totalMems - pCount} Absent of ${totalMems} Members)`, 115, 80);
+    doc.text(
+        `Attendance Rate: ${rate}% (${pCount} Present / ${totalMems - pCount} Absent of ${totalMems} Members)`,
+        115,
+        80
+    );
 
     // Table Header & Rows
-    const tableHeaders = [["#", "Member Name", "Department", "Role", "Attendance Status", "Remarks / Notes"]];
+    const tableHeaders = [
+        ['#', 'Member Name', 'Department', 'Role', 'Attendance Status', 'Remarks / Notes'],
+    ];
     const tableRows = state.members.map((mem, idx) => {
         const memAtt = attObj[mem.id] || { status: 'absent', notes: '' };
         const statusText = memAtt.status === 'present' ? 'PRESENT' : 'ABSENT';
@@ -285,7 +323,7 @@ export function downloadActivityPDF(actId, title) {
             mem.dept || '-',
             mem.role || '-',
             statusText,
-            memAtt.notes || '-'
+            memAtt.notes || '-',
         ];
     });
 
@@ -299,7 +337,7 @@ export function downloadActivityPDF(actId, title) {
         columnStyles: {
             0: { cellWidth: 12 },
             1: { cellWidth: 50, fontStyle: 'bold' },
-            4: { fontStyle: 'bold' }
+            4: { fontStyle: 'bold' },
         },
         didParseCell: function (data) {
             if (data.section === 'body' && data.column.index === 4) {
@@ -309,15 +347,15 @@ export function downloadActivityPDF(actId, title) {
                     data.cell.styles.textColor = [239, 68, 68];
                 }
             }
-        }
+        },
     });
 
     // Footer Sign-Off
     const finalY = doc.lastAutoTable.finalY + 18;
     doc.setFontSize(9);
-    doc.setFont("helvetica", "italic");
+    doc.setFont('helvetica', 'italic');
     doc.setTextColor(100, 116, 139);
-    doc.text("MFC Youth Tarlac Secretariat Ledger • Certified Official Record", 14, finalY);
+    doc.text('MFC Youth Tarlac Secretariat Ledger • Certified Official Record', 14, finalY);
 
     const safeName = displayTitle.replace(/[^a-z0-9]/gi, '_').toLowerCase();
     doc.save(`${safeName}_attendance_report.pdf`);
@@ -361,16 +399,18 @@ export function handleFormSubmit(e) {
         return;
     }
 
-    const semRaw = document.getElementById('form-semester') ? document.getElementById('form-semester').value : 'auto';
+    const semRaw = document.getElementById('form-semester')
+        ? document.getElementById('form-semester').value
+        : 'auto';
     let semVal = semRaw;
     if (!semVal || semVal === 'auto') {
         const dObjSem = new Date(dateVal);
-        semVal = (!isNaN(dObjSem.getTime()) && dObjSem.getMonth() >= 6) ? 's2' : 's1';
+        semVal = !isNaN(dObjSem.getTime()) && dObjSem.getMonth() >= 6 ? 's2' : 's1';
     }
 
     if (idVal) {
         // Update existing
-        const idx = state.activities.findIndex(a => a.id === idVal);
+        const idx = state.activities.findIndex((a) => a.id === idVal);
         if (idx !== -1) {
             state.activities[idx] = {
                 id: idVal,
@@ -383,7 +423,7 @@ export function handleFormSubmit(e) {
                 venue: locVal,
                 status: statVal,
                 description: descVal,
-                semester: semVal
+                semester: semVal,
             };
             showToast('Activity record updated successfully!', 'success');
         }
@@ -401,12 +441,12 @@ export function handleFormSubmit(e) {
             venue: locVal,
             status: statVal,
             description: descVal,
-            semester: semVal
+            semester: semVal,
         };
         state.activities.unshift(newAct);
         // Initialize attendance map for new activity
         state.attendance[newId] = {};
-        state.members.forEach(mem => {
+        state.members.forEach((mem) => {
             state.attendance[newId][mem.id] = { status: 'absent', time: '-', notes: '' };
         });
         showToast('New activity created successfully!', 'success');
@@ -427,7 +467,11 @@ export function clearAllActivities() {
         showToast('Activities list is already empty.', 'info');
         return;
     }
-    if (confirm('Are you sure you want to clear all activities and agenda items? This action cannot be undone.')) {
+    if (
+        confirm(
+            'Are you sure you want to clear all activities and agenda items? This action cannot be undone.'
+        )
+    ) {
         state.activities = [];
         state.attendance = {};
         state.selectedActivityId = null;

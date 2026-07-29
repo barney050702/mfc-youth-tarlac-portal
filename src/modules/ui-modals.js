@@ -1,4 +1,7 @@
+import { announcementsList, prayersList } from './legacy.js';
 
+import { state } from './state.js';
+import { calculateAgeClean, formatDateClean } from './members.js';
 
 export function openAddModal(actId = null) {
     const modal = document.getElementById('modal-backdrop');
@@ -14,7 +17,7 @@ export function openAddModal(actId = null) {
     if (!modal) return;
 
     if (actId) {
-        const act = state.activities.find(a => a.id === actId);
+        const act = state.activities.find((a) => a.id === actId);
         if (act) {
             titleEl.textContent = 'Edit Activity Record';
             formId.value = act.id;
@@ -51,7 +54,7 @@ export function closeAddModal() {
 }
 
 export function openMemberProfile(memberId) {
-    const member = state.members.find(m => m.id === memberId);
+    const member = state.members.find((m) => m.id === memberId);
     if (!member) return;
     window.currentProfileMemberId = memberId;
 
@@ -65,7 +68,7 @@ export function openMemberProfile(memberId) {
     const totalActivities = state.activities.length;
 
     let historyHtml = '';
-    state.activities.forEach(act => {
+    state.activities.forEach((act) => {
         const record = state.attendance[act.id]?.[memberId];
         let statusText = 'Absent / Unrecorded';
         let statusClass = 'text-red';
@@ -98,7 +101,8 @@ export function openMemberProfile(memberId) {
         `;
     });
 
-    const rate = totalActivities > 0 ? Math.round(((presentCount + lateCount) / totalActivities) * 100) : 0;
+    const rate =
+        totalActivities > 0 ? Math.round(((presentCount + lateCount) / totalActivities) * 100) : 0;
     const initial = member.name.charAt(0).toUpperCase();
 
     contentEl.innerHTML = `
@@ -214,7 +218,8 @@ export function openMemberProfile(memberId) {
 
     const timelineEl = document.getElementById('member-timeline-container');
     if (timelineEl) {
-        let timelineHtml = '<h4 style="font-size: 0.95rem; color: #E2E8F0; margin-bottom: 12px;">🌟 MFC Youth Service & Milestones</h4>';
+        let timelineHtml =
+            '<h4 style="font-size: 0.95rem; color: #E2E8F0; margin-bottom: 12px;">🌟 MFC Youth Service & Milestones</h4>';
         timelineHtml += `
             <div class="timeline-item">
                 <div class="timeline-dot"></div>
@@ -265,7 +270,7 @@ export function openAddMemberModal() {
 }
 
 export function openEditMemberModal(id) {
-    const mem = state.members.find(m => m.id === id);
+    const mem = state.members.find((m) => m.id === id);
     if (!mem) return;
 
     const form = document.getElementById('add-member-form');
@@ -280,10 +285,14 @@ export function openEditMemberModal(id) {
     if (btnTextEl) btnTextEl.textContent = 'Save Changes';
 
     const names = mem.name ? mem.name.split(' ') : [''];
-    const first = mem.firstName || (names.length > 1 ? names.slice(0, -1).join(' ') : names[0] || '');
+    const first =
+        mem.firstName || (names.length > 1 ? names.slice(0, -1).join(' ') : names[0] || '');
     const last = mem.lastName || (names.length > 1 ? names[names.length - 1] : '');
 
-    const setVal = (elId, val) => { const el = document.getElementById(elId); if (el) el.value = val || ''; };
+    const setVal = (elId, val) => {
+        const el = document.getElementById(elId);
+        if (el) el.value = val || '';
+    };
     setVal('mem-first-name', first);
     setVal('mem-middle-name', mem.middleName || '');
     setVal('mem-last-name', last);
@@ -311,13 +320,14 @@ export function openEditMemberModal(id) {
 
 export function openPastoralGreetingModal(memberId, reason) {
     activePastoralMemberId = memberId;
-    const mem = state.members.find(m => m.id === memberId);
+    const mem = state.members.find((m) => m.id === memberId);
     if (!mem) return;
 
     const titleEl = document.getElementById('pastoral-greeting-title');
     const descEl = document.getElementById('pastoral-greeting-desc');
     if (titleEl) titleEl.textContent = `Send ${reason || 'Pastoral'} Greeting`;
-    if (descEl) descEl.textContent = `Choose a channel below to send a personalized birthday and pastoral blessing to ${mem.name} (${mem.chapter || 'Central Chapter'}).`;
+    if (descEl)
+        descEl.textContent = `Choose a channel below to send a personalized birthday and pastoral blessing to ${mem.name} (${mem.chapter || 'Central Chapter'}).`;
 
     const modal = document.getElementById('modal-pastoral-greeting');
     if (modal) modal.style.display = 'flex';
@@ -331,7 +341,7 @@ export function closePastoralGreetingModal() {
 
 export function sendPastoralGreetingVia(channel) {
     if (!activePastoralMemberId) return;
-    const mem = state.members.find(m => m.id === activePastoralMemberId);
+    const mem = state.members.find((m) => m.id === activePastoralMemberId);
     if (!mem) return;
 
     const first = mem.firstName || mem.name.split(' ')[0] || mem.name;
@@ -428,7 +438,9 @@ export function openBatchIDPrintModal() {
         return;
     }
 
-    const cardsHtml = state.members.map(m => `
+    const cardsHtml = state.members
+        .map(
+            (m) => `
         <div style="width: 320px; height: 195px; border: 2px solid #0284C7; border-radius: 12px; padding: 12px; box-sizing: border-box; background: #0B0F19; color: #FFF; font-family: sans-serif; display: flex; flex-direction: column; justify-content: space-between; page-break-inside: avoid;">
             <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid rgba(56,189,248,0.3); padding-bottom: 6px;">
                 <span style="font-size: 11px; font-weight: 800; color: #38BDF8; letter-spacing: 0.5px;">MFC YOUTH TARLAC</span>
@@ -449,7 +461,9 @@ export function openBatchIDPrintModal() {
                 <span>Official Youth Member</span>
             </div>
         </div>
-    `).join('');
+    `
+        )
+        .join('');
 
     printWin.document.write(`
         <!DOCTYPE html>
@@ -505,7 +519,7 @@ export function saveCustomResourceFile(e) {
         const file = fileInput.files[0];
         const reader = new FileReader();
 
-        reader.onload = function(evt) {
+        reader.onload = function (evt) {
             const fileDataUrl = evt.target.result;
             const newRes = {
                 id: 'custom_res_' + Date.now(),
@@ -515,7 +529,7 @@ export function saveCustomResourceFile(e) {
                 fileName: file.name,
                 fileUrl: fileDataUrl,
                 fileType: file.type,
-                dateAdded: new Date().toLocaleDateString()
+                dateAdded: new Date().toLocaleDateString(),
             };
 
             const existing = JSON.parse(localStorage.getItem('mfc_custom_resources') || '[]');
@@ -539,17 +553,18 @@ export function renderCustomUploadedResources() {
         const customRes = JSON.parse(localStorage.getItem('mfc_custom_resources') || '[]');
         const categories = ['youthcamp', 'trainings', 'songboard', 'holyrosary', 'letters'];
 
-        categories.forEach(cat => {
+        categories.forEach((cat) => {
             const container = document.getElementById(`res-dynamic-${cat}`);
             if (!container) return;
             container.innerHTML = '';
             container.style.display = 'grid';
 
-            const items = customRes.filter(r => r.category === cat);
-            items.forEach(item => {
+            const items = customRes.filter((r) => r.category === cat);
+            items.forEach((item) => {
                 const card = document.createElement('div');
                 card.className = 'glass-card';
-                card.style.cssText = 'padding: 22px; border-radius: 16px; border: 1px solid rgba(56, 189, 248, 0.4); background: rgba(15, 23, 42, 0.85); position: relative;';
+                card.style.cssText =
+                    'padding: 22px; border-radius: 16px; border: 1px solid rgba(56, 189, 248, 0.4); background: rgba(15, 23, 42, 0.85); position: relative;';
                 card.innerHTML = `
                     <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;">
                         <div style="font-size: 1.8rem;">📄</div>
@@ -610,12 +625,16 @@ export function updateLetterPreview() {
         const venueEl = document.getElementById('let-venue');
         const servantEl = document.getElementById('let-servant-name');
 
-        const memberName = (memberEl && memberEl.value.trim()) ? memberEl.value.trim() : '[Member / Student Name]';
-        const parentName = (parentEl && parentEl.value.trim()) ? parentEl.value.trim() : '[Parent / Addressee Name]';
-        const eventTitle = (eventEl && eventEl.value.trim()) ? eventEl.value.trim() : '[Event / Activity Title]';
-        const eventDate = (dateEl && dateEl.value.trim()) ? dateEl.value.trim() : '[Event Date]';
-        const venue = (venueEl && venueEl.value.trim()) ? venueEl.value.trim() : '[Venue Location]';
-        const servantName = (servantEl && servantEl.value.trim()) ? servantEl.value.trim() : '[Chapter Servant Name]';
+        const memberName =
+            memberEl && memberEl.value.trim() ? memberEl.value.trim() : '[Member / Student Name]';
+        const parentName =
+            parentEl && parentEl.value.trim() ? parentEl.value.trim() : '[Parent / Addressee Name]';
+        const eventTitle =
+            eventEl && eventEl.value.trim() ? eventEl.value.trim() : '[Event / Activity Title]';
+        const eventDate = dateEl && dateEl.value.trim() ? dateEl.value.trim() : '[Event Date]';
+        const venue = venueEl && venueEl.value.trim() ? venueEl.value.trim() : '[Venue Location]';
+        const servantName =
+            servantEl && servantEl.value.trim() ? servantEl.value.trim() : '[Chapter Servant Name]';
 
         const container = document.getElementById('letter-live-content');
         if (!container) return;
@@ -733,11 +752,12 @@ export function downloadLetterPDF() {
         const selectEl = document.getElementById('let-template-type');
         const type = selectEl ? selectEl.value : 'parental';
         const nameEl = document.getElementById('let-member-name');
-        const name = (nameEl && nameEl.value.trim()) ? nameEl.value.trim() : 'Delegate';
+        const name = nameEl && nameEl.value.trim() ? nameEl.value.trim() : 'Delegate';
         const element = document.getElementById('printable-letter-container');
 
         if (!element) {
-            if (typeof showToast === 'function') showToast('⚠️ Letter container element not found.', 'warning');
+            if (typeof showToast === 'function')
+                showToast('⚠️ Letter container element not found.', 'warning');
             return;
         }
 
@@ -746,20 +766,25 @@ export function downloadLetterPDF() {
                 showToast('📄 Generating official PDF letter document...', 'info');
             }
             const opt = {
-                margin:       [0.4, 0.4, 0.4, 0.4],
-                filename:     `MFC_Youth_Tarlac_${type.toUpperCase()}_Letter_${name.replace(/\s+/g, '_')}.pdf`,
-                image:        { type: 'jpeg', quality: 0.98 },
-                html2canvas:  { scale: 2, useCORS: true, logging: false },
-                jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
+                margin: [0.4, 0.4, 0.4, 0.4],
+                filename: `MFC_Youth_Tarlac_${type.toUpperCase()}_Letter_${name.replace(/\s+/g, '_')}.pdf`,
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { scale: 2, useCORS: true, logging: false },
+                jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' },
             };
-            html2pdf().set(opt).from(element).save().then(() => {
-                if (typeof showToast === 'function') {
-                    showToast('✅ PDF Letter exported and downloaded successfully!', 'success');
-                }
-            }).catch(err => {
-                console.warn('html2pdf fallback to print:', err);
-                window.print();
-            });
+            html2pdf()
+                .set(opt)
+                .from(element)
+                .save()
+                .then(() => {
+                    if (typeof showToast === 'function') {
+                        showToast('✅ PDF Letter exported and downloaded successfully!', 'success');
+                    }
+                })
+                .catch((err) => {
+                    console.warn('html2pdf fallback to print:', err);
+                    window.print();
+                });
         } else {
             window.print();
         }
@@ -776,17 +801,18 @@ export function openMemberIDCard(memberId) {
             backdrop.style.display = 'flex';
             backdrop.style.zIndex = '100000';
         }
-        
+
         let member = null;
         if (typeof state !== 'undefined' && state.members && state.members.length > 0) {
-            if (memberId) member = state.members.find(m => m.id === memberId || m.name === memberId);
+            if (memberId)
+                member = state.members.find((m) => m.id === memberId || m.name === memberId);
             if (!member) member = state.members[0];
         }
 
         const name = member ? member.name : 'Barney Tarlac';
-        const role = member ? (member.role || member.department || 'Youth Member') : 'Chapter Member';
-        const chapter = member ? (member.chapter || 'Central Chapter') : 'Central Chapter';
-        const idNum = member ? (member.id || 'MFC-TRC-2026-0042') : 'MFC-TRC-2026-0042';
+        const role = member ? member.role || member.department || 'Youth Member' : 'Chapter Member';
+        const chapter = member ? member.chapter || 'Central Chapter' : 'Central Chapter';
+        const idNum = member ? member.id || 'MFC-TRC-2026-0042' : 'MFC-TRC-2026-0042';
 
         const nameEl = document.getElementById('id-card-name');
         const roleEl = document.getElementById('id-card-role');
@@ -837,7 +863,8 @@ export function handlePostAnnouncement(e) {
         closePostAnnouncementModal();
         const form = document.getElementById('form-post-announcement');
         if (form) form.reset();
-        if (typeof showToast === 'function') showToast('📢 Advisory notice posted successfully!', 'success');
+        if (typeof showToast === 'function')
+            showToast('📢 Advisory notice posted successfully!', 'success');
     }
 }
 
@@ -863,7 +890,8 @@ export function handleSubmitPrayer(e) {
         closeSubmitPrayerModal();
         const form = document.getElementById('form-submit-prayer');
         if (form) form.reset();
-        if (typeof showToast === 'function') showToast('🙏 Prayer intention added to the Prayer Wall!', 'success');
+        if (typeof showToast === 'function')
+            showToast('🙏 Prayer intention added to the Prayer Wall!', 'success');
     }
 }
 
@@ -879,9 +907,9 @@ export function closeAllActiveModals() {
         'pastoral-followup-backdrop',
         'songbook-transposer-backdrop',
         'holy-rosary-guide-backdrop',
-        'venue-map-modal-backdrop'
+        'venue-map-modal-backdrop',
     ];
-    backdropIds.forEach(id => {
+    backdropIds.forEach((id) => {
         const el = document.getElementById(id);
         if (el) el.style.display = 'none';
     });
@@ -915,14 +943,21 @@ export function handleAIChatSubmit(e) {
     input.value = '';
 
     setTimeout(() => {
-        let response = "God bless your heart! Keep serving with love, humility, and joy in Christ.";
+        let response = 'God bless your heart! Keep serving with love, humility, and joy in Christ.';
         const lower = userMsg.toLowerCase();
         if (lower.includes('bible') || lower.includes('verse') || lower.includes('scripture')) {
-            response = "📖 'Let no one look down on you because you are young, but set an example for the believers in speech, in conduct, in love, in faith and in purity.' — 1 Timothy 4:12";
-        } else if (lower.includes('camp') || lower.includes('event') || lower.includes('activity')) {
-            response = "⭐ Our next major provincial activity is the Provincial Youth Camp! Be sure to submit your parental consent form in the Letter Builder.";
+            response =
+                "📖 'Let no one look down on you because you are young, but set an example for the believers in speech, in conduct, in love, in faith and in purity.' — 1 Timothy 4:12";
+        } else if (
+            lower.includes('camp') ||
+            lower.includes('event') ||
+            lower.includes('activity')
+        ) {
+            response =
+                '⭐ Our next major provincial activity is the Provincial Youth Camp! Be sure to submit your parental consent form in the Letter Builder.';
         } else if (lower.includes('prayer') || lower.includes('pray')) {
-            response = "🙏 Lord Jesus, fill our youth with Your Holy Spirit. Strengthen our families, bless our chapter leaders, and grant peace to every heart. Amen!";
+            response =
+                '🙏 Lord Jesus, fill our youth with Your Holy Spirit. Strengthen our families, bless our chapter leaders, and grant peace to every heart. Amen!';
         }
 
         container.innerHTML += `
@@ -936,7 +971,7 @@ export function handleAIChatSubmit(e) {
 
 export function pinVenueLocation(venueName) {
     try {
-        const locQuery = (venueName && venueName.trim()) ? venueName.trim() : 'Tarlac City';
+        const locQuery = venueName && venueName.trim() ? venueName.trim() : 'Tarlac City';
         const encoded = encodeURIComponent(locQuery);
 
         // Open the venue map modal
@@ -989,7 +1024,8 @@ export function handleVenueMapModalPin(e) {
         const status = document.getElementById('venue-map-modal-pinned-status');
         const dirBtn = document.getElementById('venue-map-modal-directions-btn');
 
-        if (iframe) iframe.src = `https://maps.google.com/maps?q=${encoded}&t=&z=15&ie=UTF8&iwloc=&output=embed`;
+        if (iframe)
+            iframe.src = `https://maps.google.com/maps?q=${encoded}&t=&z=15&ie=UTF8&iwloc=&output=embed`;
         if (label) label.innerText = locQuery;
         if (status) status.innerHTML = `✅ Pinned: ${locQuery}`;
         if (dirBtn) dirBtn.href = `https://maps.google.com/?q=${encoded}`;
@@ -1032,7 +1068,8 @@ export function showToast(message, type = 'info', undoCallback = null) {
         const undoBtn = document.createElement('button');
         undoBtn.type = 'button';
         undoBtn.className = 'btn-secondary';
-        undoBtn.style.cssText = 'padding: 4px 10px; font-size: 0.75rem; font-weight: 700; background: rgba(56, 189, 248, 0.2); border: 1px solid #38BDF8; color: #38BDF8; cursor: pointer; border-radius: 6px; margin-left: 10px;';
+        undoBtn.style.cssText =
+            'padding: 4px 10px; font-size: 0.75rem; font-weight: 700; background: rgba(56, 189, 248, 0.2); border: 1px solid #38BDF8; color: #38BDF8; cursor: pointer; border-radius: 6px; margin-left: 10px;';
         undoBtn.textContent = '↩️ UNDO';
         undoBtn.onclick = (e) => {
             e.stopPropagation();
@@ -1063,7 +1100,7 @@ export function updateFormMapPreview(val) {
         const dirBtn = document.getElementById('modal-open-google-maps-btn');
         if (!iframe) return;
 
-        const locQuery = (val && val.trim()) ? val.trim() : 'Tarlac City';
+        const locQuery = val && val.trim() ? val.trim() : 'Tarlac City';
         const encoded = encodeURIComponent(locQuery);
         iframe.src = `https://maps.google.com/maps?q=${encoded}&t=&z=15&ie=UTF8&iwloc=&output=embed`;
         if (label) {
@@ -1089,3 +1126,8 @@ export function previewFormLocationOnMap() {
         }
     }
 }
+
+export let activePastoralMemberId = null;
+export let formMapDebounceTimer = null;
+export function renderAnnouncementsBoard() {}
+export function renderPrayersBoard() {}

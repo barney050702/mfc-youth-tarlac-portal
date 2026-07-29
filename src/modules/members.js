@@ -1,3 +1,5 @@
+import { getMemberBadgesHtml, logAuditAction } from './legacy.js';
+
 /**
  * MFC YOUTH TARLAC | MEMBER DIRECTORY & DIGITAL QR BADGES
  * Roster Management, Filtering, Duplicate Detection & QR Generation
@@ -7,10 +9,8 @@ import { state, saveToStorage, notifyStateChange } from './state.js';
 import { escapeHTML, showToast, triggerHaptic } from './ui.js';
 import { MFCFirebaseCloud } from './firebase.js';
 
-
-
 export function openDigitalQRModal(memberId) {
-    const member = state.members.find(m => m.id === memberId);
+    const member = state.members.find((m) => m.id === memberId);
     if (!member) return;
 
     const modal = document.getElementById('modal-member-qr-id');
@@ -30,9 +30,9 @@ export function openDigitalQRModal(memberId) {
                 text: member.id,
                 width: 180,
                 height: 180,
-                colorDark: "#0B0F19",
-                colorLight: "#FFFFFF",
-                correctLevel: QRCode.CorrectLevel.H
+                colorDark: '#0B0F19',
+                colorLight: '#FFFFFF',
+                correctLevel: QRCode.CorrectLevel.H,
             });
         }
     }
@@ -49,16 +49,17 @@ export function closeDigitalQRModal() {
 export function printMemberQRCard() {
     const cardEl = document.getElementById('qr-id-badge-card');
     if (!cardEl) return;
-    
+
     showToast('Preparing digital QR ID badge for printing...', 'info');
-    
+
     html2canvas(cardEl, {
         scale: 3,
-        backgroundColor: '#0F172A'
-    }).then(canvas => {
-        const imgData = canvas.toDataURL('image/png');
-        const printWindow = window.open('', '_blank');
-        printWindow.document.write(`
+        backgroundColor: '#0F172A',
+    })
+        .then((canvas) => {
+            const imgData = canvas.toDataURL('image/png');
+            const printWindow = window.open('', '_blank');
+            printWindow.document.write(`
             <html>
                 <head><title>Print Member QR ID</title></head>
                 <body style="margin:0; display:flex; justify-content:center; align-items:center; height:100vh; background:#FFF;">
@@ -66,24 +67,25 @@ export function printMemberQRCard() {
                 </body>
             </html>
         `);
-        printWindow.document.close();
-        printWindow.onload = () => {
-            printWindow.focus();
-            printWindow.print();
-        };
-        showToast('Sent digital QR ID badge to printer!', 'success');
-    }).catch(err => {
-        console.error('Printing error:', err);
-        showToast('Failed to generate printable ID.', 'error');
-    });
+            printWindow.document.close();
+            printWindow.onload = () => {
+                printWindow.focus();
+                printWindow.print();
+            };
+            showToast('Sent digital QR ID badge to printer!', 'success');
+        })
+        .catch((err) => {
+            console.error('Printing error:', err);
+            showToast('Failed to generate printable ID.', 'error');
+        });
 }
 
 export function deleteMember(memberId) {
-    const member = state.members.find(m => m.id === memberId);
+    const member = state.members.find((m) => m.id === memberId);
     if (!member) return;
 
     if (confirm(`Are you sure you want to delete member "${member.name}"?`)) {
-        state.members = state.members.filter(m => m.id !== memberId);
+        state.members = state.members.filter((m) => m.id !== memberId);
         saveToStorage();
         MFCFirebaseCloud.deleteMemberFromFirestore(memberId);
         MFCFirebaseCloud.pushAtomicUpdate('members', state.members);
@@ -95,7 +97,7 @@ export function deleteMember(memberId) {
 
 export function syncChapterBullets(val) {
     const btns = document.querySelectorAll('#members-chapter-bullets .chapter-bullet-btn');
-    btns.forEach(btn => {
+    btns.forEach((btn) => {
         const c = btn.getAttribute('data-chapter');
         if (c === val) {
             btn.classList.add('active');
@@ -115,7 +117,7 @@ export function syncChapterBullets(val) {
 
 export function filterByChapterBullet(chapterValue, clickedBtn) {
     syncChapterBullets(chapterValue);
-    
+
     // Store in global state since the dropdown doesn't exist
     state.activeChapterFilter = chapterValue;
 
@@ -136,7 +138,6 @@ export function filterByChapterBullet(chapterValue, clickedBtn) {
     }
 }
 
-
 export function setOrgViewMode(mode) {
     state.orgViewMode = mode;
     const treeBtn = document.getElementById('btn-org-tree');
@@ -151,7 +152,7 @@ export function setOrgViewMode(mode) {
 export function getMemberAttendanceRate(memberId) {
     if (!state.activities || state.activities.length === 0) return 100;
     let presentOrLate = 0;
-    state.activities.forEach(act => {
+    state.activities.forEach((act) => {
         const record = state.attendance[act.id]?.[memberId];
         if (record && (record.status === 'present' || record.status === 'late')) {
             presentOrLate++;
@@ -197,7 +198,10 @@ export function renderOrgMemberCard(member, isExec = false) {
     if (rate >= 80) badgeColor = '#10B981';
     else if (rate < 60) badgeColor = '#F43F5E';
 
-    const roleBadgeHtml = typeof formatRoleBadge === 'function' ? formatRoleBadge(roleName) : `<span style="color:#38BDF8; font-weight:700; font-size:0.75rem;">${roleName}</span>`;
+    const roleBadgeHtml =
+        typeof formatRoleBadge === 'function'
+            ? formatRoleBadge(roleName)
+            : `<span style="color:#38BDF8; font-weight:700; font-size:0.75rem;">${roleName}</span>`;
 
     return `
         <div class="org-member-card ${execClass}" onclick="openMemberProfile('${member.id}')" role="button" tabindex="0" title="Click to open full member profile">
@@ -237,20 +241,26 @@ export function renderOrgChart() {
 
     let members = state.members || [];
     if (filterDept !== 'ALL') {
-        members = members.filter(m => matchOrgDepartment(m.department || m.dept, filterDept));
+        members = members.filter((m) => matchOrgDepartment(m.department || m.dept, filterDept));
     }
     if (searchQuery) {
-        members = members.filter(m =>
-            (m.name || '').toLowerCase().includes(searchQuery) ||
-            (m.role || '').toLowerCase().includes(searchQuery) ||
-            (m.chapter || '').toLowerCase().includes(searchQuery)
+        members = members.filter(
+            (m) =>
+                (m.name || '').toLowerCase().includes(searchQuery) ||
+                (m.role || '').toLowerCase().includes(searchQuery) ||
+                (m.chapter || '').toLowerCase().includes(searchQuery)
         );
     }
 
     // Top summary bar inside chart canvas
     const totalMembers = members.length;
-    const leadersCount = members.filter(m => getRoleRank(m.role) <= 2).length;
-    const avgAtt = totalMembers > 0 ? Math.round(members.reduce((sum, m) => sum + getMemberAttendanceRate(m.id), 0) / totalMembers) : 100;
+    const leadersCount = members.filter((m) => getRoleRank(m.role) <= 2).length;
+    const avgAtt =
+        totalMembers > 0
+            ? Math.round(
+                  members.reduce((sum, m) => sum + getMemberAttendanceRate(m.id), 0) / totalMembers
+              )
+            : 100;
 
     const summaryHeaderHtml = `
         <div class="org-stats-header glass-card" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:16px; padding:16px 20px; margin-bottom:24px; border-radius:16px; background:rgba(15,23,42,0.85); border:1px solid rgba(56,189,248,0.2);">
@@ -279,7 +289,9 @@ export function renderOrgChart() {
     `;
 
     if (members.length === 0) {
-        container.innerHTML = summaryHeaderHtml + `
+        container.innerHTML =
+            summaryHeaderHtml +
+            `
             <div class="glass-panel" style="padding:48px; text-align:center; border-radius:16px;">
                 <div style="font-size:2.5rem; margin-bottom:12px;">🔍</div>
                 <h4 style="color:#FFF; font-size:1.15rem; margin-bottom:6px;">No Members Found in this Department</h4>
@@ -292,30 +304,48 @@ export function renderOrgChart() {
 
     if (viewMode === 'grid') {
         // GRID VIEW: Group by Department
-        const departments = ['Executive', 'EAST CHAPTER', 'Programs & Events', 'Creative & Media', 'Outreach & Fellowship', 'Finance & Treasury'];
+        const departments = [
+            'Executive',
+            'EAST CHAPTER',
+            'Programs & Events',
+            'Creative & Media',
+            'Outreach & Fellowship',
+            'Finance & Treasury',
+        ];
         const activeDepts = filterDept === 'ALL' ? departments : [filterDept];
 
-        const gridHtml = activeDepts.map(dept => {
-            const deptMembers = members.filter(m => matchOrgDepartment(m.department || m.dept, dept));
-            if (deptMembers.length === 0 && filterDept !== 'ALL') return '';
+        const gridHtml = activeDepts
+            .map((dept) => {
+                const deptMembers = members.filter((m) =>
+                    matchOrgDepartment(m.department || m.dept, dept)
+                );
+                if (deptMembers.length === 0 && filterDept !== 'ALL') return '';
 
-            const deptAvg = deptMembers.length > 0 ? Math.round(deptMembers.reduce((sum, m) => sum + getMemberAttendanceRate(m.id), 0) / deptMembers.length) : 0;
-            const deptIcons = {
-                'Executive': '👑',
-                'EAST CHAPTER': '⚡',
-                'Programs & Events': '🎉',
-                'Creative & Media': '🎨',
-                'Outreach & Fellowship': '🤝',
-                'Finance & Treasury': '💼'
-            };
+                const deptAvg =
+                    deptMembers.length > 0
+                        ? Math.round(
+                              deptMembers.reduce(
+                                  (sum, m) => sum + getMemberAttendanceRate(m.id),
+                                  0
+                              ) / deptMembers.length
+                          )
+                        : 0;
+                const deptIcons = {
+                    Executive: '👑',
+                    'EAST CHAPTER': '⚡',
+                    'Programs & Events': '🎉',
+                    'Creative & Media': '🎨',
+                    'Outreach & Fellowship': '🤝',
+                    'Finance & Treasury': '💼',
+                };
 
-            return `
+                return `
                 <div class="org-dept-section glass-panel" style="margin-bottom:24px; padding:24px; border-radius:20px; border:1px solid rgba(56,189,248,0.18);">
                     <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; margin-bottom:18px; padding-bottom:14px; border-bottom:1px solid rgba(255,255,255,0.08);">
                         <div style="display:flex; align-items:center; gap:12px;">
                             <span style="font-size:1.6rem;">${deptIcons[dept] || '🏛️'}</span>
                             <div>
-                                <h3 style="color:#FFF; font-size:1.15rem; font-weight:800; margin:0;">${dept === 'Executive' ? 'AREA SERVANTS' : (dept.includes('CHAPTER') ? dept : dept + ' Department')}</h3>
+                                <h3 style="color:#FFF; font-size:1.15rem; font-weight:800; margin:0;">${dept === 'Executive' ? 'AREA SERVANTS' : dept.includes('CHAPTER') ? dept : dept + ' Department'}</h3>
                                 <p style="color:#94A3B8; font-size:0.82rem; margin:2px 0 0;">${deptMembers.length} active member(s) assigned</p>
                             </div>
                         </div>
@@ -325,19 +355,22 @@ export function renderOrgChart() {
                         </div>
                     </div>
                     <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(280px, 1fr)); gap:16px;">
-                        ${deptMembers.length > 0 ? deptMembers.map(m => renderOrgMemberCard(m, dept === 'Executive')).join('') : `<div style="grid-column:1/-1; text-align:center; color:#64748B; padding:20px; font-style:italic;">No members currently in ${dept}. Click "+ Add Member" to assign.</div>`}
+                        ${deptMembers.length > 0 ? deptMembers.map((m) => renderOrgMemberCard(m, dept === 'Executive')).join('') : `<div style="grid-column:1/-1; text-align:center; color:#64748B; padding:20px; font-style:italic;">No members currently in ${dept}. Click "+ Add Member" to assign.</div>`}
                     </div>
                 </div>
             `;
-        }).join('');
+            })
+            .join('');
 
         container.innerHTML = summaryHeaderHtml + gridHtml;
         return;
     }
 
     if (viewMode === 'household') {
-        const hhHeads = members.filter(m => (m.role || '').toLowerCase().includes('household') || getRoleRank(m.role) <= 2);
-        const generalMembers = members.filter(m => !hhHeads.some(h => h.id === m.id));
+        const hhHeads = members.filter(
+            (m) => (m.role || '').toLowerCase().includes('household') || getRoleRank(m.role) <= 2
+        );
+        const generalMembers = members.filter((m) => !hhHeads.some((h) => h.id === m.id));
 
         const householdHtml = `
             <div class="org-dept-section glass-panel" style="margin-bottom:24px; padding:24px; border-radius:20px; border:1px solid rgba(129,140,248,0.3);">
@@ -349,9 +382,14 @@ export function renderOrgChart() {
                     </div>
                 </div>
                 <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(300px, 1fr)); gap:20px;">
-                    ${hhHeads.length > 0 ? hhHeads.map(h => {
-            const assignedYouth = generalMembers.filter(m => (m.chapter || '') === (h.chapter || ''));
-            return `
+                    ${
+                        hhHeads.length > 0
+                            ? hhHeads
+                                  .map((h) => {
+                                      const assignedYouth = generalMembers.filter(
+                                          (m) => (m.chapter || '') === (h.chapter || '')
+                                      );
+                                      return `
                             <div style="background:rgba(15,23,42,0.65); border:1px solid rgba(129,140,248,0.35); border-radius:16px; padding:16px;">
                                 <div style="display:flex; align-items:center; gap:10px; margin-bottom:12px;">
                                     <span style="font-size:1.4rem;">👑</span>
@@ -362,16 +400,26 @@ export function renderOrgChart() {
                                 </div>
                                 <div style="font-size:0.75rem; color:#94A3B8; margin-bottom:8px; font-weight:700; text-transform:uppercase;">Assigned Chapter Members (${assignedYouth.length}):</div>
                                 <div style="display:flex; flex-direction:column; gap:6px; max-height:160px; overflow-y:auto;">
-                                    ${assignedYouth.map(y => `
+                                    ${
+                                        assignedYouth
+                                            .map(
+                                                (y) => `
                                         <div style="display:flex; justify-content:space-between; align-items:center; background:rgba(255,255,255,0.04); padding:6px 10px; border-radius:8px; font-size:0.82rem; color:#F8FAFC;">
                                             <span>👤 ${y.name}</span>
                                             <span style="font-size:0.72rem; color:#64748B;">${y.role || 'Member'}</span>
                                         </div>
-                                    `).join('') || '<div style="color:#64748B; font-size:0.78rem;">No general members in this chapter.</div>'}
+                                    `
+                                            )
+                                            .join('') ||
+                                        '<div style="color:#64748B; font-size:0.78rem;">No general members in this chapter.</div>'
+                                    }
                                 </div>
                             </div>
                         `;
-        }).join('') : `<div style="grid-column:1/-1; text-align:center; color:#64748B; padding:20px;">No Household Heads recorded yet.</div>`}
+                                  })
+                                  .join('')
+                            : `<div style="grid-column:1/-1; text-align:center; color:#64748B; padding:20px;">No Household Heads recorded yet.</div>`
+                    }
                 </div>
             </div>
         `;
@@ -381,20 +429,28 @@ export function renderOrgChart() {
 
     // TREE VIEW: Dynamic Hierarchy
     // Tier 1: Executive & Chapter Leadership
-    let execMembers = members.filter(m => (m.department || m.dept) === 'Executive' || getRoleRank(m.role) === 1);
+    let execMembers = members.filter(
+        (m) => (m.department || m.dept) === 'Executive' || getRoleRank(m.role) === 1
+    );
     if (execMembers.length === 0 && members.length > 0) {
         // If filtering by a department without a Rank 1 head, showcase top ranking members in this department
-        const minRank = Math.min(...members.map(m => getRoleRank(m.role)));
+        const minRank = Math.min(...members.map((m) => getRoleRank(m.role)));
         if (minRank < 5) {
-            execMembers = members.filter(m => getRoleRank(m.role) === minRank);
+            execMembers = members.filter((m) => getRoleRank(m.role) === minRank);
         }
     }
-    const otherMembers = members.filter(m => !execMembers.some(em => em.id === m.id));
+    const otherMembers = members.filter((m) => !execMembers.some((em) => em.id === m.id));
 
     // Discover canonical and custom chapters
-    const standardChapters = ['East Chapter', 'North Chapter', 'West Chapter', 'South Chapter', 'Central Chapter'];
+    const standardChapters = [
+        'East Chapter',
+        'North Chapter',
+        'West Chapter',
+        'South Chapter',
+        'Central Chapter',
+    ];
     const dynamicChapters = [];
-    otherMembers.forEach(m => {
+    otherMembers.forEach((m) => {
         const canonical = getCanonicalChapterName(m.chapter);
         if (!standardChapters.includes(canonical) && !dynamicChapters.includes(canonical)) {
             dynamicChapters.push(canonical);
@@ -409,14 +465,18 @@ export function renderOrgChart() {
                 <span style="background:linear-gradient(135deg, #F59E0B, #D97706); color:#FFF; font-weight:800; font-size:0.78rem; letter-spacing:0.08em; text-transform:uppercase; padding:6px 18px; border-radius:20px; box-shadow:0 4px 14px rgba(245,158,11,0.3);">👑 AREA SERVANTS</span>
             </div>
             <div style="display:flex; flex-wrap:wrap; justify-content:center; gap:16px; margin-bottom:28px;">
-                ${execMembers.length > 0 ? execMembers.map(m => renderOrgMemberCard(m, true)).join('') : `
+                ${
+                    execMembers.length > 0
+                        ? execMembers.map((m) => renderOrgMemberCard(m, true)).join('')
+                        : `
                     <div class="org-member-card" style="border:1px dashed rgba(245,158,11,0.5); justify-content:center; text-align:center;" onclick="openAddMemberModal()">
                         <div class="org-member-info" style="margin:0;">
                             <div class="org-member-name" style="color:#F59E0B;">+ Assign Executive Leader</div>
                             <div class="org-member-role">Click to assign Chapter Youth Head</div>
                         </div>
                     </div>
-                `}
+                `
+                }
             </div>
 
             <!-- Connector line down -->
@@ -428,39 +488,51 @@ export function renderOrgChart() {
             </div>
             
             <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(270px, 1fr)); gap:20px;">
-                ${chapters.map(chapName => {
-        const chapMembers = otherMembers.filter(m => getCanonicalChapterName(m.chapter) === chapName);
-        if (chapMembers.length === 0 && filterDept !== 'ALL') return '';
+                ${chapters
+                    .map((chapName) => {
+                        const chapMembers = otherMembers.filter(
+                            (m) => getCanonicalChapterName(m.chapter) === chapName
+                        );
+                        if (chapMembers.length === 0 && filterDept !== 'ALL') return '';
 
-        const hhHeads = chapMembers.filter(m => getRoleRank(m.role) === 2);
-        const regularMems = chapMembers.filter(m => getRoleRank(m.role) > 2);
+                        const hhHeads = chapMembers.filter((m) => getRoleRank(m.role) === 2);
+                        const regularMems = chapMembers.filter((m) => getRoleRank(m.role) > 2);
 
-        return `
+                        return `
                         <div class="org-branch-column glass-panel" style="padding:18px; border-radius:18px; border:1px solid rgba(255,255,255,0.08); background:rgba(15,23,42,0.75); display:flex; flex-direction:column; gap:14px;">
                             <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid rgba(255,255,255,0.08); padding-bottom:10px;">
                                 <strong style="color:#F8FAFC; font-size:0.98rem;">📍 ${chapName}</strong>
                                 <span style="background:rgba(56,189,248,0.15); color:#38BDF8; font-size:0.72rem; font-weight:700; padding:3px 8px; border-radius:8px;">${chapMembers.length} Members</span>
                             </div>
 
-                            ${hhHeads.length > 0 ? `
+                            ${
+                                hhHeads.length > 0
+                                    ? `
                                 <div style="font-size:0.72rem; font-weight:700; color:#94A3B8; text-transform:uppercase; letter-spacing:0.05em;">Household & Unit Heads</div>
                                 <div style="display:flex; flex-direction:column; gap:10px;">
-                                    ${hhHeads.map(m => renderOrgMemberCard(m)).join('')}
+                                    ${hhHeads.map((m) => renderOrgMemberCard(m)).join('')}
                                 </div>
-                            ` : ''}
+                            `
+                                    : ''
+                            }
 
                             <div style="font-size:0.72rem; font-weight:700; color:#94A3B8; text-transform:uppercase; letter-spacing:0.05em; margin-top:4px;">Youth Members</div>
                             <div style="display:flex; flex-direction:column; gap:10px;">
-                                ${regularMems.length > 0 ? regularMems.map(m => renderOrgMemberCard(m)).join('') : `
+                                ${
+                                    regularMems.length > 0
+                                        ? regularMems.map((m) => renderOrgMemberCard(m)).join('')
+                                        : `
                                     <div style="color:#64748B; font-size:0.82rem; text-align:center; padding:16px; border:1px dashed rgba(255,255,255,0.1); border-radius:12px; cursor:pointer;" onclick="openAddMemberModal()">
                                         <div>No members listed</div>
                                         <div style="color:#38BDF8; font-size:0.75rem; margin-top:4px;">+ Assign Member</div>
                                     </div>
-                                `}
+                                `
+                                }
                             </div>
                         </div>
                     `;
-    }).join('')}
+                    })
+                    .join('')}
             </div>
         </div>
     `;
@@ -470,7 +542,12 @@ export function renderOrgChart() {
 
 export function getRoleRank(role = '') {
     const r = role.toLowerCase();
-    if (r.includes('chapter head') || r.includes('chapter leader') || r.includes('couple coordinator')) return 1;
+    if (
+        r.includes('chapter head') ||
+        r.includes('chapter leader') ||
+        r.includes('couple coordinator')
+    )
+        return 1;
     if (r.includes('household head') || r.includes('hh') || r.includes('unit head')) return 2;
     if (r.includes('core') || r.includes('ministry head')) return 3;
     if (r.includes('officer') || r.includes('ministry')) return 4;
@@ -523,7 +600,7 @@ export function checkAddMemberDuplicate() {
     }
 
     const fullName = `${fn} ${ln}`.toLowerCase();
-    const duplicate = state.members.find(m => {
+    const duplicate = state.members.find((m) => {
         if (currentId && m.id === currentId) return false;
         const mName = (m.name || '').trim().toLowerCase();
         return mName === fullName || mName.includes(fullName) || fullName.includes(mName);
@@ -540,7 +617,12 @@ export function checkAddMemberDuplicate() {
 export function filterDuplicateMembers() {
     state.showOnlyDuplicates = !state.showOnlyDuplicates;
     renderMembersTable();
-    showToast(state.showOnlyDuplicates ? 'Filtering table to show duplicate names only ⚠️' : 'Showing all members in directory', 'info');
+    showToast(
+        state.showOnlyDuplicates
+            ? 'Filtering table to show duplicate names only ⚠️'
+            : 'Showing all members in directory',
+        'info'
+    );
 }
 
 export function renderMembersTable() {
@@ -553,14 +635,16 @@ export function renderMembersTable() {
 
     // Compute exact normalized name counts across the full directory
     const nameCounts = {};
-    state.members.forEach(m => {
+    state.members.forEach((m) => {
         const clean = (m.name || '').trim().toLowerCase();
         if (clean) {
             nameCounts[clean] = (nameCounts[clean] || 0) + 1;
         }
     });
 
-    const totalDuplicateCount = state.members.filter(m => nameCounts[(m.name || '').trim().toLowerCase()] > 1).length;
+    const totalDuplicateCount = state.members.filter(
+        (m) => nameCounts[(m.name || '').trim().toLowerCase()] > 1
+    ).length;
     const dupBanner = document.getElementById('members-duplicate-banner');
     const dupBannerText = document.getElementById('members-duplicate-banner-text');
     const btnFilterDup = document.getElementById('btn-filter-duplicates');
@@ -591,9 +675,11 @@ export function renderMembersTable() {
     const chapterSelect = document.getElementById('members-filter-chapter');
     const query = searchInput ? searchInput.value.toLowerCase() : '';
     const deptFilter = deptSelect ? deptSelect.value : 'ALL';
-    const chapterSelectFilter = chapterSelect ? chapterSelect.value : (state.activeChapterFilter || 'ALL');
+    const chapterSelectFilter = chapterSelect
+        ? chapterSelect.value
+        : state.activeChapterFilter || 'ALL';
 
-    const filtered = state.members.filter(mem => {
+    const filtered = state.members.filter((mem) => {
         const cleanN = (mem.name || '').trim().toLowerCase();
         if (state.showOnlyDuplicates && nameCounts[cleanN] <= 1) return false;
 
@@ -605,11 +691,18 @@ export function renderMembersTable() {
             }
         }
 
-        const matchesQuery = (mem.name || '').toLowerCase().includes(query) || (mem.role || '').toLowerCase().includes(query);
-        const matchesDept = deptFilter === 'ALL' || (mem.dept || mem.department || '') === deptFilter;
+        const matchesQuery =
+            (mem.name || '').toLowerCase().includes(query) ||
+            (mem.role || '').toLowerCase().includes(query);
+        const matchesDept =
+            deptFilter === 'ALL' || (mem.dept || mem.department || '') === deptFilter;
         const memChap = (mem.chapter || 'EAST').toLowerCase();
         const filterChap = chapterSelectFilter.toLowerCase().replace(' chapter', '');
-        const matchesChapter = chapterSelectFilter === 'ALL' || mem.chapter === chapterSelectFilter || memChap.includes(filterChap) || filterChap.includes(memChap);
+        const matchesChapter =
+            chapterSelectFilter === 'ALL' ||
+            mem.chapter === chapterSelectFilter ||
+            memChap.includes(filterChap) ||
+            filterChap.includes(memChap);
         return matchesQuery && matchesDept && matchesChapter;
     });
 
@@ -646,12 +739,14 @@ export function renderMembersTable() {
     let currentChapterSection = null;
     const rowsHtml = [];
 
-    paginated.forEach(mem => {
+    paginated.forEach((mem) => {
         const chapName = mem.chapter || 'EAST CHAPTER';
         const cleanChap = chapName.toUpperCase();
         if (cleanChap !== currentChapterSection) {
             currentChapterSection = cleanChap;
-            const chapterCount = filtered.filter(m => (m.chapter || 'EAST CHAPTER').toUpperCase() === cleanChap).length;
+            const chapterCount = filtered.filter(
+                (m) => (m.chapter || 'EAST CHAPTER').toUpperCase() === cleanChap
+            ).length;
             rowsHtml.push(`
                 <tr class="chapter-section-header" style="background: rgba(15, 23, 42, 0.95); border-top: 2px solid rgba(56, 189, 248, 0.4); border-bottom: 1px solid rgba(56, 189, 248, 0.2);">
                     <td colspan="11" style="padding: 14px 20px;">
@@ -677,11 +772,13 @@ export function renderMembersTable() {
             ? `background: rgba(245, 158, 11, 0.12); border-left: 4px solid #F59E0B; border-bottom: 1px solid rgba(245, 158, 11, 0.3); transition: background 0.2s ease;`
             : `border-bottom: 1px solid rgba(255, 255, 255, 0.05); transition: background 0.2s ease;`;
 
-        const dupBadgeHtml = isDuplicate ? `
+        const dupBadgeHtml = isDuplicate
+            ? `
             <span class="badge" style="background: rgba(245, 158, 11, 0.25); border: 1px solid #F59E0B; color: #FBBF24; padding: 2px 8px; border-radius: 12px; font-size: 0.68rem; font-weight: 800; display: inline-flex; align-items: center; gap: 4px; box-shadow: 0 0 10px rgba(245,158,11,0.3);" title="⚠️ Another member exists with this exact name (${nameCounts[cleanName]} records total).">
                 <span>⚠️ Duplicate (${nameCounts[cleanName]})</span>
             </span>
-        ` : '';
+        `
+            : '';
 
         rowsHtml.push(`
             <tr class="activity-row ${isDuplicate ? 'duplicate-row-highlight' : ''}" style="${rowStyle}">
@@ -734,14 +831,19 @@ export function renderMembersTable() {
                     <button class="top-bar-icon-btn" title="View Digital QR Badge" style="width: 30px; height: 30px; display: inline-flex; color: #38BDF8; margin-right: 4px;" onclick="window.openDigitalQRModal('${mem.id}')">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 15px; height: 15px;"><rect width="5" height="5" x="3" y="3" rx="1"/><rect width="5" height="5" x="16" y="3" rx="1"/><rect width="5" height="5" x="3" y="16" rx="1"/><path d="M21 16h-3a2 2 0 0 0-2 2v3"/><path d="M21 21v.01"/><path d="M12 7v3a2 2 0 0 1-2 2H7"/><path d="M3 12h.01"/><path d="M12 3h.01"/><path d="M12 16v.01"/><path d="M16 12h1"/><path d="M21 12v.01"/><path d="M12 21v-1"/></svg>
                     </button>
-                    ${ (localStorage.getItem('ps_role') !== 'CHAPTER HEAD' || (mem.chapter || 'EAST').toUpperCase() === localStorage.getItem('ps_chapter')) ? `
+                    ${
+                        localStorage.getItem('ps_role') !== 'CHAPTER HEAD' ||
+                        (mem.chapter || 'EAST').toUpperCase() === localStorage.getItem('ps_chapter')
+                            ? `
                     <button class="top-bar-icon-btn" title="Edit Member Profile" style="width: 30px; height: 30px; display: inline-flex; color: var(--accent-blue); margin-right: 4px;" onclick="openEditMemberModal('${mem.id}')">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 15px; height: 15px;"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
                     </button>
                     <button class="top-bar-icon-btn" title="Remove Member" style="width: 30px; height: 30px; display: inline-flex; color: var(--accent-rose);" onclick="deleteMember('${mem.id}')">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 15px; height: 15px;"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
                     </button>
-                    ` : '' }
+                    `
+                            : ''
+                    }
                 </td>
             </tr>
         `);
@@ -789,12 +891,14 @@ export function renderMembersMobileCards(filtered, nameCounts = {}) {
 
     const paginated = filtered.slice(0, state.membersPaginationLimit || 50);
 
-    paginated.forEach(mem => {
+    paginated.forEach((mem) => {
         const chapName = mem.chapter || 'EAST CHAPTER';
         const cleanChap = chapName.toUpperCase();
         if (cleanChap !== currentChapterSection) {
             currentChapterSection = cleanChap;
-            const chapterCount = filtered.filter(m => (m.chapter || 'EAST CHAPTER').toUpperCase() === cleanChap).length;
+            const chapterCount = filtered.filter(
+                (m) => (m.chapter || 'EAST CHAPTER').toUpperCase() === cleanChap
+            ).length;
             cardsHtml.push(`
                 <div class="mobile-chapter-section-banner" style="background: linear-gradient(135deg, rgba(14, 165, 233, 0.25), rgba(15, 23, 42, 0.95)); border-left: 4px solid #38BDF8; padding: 10px 14px; border-radius: 10px; display: flex; align-items: center; justify-content: space-between; margin: 6px 0;">
                     <div style="display: flex; align-items: center; gap: 8px;">
@@ -816,9 +920,11 @@ export function renderMembersMobileCards(filtered, nameCounts = {}) {
             ? `padding: 16px; border-radius: 16px; background: rgba(245, 158, 11, 0.15); border: 2px solid #F59E0B; box-shadow: 0 4px 22px rgba(245,158,11,0.25);`
             : `padding: 16px; border-radius: 16px; background: rgba(15, 23, 42, 0.88); border: 1px solid rgba(255, 255, 255, 0.09); box-shadow: 0 4px 18px rgba(0,0,0,0.3);`;
 
-        const dupBadgeHtml = isDuplicate ? `
+        const dupBadgeHtml = isDuplicate
+            ? `
             <span style="background: rgba(245, 158, 11, 0.25); border: 1px solid #F59E0B; color: #FBBF24; padding: 2px 8px; border-radius: 12px; font-weight: 800; font-size: 0.68rem;">⚠️ DUPLICATE (${nameCounts[cleanName]})</span>
-        ` : '';
+        `
+            : '';
 
         cardsHtml.push(`
             <div class="mobile-member-card glass-card spotlight-card stagger-item" style="${cardStyle}; --stagger-idx: ${cardsHtml.length};">
@@ -884,7 +990,10 @@ export function renderMembersMobileCards(filtered, nameCounts = {}) {
                             🏷️ QR
                         </button>
                     </div>
-                    ${ (localStorage.getItem('ps_role') !== 'CHAPTER HEAD' || (mem.chapter || 'EAST').toUpperCase() === localStorage.getItem('ps_chapter')) ? `
+                    ${
+                        localStorage.getItem('ps_role') !== 'CHAPTER HEAD' ||
+                        (mem.chapter || 'EAST').toUpperCase() === localStorage.getItem('ps_chapter')
+                            ? `
                     <div style="display: flex; gap: 6px;">
                         <button onclick="openEditMemberModal('${mem.id}')" class="btn-secondary btn-sm" title="Edit Member" style="padding: 6px 12px; font-size: 0.78rem; border-color: rgba(96, 165, 250, 0.4); color: #60A5FA;">
                             ✏️ Edit
@@ -893,7 +1002,9 @@ export function renderMembersMobileCards(filtered, nameCounts = {}) {
                             🗑️
                         </button>
                     </div>
-                    ` : '' }
+                    `
+                            : ''
+                    }
                 </div>
             </div>
         `);
@@ -942,11 +1053,16 @@ export function clearAllMembers() {
         if (typeof MFCFirebaseCloud !== 'undefined' && MFCFirebaseCloud.initialized) {
             try {
                 const db = firebase.firestore();
-                toDelete.forEach(m => {
-                    if (m.id) db.collection('members').doc(m.id).delete()
-                        .catch(e => console.warn('Firestore clear error:', e));
+                toDelete.forEach((m) => {
+                    if (m.id)
+                        db.collection('members')
+                            .doc(m.id)
+                            .delete()
+                            .catch((e) => console.warn('Firestore clear error:', e));
                 });
-            } catch (e) { console.warn('Firestore clear error:', e); }
+            } catch (e) {
+                console.warn('Firestore clear error:', e);
+            }
         }
         showToast('All members have been cleared successfully.', 'info');
     }
@@ -955,12 +1071,16 @@ export function clearAllMembers() {
 export function generateMemberIDMatrixSVG(memberId = 'M-001') {
     let hash = 0;
     for (let i = 0; i < memberId.length; i++) {
-        hash = ((hash << 5) - hash) + memberId.charCodeAt(i);
+        hash = (hash << 5) - hash + memberId.charCodeAt(i);
         hash |= 0;
     }
     const size = 11;
     let svgRects = '';
-    const corners = [[0, 0], [0, 8], [8, 0]];
+    const corners = [
+        [0, 0],
+        [0, 8],
+        [8, 0],
+    ];
     for (const [cx, cy] of corners) {
         svgRects += `<rect x="${cx * 14 + 2}" y="${cy * 14 + 2}" width="42" height="42" fill="#0F172A" rx="4"/>`;
         svgRects += `<rect x="${cx * 14 + 8}" y="${cy * 14 + 8}" width="30" height="30" fill="#FFF" rx="2"/>`;
@@ -971,7 +1091,7 @@ export function generateMemberIDMatrixSVG(memberId = 'M-001') {
             if ((r < 3 && c < 3) || (r < 3 && c >= 8) || (r >= 8 && c < 3)) continue;
             const bit = Math.abs(Math.sin((r * 13 + c * 17 + hash) * 100)) > 0.45;
             if (bit) {
-                const color = ((r + c) % 4 === 0) ? '#0284C7' : '#0F172A';
+                const color = (r + c) % 4 === 0 ? '#0284C7' : '#0F172A';
                 svgRects += `<rect x="${c * 14 + 4}" y="${r * 14 + 4}" width="10" height="10" fill="${color}" rx="2"/>`;
             }
         }
@@ -980,7 +1100,7 @@ export function generateMemberIDMatrixSVG(memberId = 'M-001') {
 }
 
 export function exportMemberDossierPDF(memberId) {
-    const member = state.members.find(m => m.id === memberId);
+    const member = state.members.find((m) => m.id === memberId);
     if (!member) return;
 
     if (!window.jspdf || !window.jspdf.jsPDF) {
@@ -1013,15 +1133,23 @@ export function exportMemberDossierPDF(memberId) {
 
     doc.setFontSize(10);
     doc.setFont('helvetica', 'normal');
-    doc.text(`Chapter: ${member.chapter || 'East'} | Role: ${member.role} | Dept: ${member.dept}`, 14, 61);
-    doc.text(`Contact: ${member.contactNum || 'N/A'} | Birthday: ${member.birthday ? new Date(member.birthday).toLocaleDateString() : 'N/A'}`, 14, 67);
+    doc.text(
+        `Chapter: ${member.chapter || 'East'} | Role: ${member.role} | Dept: ${member.dept}`,
+        14,
+        61
+    );
+    doc.text(
+        `Contact: ${member.contactNum || 'N/A'} | Birthday: ${member.birthday ? new Date(member.birthday).toLocaleDateString() : 'N/A'}`,
+        14,
+        67
+    );
 
     let presentCount = 0;
     let lateCount = 0;
     let absentCount = 0;
     const totalActivities = state.activities.length;
 
-    const rows = state.activities.map(act => {
+    const rows = state.activities.map((act) => {
         const record = state.attendance[act.id]?.[memberId];
         let statusText = 'Absent';
         if (record) {
@@ -1042,10 +1170,15 @@ export function exportMemberDossierPDF(memberId) {
         return [act.name || act.title || 'Activity', dateStr, act.category || 'Event', statusText];
     });
 
-    const rate = totalActivities > 0 ? Math.round(((presentCount + lateCount) / totalActivities) * 100) : 0;
+    const rate =
+        totalActivities > 0 ? Math.round(((presentCount + lateCount) / totalActivities) * 100) : 0;
 
     doc.setFont('helvetica', 'bold');
-    doc.text(`Overall Attendance Rate: ${rate}% (${presentCount + lateCount} of ${totalActivities} activities attended)`, 14, 76);
+    doc.text(
+        `Overall Attendance Rate: ${rate}% (${presentCount + lateCount} of ${totalActivities} activities attended)`,
+        14,
+        76
+    );
 
     doc.autoTable({
         startY: 82,
@@ -1053,14 +1186,18 @@ export function exportMemberDossierPDF(memberId) {
         body: rows,
         styles: { fontSize: 9 },
         headStyles: { fillColor: [14, 165, 233] },
-        alternateRowStyles: { fillColor: [241, 245, 249] }
+        alternateRowStyles: { fillColor: [241, 245, 249] },
     });
 
-    const finalY = (doc.lastAutoTable && doc.lastAutoTable.finalY) ? doc.lastAutoTable.finalY : 120;
+    const finalY = doc.lastAutoTable && doc.lastAutoTable.finalY ? doc.lastAutoTable.finalY : 120;
     doc.setFontSize(9);
     doc.setFont('helvetica', 'italic');
     doc.setTextColor(100, 116, 139);
-    doc.text('Certified Official Document - Designed & Developed by Area LIT Tarlac', 14, finalY + 18);
+    doc.text(
+        'Certified Official Document - Designed & Developed by Area LIT Tarlac',
+        14,
+        finalY + 18
+    );
 
     doc.save(`${member.name.replace(/[^a-zA-Z0-9]/g, '_')}_Attendance_Dossier.pdf`);
     showToast('Member Dossier PDF exported successfully!', 'success');
@@ -1125,9 +1262,15 @@ export function handleAddMemberSubmit(event) {
 
     // Duplicate Check when adding a new member
     if (!idEl || !idEl.value) {
-        const duplicate = state.members.find(m => m.name.toLowerCase() === fullName.toLowerCase());
+        const duplicate = state.members.find(
+            (m) => m.name.toLowerCase() === fullName.toLowerCase()
+        );
         if (duplicate) {
-            if (!confirm(`Warning: Member "${fullName}" already exists in the directory. Add duplicate anyway?`)) {
+            if (
+                !confirm(
+                    `Warning: Member "${fullName}" already exists in the directory. Add duplicate anyway?`
+                )
+            ) {
                 return;
             }
         }
@@ -1150,17 +1293,23 @@ export function handleAddMemberSubmit(event) {
         parentsContact: parentsEl ? parentsEl.value.trim() : '',
         campDate: campDateEl ? campDateEl.value : '',
         campTitle: campTitleEl ? campTitleEl.value.trim() : '',
-        covenantDate: covenantEl ? covenantEl.value : ''
+        covenantDate: covenantEl ? covenantEl.value : '',
     };
 
     if (idEl && idEl.value) {
-        const idx = state.members.findIndex(m => m.id === idEl.value);
+        const idx = state.members.findIndex((m) => m.id === idEl.value);
         if (idx !== -1) {
             state.members[idx] = { ...state.members[idx], ...memberData };
             // Sync updated member to Firestore
-            if (typeof MFCFirebaseCloud !== 'undefined' && MFCFirebaseCloud.enabled && MFCFirebaseCloud.syncMember) {
+            if (
+                typeof MFCFirebaseCloud !== 'undefined' &&
+                MFCFirebaseCloud.enabled &&
+                MFCFirebaseCloud.syncMember
+            ) {
                 MFCFirebaseCloud.syncMember(state.members[idx]);
-                if (typeof MFCFirebaseCloud.pushSnapshot === 'function') { MFCFirebaseCloud.pushSnapshot(); }
+                if (typeof MFCFirebaseCloud.pushSnapshot === 'function') {
+                    MFCFirebaseCloud.pushSnapshot();
+                }
             }
             showToast(`Member "${fullName}" updated successfully!`, 'success');
             logAuditAction(`Updated member record: ${fullName}`, 'members');
@@ -1169,13 +1318,19 @@ export function handleAddMemberSubmit(event) {
         const newMember = {
             id: 'm-' + Date.now(),
             dept: 'Outreach',
-            ...memberData
+            ...memberData,
         };
         state.members.push(newMember);
         // Sync new member to Firestore
-        if (typeof MFCFirebaseCloud !== 'undefined' && MFCFirebaseCloud.enabled && MFCFirebaseCloud.syncMember) {
+        if (
+            typeof MFCFirebaseCloud !== 'undefined' &&
+            MFCFirebaseCloud.enabled &&
+            MFCFirebaseCloud.syncMember
+        ) {
             MFCFirebaseCloud.syncMember(newMember);
-            if (typeof MFCFirebaseCloud.pushSnapshot === 'function') { MFCFirebaseCloud.pushSnapshot(); }
+            if (typeof MFCFirebaseCloud.pushSnapshot === 'function') {
+                MFCFirebaseCloud.pushSnapshot();
+            }
         }
         showToast(`New member "${fullName}" added to organization!`, 'success');
         logAuditAction(`Added new member: ${fullName}`, 'members');

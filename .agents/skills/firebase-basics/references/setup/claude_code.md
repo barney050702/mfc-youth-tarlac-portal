@@ -19,23 +19,23 @@ Check if the plugins are already installed before proceeding:
    `claude mcp list -s project`. Note whether the output of either command
    includes `firebase`.
 1. **Determine Installation Path**:
-   - If **both** skills and MCP configuration are found, the plugin is fully
-     installed. **Stop here and skip all remaining setup steps in this
-     document.**
-   - If **neither** are found, proceed to step 4.
-   - If **only one** is found (e.g., skills are installed but MCP is missing, or
-     vice versa), **stop and prompt the user**. Explain the mixed state and ask
-     if they want to proceed with installing the Firebase plugin before
-     continuing to step 4.
+    - If **both** skills and MCP configuration are found, the plugin is fully
+      installed. **Stop here and skip all remaining setup steps in this
+      document.**
+    - If **neither** are found, proceed to step 4.
+    - If **only one** is found (e.g., skills are installed but MCP is missing, or
+      vice versa), **stop and prompt the user**. Explain the mixed state and ask
+      if they want to proceed with installing the Firebase plugin before
+      continuing to step 4.
 1. **Add Marketplace**: Run the following command to add the marketplace (this
    uses the default User scope):
-   ```bash
-   claude plugin marketplace add firebase/agent-skills
-   ```
+    ```bash
+    claude plugin marketplace add firebase/agent-skills
+    ```
 1. **Install Plugins**: Run the following command to install the plugin:
-   ```bash
-   claude plugin install firebase@firebase
-   ```
+    ```bash
+    claude plugin install firebase@firebase
+    ```
 1. **Verify Installation**: Re-run the checks in steps 1 and 2 to confirm the
    skills and the MCP server are now available.
 

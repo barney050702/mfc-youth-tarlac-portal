@@ -29,7 +29,8 @@ export function showToast(message, type = 'info', duration = 3000) {
     if (!container) {
         container = document.createElement('div');
         container.id = 'toast-container';
-        container.style.cssText = 'position: fixed; bottom: 24px; right: 24px; z-index: 100000; display: flex; flex-direction: column; gap: 10px; max-width: 90vw; pointer-events: none;';
+        container.style.cssText =
+            'position: fixed; bottom: 24px; right: 24px; z-index: 100000; display: flex; flex-direction: column; gap: 10px; max-width: 90vw; pointer-events: none;';
         document.body.appendChild(container);
     }
 
@@ -39,9 +40,9 @@ export function showToast(message, type = 'info', duration = 3000) {
         success: 'rgba(16, 185, 129, 0.95)',
         error: 'rgba(239, 68, 68, 0.95)',
         warning: 'rgba(245, 158, 11, 0.95)',
-        info: 'rgba(14, 165, 233, 0.95)'
+        info: 'rgba(14, 165, 233, 0.95)',
     };
-    
+
     toast.style.cssText = `
         background: ${bgMap[type] || bgMap.info};
         color: #FFFFFF;
@@ -74,23 +75,29 @@ export function showToast(message, type = 'info', duration = 3000) {
 }
 
 export function switchView(viewId) {
-    if (typeof window !== 'undefined' && typeof window.switchView === 'function' && window.switchView !== switchView) {
+    if (
+        typeof window !== 'undefined' &&
+        typeof window.switchView === 'function' &&
+        window.switchView !== switchView
+    ) {
         return window.switchView(viewId);
     }
 
     state.currentView = viewId;
     triggerHaptic('light');
 
-    document.querySelectorAll('.nav-item, .sidebar-nav-item, .bottom-nav-item, .mobile-nav-item').forEach(btn => {
-        if (btn.getAttribute('data-view') === viewId) {
-            btn.classList.add('active');
-        } else {
-            btn.classList.remove('active');
-        }
-    });
+    document
+        .querySelectorAll('.nav-item, .sidebar-nav-item, .bottom-nav-item, .mobile-nav-item')
+        .forEach((btn) => {
+            if (btn.getAttribute('data-view') === viewId) {
+                btn.classList.add('active');
+            } else {
+                btn.classList.remove('active');
+            }
+        });
 
-    document.querySelectorAll('.view-panel').forEach(panel => {
-        const targetViewId = (viewId === 'servants') ? 'members' : viewId;
+    document.querySelectorAll('.view-panel').forEach((panel) => {
+        const targetViewId = viewId === 'servants' ? 'members' : viewId;
         if (panel.id === `view-${targetViewId}`) {
             panel.classList.add('active');
         } else {
@@ -122,14 +129,22 @@ export function initMobileNativeGestures() {
     let touchStartX = 0;
     let touchEndX = 0;
 
-    sidebar.addEventListener('touchstart', (e) => {
-        touchStartX = e.changedTouches[0].screenX;
-    }, { passive: true });
+    sidebar.addEventListener(
+        'touchstart',
+        (e) => {
+            touchStartX = e.changedTouches[0].screenX;
+        },
+        { passive: true }
+    );
 
-    sidebar.addEventListener('touchend', (e) => {
-        touchEndX = e.changedTouches[0].screenX;
-        handleSwipe();
-    }, { passive: true });
+    sidebar.addEventListener(
+        'touchend',
+        (e) => {
+            touchEndX = e.changedTouches[0].screenX;
+            handleSwipe();
+        },
+        { passive: true }
+    );
 
     function handleSwipe() {
         const threshold = 50;
@@ -142,10 +157,13 @@ export function initMobileNativeGestures() {
 
 export function copyToClipboardText(text, successMsg = 'Copied to clipboard!') {
     if (navigator.clipboard && navigator.clipboard.writeText) {
-        navigator.clipboard.writeText(text).then(() => {
-            showToast(successMsg, 'success');
-            triggerHaptic('success');
-        }).catch(() => fallbackCopy(text, successMsg));
+        navigator.clipboard
+            .writeText(text)
+            .then(() => {
+                showToast(successMsg, 'success');
+                triggerHaptic('success');
+            })
+            .catch(() => fallbackCopy(text, successMsg));
     } else {
         fallbackCopy(text, successMsg);
     }
@@ -191,7 +209,7 @@ export function switchResourceCategory(category) {
     }
 
     // Highlight sidebar subnav item
-    document.querySelectorAll('.nav-sub-item').forEach(el => {
+    document.querySelectorAll('.nav-sub-item').forEach((el) => {
         el.style.color = '#94A3B8';
         el.style.fontWeight = '500';
     });
@@ -202,7 +220,7 @@ export function switchResourceCategory(category) {
     }
 
     // Highlight top tab buttons inside view-resources
-    document.querySelectorAll('.resource-tab-btn').forEach(btn => {
+    document.querySelectorAll('.resource-tab-btn').forEach((btn) => {
         btn.classList.remove('active');
         btn.style.borderColor = 'rgba(255, 255, 255, 0.1)';
         btn.style.background = 'rgba(15, 23, 42, 0.4)';
@@ -217,7 +235,7 @@ export function switchResourceCategory(category) {
     }
 
     // Show selected section cards
-    document.querySelectorAll('.resource-section').forEach(sec => {
+    document.querySelectorAll('.resource-section').forEach((sec) => {
         sec.style.display = 'none';
     });
     const targetSec = document.getElementById(`res-section-${category}`);
@@ -226,7 +244,7 @@ export function switchResourceCategory(category) {
     }
 
     // Show dynamic user-added cards for this category
-    ['youthcamp', 'trainings', 'songboard', 'holyrosary', 'letters'].forEach(cat => {
+    ['youthcamp', 'trainings', 'songboard', 'holyrosary', 'letters'].forEach((cat) => {
         const dynDiv = document.getElementById(`res-dynamic-${cat}`);
         if (dynDiv) dynDiv.style.display = cat === category ? 'grid' : 'none';
     });

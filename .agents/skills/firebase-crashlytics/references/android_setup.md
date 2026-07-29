@@ -43,12 +43,12 @@ plugins {
 
 1. Add the Crashlytics plugin to the `plugins` block:
 
-   ```kotlin
-   plugins {
-       // ... other plugins
-       id("com.google.firebase.crashlytics")
-   }
-   ```
+    ```kotlin
+    plugins {
+        // ... other plugins
+        id("com.google.firebase.crashlytics")
+    }
+    ```
 
 1. Add the Firebase Crashlytics dependency to the `dependencies` block. It is
    recommended to use the Firebase Bill of Materials (BoM) to manage SDK
@@ -56,17 +56,17 @@ plugins {
    [latest version from the Google Maven repository](https://maven.google.com/web/index.html?q=firebase-bom#com.google.firebase:firebase-bom)
    before adding this.
 
-   ```kotlin
-   dependencies {
-       // ... other dependencies
+    ```kotlin
+    dependencies {
+        // ... other dependencies
 
-       // Import the Firebase BoM
-       implementation(platform("com.google.firebase:firebase-bom:<latest_bom_version>"))
+        // Import the Firebase BoM
+        implementation(platform("com.google.firebase:firebase-bom:<latest_bom_version>"))
 
-       // Add the dependencies for the Crashlytics and Analytics
-       implementation("com.google.firebase:firebase-crashlytics-ktx")
-   }
-   ```
+        // Add the dependencies for the Crashlytics and Analytics
+        implementation("com.google.firebase:firebase-crashlytics-ktx")
+    }
+    ```
 
 ## Follow up Steps
 
@@ -79,30 +79,30 @@ App-level `build.gradle.kts` (`<project>/<app-module>/build.gradle.kts`)
 
 1. Add the `firebase-crashlytics-ndk` dependency:
 
-   ```kotlin
-   dependencies {
-       // ... other dependencies
-       implementation("com.google.firebase:firebase-crashlytics-ndk:18.6.2")
-   }
-   ```
+    ```kotlin
+    dependencies {
+        // ... other dependencies
+        implementation("com.google.firebase:firebase-crashlytics-ndk:18.6.2")
+    }
+    ```
 
 1. Enable the `nativeSymbolUpload` flag in your `buildTypes` configuration. This
    will automatically upload symbol files for your native code, which are
    required to symbolicate native crash reports.
 
-   ```kotlin
-   android {
-       // ... other config
-       buildTypes {
-           getByName("release") {
-               // ...
-               firebaseCrashlytics {
-                   nativeSymbolUploadEnabled = true
-               }
-           }
-       }
-   }
-   ```
+    ```kotlin
+    android {
+        // ... other config
+        buildTypes {
+            getByName("release") {
+                // ...
+                firebaseCrashlytics {
+                    nativeSymbolUploadEnabled = true
+                }
+            }
+        }
+    }
+    ```
 
 After these changes, Crashlytics will automatically report crashes in your app's
 native code.
@@ -115,15 +115,15 @@ crash in the app.
 1. Add code to your main activity (e.g., in `onCreate`) to trigger a crash a few
    seconds after app startup:
 
-   ```kotlin
-   import android.os.Handler
-   import android.os.Looper
+    ```kotlin
+    import android.os.Handler
+    import android.os.Looper
 
-   // ... in your Activity's onCreate method or similar startup logic
-   Handler(Looper.getMainLooper()).postDelayed({
-       throw RuntimeException("Test Crash") // Force a crash after 3 seconds
-   }, 3000)
-   ```
+    // ... in your Activity's onCreate method or similar startup logic
+    Handler(Looper.getMainLooper()).postDelayed({
+        throw RuntimeException("Test Crash") // Force a crash after 3 seconds
+    }, 3000)
+    ```
 
 1. Run your app on a device or emulator. The app should crash after a short
    delay.

@@ -51,13 +51,13 @@ this file already exists, instead append to the existing JSON:
 
 ```json
 {
-  "firestore": {
-    "rules": "firestore.rules",
-    "indexes": "firestore.indexes.json",
-    "edition": "enterprise",
-    "database": "my-database-id",
-    "location": "<selected-location>"
-  }
+    "firestore": {
+        "rules": "firestore.rules",
+        "indexes": "firestore.indexes.json",
+        "edition": "enterprise",
+        "database": "my-database-id",
+        "location": "<selected-location>"
+    }
 }
 ```
 
@@ -77,7 +77,7 @@ service cloud.firestore {
 }
 ```
 
-*See [security_rules.md](security_rules.md) for how to write actual rules.*
+_See [security_rules.md](security_rules.md) for how to write actual rules._
 
 ### 3. Create `firestore.indexes.json`
 
@@ -86,12 +86,12 @@ start:
 
 ```json
 {
-  "indexes": [],
-  "fieldOverrides": []
+    "indexes": [],
+    "fieldOverrides": []
 }
 ```
 
-*See [indexes.md](indexes.md) for how to configure indexes.*
+_See [indexes.md](indexes.md) for how to configure indexes._
 
 ## Deploy rules and indexes
 

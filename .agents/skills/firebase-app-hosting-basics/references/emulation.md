@@ -14,12 +14,12 @@ source control.
 ```yaml
 # apphosting.emulator.yaml (gitignored usually)
 runConfig:
-  cpu: 1
-  memoryMiB: 512
+    cpu: 1
+    memoryMiB: 512
 
 env:
-  - variable: API_KEY
-    value: "local-dev-api-key" # Override secret with local value
+    - variable: API_KEY
+      value: 'local-dev-api-key' # Override secret with local value
 ```
 
 ## Running the Emulator
@@ -46,12 +46,12 @@ npx -y firebase-tools@latest emulators:start
 
 ```json
 {
-  "emulators": {
-    "apphosting": {
-      "host": "localhost",
-      "port": 5004
+    "emulators": {
+        "apphosting": {
+            "host": "localhost",
+            "port": 5004
+        }
     }
-  }
 }
 ```
 
