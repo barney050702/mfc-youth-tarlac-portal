@@ -103,4 +103,6 @@ function renderAllViews() {
     populateAttendanceDropdown();
     renderAttendanceRoster();
     renderActivitiesTable();
+    if (window.renderInteractiveCharts) window.renderInteractiveCharts();
 }
+window.renderAll = renderAllViews;

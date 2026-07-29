@@ -71,7 +71,12 @@ export function renderActivitiesTable() {
         const actionsTd = document.createElement('td');
         actionsTd.setAttribute('data-label', 'Actions');
         actionsTd.style.cssText = 'padding: 14px 16px; text-align: right;';
-        
+        const emailBtn = document.createElement('button');
+        emailBtn.style.cssText = 'background: rgba(56, 189, 248, 0.15); border: 1px solid rgba(56, 189, 248, 0.3); color: #38BDF8; padding: 6px 10px; border-radius: 8px; font-size: 12px; cursor: pointer; margin-right: 8px;';
+        emailBtn.textContent = '✉️ Remind';
+        emailBtn.addEventListener('click', () => sendActivityEmailReminder(act));
+        actionsTd.appendChild(emailBtn);
+
         if (localStorage.getItem('ps_role') !== 'CHAPTER HEAD') {
             const delBtn = document.createElement('button');
             delBtn.style.cssText = 'background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.3); color: #F87171; padding: 6px 10px; border-radius: 8px; font-size: 12px; cursor: pointer;';
@@ -92,6 +97,10 @@ export function renderActivitiesTable() {
 }
 
 export function deleteActivity(actId) {
+    if (localStorage.getItem('ps_role') === 'CHAPTER HEAD') {
+        showToast('Access Denied: Chapter Heads cannot delete activities.', 'error');
+        return;
+    }
     if (confirm('Are you sure you want to delete this activity?')) {
         state.activities = state.activities.filter(a => a.id !== actId);
         saveToStorage();
@@ -102,3 +111,37 @@ export function deleteActivity(actId) {
         triggerHaptic('medium');
     }
 }
+
+export async function sendActivityEmailReminder(act) {
+    if (!window.emailjs) {
+        if (window.showToast) window.showToast('EmailJS SDK not loaded.', 'error');
+        else alert('EmailJS SDK not loaded.');
+        return;
+    }
+
+    const conf = confirm(`Are you sure you want to send email reminders for: ${act.title || act.name}?`);
+    if (!conf) return;
+
+    if (window.showToast) window.showToast('Sending reminders...', 'info');
+    
+    // Using a generic template approach, the user will need to configure this in EmailJS
+    try {
+        // Mocking the call since we don't have keys yet.
+        // await emailjs.send("YOUR_SERVICE_ID","YOUR_TEMPLATE_ID",{
+        //     activity_name: act.title,
+        //     activity_date: act.date,
+        //     activity_venue: act.venue,
+        //     to_email: "member@example.com"
+        // });
+        
+        setTimeout(() => {
+            if (window.showToast) window.showToast(`Reminders sent for ${act.title || act.name}! (Demo Mode)`, 'success');
+            else alert(`Reminders sent for ${act.title || act.name}! (Demo Mode)`);
+        }, 1500);
+        
+    } catch (err) {
+        console.error('Email error:', err);
+        if (window.showToast) window.showToast('Failed to send emails.', 'error');
+    }
+}
+window.sendActivityEmailReminder = sendActivityEmailReminder;

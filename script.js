@@ -893,6 +893,9 @@ function renderActivitiesTable() {
                                 <button onclick="downloadActivityPDF('${act.id}', '${displayTitle.replace(/'/g, "\\'")}')" class="btn-secondary" style="flex: 1; padding: 10px; border-radius: 12px; font-weight: 700; font-size: 0.85rem; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 6px; min-height: 44px; min-width: 44px;">
                                     <span>📄 Export PDF</span>
                                 </button>
+                                <button onclick="sendActivityEmailReminder(${JSON.stringify(act).replace(/"/g, '&quot;')})" style="background: rgba(56, 189, 248, 0.15); border: 1px solid rgba(56, 189, 248, 0.3); color: #38BDF8; flex: 1; padding: 10px; border-radius: 12px; font-weight: 700; font-size: 0.85rem; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 6px; min-height: 44px; min-width: 44px;">
+                                    <span>✉️ Remind</span>
+                                </button>
                             </div>
                             ${ localStorage.getItem('ps_role') !== 'CHAPTER HEAD' ? `
                             <div style="display: flex; justify-content: space-between; align-items: center; gap: 8px;">
@@ -1073,6 +1076,13 @@ function closeAddModal() {
 function handleFormSubmit(e) {
     if (e && e.preventDefault) e.preventDefault();
     const idEl = document.getElementById('form-activity-id');
+    const idVal = idEl ? idEl.value : '';
+
+    if (idVal && localStorage.getItem('ps_role') === 'CHAPTER HEAD') {
+        showToast('Access Denied: Chapter Heads cannot edit activities.', 'error');
+        return;
+    }
+
     const titleEl = document.getElementById('form-title');
     const dateEl = document.getElementById('form-date');
     const catEl = document.getElementById('form-category');
@@ -1080,7 +1090,6 @@ function handleFormSubmit(e) {
     const statEl = document.getElementById('form-status');
     const descEl = document.getElementById('form-description');
 
-    const idVal = idEl ? idEl.value : '';
     const titleVal = titleEl ? titleEl.value.trim() : '';
     const dateVal = dateEl ? dateEl.value : '';
     const catVal = catEl ? catEl.value : 'PASTORAL';
@@ -1150,6 +1159,11 @@ function handleFormSubmit(e) {
 }
 
 function deleteActivity(actId) {
+    if (localStorage.getItem('ps_role') === 'CHAPTER HEAD') {
+        showToast('Access Denied: Chapter Heads cannot delete activities.', 'error');
+        return;
+    }
+
     const act = state.activities.find(a => a.id === actId);
     if (!act) return;
 
@@ -1177,6 +1191,11 @@ function deleteActivity(actId) {
 }
 
 function clearAllActivities() {
+    if (localStorage.getItem('ps_role') === 'CHAPTER HEAD') {
+        showToast('Access Denied: Chapter Heads cannot delete activities.', 'error');
+        return;
+    }
+
     if (!state.activities || state.activities.length === 0) {
         showToast('Activities list is already empty.', 'info');
         return;

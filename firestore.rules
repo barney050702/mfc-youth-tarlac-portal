@@ -1,0 +1,45 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Function to check if the user is a Super Admin
+    function isSuperAdmin() {
+      return request.auth != null && request.auth.token.email == 'reyesbarney38@gmail.com';
+    }
+
+    // Function to check if the user is a Chapter Head
+    function isChapterHead() {
+      return request.auth != null && request.auth.token.email == 'chapter@mfcyouthtarlac.com';
+    }
+
+    // Members collection
+    match /members/{memberId} {
+      // Anyone logged in can read
+      allow read: if isSuperAdmin() || isChapterHead();
+      
+      // Only Super Admin can write (create, update, delete)
+      // Note: Chapter Heads might need create access if they can add members, 
+      // but current UI hides add member from them in some views. 
+      // We'll allow Chapter Heads to create for now, but not update/delete.
+      allow create: if isSuperAdmin() || isChapterHead();
+      allow update, delete: if isSuperAdmin();
+    }
+
+    // Activities collection
+    match /activities/{activityId} {
+      allow read: if isSuperAdmin() || isChapterHead();
+      allow write: if isSuperAdmin();
+    }
+    
+    // Events collection
+    match /events/{eventId} {
+      allow read: if isSuperAdmin() || isChapterHead();
+      allow write: if isSuperAdmin();
+    }
+    
+    // Default fallback
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
