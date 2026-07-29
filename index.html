@@ -429,7 +429,9 @@
                                     </svg>
                                 </div>
                             </div>
-                            <div class="metric-value" id="stat-total-activities">0</div>
+                            <div class="metric-value" id="stat-total-activities">
+                                <div class="skeleton skeleton-text" style="width: 60px; height: 36px; margin: 0;"></div>
+                            </div>
                             <div class="metric-footer">
                                 <span class="trend badge-green">↑ 100%</span>
                                 <span class="trend-text">from last semester</span>
@@ -445,7 +447,9 @@
                                     </svg>
                                 </div>
                             </div>
-                            <div class="metric-value text-gradient" id="stat-avg-rate">0%</div>
+                            <div class="metric-value text-gradient" id="stat-avg-rate">
+                                <div class="skeleton skeleton-text" style="width: 80px; height: 36px; margin: 0;"></div>
+                            </div>
                             <div class="metric-footer">
                                 <div class="mini-progress-bar">
                                     <div class="mini-fill" id="stat-rate-bar" style="width: 0%;"></div>
@@ -463,7 +467,9 @@
                                     </svg>
                                 </div>
                             </div>
-                            <div class="metric-value" id="stat-total-members">0</div>
+                            <div class="metric-value" id="stat-total-members">
+                                <div class="skeleton skeleton-text" style="width: 60px; height: 36px; margin: 0;"></div>
+                            </div>
                             <div class="metric-footer">
                                 <span class="trend badge-emerald">● Active</span>
                                 <span class="trend-text">Registered participants</span>
@@ -480,7 +486,9 @@
                                     </svg>
                                 </div>
                             </div>
-                            <div class="metric-value" id="stat-total-checkins">0</div>
+                            <div class="metric-value" id="stat-total-checkins">
+                                <div class="skeleton skeleton-text" style="width: 60px; height: 36px; margin: 0;"></div>
+                            </div>
                             <div class="metric-footer">
                                 <span class="trend text-purple">Present & Late</span>
                                 <span class="trend-text">cumulative attendance</span>
@@ -754,7 +762,13 @@
                                     </tr>
                                 </thead>
                                 <tbody id="activities-table-body">
-                                    <!-- Populated via script.js -->
+                                    <tr>
+                                        <td colspan="6" style="padding: 1rem; text-align: center; border: none;">
+                                            <div class="skeleton-card" style="height: 60px; margin-bottom: 8px;"></div>
+                                            <div class="skeleton-card" style="height: 60px; margin-bottom: 8px;"></div>
+                                            <div class="skeleton-card" style="height: 60px;"></div>
+                                        </td>
+                                    </tr>
                                 </tbody>
                             </table>
                         </div>
@@ -954,7 +968,12 @@
                                     </tr>
                                 </thead>
                                 <tbody id="attendance-roster-body">
-                                    <!-- Populated via script.js -->
+                                    <tr>
+                                        <td colspan="4" style="padding: 1rem; text-align: center; border: none;">
+                                            <div class="skeleton-card" style="height: 50px; margin-bottom: 8px;"></div>
+                                            <div class="skeleton-card" style="height: 50px; margin-bottom: 8px;"></div>
+                                        </td>
+                                    </tr>
                                 </tbody>
                             </table>
                         </div>
@@ -1137,7 +1156,13 @@
                                     </tr>
                                 </thead>
                                 <tbody id="members-table-body">
-                                    <!-- Populated dynamically by script.js -->
+                                    <tr>
+                                        <td colspan="6" style="padding: 1rem; text-align: center; border: none;">
+                                            <div class="skeleton-card" style="height: 60px; margin-bottom: 8px;"></div>
+                                            <div class="skeleton-card" style="height: 60px; margin-bottom: 8px;"></div>
+                                            <div class="skeleton-card" style="height: 60px;"></div>
+                                        </td>
+                                    </tr>
                                 </tbody>
                             </table>
                         </div>

@@ -32,6 +32,13 @@ export const MFCFirebaseCloud = {
                 if (!firebase.apps || firebase.apps.length === 0) {
                     firebase.initializeApp(this.config);
                 }
+                
+                // Enable Offline Persistence
+                if (firebase.firestore) {
+                    firebase.firestore().enablePersistence({ synchronizeTabs: true })
+                        .catch(err => console.warn('[Firestore] Offline persistence error:', err));
+                }
+
                 this.initialized = true;
 
                 // Load members from Firestore
