@@ -35,8 +35,21 @@ export const MFCFirebaseCloud = {
                 
                 // Enable Offline Persistence
                 if (firebase.firestore) {
+                    // Temporarily suppress the deprecation warning for compat API
+                    const originalWarn = console.warn;
+                    console.warn = function(...args) {
+                        if (args[0] && typeof args[0] === 'string' && args[0].includes('enableMultiTabIndexedDbPersistence() will be deprecated')) {
+                            return;
+                        }
+                        originalWarn.apply(console, args);
+                    };
+
                     firebase.firestore().enablePersistence({ synchronizeTabs: true })
-                        .catch(err => console.warn('[Firestore] Offline persistence error:', err));
+                        .catch(err => originalWarn('[Firestore] Offline persistence error:', err))
+                        .finally(() => {
+                            // Restore console.warn after the initial synchronous execution
+                            setTimeout(() => { console.warn = originalWarn; }, 100);
+                        });
                 }
 
                 this.initialized = true;
