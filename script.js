@@ -4242,7 +4242,7 @@ document.addEventListener('keydown', (e) => {
     }
     if (e.altKey && (e.key === 'q' || e.key === 'Q')) {
         e.preventDefault();
-        if (typeof openQRScannerModal === 'function') openQRScannerModal();
+        if (window.startLiveQRScanner) window.startLiveQRScanner();
         return;
     }
     if (e.altKey && (e.key === 'n' || e.key === 'N')) {

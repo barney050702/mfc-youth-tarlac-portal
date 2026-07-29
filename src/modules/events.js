@@ -252,7 +252,7 @@ export function initializeEventListeners() {
     const el_btn_open_qr_scanner = document.getElementById('btn-open-qr-scanner');
     if (el_btn_open_qr_scanner) {
         el_btn_open_qr_scanner.addEventListener('click', function(event) {
-            openQRScannerModal()
+            if (window.startLiveQRScanner) window.startLiveQRScanner()
         });
     }
 
@@ -406,7 +406,7 @@ export function initializeEventListeners() {
     const el_action_btn_45 = document.getElementById('action-btn-45');
     if (el_action_btn_45) {
         el_action_btn_45.addEventListener('click', function(event) {
-            openQRScannerModal()
+            if (window.startLiveQRScanner) window.startLiveQRScanner()
         });
     }
 
@@ -1057,14 +1057,14 @@ export function initializeEventListeners() {
     const el_action_btn_125 = document.getElementById('action-btn-125');
     if (el_action_btn_125) {
         el_action_btn_125.addEventListener('click', function(event) {
-            closeQRScannerModal()
+            if (window.stopLiveQRScanner) window.stopLiveQRScanner()
         });
     }
 
     const el_action_btn_126 = document.getElementById('action-btn-126');
     if (el_action_btn_126) {
         el_action_btn_126.addEventListener('click', function(event) {
-            startLiveCameraQRScanner()
+            if (window.startLiveQRScanner) window.startLiveQRScanner()
         });
     }
 
@@ -1078,7 +1078,7 @@ export function initializeEventListeners() {
     const el_action_btn_128 = document.getElementById('action-btn-128');
     if (el_action_btn_128) {
         el_action_btn_128.addEventListener('click', function(event) {
-            closeQRScannerModal()
+            if (window.stopLiveQRScanner) window.stopLiveQRScanner()
         });
     }
 
@@ -1330,7 +1330,7 @@ export function initializeEventListeners() {
     const el_action_btn_162 = document.getElementById('action-btn-162');
     if (el_action_btn_162) {
         el_action_btn_162.addEventListener('click', function(event) {
-            closeKeyboardCheatsheetModal(); openQRScannerModal();
+            closeKeyboardCheatsheetModal(); if (window.startLiveQRScanner) window.startLiveQRScanner();
         });
     }
 
@@ -1589,14 +1589,14 @@ export function initializeEventListeners() {
     const el_action_btn_193 = document.getElementById('action-btn-193');
     if (el_action_btn_193) {
         el_action_btn_193.addEventListener('click', function(event) {
-            closeQRScannerModal()
+            if (window.stopLiveQRScanner) window.stopLiveQRScanner()
         });
     }
 
     const el_action_btn_194 = document.getElementById('action-btn-194');
     if (el_action_btn_194) {
         el_action_btn_194.addEventListener('click', function(event) {
-            closeQRScannerModal()
+            if (window.stopLiveQRScanner) window.stopLiveQRScanner()
         });
     }
 
