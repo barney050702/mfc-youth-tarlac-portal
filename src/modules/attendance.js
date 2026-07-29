@@ -442,7 +442,7 @@ export function startLiveQRScanner() {
 
     if (typeof window.Html5Qrcode !== 'undefined') {
         if (!html5QrScanner) {
-            html5QrScanner = new window.Html5Qrcode("qr-reader-viewport");
+            html5QrScanner = new window.Html5Qrcode("qr-reader");
         }
         html5QrScanner.start(
             { facingMode: "environment" },
