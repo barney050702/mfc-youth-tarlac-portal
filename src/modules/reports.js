@@ -130,6 +130,54 @@ export function renderInteractiveCharts() {
             }
         });
     }
+    
+    renderFundsCharts();
+}
+
+let chartCompInstance = null;
+let chartPieInstance = null;
+
+export function renderFundsCharts() {
+    try {
+        if (!window.Chart) return;
+
+        // Funds Comparison Chart
+        const compCtx = document.getElementById('funds-comparison-canvas');
+        if (compCtx) {
+            if (chartCompInstance) chartCompInstance.destroy();
+            chartCompInstance = new Chart(compCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'],
+                    datasets: [
+                        { label: 'Income (₱)', data: [15000, 18000, 22000, 19500, 25000, 28000, 32000], backgroundColor: '#10B981', borderRadius: 6 },
+                        { label: 'Expenses (₱)', data: [12000, 14000, 16500, 15000, 18000, 21000, 23500], backgroundColor: '#EF4444', borderRadius: 6 }
+                    ]
+                },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { labels: { color: '#CBD5E1' } } }, scales: { x: { ticks: { color: '#94A3B8' } }, y: { ticks: { color: '#94A3B8' } } } }
+            });
+        }
+
+        // Funds Pie Chart
+        const pieCtx = document.getElementById('funds-pie-canvas');
+        if (pieCtx) {
+            if (chartPieInstance) chartPieInstance.destroy();
+            chartPieInstance = new Chart(pieCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Events & Camps', 'Pastoral Care', 'Transport & Meals', 'Materials & Supplies'],
+                    datasets: [{
+                        data: [45, 20, 20, 15],
+                        backgroundColor: ['#0284C7', '#A855F7', '#F59E0B', '#10B981'],
+                        borderWidth: 0
+                    }]
+                },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { color: '#CBD5E1', font: { size: 11 } } } } }
+            });
+        }
+    } catch (e) {
+        console.warn('renderFundsCharts error:', e);
+    }
 }
 
 export function generateExecutiveSummaryReport() {
