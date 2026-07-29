@@ -150,6 +150,7 @@ import {
     calculateAgeFromBirthday,
     closeAddMemberModal,
     handleAddMemberSubmit,
+    loadMoreMembers,
 } from './modules/members.js';
 import {
     exportFinancialStatementPDF,
@@ -338,7 +339,7 @@ document.addEventListener('DOMContentLoaded', () => {
     window.filterDuplicateMembers = window.filterDuplicateMembers || filterDuplicateMembers;
     window.renderMembersTable = window.renderMembersTable || renderMembersTable;
     window.renderMembersMobileCards = window.renderMembersMobileCards || renderMembersMobileCards;
-    window.loadMoreMembers = window.loadMoreMembers || Members.loadMoreMembers;
+    window.loadMoreMembers = window.loadMoreMembers || loadMoreMembers;
     window.formatDateClean = window.formatDateClean || formatDateClean;
     window.clearAllMembers = window.clearAllMembers || clearAllMembers;
     window.generateMemberIDMatrixSVG =
