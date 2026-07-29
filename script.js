@@ -719,6 +719,12 @@ function renderActivitiesTable() {
     const tableBody = document.getElementById('activities-table-body');
     const gridCont = document.getElementById('agenda-grid-container');
 
+    // Hide 'Add Activity' button if Chapter Head
+    const addActivityBtn = document.getElementById('action-btn-21');
+    if (addActivityBtn) {
+        addActivityBtn.style.display = localStorage.getItem('ps_role') === 'CHAPTER HEAD' ? 'none' : 'flex';
+    }
+
     updateBadgeCount();
     const totalMems = state.members.length;
 
@@ -888,6 +894,7 @@ function renderActivitiesTable() {
                                     <span>📄 Export PDF</span>
                                 </button>
                             </div>
+                            ${ localStorage.getItem('ps_role') !== 'CHAPTER HEAD' ? `
                             <div style="display: flex; justify-content: space-between; align-items: center; gap: 8px;">
                                 <button onclick="openAddModal('${act.id}')" style="background: rgba(255, 255, 255, 0.06); color: #E2E8F0; border: 1px solid rgba(255, 255, 255, 0.1); padding: 10px 16px; border-radius: 12px; font-weight: 700; font-size: 0.8rem; cursor: pointer; transition: all 0.2s; min-height: 44px; min-width: 44px;">
                                     ✏️ Edit
@@ -896,6 +903,7 @@ function renderActivitiesTable() {
                                     🗑️ Delete
                                 </button>
                             </div>
+                            ` : '' }
                         </div>
                     </div>
                 `;

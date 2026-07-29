@@ -10,6 +10,12 @@ import { MFCFirebaseCloud } from './firebase.js';
 export function renderActivitiesTable() {
     const tableBody = document.getElementById('activities-table-body');
     if (!tableBody) return;
+    
+    // Hide 'Add Activity' button if Chapter Head
+    const addActivityBtn = document.getElementById('action-btn-21');
+    if (addActivityBtn) {
+        addActivityBtn.style.display = localStorage.getItem('ps_role') === 'CHAPTER HEAD' ? 'none' : 'flex';
+    }
 
     let items = [...state.activities];
 
@@ -65,11 +71,14 @@ export function renderActivitiesTable() {
         const actionsTd = document.createElement('td');
         actionsTd.setAttribute('data-label', 'Actions');
         actionsTd.style.cssText = 'padding: 14px 16px; text-align: right;';
-        const delBtn = document.createElement('button');
-        delBtn.style.cssText = 'background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.3); color: #F87171; padding: 6px 10px; border-radius: 8px; font-size: 12px; cursor: pointer;';
-        delBtn.textContent = '🗑️';
-        delBtn.addEventListener('click', () => deleteActivity(act.id));
-        actionsTd.appendChild(delBtn);
+        
+        if (localStorage.getItem('ps_role') !== 'CHAPTER HEAD') {
+            const delBtn = document.createElement('button');
+            delBtn.style.cssText = 'background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.3); color: #F87171; padding: 6px 10px; border-radius: 8px; font-size: 12px; cursor: pointer;';
+            delBtn.textContent = '🗑️';
+            delBtn.addEventListener('click', () => deleteActivity(act.id));
+            actionsTd.appendChild(delBtn);
+        }
 
         tr.appendChild(titleTd);
         tr.appendChild(dateTd);
