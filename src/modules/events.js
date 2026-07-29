@@ -784,7 +784,7 @@ export function initializeEventListeners() {
     const el_action_btn_88 = document.getElementById('action-btn-88');
     if (el_action_btn_88) {
         el_action_btn_88.addEventListener('click', function(event) {
-            openMemberQRBadgeModal()
+            if (window.openDigitalQRModal) window.openDigitalQRModal(window.currentProfileMemberId)
         });
     }
 
@@ -861,7 +861,7 @@ export function initializeEventListeners() {
     const el_action_btn_99 = document.getElementById('action-btn-99');
     if (el_action_btn_99) {
         el_action_btn_99.addEventListener('click', function(event) {
-            closeMemberQRBadgeModal()
+            if (window.closeDigitalQRModal) window.closeDigitalQRModal()
         });
     }
 
@@ -875,7 +875,7 @@ export function initializeEventListeners() {
     const el_action_btn_101 = document.getElementById('action-btn-101');
     if (el_action_btn_101) {
         el_action_btn_101.addEventListener('click', function(event) {
-            closeMemberQRBadgeModal()
+            if (window.closeDigitalQRModal) window.closeDigitalQRModal()
         });
     }
 

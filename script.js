@@ -1869,7 +1869,7 @@ function renderMembersTable() {
                     <button class="top-bar-icon-btn" title="Generate Official Certificate" style="width: 30px; height: 30px; display: inline-flex; color: #F59E0B; margin-right: 4px;" onclick="openCertificateModal('${mem.id}')">
                         <span>📜</span>
                     </button>
-                    <button class="top-bar-icon-btn" title="View Digital QR Badge" style="width: 30px; height: 30px; display: inline-flex; color: #38BDF8; margin-right: 4px;" onclick="openMemberQRBadgeModal('${mem.id}')">
+                    <button class="top-bar-icon-btn" title="View Digital QR Badge" style="width: 30px; height: 30px; display: inline-flex; color: #38BDF8; margin-right: 4px;" onclick="window.openDigitalQRModal('${mem.id}')">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 15px; height: 15px;"><rect width="5" height="5" x="3" y="3" rx="1"/><rect width="5" height="5" x="16" y="3" rx="1"/><rect width="5" height="5" x="3" y="16" rx="1"/><path d="M21 16h-3a2 2 0 0 0-2 2v3"/><path d="M21 21v.01"/><path d="M12 7v3a2 2 0 0 1-2 2H7"/><path d="M3 12h.01"/><path d="M12 3h.01"/><path d="M12 16v.01"/><path d="M16 12h1"/><path d="M21 12v.01"/><path d="M12 21v-1"/></svg>
                     </button>
                     <button class="top-bar-icon-btn" title="Edit Member Profile" style="width: 30px; height: 30px; display: inline-flex; color: var(--accent-blue); margin-right: 4px;" onclick="openEditMemberModal('${mem.id}')">
@@ -1997,7 +1997,7 @@ function renderMembersMobileCards(filtered, nameCounts = {}) {
                         <button onclick="openCertificateModal('${mem.id}')" class="btn-secondary btn-sm" title="Certificate" style="padding: 6px 10px; font-size: 0.78rem; border-color: rgba(245, 158, 11, 0.4); color: #F59E0B;">
                             📜 Cert
                         </button>
-                        <button onclick="openMemberQRBadgeModal('${mem.id}')" class="btn-secondary btn-sm" title="QR Badge" style="padding: 6px 10px; font-size: 0.78rem; border-color: rgba(56, 189, 248, 0.4); color: #38BDF8;">
+                        <button onclick="window.openDigitalQRModal('${mem.id}')" class="btn-secondary btn-sm" title="QR Badge" style="padding: 6px 10px; font-size: 0.78rem; border-color: rgba(56, 189, 248, 0.4); color: #38BDF8;">
                             🏷️ QR
                         </button>
                     </div>
