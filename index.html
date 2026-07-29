@@ -79,9 +79,16 @@
                 </p>
 
                 <form id="auth-login-form" style="display: flex; flex-direction: column;">
-                    <select id="auth-login-role" style="width: 100%; background: #060B18; border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 12px; color: #FFF; padding: 12px 14px; font-size: 15px; outline: none; margin-bottom: 12px; transition: border-color 0.2s ease; box-sizing: border-box; cursor: pointer; appearance: none;" onchange="document.getElementById('auth-login-chapter').style.display = this.value === 'CHAPTER HEAD' ? 'block' : 'none';">
+                    <select id="auth-login-role" style="width: 100%; background: #060B18; border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 12px; color: #FFF; padding: 12px 14px; font-size: 15px; outline: none; margin-bottom: 12px; transition: border-color 0.2s ease; box-sizing: border-box; cursor: pointer; appearance: none;" onchange="
+                        document.getElementById('auth-login-chapter').style.display = this.value === 'CHAPTER HEAD' ? 'block' : 'none';
+                        document.getElementById('auth-login-password').style.display = this.value === 'MEMBER' ? 'none' : 'block';
+                        document.getElementById('auth-login-mfc-id').style.display = this.value === 'MEMBER' ? 'block' : 'none';
+                        document.getElementById('auth-login-password').required = this.value !== 'MEMBER';
+                        document.getElementById('auth-login-mfc-id').required = this.value === 'MEMBER';
+                    ">
                         <option value="SUPER ADMIN">Super Admin</option>
                         <option value="CHAPTER HEAD">Chapter Head</option>
+                        <option value="MEMBER">Member (Self-Service)</option>
                     </select>
 
                     <select id="auth-login-chapter" style="display: none; width: 100%; background: #060B18; border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 12px; color: #FFF; padding: 12px 14px; font-size: 15px; outline: none; margin-bottom: 12px; transition: border-color 0.2s ease; box-sizing: border-box; cursor: pointer; appearance: none;">
@@ -94,6 +101,9 @@
 
                     <input type="password" id="auth-login-password" required placeholder="Enter role password..." value=""
                         style="width: 100%; background: #060B18; border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 12px; color: #FFF; padding: 12px 14px; font-size: 15px; outline: none; margin-bottom: 12px; transition: border-color 0.2s ease; box-sizing: border-box;">
+                    
+                    <input type="text" id="auth-login-mfc-id" placeholder="Enter MFC ID (e.g. MFC-2024-XXXX)..." value=""
+                        style="display: none; width: 100%; background: #060B18; border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 12px; color: #FFF; padding: 12px 14px; font-size: 15px; outline: none; margin-bottom: 12px; transition: border-color 0.2s ease; box-sizing: border-box;">
                     
                     <!-- Reserved space for error messages (min-height prevents layout jump) -->
                     <div id="login-error-msg" style="color: #F87171; font-size: 14px; font-weight: 500; min-height: 20px; margin-bottom: 12px; display: none;"></div>
@@ -160,6 +170,15 @@
 
             <!-- Navigation Links -->
             <nav class="sidebar-nav">
+                <a id="action-btn-member-dash" href="javascript:void(0)" class="nav-item" data-view="member-dashboard" style="display: none;">
+                    <span class="nav-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                            <circle cx="12" cy="7" r="4" />
+                        </svg>
+                    </span>
+                    <span class="nav-label">My Dashboard</span>
+                </a>
                 <a id="action-btn-3"  href="javascript:void(0)" class="nav-item active" data-view="dashboard" >
                     <span class="nav-icon">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
@@ -408,6 +427,35 @@
 
             <!-- Views Container -->
             <div class="views-container">
+
+                <!-- ==========================================
+                     VIEW: MEMBER DASHBOARD (Self-Service)
+                     ========================================== -->
+                <div id="view-member-dashboard" class="view-panel">
+                    <div class="glass-panel" style="padding: 24px; text-align: center; margin-bottom: 24px;">
+                        <h2 style="font-size: 2rem; margin-bottom: 10px; background: var(--grad-primary); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Welcome, <span id="member-dash-name">Member</span>!</h2>
+                        <p style="color: var(--text-secondary);">Here is your personal MFC Youth portal.</p>
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 24px;">
+                        <!-- QR Code Card -->
+                        <div class="glass-card" style="padding: 24px; text-align: center; display: flex; flex-direction: column; align-items: center;">
+                            <h3 style="margin-bottom: 16px; font-weight: 600;">Your ID Badge</h3>
+                            <div id="member-dash-qr" style="background: white; padding: 16px; border-radius: 12px; display: inline-block; margin-bottom: 16px;"></div>
+                            <p style="color: var(--text-muted); font-size: 0.9rem;">Present this QR code at events for quick check-in.</p>
+                        </div>
+                        
+                        <!-- Mini Attendance Stats -->
+                        <div class="glass-card" style="padding: 24px;">
+                            <h3 style="margin-bottom: 16px; font-weight: 600;">Your Recent Attendance</h3>
+                            <div id="member-dash-attendance-list" style="display: flex; flex-direction: column; gap: 12px;">
+                                <div class="empty-state" style="text-align: center; padding: 20px;">
+                                    <p>Loading your records...</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
                 <!-- ==========================================
                      VIEW 1: DASHBOARD OVERVIEW

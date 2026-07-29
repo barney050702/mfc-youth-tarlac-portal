@@ -98,11 +98,84 @@ function setupNavigationListeners() {
 }
 
 function renderAllViews() {
-    renderDashboard();
-    if (window.renderMembersTable) window.renderMembersTable();
-    populateAttendanceDropdown();
-    renderAttendanceRoster();
-    renderActivitiesTable();
-    if (window.renderInteractiveCharts) window.renderInteractiveCharts();
+    const isMember = localStorage.getItem('ps_role') === 'MEMBER';
+    
+    // Toggle nav items
+    document.querySelectorAll('.nav-item, .sidebar-nav-item').forEach(item => {
+        const view = item.getAttribute('data-view');
+        if (isMember) {
+            item.style.display = (view === 'member-dashboard') ? 'flex' : 'none';
+        } else {
+            item.style.display = (view === 'member-dashboard') ? 'none' : 'flex';
+        }
+    });
+
+    if (isMember) {
+        if (typeof window.switchView === 'function') window.switchView('member-dashboard');
+        // Render member dashboard info
+        const memberName = localStorage.getItem('ps_member_name') || 'Member';
+        const memberId = localStorage.getItem('ps_member_id') || 'Unknown';
+        const nameEl = document.getElementById('member-dash-name');
+        if (nameEl) nameEl.textContent = memberName.split(' ')[0];
+        
+        // Generate QR
+        const qrContainer = document.getElementById('member-dash-qr');
+        if (qrContainer && typeof QRCode !== 'undefined') {
+            qrContainer.innerHTML = '';
+            new QRCode(qrContainer, {
+                text: memberId,
+                width: 150,
+                height: 150,
+                colorDark: "#090D16",
+                colorLight: "#ffffff",
+                correctLevel: QRCode.CorrectLevel.H
+            });
+        }
+        // Fetch Attendance
+        if (typeof firebase !== 'undefined' && firebase.firestore) {
+            const db = firebase.firestore();
+            db.collection('attendance').where('mfc_id', '==', memberId).orderBy('timestamp', 'desc').limit(5).get().then(snapshot => {
+                const listEl = document.getElementById('member-dash-attendance-list');
+                if (!listEl) return;
+                
+                if (snapshot.empty) {
+                    listEl.innerHTML = `
+                        <div class="empty-state" style="text-align: center; padding: 20px;">
+                            <p>No recent attendance records found.</p>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                let html = '';
+                snapshot.forEach(doc => {
+                    const data = doc.data();
+                    const dateStr = data.timestamp ? new Date(data.timestamp.toDate()).toLocaleDateString('en-US', {month:'short', day:'numeric', year:'numeric'}) : 'Unknown Date';
+                    const statusColor = data.status === 'Present' ? '#34D399' : (data.status === 'Absent' ? '#EF4444' : '#F59E0B');
+                    html += `
+                        <div style="background: rgba(15, 23, 42, 0.6); padding: 12px 16px; border-radius: 8px; border-left: 4px solid ${statusColor}; display: flex; justify-content: space-between; align-items: center;">
+                            <div>
+                                <h4 style="margin: 0; font-size: 1rem; font-weight: 600;">${data.activity_name || 'Activity'}</h4>
+                                <span style="font-size: 0.8rem; color: var(--text-muted);">${dateStr}</span>
+                            </div>
+                            <span style="font-weight: 700; color: ${statusColor};">${data.status}</span>
+                        </div>
+                    `;
+                });
+                listEl.innerHTML = html;
+            }).catch(err => {
+                console.warn('Error fetching member attendance:', err);
+                const listEl = document.getElementById('member-dash-attendance-list');
+                if (listEl) listEl.innerHTML = `<p style="color:#EF4444;">Failed to load records.</p>`;
+            });
+        }
+    } else {
+        renderDashboard();
+        if (window.renderMembersTable) window.renderMembersTable();
+        populateAttendanceDropdown();
+        renderAttendanceRoster();
+        renderActivitiesTable();
+        if (window.renderInteractiveCharts) window.renderInteractiveCharts();
+    }
 }
 window.renderAll = renderAllViews;

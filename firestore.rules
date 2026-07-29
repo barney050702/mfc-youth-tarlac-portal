@@ -14,26 +14,29 @@ service cloud.firestore {
 
     // Members collection
     match /members/{memberId} {
-      // Anyone logged in can read
-      allow read: if isSuperAdmin() || isChapterHead();
+      // Anyone can read (needed for Member Portal self-service)
+      allow read: if true;
       
       // Only Super Admin can write (create, update, delete)
-      // Note: Chapter Heads might need create access if they can add members, 
-      // but current UI hides add member from them in some views. 
-      // We'll allow Chapter Heads to create for now, but not update/delete.
       allow create: if isSuperAdmin() || isChapterHead();
       allow update, delete: if isSuperAdmin();
     }
 
     // Activities collection
     match /activities/{activityId} {
-      allow read: if isSuperAdmin() || isChapterHead();
-      allow write: if isSuperAdmin();
+      allow read: if true;
+      allow create, update, delete: if isSuperAdmin();
+    }
+
+    // Attendance collection
+    match /attendance/{docId} {
+      allow read: if true;
+      allow create, update, delete: if isSuperAdmin() || isChapterHead();
     }
     
     // Events collection
     match /events/{eventId} {
-      allow read: if isSuperAdmin() || isChapterHead();
+      allow read: if true;
       allow write: if isSuperAdmin();
     }
     
