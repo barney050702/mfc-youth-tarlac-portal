@@ -36,19 +36,14 @@ export const MFCFirebaseCloud = {
                 // Enable Offline Persistence (modern API)
                 if (firebase.firestore) {
                     try {
-                        const firestoreSettings = {
-                            cacheSizeBytes: firebase.firestore.CACHE_SIZE_UNLIMITED
-                        };
                         const db = firebase.firestore();
-                        db.settings(firestoreSettings);
-                        db.enablePersistence({ synchronizeTabs: true })
-                            .catch(err => {
-                                if (err.code === 'failed-precondition') {
-                                    console.warn('[Firestore] Persistence unavailable (multiple tabs open).');
-                                } else if (err.code === 'unimplemented') {
-                                    console.warn('[Firestore] Persistence not supported by browser.');
-                                }
-                            });
+                        db.settings({
+                            cache: firebase.firestore.persistentLocalCache ? 
+                                   firebase.firestore.persistentLocalCache({
+                                       tabManager: firebase.firestore.persistentMultipleTabManager ? firebase.firestore.persistentMultipleTabManager() : undefined
+                                   }) : undefined,
+                            cacheSizeBytes: firebase.firestore.CACHE_SIZE_UNLIMITED
+                        });
                     } catch(e) {
                         console.warn('[Firestore] Persistence setup notice:', e);
                     }
