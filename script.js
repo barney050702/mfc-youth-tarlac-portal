@@ -956,6 +956,7 @@ function renderActivitiesTable() {
                         </td>
                         <td><span class="status-pill pill-${act.status.toLowerCase()}">● ${act.status}</span></td>
                         <td class="text-right">
+                            ${ localStorage.getItem('ps_role') !== 'CHAPTER HEAD' ? `
                             <div class="action-buttons-cell">
                                 <button class="btn-icon-action" title="Edit Activity" onclick="openAddModal('${act.id}')">
                                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
@@ -964,6 +965,7 @@ function renderActivitiesTable() {
                                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
                                 </button>
                             </div>
+                            ` : '' }
                         </td>
                     </tr>
                 `;
@@ -1884,12 +1886,14 @@ function renderMembersTable() {
                     <button class="top-bar-icon-btn" title="View Digital QR Badge" style="width: 30px; height: 30px; display: inline-flex; color: #38BDF8; margin-right: 4px;" onclick="window.openDigitalQRModal('${mem.id}')">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 15px; height: 15px;"><rect width="5" height="5" x="3" y="3" rx="1"/><rect width="5" height="5" x="16" y="3" rx="1"/><rect width="5" height="5" x="3" y="16" rx="1"/><path d="M21 16h-3a2 2 0 0 0-2 2v3"/><path d="M21 21v.01"/><path d="M12 7v3a2 2 0 0 1-2 2H7"/><path d="M3 12h.01"/><path d="M12 3h.01"/><path d="M12 16v.01"/><path d="M16 12h1"/><path d="M21 12v.01"/><path d="M12 21v-1"/></svg>
                     </button>
+                    ${ (localStorage.getItem('ps_role') !== 'CHAPTER HEAD' || (mem.chapter || 'EAST').toUpperCase() === localStorage.getItem('ps_chapter')) ? `
                     <button class="top-bar-icon-btn" title="Edit Member Profile" style="width: 30px; height: 30px; display: inline-flex; color: var(--accent-blue); margin-right: 4px;" onclick="openEditMemberModal('${mem.id}')">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 15px; height: 15px;"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
                     </button>
                     <button class="top-bar-icon-btn" title="Remove Member" style="width: 30px; height: 30px; display: inline-flex; color: var(--accent-rose);" onclick="deleteMember('${mem.id}')">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 15px; height: 15px;"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
                     </button>
+                    ` : '' }
                 </td>
             </tr>
         `);
@@ -2013,6 +2017,7 @@ function renderMembersMobileCards(filtered, nameCounts = {}) {
                             🏷️ QR
                         </button>
                     </div>
+                    ${ (localStorage.getItem('ps_role') !== 'CHAPTER HEAD' || (mem.chapter || 'EAST').toUpperCase() === localStorage.getItem('ps_chapter')) ? `
                     <div style="display: flex; gap: 6px;">
                         <button onclick="openEditMemberModal('${mem.id}')" class="btn-secondary btn-sm" title="Edit Member" style="padding: 6px 12px; font-size: 0.78rem; border-color: rgba(96, 165, 250, 0.4); color: #60A5FA;">
                             ✏️ Edit
@@ -2021,6 +2026,7 @@ function renderMembersMobileCards(filtered, nameCounts = {}) {
                             🗑️
                         </button>
                     </div>
+                    ` : '' }
                 </div>
             </div>
         `);

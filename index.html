@@ -71,7 +71,20 @@
                 </p>
 
                 <form id="auth-login-form" style="display: flex; flex-direction: column;">
-                    <input type="password" id="auth-login-password" required placeholder="Enter chapter password..." value=""
+                    <select id="auth-login-role" style="width: 100%; background: #060B18; border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 12px; color: #FFF; padding: 12px 14px; font-size: 15px; outline: none; margin-bottom: 12px; transition: border-color 0.2s ease; box-sizing: border-box; cursor: pointer; appearance: none;" onchange="document.getElementById('auth-login-chapter').style.display = this.value === 'CHAPTER HEAD' ? 'block' : 'none';">
+                        <option value="SUPER ADMIN">Super Admin</option>
+                        <option value="CHAPTER HEAD">Chapter Head</option>
+                    </select>
+
+                    <select id="auth-login-chapter" style="display: none; width: 100%; background: #060B18; border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 12px; color: #FFF; padding: 12px 14px; font-size: 15px; outline: none; margin-bottom: 12px; transition: border-color 0.2s ease; box-sizing: border-box; cursor: pointer; appearance: none;">
+                        <option value="EAST">EAST Chapter</option>
+                        <option value="WEST">WEST Chapter</option>
+                        <option value="NORTH">NORTH Chapter</option>
+                        <option value="SOUTH">SOUTH Chapter</option>
+                        <option value="CENTRAL">CENTRAL Chapter</option>
+                    </select>
+
+                    <input type="password" id="auth-login-password" required placeholder="Enter role password..." value=""
                         style="width: 100%; background: #060B18; border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 12px; color: #FFF; padding: 12px 14px; font-size: 15px; outline: none; margin-bottom: 12px; transition: border-color 0.2s ease; box-sizing: border-box;">
                     
                     <!-- Reserved space for error messages (min-height prevents layout jump) -->

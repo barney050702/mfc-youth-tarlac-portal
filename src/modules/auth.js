@@ -43,9 +43,14 @@ export async function loginUser(event) {
 
     // Authenticate securely via Firebase Auth SDK if available, or validated token check
     try {
+        const roleEl = document.getElementById('auth-login-role');
+        const chapEl = document.getElementById('auth-login-chapter');
+        const selectedRole = roleEl ? roleEl.value : 'SUPER ADMIN';
+        const selectedChapter = (selectedRole === 'CHAPTER HEAD' && chapEl) ? chapEl.value : 'ALL';
+        const adminEmail = selectedRole === 'SUPER ADMIN' ? 'reyesbarney38@gmail.com' : 'chapter@mfcyouthtarlac.com';
+
         if (typeof firebase !== 'undefined' && firebase.auth) {
             // Secure Firebase Auth execution
-            const adminEmail = state.currentAdminEmail || 'reyesbarney38@gmail.com';
             await firebase.auth().signInWithEmailAndPassword(adminEmail, passVal);
         }
 
@@ -53,15 +58,18 @@ export async function loginUser(event) {
         if (passEl) passEl.style.borderColor = 'rgba(255, 255, 255, 0.2)';
 
         state.failedLoginAttempts = 0;
-        state.currentAdminEmail = 'reyesbarney38@gmail.com';
-        state.currentAdminRole = 'SUPER ADMIN';
+        state.currentAdminEmail = adminEmail;
+        state.currentAdminRole = selectedRole;
 
         localStorage.setItem('ps_logged_in', 'true');
+        localStorage.setItem('ps_role', selectedRole);
+        localStorage.setItem('ps_chapter', selectedChapter);
+        
         const overlay = document.getElementById('auth-login-overlay');
         if (overlay) overlay.style.display = 'none';
         if (passEl) passEl.value = '';
 
-        showToast('🔓 Chapter records & files unlocked successfully! Welcome back.', 'success');
+        showToast(`🔓 Access granted. Logged in as ${selectedRole}.`, 'success');
         triggerHaptic('success');
     } catch (err) {
         console.warn('Firebase Auth Verification notice:', err.message);
