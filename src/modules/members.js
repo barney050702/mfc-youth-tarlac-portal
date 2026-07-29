@@ -640,10 +640,13 @@ export function renderMembersTable() {
         return a.name.localeCompare(b.name);
     });
 
+    state.membersPaginationLimit = state.membersPaginationLimit || 50;
+    const paginated = filtered.slice(0, state.membersPaginationLimit);
+
     let currentChapterSection = null;
     const rowsHtml = [];
 
-    filtered.forEach(mem => {
+    paginated.forEach(mem => {
         const chapName = mem.chapter || 'EAST CHAPTER';
         const cleanChap = chapName.toUpperCase();
         if (cleanChap !== currentChapterSection) {
@@ -744,8 +747,25 @@ export function renderMembersTable() {
         `);
     });
 
+    if (filtered.length > state.membersPaginationLimit) {
+        rowsHtml.push(`
+            <tr>
+                <td colspan="11" style="text-align: center; padding: 20px;">
+                    <button class="btn-primary" onclick="window.loadMoreMembers()" style="padding: 8px 24px;">
+                        Load More (${filtered.length - state.membersPaginationLimit} remaining)
+                    </button>
+                </td>
+            </tr>
+        `);
+    }
+
     tbody.innerHTML = rowsHtml.join('');
     renderMembersMobileCards(filtered, nameCounts);
+}
+
+export function loadMoreMembers() {
+    state.membersPaginationLimit = (state.membersPaginationLimit || 50) + 50;
+    renderMembersTable();
 }
 
 export function renderMembersMobileCards(filtered, nameCounts = {}) {
@@ -767,7 +787,9 @@ export function renderMembersMobileCards(filtered, nameCounts = {}) {
     let currentChapterSection = null;
     const cardsHtml = [];
 
-    filtered.forEach(mem => {
+    const paginated = filtered.slice(0, state.membersPaginationLimit || 50);
+
+    paginated.forEach(mem => {
         const chapName = mem.chapter || 'EAST CHAPTER';
         const cleanChap = chapName.toUpperCase();
         if (cleanChap !== currentChapterSection) {
@@ -876,6 +898,16 @@ export function renderMembersMobileCards(filtered, nameCounts = {}) {
             </div>
         `);
     });
+
+    if (filtered.length > state.membersPaginationLimit) {
+        cardsHtml.push(`
+            <div style="text-align: center; padding: 20px;">
+                <button class="btn-primary" onclick="window.loadMoreMembers()" style="padding: 10px 24px; font-size: 0.9rem;">
+                    Load More (${filtered.length - state.membersPaginationLimit} remaining)
+                </button>
+            </div>
+        `);
+    }
 
     container.innerHTML = cardsHtml.join('');
 }

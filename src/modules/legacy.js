@@ -1128,7 +1128,7 @@ export function openAddResourceModal() {
     // Pre-select the currently active tab
     const activeBtn = document.querySelector('.resource-tab-btn.active');
     if (activeBtn) {
-        const catMap = { '\u26fa': 'youthcamp', '\uD83C\uDF93': 'trainings', '\uD83C\uDFB8': 'songboard', '\uD83D\uDCFF': 'holyrosary', '\u2709\uFE0F': 'letters', '✉️': 'letters' };
+        const catMap = { '\u26fa': 'youthcamp', '\uD83C\uDF93': 'trainings', '\uD83C\uDFB8': 'songboard', '\uD83D\uDCFF': 'holyrosary', '\u2709\uFE0F': 'letters' };
         const sel = document.getElementById('res-input-category');
         if (sel) {
             const id = activeBtn.id.replace('btn-res-', '');

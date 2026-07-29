@@ -1,12 +1,13 @@
 import { defineConfig } from 'vite';
 
 export default defineConfig({
-  base: './',
+  root: './',
   build: {
     outDir: 'dist',
-    assetsDir: 'assets',
-    sourcemap: true,
-    target: 'esnext'
+    emptyOutDir: true,
+    rollupOptions: {
+      input: 'index.html'
+    }
   },
   server: {
     port: 3000,

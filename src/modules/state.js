@@ -38,7 +38,6 @@ export const state = (typeof window !== 'undefined' && window.state) ? window.st
     filterCategory: 'ALL',
     filterStatus: 'ALL',
     agendaSemester: 'all',
-    charts: {},
     agendaViewMode: 'grid',
     auditLog: [],
     currentRole: 'Super Admin',
