@@ -6,68 +6,126 @@
 import { state } from './state.js';
 import { showToast, triggerHaptic } from './ui.js';
 
-export function renderDashboardCharts() {
-    if (typeof Chart === 'undefined') return;
 
-    // Safely destroy existing chart instances to prevent canvas memory leaks
-    if (!state.charts) state.charts = {};
+let activeAttendanceChart = null;
+let activeCategoryChart = null;
 
-    if (state.charts.attendance) {
-        state.charts.attendance.destroy();
-        state.charts.attendance = null;
-    }
-    if (state.charts.demographics) {
-        state.charts.demographics.destroy();
-        state.charts.demographics = null;
-    }
+export function renderInteractiveCharts() {
+    const trendCanvas = document.getElementById('chart-attendance-trend');
+    const catCanvas = document.getElementById('chart-category-breakdown');
 
-    const attendanceCanvas = document.getElementById('chart-attendance');
-    if (attendanceCanvas) {
-        const ctx = attendanceCanvas.getContext('2d');
-        state.charts.attendance = new Chart(ctx, {
+    const totalMems = state.members.length;
+    const labels = state.activities.map(a => (a.name || a.title || 'Event').substring(0, 18));
+    const dataRates = state.activities.map(act => {
+        const attObj = state.attendance[act.id] || {};
+        let pCount = 0;
+        state.members.forEach(m => {
+            const st = attObj[m.id]?.status;
+            if (st === 'present' || st === 'late') pCount++;
+        });
+        return totalMems > 0 ? Math.round((pCount / totalMems) * 100) : 0;
+    });
+
+    if (!window.Chart && trendCanvas && trendCanvas.parentElement) {
+        // Fallback HTML/CSS Chart if Chart CDN unavailable
+        trendCanvas.parentElement.innerHTML = `
+            <div style="display:flex; align-items:flex-end; justify-content:space-around; height:100%; padding:20px 0; gap:10px;">
+                ${state.activities.map((act, idx) => `
+                    <div style="display:flex; flex-direction:column; align-items:center; flex:1; height:100%; justify-content:flex-end;">
+                        <span style="font-size:0.75rem; color:#38BDF8; font-weight:700; margin-bottom:4px;">${dataRates[idx]}%</span>
+                        <div style="width:100%; max-width:40px; height:${Math.max(10, dataRates[idx])}%; background:linear-gradient(180deg, #38BDF8, #0284C7); border-radius:6px 6px 0 0;"></div>
+                        <span style="font-size:0.7rem; color:#94A3B8; margin-top:6px; text-align:center; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:60px;">${(act.name || 'Act').substring(0, 8)}</span>
+                    </div>
+                `).join('')}
+            </div>
+        `;
+    } else if (trendCanvas && window.Chart) {
+        if (activeAttendanceChart) activeAttendanceChart.destroy();
+        const trendCtx = trendCanvas.getContext('2d');
+        const gradientTrend = trendCtx.createLinearGradient(0, 0, 0, 300);
+        gradientTrend.addColorStop(0, 'rgba(56, 189, 248, 0.6)');
+        gradientTrend.addColorStop(1, 'rgba(56, 189, 248, 0.02)');
+
+        activeAttendanceChart = new Chart(trendCanvas, {
             type: 'line',
             data: {
-                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+                labels: labels.length ? labels : ['No Activities'],
                 datasets: [{
-                    label: 'Member Attendance',
-                    data: [28, 35, 42, 38, 45, 52],
+                    label: 'Attendance Rate (%)',
+                    data: dataRates.length ? dataRates : [0],
                     borderColor: '#38BDF8',
-                    backgroundColor: 'rgba(56, 189, 248, 0.1)',
-                    tension: 0.4,
-                    fill: true
+                    backgroundColor: gradientTrend,
+                    borderWidth: 3,
+                    fill: true,
+                    tension: 0.35,
+                    pointBackgroundColor: '#38BDF8',
+                    pointRadius: 5,
+                    pointHoverRadius: 7
                 }]
             },
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
-                plugins: {
-                    legend: { labels: { color: '#94A3B8' } }
-                },
                 scales: {
-                    x: { ticks: { color: '#64748B' }, grid: { color: 'rgba(255,255,255,0.05)' } },
-                    y: { ticks: { color: '#64748B' }, grid: { color: 'rgba(255,255,255,0.05)' } }
+                    y: {
+                        beginAtZero: true,
+                        max: 100,
+                        ticks: { color: '#94A3B8', callback: val => val + '%' },
+                        grid: { color: 'rgba(255,255,255,0.06)' }
+                    },
+                    x: {
+                        ticks: { color: '#94A3B8' },
+                        grid: { color: 'rgba(255,255,255,0.06)' }
+                    }
+                },
+                plugins: {
+                    legend: { labels: { color: '#F8FAFC', font: { weight: 'bold' } } }
                 }
             }
         });
     }
 
-    const demoCanvas = document.getElementById('chart-demographics');
-    if (demoCanvas) {
-        const ctx = demoCanvas.getContext('2d');
-        state.charts.demographics = new Chart(ctx, {
+    if (catCanvas && window.Chart) {
+        const catMap = {};
+        state.activities.forEach(a => {
+            const cat = a.type || a.category || 'General';
+            catMap[cat] = (catMap[cat] || 0) + 1;
+        });
+        const catLabels = Object.keys(catMap);
+        const catCounts = Object.values(catMap);
+
+        const catCtx = catCanvas.getContext('2d');
+        const makeGrad = (c1, c2) => {
+            const g = catCtx.createLinearGradient(0, 0, 0, 150);
+            g.addColorStop(0, c1);
+            g.addColorStop(1, c2);
+            return g;
+        };
+
+        if (activeCategoryChart) activeCategoryChart.destroy();
+        activeCategoryChart = new Chart(catCanvas, {
             type: 'doughnut',
             data: {
-                labels: ['Central', 'North', 'West', 'East'],
+                labels: catLabels.length ? catLabels : ['General Assembly'],
                 datasets: [{
-                    data: [18, 12, 10, 8],
-                    backgroundColor: ['#0284C7', '#38BDF8', '#34D399', '#F59E0B']
+                    data: catCounts.length ? catCounts : [1],
+                    backgroundColor: [
+                        makeGrad('#38BDF8', '#0284C7'),
+                        makeGrad('#10B981', '#047857'),
+                        makeGrad('#F59E0B', '#B45309'),
+                        makeGrad('#8B5CF6', '#6D28D9'),
+                        makeGrad('#F43F5E', '#BE123C'),
+                        makeGrad('#EC4899', '#BE185D')
+                    ],
+                    borderColor: '#0F172A',
+                    borderWidth: 2
                 }]
             },
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
                 plugins: {
-                    legend: { labels: { color: '#94A3B8' } }
+                    legend: { position: 'right', labels: { color: '#F8FAFC', font: { size: 11, weight: 'bold' } } }
                 }
             }
         });
@@ -712,4 +770,111 @@ export function exportFundsCSV() {
     const csvContent = [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
     downloadCSVFile(csvContent, `MFC_Youth_Finance_Ledger_${new Date().toISOString().slice(0, 10)}.csv`);
     showToast('📊 Finance ledger exported successfully as Excel/CSV!', 'success');
-}
+}
+
+export function generatePastoralList() {
+    const listEl = document.getElementById('pastoral-followup-list');
+    if (!listEl) return;
+
+    // Find members who missed the most recent activities
+    const recentActs = state.activities.slice(-3);
+    const absentMembers = [];
+
+    state.members.forEach(mem => {
+        let missedCount = 0;
+        recentActs.forEach(act => {
+            const status = state.attendance[act.id]?.[mem.id]?.status;
+            if (status !== 'present') missedCount++;
+        });
+        if (missedCount > 0) {
+            absentMembers.push({ mem, missedCount });
+        }
+    });
+
+    if (absentMembers.length === 0) {
+        listEl.innerHTML = `<div style="color: #34D399; font-weight: 600; padding: 12px 0;">🎉 Great news! All members attended recent activities.</div>`;
+        return;
+    }
+
+    const headerHtml = `
+        <div style="background: rgba(234, 67, 53, 0.15); border: 1px solid rgba(234, 67, 53, 0.4); border-radius: 12px; padding: 14px; margin-bottom: 14px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+            <div>
+                <div style="color: #FFF; font-weight: 800; font-size: 0.92rem;">⚡ Automated Batch Absentee Check-In</div>
+                <div style="color: #94A3B8; font-size: 0.78rem;">Auto-generates one Gmail compose window addressed via BCC to all ${absentMembers.length} absent member(s).</div>
+            </div>
+            <button type="button" class="btn-primary glow-button" onclick="autoSendBatchPastoralGmail()" style="background: linear-gradient(135deg, #EA4335, #DB4437); border: none; font-size: 0.8rem; padding: 8px 16px; cursor: pointer;">
+                🚀 Auto-Send Batch Gmail
+            </button>
+        </div>
+    `;
+
+    const cardsHtml = absentMembers.map(item => {
+        const mem = item.mem;
+        const msgBodyText = `Hi Bro/Sis ${mem.name}!\n\nWe missed you at our recent MFC Youth Tarlac activities. Hope you are doing well! Let us know if you need any prayers or support.\n\nGod bless! 💛\n- MFC Youth Tarlac Chapter`;
+        const encodedBody = encodeURIComponent(msgBodyText);
+        const encodedSubject = encodeURIComponent(`MFC Youth Tarlac - Pastoral Check-In 💛 (${mem.name})`);
+        const targetEmail = encodeURIComponent(mem.email || '');
+        const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=${targetEmail}&su=${encodedSubject}&body=${encodedBody}`;
+
+        return `
+            <div style="background: rgba(15, 23, 42, 0.7); border: 1px solid rgba(244, 63, 94, 0.35); border-radius: 12px; padding: 16px; display: flex; flex-direction: column; justify-content: space-between; gap: 12px; margin-bottom: 10px;">
+                <div>
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <strong style="color: #F8FAFC; font-size: 0.95rem;">${mem.name}</strong>
+                        <span style="background: rgba(244, 63, 94, 0.2); color: #F43F5E; padding: 3px 10px; border-radius: 10px; font-size: 0.72rem; font-weight: 700;">Missed ${item.missedCount} event(s)</span>
+                    </div>
+                    <div style="font-size: 0.8rem; color: #94A3B8; margin-top: 4px;">Role: ${mem.role || 'Member'} • Email: <span style="color: #38BDF8;">${mem.email || 'Not listed'}</span></div>
+                </div>
+                <div style="display: flex; gap: 8px;">
+                    <a href="${gmailUrl}" target="_blank" class="btn-primary glow-button" style="text-decoration: none; font-size: 0.78rem; padding: 7px 14px; text-align: center; flex: 1; background: linear-gradient(135deg, #EA4335, #DB4437); color: #FFF; display: inline-flex; align-items: center; justify-content: center; gap: 6px; border: none;">
+                        <span>📧 Send via Gmail</span>
+                    </a>
+                    <button type="button" class="btn-secondary" style="font-size: 0.78rem; padding: 7px 12px;" onclick="copyPastoralMessage('${mem.name.replace(/'/g, "\'")}')">
+                        📋 Copy Text
+                    </button>
+                </div>
+            </div>
+        `;
+    }).join('');
+
+    listEl.innerHTML = headerHtml + cardsHtml;
+}
+
+window.autoSendBatchPastoralGmail = function() {
+    const recentActs = state.activities.slice(-3);
+    const absentEmails = [];
+    const absentNames = [];
+
+    state.members.forEach(mem => {
+        let missedCount = 0;
+        recentActs.forEach(act => {
+            const status = state.attendance[act.id]?.[mem.id]?.status;
+            if (status !== 'present') missedCount++;
+        });
+        if (missedCount > 0) {
+            absentNames.push(mem.name);
+            if (mem.email && mem.email.trim() && mem.email.includes('@')) {
+                absentEmails.push(mem.email.trim());
+            }
+        }
+    });
+
+    const bccList = absentEmails.join(',');
+    const msgBodyText = `Hi Brothers and Sisters!\n\nWe missed you at our recent MFC Youth Tarlac Chapter assemblies and activities. Hope you are doing well! Please let your household heads know if you need any prayers, assistance, or support.\n\nSee you at our next activity! God bless! 💛\n\n- MFC Youth Tarlac Chapter Executive Team`;
+    const encodedBody = encodeURIComponent(msgBodyText);
+    const encodedSubject = encodeURIComponent(`MFC Youth Tarlac - Pastoral Check-In 💛`);
+
+    const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&bcc=${encodeURIComponent(bccList)}&su=${encodedSubject}&body=${encodedBody}`;
+    window.open(gmailUrl, '_blank');
+
+    showToast(`Automated batch check-in triggered for ${absentNames.length} member(s)!`, 'success');
+};
+
+window.copyPastoralMessage = function(name) {
+    const text = `Hi Bro/Sis ${name}! We missed you at our recent MFC Youth Tarlac activities. Hope you are doing well! Let us know if you need any prayers or support. God bless! 💛`;
+    navigator.clipboard.writeText(text).then(() => {
+        showToast('Message copied to clipboard!', 'success');
+    }).catch(() => {
+        showToast('Failed to copy text', 'error');
+    });
+};
