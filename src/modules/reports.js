@@ -707,20 +707,29 @@ export function generatePrintableMembersPDF() {
 }
 
 // ============================================================================
-// ONE-CLICK EXCEL / CSV EXPORT SUITE (UTF-8 BOM COMPATIBLE)
+// ONE-CLICK EXCEL EXPORT SUITE (Using SheetJS)
 // ============================================================================
 
-export function downloadCSVFile(csvContent, filename) {
-    const bom = '\uFEFF'; // UTF-8 Byte Order Mark for Excel
-    const blob = new Blob([bom + csvContent], { type: 'text/csv;charset=utf-8;' });
-    const link = document.createElement('a');
-    const url = URL.createObjectURL(blob);
-    link.setAttribute('href', url);
-    link.setAttribute('download', filename);
-    link.style.visibility = 'hidden';
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+export function downloadExcelFile(dataArray, filename, sheetName) {
+    if (typeof XLSX !== 'undefined') {
+        const wb = XLSX.utils.book_new();
+        const ws = XLSX.utils.aoa_to_sheet(dataArray);
+        XLSX.utils.book_append_sheet(wb, ws, sheetName);
+        XLSX.writeFile(wb, filename + '.xlsx');
+    } else {
+        // Fallback to CSV if SheetJS failed to load
+        const bom = '\uFEFF'; 
+        const csvContent = dataArray.map(r => r.map(c => `"${(c||'').toString().replace(/"/g, '""')}"`).join(',')).join('\n');
+        const blob = new Blob([bom + csvContent], { type: 'text/csv;charset=utf-8;' });
+        const link = document.createElement('a');
+        const url = URL.createObjectURL(blob);
+        link.setAttribute('href', url);
+        link.setAttribute('download', filename + '.csv');
+        link.style.visibility = 'hidden';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    }
 }
 
 export function exportMembersCSV() {
@@ -731,21 +740,20 @@ export function exportMembersCSV() {
 
     const headers = ['Member ID', 'Full Name', 'Chapter', 'Department', 'Role', 'Phone Number', 'Email Address', 'Birthdate', 'Parent Contact', 'Youth Camp Date', 'Status'];
     const rows = state.members.map(m => [
-        `"${m.id || ''}"`,
-        `"${(m.name || '').replace(/"/g, '""')}"`,
-        `"${(m.chapter || '').replace(/"/g, '""')}"`,
-        `"${(m.dept || m.department || '').replace(/"/g, '""')}"`,
-        `"${(m.role || '').replace(/"/g, '""')}"`,
-        `"${m.phone || ''}"`,
-        `"${m.email || ''}"`,
-        `"${m.birthdate || ''}"`,
-        `"${m.parentContact || ''}"`,
-        `"${m.youthCampDate || ''}"`,
-        `"${m.status || 'Active'}"`
+        m.id || '',
+        m.name || '',
+        m.chapter || '',
+        m.dept || m.department || '',
+        m.role || '',
+        m.phone || '',
+        m.email || '',
+        m.birthdate || '',
+        m.parentContact || '',
+        m.youthCampDate || '',
+        m.status || 'Active'
     ]);
 
-    const csvContent = [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
-    downloadCSVFile(csvContent, `MFC_Youth_Members_Directory_${new Date().toISOString().slice(0, 10)}.csv`);
+    downloadExcelFile([headers, ...rows], `MFC_Youth_Members_Directory_${new Date().toISOString().slice(0, 10)}`, 'Members');
     showToast('📊 Members directory exported successfully as Excel/CSV file!', 'success');
     logAuditAction(`Exported Members Directory to CSV/Excel (${state.members.length} rows)`, 'export');
 }
@@ -758,17 +766,16 @@ export function exportActivitiesCSV() {
 
     const headers = ['Activity ID', 'Activity Name', 'Date', 'Location', 'Type', 'Status', 'Notes'];
     const rows = state.activities.map(a => [
-        `"${a.id || ''}"`,
-        `"${(a.name || '').replace(/"/g, '""')}"`,
-        `"${a.date || ''}"`,
-        `"${(a.location || '').replace(/"/g, '""')}"`,
-        `"${a.type || ''}"`,
-        `"${a.status || ''}"`,
-        `"${(a.notes || '').replace(/"/g, '""')}"`
+        a.id || '',
+        a.name || '',
+        a.date || '',
+        a.location || '',
+        a.type || '',
+        a.status || '',
+        a.notes || ''
     ]);
 
-    const csvContent = [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
-    downloadCSVFile(csvContent, `MFC_Youth_Activity_Records_${new Date().toISOString().slice(0, 10)}.csv`);
+    downloadExcelFile([headers, ...rows], `MFC_Youth_Activity_Records_${new Date().toISOString().slice(0, 10)}`, 'Activities');
     showToast('📊 Activity records exported successfully as Excel/CSV!', 'success');
 }
 
@@ -779,11 +786,11 @@ export function exportAttendanceCSV() {
         const records = state.attendance[actId] || [];
         records.forEach(rec => {
             attendanceRecords.push([
-                `"${act.name}"`,
-                `"${rec.memberId || ''}"`,
-                `"${(rec.name || '').replace(/"/g, '""')}"`,
-                `"${rec.timestamp || ''}"`,
-                `"${rec.status || 'Present'}"`
+                act.name,
+                rec.memberId || '',
+                rec.name || '',
+                rec.timestamp || '',
+                rec.status || 'Present'
             ]);
         });
     });
@@ -794,8 +801,7 @@ export function exportAttendanceCSV() {
     }
 
     const headers = ['Activity Event Name', 'Member ID', 'Member Name', 'Check-in Timestamp', 'Status'];
-    const csvContent = [headers.join(','), ...attendanceRecords.map(r => r.join(','))].join('\n');
-    downloadCSVFile(csvContent, `MFC_Youth_Attendance_Logs_${new Date().toISOString().slice(0, 10)}.csv`);
+    downloadExcelFile([headers, ...attendanceRecords], `MFC_Youth_Attendance_Logs_${new Date().toISOString().slice(0, 10)}`, 'Attendance');
     showToast('📊 Attendance logs exported successfully as Excel/CSV!', 'success');
 }
 
@@ -807,16 +813,15 @@ export function exportFundsCSV() {
 
     const headers = ['Transaction ID', 'Date', 'Description', 'Category', 'Type', 'Amount (PHP)'];
     const rows = state.funds.map(f => [
-        `"${f.id || ''}"`,
-        `"${f.date || ''}"`,
-        `"${(f.description || '').replace(/"/g, '""')}"`,
-        `"${f.category || ''}"`,
-        `"${f.type || ''}"`,
-        `"${f.amount || 0}"`
+        f.id || '',
+        f.date || '',
+        f.description || '',
+        f.category || '',
+        f.type || '',
+        f.amount || 0
     ]);
 
-    const csvContent = [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
-    downloadCSVFile(csvContent, `MFC_Youth_Finance_Ledger_${new Date().toISOString().slice(0, 10)}.csv`);
+    downloadExcelFile([headers, ...rows], `MFC_Youth_Finance_Ledger_${new Date().toISOString().slice(0, 10)}`, 'Finance');
     showToast('📊 Finance ledger exported successfully as Excel/CSV!', 'success');
 }
 
