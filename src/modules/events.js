@@ -179,19 +179,7 @@ export function initializeEventListeners() {
         });
     }
 
-    const el_action_btn_17 = document.getElementById('action-btn-17');
-    if (el_action_btn_17) {
-        el_action_btn_17.addEventListener('click', function(event) {
-            generateExecutiveSummaryReport()
-        });
-    }
 
-    const el_action_btn_18 = document.getElementById('action-btn-18');
-    if (el_action_btn_18) {
-        el_action_btn_18.addEventListener('click', function(event) {
-            openAbsenteeSwiperModal()
-        });
-    }
 
     const el_tab_s1 = document.getElementById('tab-s1');
     if (el_tab_s1) {
