@@ -1099,7 +1099,7 @@ export function initializeEventListeners() {
     const el_action_btn_131 = document.getElementById('action-btn-131');
     if (el_action_btn_131) {
         el_action_btn_131.addEventListener('click', function(event) {
-            closeMemberQRModal()
+            if (window.closeDigitalQRModal) window.closeDigitalQRModal()
         });
     }
 
@@ -1113,7 +1113,7 @@ export function initializeEventListeners() {
     const el_action_btn_133 = document.getElementById('action-btn-133');
     if (el_action_btn_133) {
         el_action_btn_133.addEventListener('click', function(event) {
-            closeMemberQRModal()
+            if (window.closeDigitalQRModal) window.closeDigitalQRModal()
         });
     }
 
