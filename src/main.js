@@ -53,7 +53,7 @@ document.addEventListener('DOMContentLoaded', () => {
     window.renderAgendaTimeline = window.renderAgendaTimeline || renderAgendaTimeline;
     window.updatePastoralCareWidget = window.updatePastoralCareWidget || updatePastoralCareWidget;
     window.jumpToAttendance = window.jumpToAttendance || jumpToAttendance;
-    window.renderDashboardCharts = window.renderDashboardCharts || renderDashboardCharts;
+    window.renderInteractiveCharts = window.renderInteractiveCharts || renderInteractiveCharts;
     
     // Attendance Engine exports
     window.populateAttendanceDropdown = window.populateAttendanceDropdown || populateAttendanceDropdown;
