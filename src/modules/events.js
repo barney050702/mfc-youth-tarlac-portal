@@ -95,12 +95,7 @@ export function initializeEventListeners() {
         });
     }
 
-    const el_action_btn_12 = document.getElementById('action-btn-12');
-    if (el_action_btn_12) {
-        el_action_btn_12.addEventListener('click', function(event) {
-            openWhatsNewModal()
-        });
-    }
+
 
     const el_menu_toggle_btn = document.getElementById('menu-toggle-btn');
     if (el_menu_toggle_btn) {
@@ -123,12 +118,7 @@ export function initializeEventListeners() {
         });
     }
 
-    const el_whats_new_btn = document.getElementById('whats-new-btn');
-    if (el_whats_new_btn) {
-        el_whats_new_btn.addEventListener('click', function(event) {
-            openWhatsNewModal()
-        });
-    }
+
 
     const el_install_pwa_btn = document.getElementById('install-pwa-btn');
     if (el_install_pwa_btn) {
