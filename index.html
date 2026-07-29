@@ -416,9 +416,9 @@
                             <button id="action-btn-16"  class="btn-secondary"  style="padding: 8px 14px; font-size: 0.82rem; display: inline-flex; align-items: center; gap: 6px; border-color: rgba(16, 185, 129, 0.4); color: #34D399;">
                                 <span>💾 Backup All Portal Data</span>
                             </button>
-                            <label class="btn-secondary" style="padding: 8px 14px; font-size: 0.82rem; display: inline-flex; align-items: center; gap: 6px; cursor: pointer; border-color: rgba(56, 189, 248, 0.4); color: #38BDF8; margin: 0;">
+                            <label for="import-full-backup-input" class="btn-secondary" style="padding: 8px 14px; font-size: 0.82rem; display: inline-flex; align-items: center; gap: 6px; cursor: pointer; border-color: rgba(56, 189, 248, 0.4); color: #38BDF8; margin: 0;">
                                 <span>📂 Restore Backup</span>
-                                <input type="file" accept=".json" onchange="importFullBackupJSON(this)" style="display: none;">
+                                <input type="file" id="import-full-backup-input" accept=".json" onchange="importFullBackupJSON(this)" style="display: none;">
                             </label>
                         </div>
                     </div>
@@ -1244,7 +1244,7 @@
                                 </svg>
                                 <span>Backup JSON</span>
                             </button>
-                            <label class="btn-export btn-restore" id="btn-restore-json"
+                            <label for="input-restore-file" class="btn-export btn-restore" id="btn-restore-json"
                                 style="cursor: pointer; margin: 0; display: inline-flex; align-items: center; justify-content: center; gap: 8px; background: rgba(16, 185, 129, 0.15); color: #34D399; border: 1px solid rgba(16, 185, 129, 0.3); border-radius: 8px; padding: 10px 16px; font-weight: 600; font-size: 0.9rem;">
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                     <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
@@ -1371,12 +1371,12 @@
                         </div>
                         <div class="org-toolbar-right" style="display: flex; align-items: center; flex-wrap: wrap; gap: 12px;">
                             <div class="filter-group" style="display: flex; align-items: center; gap: 6px;">
-                                <label style="font-size: 0.82rem; color: #94A3B8; font-weight: 600;">Search:</label>
+                                <label for="org-search-input" style="font-size: 0.82rem; color: #94A3B8; font-weight: 600;">Search:</label>
                                 <input type="text" id="org-search-input" placeholder="Search name or role..." oninput="renderOrgChart()"
                                     style="background: rgba(15, 23, 42, 0.85); border: 1px solid rgba(255,255,255,0.15); color: #F8FAFC; padding: 7px 12px; border-radius: 8px; font-size: 0.84rem; outline: none; width: 170px;">
                             </div>
                             <div class="filter-group" style="display: flex; align-items: center; gap: 6px;">
-                                <label style="font-size: 0.82rem; color: #94A3B8; font-weight: 600;">Department:</label>
+                                <label for="org-dept-filter" style="font-size: 0.82rem; color: #94A3B8; font-weight: 600;">Department:</label>
                                 <select id="org-dept-filter" class="custom-select" onchange="renderOrgChart()" style="background: rgba(15, 23, 42, 0.85); border: 1px solid rgba(255,255,255,0.15); color: #F8FAFC; padding: 7px 12px; border-radius: 8px; font-size: 0.84rem;">
                                     <option value="ALL">All Departments</option>
                                     <option value="Executive">Executive Board</option>
@@ -2875,7 +2875,7 @@
                 </div>
 
                 <div class="form-group" style="margin-top: 16px;">
-                    <label>Attach Receipt Image (Optional)</label>
+                    <label for="fund-receipt-file">Attach Receipt Image (Optional)</label>
                     <input type="hidden" id="fund-receipt-image-data">
                     <div class="receipt-upload-box" id="receipt-upload-box" 
                         style="border: 2px dashed rgba(56, 189, 248, 0.4); border-radius: 12px; padding: 18px; text-align: center; cursor: pointer; background: rgba(15, 23, 42, 0.6); transition: all 0.2s;">
@@ -3002,19 +3002,19 @@
                     <h4>Change Passcode</h4>
                 </div>
                 <div class="form-group" style="margin-bottom: 12px;">
-                    <label style="font-size: 0.82rem; color: #94A3B8; display: block; margin-bottom: 4px;">Current
+                    <label for="sec-current-passcode" style="font-size: 0.82rem; color: #94A3B8; display: block; margin-bottom: 4px;">Current
                         Passcode</label>
                     <input type="password" id="sec-current-passcode" class="form-input"
                         placeholder="Enter current passcode" style="width: 100%; padding: 8px 12px;">
                 </div>
                 <div class="form-group" style="margin-bottom: 12px;">
-                    <label style="font-size: 0.82rem; color: #94A3B8; display: block; margin-bottom: 4px;">New
+                    <label for="sec-new-passcode" style="font-size: 0.82rem; color: #94A3B8; display: block; margin-bottom: 4px;">New
                         Passcode</label>
                     <input type="password" id="sec-new-passcode" class="form-input" placeholder="Min. 6 characters"
                         style="width: 100%; padding: 8px 12px;">
                 </div>
                 <div class="form-group" style="margin-bottom: 16px;">
-                    <label style="font-size: 0.82rem; color: #94A3B8; display: block; margin-bottom: 4px;">Confirm New
+                    <label for="sec-confirm-passcode" style="font-size: 0.82rem; color: #94A3B8; display: block; margin-bottom: 4px;">Confirm New
                         Passcode</label>
                     <input type="password" id="sec-confirm-passcode" class="form-input"
                         placeholder="Confirm new passcode" style="width: 100%; padding: 8px 12px;">
@@ -3034,19 +3034,19 @@
                     <h4>Recovery Options</h4>
                 </div>
                 <div class="form-group" style="margin-bottom: 12px;">
-                    <label style="font-size: 0.82rem; color: #94A3B8; display: block; margin-bottom: 4px;">Recovery
+                    <label for="sec-recovery-email" style="font-size: 0.82rem; color: #94A3B8; display: block; margin-bottom: 4px;">Recovery
                         Email Address</label>
                     <input type="email" id="sec-recovery-email" class="form-input" value="reyesbarney38@gmail.com"
                         style="width: 100%; padding: 8px 12px;">
                 </div>
                 <div class="form-group" style="margin-bottom: 12px;">
-                    <label style="font-size: 0.82rem; color: #94A3B8; display: block; margin-bottom: 4px;">Backup Phone
+                    <label for="sec-recovery-phone" style="font-size: 0.82rem; color: #94A3B8; display: block; margin-bottom: 4px;">Backup Phone
                         Number</label>
                     <input type="tel" id="sec-recovery-phone" class="form-input" value="+63 917 123 4567"
                         style="width: 100%; padding: 8px 12px;">
                 </div>
                 <div class="form-group" style="margin-bottom: 12px;">
-                    <label style="font-size: 0.82rem; color: #94A3B8; display: block; margin-bottom: 4px;">Security
+                    <label for="sec-recovery-question" style="font-size: 0.82rem; color: #94A3B8; display: block; margin-bottom: 4px;">Security
                         Question</label>
                     <select id="sec-recovery-question" class="form-input"
                         style="width: 100%; padding: 8px 12px; background: var(--bg-card); color: white;">
@@ -3056,7 +3056,7 @@
                     </select>
                 </div>
                 <div class="form-group" style="margin-bottom: 16px;">
-                    <label style="font-size: 0.82rem; color: #94A3B8; display: block; margin-bottom: 4px;">Security
+                    <label for="sec-recovery-answer" style="font-size: 0.82rem; color: #94A3B8; display: block; margin-bottom: 4px;">Security
                         Answer</label>
                     <input type="text" id="sec-recovery-answer" class="form-input" value="Tarlac City"
                         style="width: 100%; padding: 8px 12px;">
@@ -3335,11 +3335,11 @@
                 <div style="font-size: 0.82rem; font-weight: 700; color: #E2E8F0; margin-bottom: 12px;">Advanced Custom Firebase Settings</div>
                 <div style="display: flex; flex-direction: column; gap: 12px;">
                     <div>
-                        <label style="display: block; font-size: 0.75rem; color: #94A3B8; margin-bottom: 4px;">Firebase Project ID</label>
+                        <label for="fb-config-project-id" style="display: block; font-size: 0.75rem; color: #94A3B8; margin-bottom: 4px;">Firebase Project ID</label>
                         <input type="text" id="fb-config-project-id" placeholder="mfc-youth-data" style="width: 100%; padding: 10px 14px; border-radius: 10px; background: rgba(15,23,42,0.8); border: 1px solid rgba(255,255,255,0.15); color: #FFF; font-size: 0.88rem;">
                     </div>
                     <div>
-                        <label style="display: block; font-size: 0.75rem; color: #94A3B8; margin-bottom: 4px;">Firebase Web API Key</label>
+                        <label for="fb-config-api-key" style="display: block; font-size: 0.75rem; color: #94A3B8; margin-bottom: 4px;">Firebase Web API Key</label>
                         <input type="password" id="fb-config-api-key" placeholder="AIzaSy..." style="width: 100%; padding: 10px 14px; border-radius: 10px; background: rgba(15,23,42,0.8); border: 1px solid rgba(255,255,255,0.15); color: #FFF; font-size: 0.88rem;">
                     </div>
                 </div>
@@ -3800,7 +3800,7 @@
                 <!-- FORM INPUTS -->
                 <div style="overflow-y: auto; padding-right: 6px;">
                     <div class="form-group" style="margin-bottom: 12px;">
-                        <label style="color: #94A3B8; font-size: 0.8rem; font-weight: 700; display: block; margin-bottom: 4px;">Select Letter Template</label>
+                        <label for="let-template-type" style="color: #94A3B8; font-size: 0.8rem; font-weight: 700; display: block; margin-bottom: 4px;">Select Letter Template</label>
                         <select id="let-template-type" class="custom-select" onchange="updateLetterPreview()" style="width: 100%; background: #0F172A; color: #FFF; border: 1px solid #38BDF8; border-radius: 8px; padding: 8px 12px; font-size: 0.85rem;">
                             <option value="parental">💌 Parental Consent & Waiver</option>
                             <option value="excuse">📜 Pastoral Invitation & School Excuse</option>
@@ -3810,27 +3810,27 @@
                         </select>
                     </div>
                     <div class="form-group" style="margin-bottom: 12px;">
-                        <label style="color: #94A3B8; font-size: 0.8rem; font-weight: 700; display: block; margin-bottom: 4px;">Member / Student Name</label>
+                        <label for="let-member-name" style="color: #94A3B8; font-size: 0.8rem; font-weight: 700; display: block; margin-bottom: 4px;">Member / Student Name</label>
                         <input type="text" id="let-member-name" placeholder="e.g. Juan Dela Cruz" oninput="updateLetterPreview()" style="width: 100%; background: #0F172A; color: #FFF; border: 1px solid rgba(255,255,255,0.15); border-radius: 8px; padding: 8px 12px; font-size: 0.85rem;">
                     </div>
                     <div class="form-group" style="margin-bottom: 12px;">
-                        <label style="color: #94A3B8; font-size: 0.8rem; font-weight: 700; display: block; margin-bottom: 4px;">Parent / Guardian / Addressee Name</label>
+                        <label for="let-parent-name" style="color: #94A3B8; font-size: 0.8rem; font-weight: 700; display: block; margin-bottom: 4px;">Parent / Guardian / Addressee Name</label>
                         <input type="text" id="let-parent-name" placeholder="e.g. Mr. & Mrs. Dela Cruz / The Dean" oninput="updateLetterPreview()" style="width: 100%; background: #0F172A; color: #FFF; border: 1px solid rgba(255,255,255,0.15); border-radius: 8px; padding: 8px 12px; font-size: 0.85rem;">
                     </div>
                     <div class="form-group" style="margin-bottom: 12px;">
-                        <label style="color: #94A3B8; font-size: 0.8rem; font-weight: 700; display: block; margin-bottom: 4px;">Event / Activity Title</label>
+                        <label for="let-event-title" style="color: #94A3B8; font-size: 0.8rem; font-weight: 700; display: block; margin-bottom: 4px;">Event / Activity Title</label>
                         <input type="text" id="let-event-title" placeholder="e.g. 2026 Provincial Youth Camp" oninput="updateLetterPreview()" style="width: 100%; background: #0F172A; color: #FFF; border: 1px solid rgba(255,255,255,0.15); border-radius: 8px; padding: 8px 12px; font-size: 0.85rem;">
                     </div>
                     <div class="form-group" style="margin-bottom: 12px;">
-                        <label style="color: #94A3B8; font-size: 0.8rem; font-weight: 700; display: block; margin-bottom: 4px;">Event Date & Time</label>
+                        <label for="let-event-date" style="color: #94A3B8; font-size: 0.8rem; font-weight: 700; display: block; margin-bottom: 4px;">Event Date & Time</label>
                         <input type="text" id="let-event-date" placeholder="e.g. August 14-16, 2026" oninput="updateLetterPreview()" style="width: 100%; background: #0F172A; color: #FFF; border: 1px solid rgba(255,255,255,0.15); border-radius: 8px; padding: 8px 12px; font-size: 0.85rem;">
                     </div>
                     <div class="form-group" style="margin-bottom: 12px;">
-                        <label style="color: #94A3B8; font-size: 0.8rem; font-weight: 700; display: block; margin-bottom: 4px;">Venue / Location</label>
+                        <label for="let-venue" style="color: #94A3B8; font-size: 0.8rem; font-weight: 700; display: block; margin-bottom: 4px;">Venue / Location</label>
                         <input type="text" id="let-venue" placeholder="e.g. Tarlac Diocesan Pastoral Center" oninput="updateLetterPreview()" style="width: 100%; background: #0F172A; color: #FFF; border: 1px solid rgba(255,255,255,0.15); border-radius: 8px; padding: 8px 12px; font-size: 0.85rem;">
                     </div>
                     <div class="form-group" style="margin-bottom: 12px;">
-                        <label style="color: #94A3B8; font-size: 0.8rem; font-weight: 700; display: block; margin-bottom: 4px;">Chapter Coordinator / Servant Name</label>
+                        <label for="let-servant-name" style="color: #94A3B8; font-size: 0.8rem; font-weight: 700; display: block; margin-bottom: 4px;">Chapter Coordinator / Servant Name</label>
                         <input type="text" id="let-servant-name" placeholder="e.g. Bro. Barney & Sis. Anna" oninput="updateLetterPreview()" style="width: 100%; background: #0F172A; color: #FFF; border: 1px solid rgba(255,255,255,0.15); border-radius: 8px; padding: 8px 12px; font-size: 0.85rem;">
                     </div>
                 </div>
@@ -4057,11 +4057,11 @@
             
             <form id="form-post-announcement" onsubmit="handlePostAnnouncement(event)" style="margin-top: 16px;">
                 <div style="margin-bottom: 14px;">
-                    <label style="color: #CBD5E1; font-size: 0.82rem; font-weight: 700; display: block; margin-bottom: 6px;">Notice Title *</label>
+                    <label for="ann-title" style="color: #CBD5E1; font-size: 0.82rem; font-weight: 700; display: block; margin-bottom: 6px;">Notice Title *</label>
                     <input type="text" id="ann-title" required placeholder="e.g. Important Advisory: Youth Camp Prep Meeting" style="width: 100%; background: #0F172A; border: 1px solid rgba(255,255,255,0.15); border-radius: 8px; padding: 10px 12px; color: #FFF;">
                 </div>
                 <div style="margin-bottom: 14px;">
-                    <label style="color: #CBD5E1; font-size: 0.82rem; font-weight: 700; display: block; margin-bottom: 6px;">Priority Level</label>
+                    <label for="ann-priority" style="color: #CBD5E1; font-size: 0.82rem; font-weight: 700; display: block; margin-bottom: 6px;">Priority Level</label>
                     <select id="ann-priority" style="width: 100%; background: #0F172A; border: 1px solid rgba(255,255,255,0.15); border-radius: 8px; padding: 10px 12px; color: #FFF;">
                         <option value="NORMAL">🔵 Normal Announcement</option>
                         <option value="URGENT">🔴 Urgent Advisory</option>
@@ -4069,7 +4069,7 @@
                     </select>
                 </div>
                 <div style="margin-bottom: 16px;">
-                    <label style="color: #CBD5E1; font-size: 0.82rem; font-weight: 700; display: block; margin-bottom: 6px;">Notice Details *</label>
+                    <label for="ann-details" style="color: #CBD5E1; font-size: 0.82rem; font-weight: 700; display: block; margin-bottom: 6px;">Notice Details *</label>
                     <textarea id="ann-details" required rows="4" placeholder="Enter announcement body..." style="width: 100%; background: #0F172A; border: 1px solid rgba(255,255,255,0.15); border-radius: 8px; padding: 10px 12px; color: #FFF; resize: vertical;"></textarea>
                 </div>
                 <div style="display: flex; gap: 10px; justify-content: flex-end;">
@@ -4093,11 +4093,11 @@
             
             <form id="form-submit-prayer" onsubmit="handleSubmitPrayer(event)" style="margin-top: 16px;">
                 <div style="margin-bottom: 14px;">
-                    <label style="color: #CBD5E1; font-size: 0.82rem; font-weight: 700; display: block; margin-bottom: 6px;">Intention For / Requester Name *</label>
+                    <label for="pray-name" style="color: #CBD5E1; font-size: 0.82rem; font-weight: 700; display: block; margin-bottom: 6px;">Intention For / Requester Name *</label>
                     <input type="text" id="pray-name" required placeholder="e.g. Sister Maria / Youth Camp Delegates" style="width: 100%; background: #0F172A; border: 1px solid rgba(255,255,255,0.15); border-radius: 8px; padding: 10px 12px; color: #FFF;">
                 </div>
                 <div style="margin-bottom: 14px;">
-                    <label style="color: #CBD5E1; font-size: 0.82rem; font-weight: 700; display: block; margin-bottom: 6px;">Category</label>
+                    <label for="pray-category" style="color: #CBD5E1; font-size: 0.82rem; font-weight: 700; display: block; margin-bottom: 6px;">Category</label>
                     <select id="pray-category" style="width: 100%; background: #0F172A; border: 1px solid rgba(255,255,255,0.15); border-radius: 8px; padding: 10px 12px; color: #FFF;">
                         <option value="Healing">🏥 Healing & Health</option>
                         <option value="Exams">📚 Exams & School Success</option>
@@ -4107,7 +4107,7 @@
                     </select>
                 </div>
                 <div style="margin-bottom: 16px;">
-                    <label style="color: #CBD5E1; font-size: 0.82rem; font-weight: 700; display: block; margin-bottom: 6px;">Prayer Intention Request *</label>
+                    <label for="pray-intent" style="color: #CBD5E1; font-size: 0.82rem; font-weight: 700; display: block; margin-bottom: 6px;">Prayer Intention Request *</label>
                     <textarea id="pray-intent" required rows="3" placeholder="Specify your prayer request..." style="width: 100%; background: #0F172A; border: 1px solid rgba(255,255,255,0.15); border-radius: 8px; padding: 10px 12px; color: #FFF; resize: vertical;"></textarea>
                 </div>
                 <div style="display: flex; gap: 10px; justify-content: flex-end;">
