@@ -10,7 +10,7 @@ import { MFCFirebaseCloud } from './modules/firebase.js';
 import { openDigitalQRModal, closeDigitalQRModal, printMemberQRCard } from './modules/members.js';
 import { populateAttendanceDropdown, renderAttendanceRoster, toggleAttendance, triggerAbsenteeAutoGmailPrompt, filterAttendanceRoster, batchMarkChapterPresent, sendGmailToCurrentAbsentees, updateRemarks, updateLiveProgress, markAllPresent, markAllAbsent, resetAttendanceSheet, startLiveQRScanner, stopLiveQRScanner, simulateQRCheckIn } from './modules/attendance.js';
 import { renderActivitiesTable } from './modules/activities.js';
-import { renderDashboardCharts, generateExecutiveSummaryReport, renderAnalytics, exportToCSV, exportToPDF, exportMembersToPDF, exportMembersCSV, exportActivitiesCSV, exportAttendanceCSV, exportFundsCSV } from './modules/reports.js';
+import { renderInteractiveCharts, generateExecutiveSummaryReport, renderAnalytics, exportToCSV, exportToPDF, exportMembersToPDF, exportMembersCSV, exportActivitiesCSV, exportAttendanceCSV, exportFundsCSV } from './modules/reports.js';
 import { renderDashboard, renderAgendaTimeline, updatePastoralCareWidget, jumpToAttendance } from './modules/dashboard.js';
 import { initializeEventListeners } from './modules/events.js';
 
