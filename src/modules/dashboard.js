@@ -94,7 +94,7 @@ export function renderDashboard() {
 
                 return `
                     <tr style="border-bottom: 1px solid rgba(255, 255, 255, 0.05); transition: background 0.2s ease;" onmouseover="this.style.background='rgba(255,255,255,0.02)'" onmouseout="this.style.background='transparent'">
-                        <td style="padding: 16px 20px;">
+                        <td data-label="Activity" style="padding: 16px 20px;">
                             <div style="font-weight: 800; color: #F8FAFC; font-size: 0.95rem; margin-bottom: 6px;">
                                 ${act.name || act.title || 'Untitled Activity'}
                             </div>
@@ -102,25 +102,25 @@ export function renderDashboard() {
                                 <span style="color: #F43F5E; font-size: 0.95rem;">📍</span> ${act.venue || act.location || 'Venue TBA'}
                             </div>
                         </td>
-                        <td style="padding: 16px 20px;">
+                        <td data-label="Category" style="padding: 16px 20px;">
                             <span style="background: rgba(14, 116, 144, 0.3); color: #38BDF8; border: 1px solid rgba(56, 189, 248, 0.35); padding: 5px 14px; border-radius: 8px; font-weight: 700; font-size: 0.8rem; display: inline-block;">
                                 ${act.category}
                             </span>
                         </td>
-                        <td style="padding: 16px 20px; color: #F8FAFC; font-weight: 700; font-size: 0.88rem; white-space: nowrap;">
+                        <td data-label="Date/Time" style="padding: 16px 20px; color: #F8FAFC; font-weight: 700; font-size: 0.88rem; white-space: nowrap;">
                             ${dateStr} • ${timeStr}
                         </td>
-                        <td style="padding: 16px 20px; white-space: nowrap;">
+                        <td data-label="Attendance" style="padding: 16px 20px; white-space: nowrap;">
                             <span style="color: #38BDF8; font-weight: 800; font-size: 0.95rem;">${rate}%</span>
                             <span style="color: #64748B; font-size: 0.8rem; margin-left: 4px;">(${pCount}/${totalMems})</span>
                         </td>
-                        <td style="padding: 16px 20px;">
+                        <td data-label="Status" style="padding: 16px 20px;">
                             <span style="background: ${isCompleted ? 'rgba(6, 78, 59, 0.4)' : 'rgba(12, 74, 110, 0.4)'}; color: ${isCompleted ? '#34D399' : '#38BDF8'}; border: 1px solid ${isCompleted ? 'rgba(52, 211, 153, 0.4)' : 'rgba(56, 189, 248, 0.4)'}; padding: 5px 14px; border-radius: 20px; font-weight: 700; font-size: 0.78rem; display: inline-flex; align-items: center; gap: 6px; white-space: nowrap;">
                                 <span style="width: 6px; height: 6px; border-radius: 50%; background: ${isCompleted ? '#34D399' : '#38BDF8'}; display: inline-block;"></span>
                                 ${act.status}
                             </span>
                         </td>
-                        <td style="padding: 16px 20px;">
+                        <td data-label="Actions" style="padding: 16px 20px;">
                             <button onclick="window.jumpToAttendance('${act.id}')" style="background: rgba(30, 41, 59, 0.8); border: 1px solid rgba(255, 255, 255, 0.15); color: #E2E8F0; padding: 8px 16px; border-radius: 10px; font-weight: 600; font-size: 0.82rem; cursor: pointer; transition: all 0.2s; display: inline-flex; align-items: center; gap: 6px; box-shadow: 0 4px 12px rgba(0,0,0,0.2); white-space: nowrap;" onmouseover="this.style.background='rgba(51, 65, 85, 1)'; this.style.borderColor='rgba(255,255,255,0.3)'" onmouseout="this.style.background='rgba(30, 41, 59, 0.8)'; this.style.borderColor='rgba(255,255,255,0.15)'">
                                 📋 Check Sheet
                             </button>

@@ -4,7 +4,7 @@
  */
 
 import { state, loadFromStorage, subscribeState } from './modules/state.js';
-import { switchView, toggleMobileSidebar, closeMobileSidebar, showToast, copyToClipboardText, openWhatsNewModal, closeWhatsNewModal } from './modules/ui.js';
+import { switchView, toggleMobileSidebar, closeMobileSidebar, showToast, copyToClipboardText, openWhatsNewModal, closeWhatsNewModal, initMobileNativeGestures } from './modules/ui.js';
 import { loginUser, logoutUser, initAuthWatchdog, sendPasswordReset } from './modules/auth.js';
 import { MFCFirebaseCloud } from './modules/firebase.js';
 import { openDigitalQRModal, closeDigitalQRModal, printMemberQRCard } from './modules/members.js';
@@ -22,6 +22,8 @@ document.addEventListener('DOMContentLoaded', () => {
     // Call legacy mobile gestures if present in script.js
     if (typeof window.initMobileNativeGestures === 'function') {
         window.initMobileNativeGestures();
+    } else if (typeof initMobileNativeGestures === 'function') {
+        initMobileNativeGestures();
     }
 
     loadFromStorage();

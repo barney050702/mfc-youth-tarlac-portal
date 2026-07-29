@@ -106,8 +106,8 @@ export function renderAttendanceRoster() {
 
                 return `
                 <tr id="row-${mem.id}">
-                    <td style="font-weight:700; color:var(--text-muted);">${idx + 1}</td>
-                    <td>
+                    <td data-label="#" style="font-weight:700; color:var(--text-muted);">${idx + 1}</td>
+                    <td data-label="Member">
                         <div style="display:flex; align-items:center; gap:10px;">
                             <div style="width:32px; height:32px; border-radius:8px; background:var(--grad-primary); display:flex; align-items:center; justify-content:center; font-weight:700; font-size:0.85rem; color:#FFF;">
                                 ${(mem.name || '?').charAt(0)}
@@ -121,17 +121,17 @@ export function renderAttendanceRoster() {
                             </div>
                         </div>
                     </td>
-                    <td>
+                    <td data-label="Dept/Role">
                         <span style="font-weight:600; color:var(--accent-blue);">${mem.dept || 'N/A'}</span>
                         <div style="font-size:0.75rem; color:var(--text-secondary);">${mem.role || 'Member'}</div>
                     </td>
-                    <td>
+                    <td data-label="Status">
                         <div class="attendance-status-group" id="group-${mem.id}">
                             <button type="button" class="status-btn ${st === 'present' ? 'active-present' : ''}" onclick="window.toggleAttendance('${actId}', '${mem.id}', 'present')">Present</button>
                             <button type="button" class="status-btn ${st === 'absent' ? 'active-absent' : ''}" onclick="window.toggleAttendance('${actId}', '${mem.id}', 'absent')">Absent</button>
                         </div>
                     </td>
-                    <td>
+                    <td data-label="Remarks">
                         <input type="text" id="remark-${mem.id}" name="remark-${mem.id}" value="${notesStr}" placeholder="Add remark..." style="background:rgba(9,13,22,0.6); border:1px solid var(--border-color); border-radius:8px; padding:6px 10px; color:#FFF; font-size:0.8rem; width:160px;" onchange="window.updateRemarks('${actId}', '${mem.id}', this.value)">
                     </td>
                 </tr>

@@ -1835,7 +1835,7 @@ function renderMembersTable() {
 
         rowsHtml.push(`
             <tr class="activity-row ${isDuplicate ? 'duplicate-row-highlight' : ''}" style="${rowStyle}">
-                <td style="font-weight: 700; color: #F8FAFC; font-size: 0.92rem; white-space: nowrap; padding: 16px 20px;">
+                <td data-label="Member Name" style="font-weight: 700; color: #F8FAFC; font-size: 0.92rem; white-space: nowrap; padding: 16px 20px;">
                     <a href="javascript:void(0)" onclick="openMemberProfile('${mem.id}')" style="color: #F8FAFC; text-decoration: none; display: inline-flex; align-items: center; gap: 6px; transition: color 0.2s;" onmouseover="this.style.color='#38BDF8'" onmouseout="this.style.color='#F8FAFC'">
                         <span>${mem.name}</span>
                         <span style="font-size: 0.72rem; color: #38BDF8; opacity: 0.8;">↗ Dossier</span>
@@ -1845,36 +1845,36 @@ function renderMembersTable() {
                         ${badgesHtml}
                     </div>
                 </td>
-                <td style="padding: 16px 20px;">
+                <td data-label="Chapter" style="padding: 16px 20px;">
                     <span style="background: var(--grad-emerald); color: white; padding: 4px 14px; border-radius: 20px; font-weight: 700; font-size: 0.75rem; display: inline-block; box-shadow: 0 2px 10px rgba(16, 185, 129, 0.25); text-transform: uppercase;">
                         ${mem.chapter || 'EAST'}
                     </span>
                 </td>
-                <td style="white-space: nowrap; padding: 16px 20px;">
+                <td data-label="Role" style="white-space: nowrap; padding: 16px 20px;">
                     ${formatRoleBadge(mem.role)}
                 </td>
-                <td style="color: #CBD5E1; font-family: 'Roboto Mono', monospace, sans-serif; font-size: 0.88rem; padding: 16px 20px;">
+                <td data-label="Contact Num" style="color: #CBD5E1; font-family: 'Roboto Mono', monospace, sans-serif; font-size: 0.88rem; padding: 16px 20px;">
                     ${mem.contactNum || '<span style="color: #64748B;">-</span>'}
                 </td>
-                <td style="padding: 16px 20px;">
+                <td data-label="Email Address" style="padding: 16px 20px;">
                     ${mem.email ? `<a href="mailto:${mem.email}" style="color: #60A5FA; text-decoration: none; font-size: 0.85rem;">${mem.email}</a>` : '<span style="color: #64748B;">-</span>'}
                 </td>
-                <td style="color: #E2E8F0; font-size: 0.88rem; white-space: nowrap; padding: 16px 20px;">
+                <td data-label="Birthday" style="color: #E2E8F0; font-size: 0.88rem; white-space: nowrap; padding: 16px 20px;">
                     ${formatDateClean(mem.birthday)}
                 </td>
-                <td style="color: #38BDF8; font-weight: 700; font-size: 0.88rem; white-space: nowrap; padding: 16px 20px;">
+                <td data-label="Age" style="color: #38BDF8; font-weight: 700; font-size: 0.88rem; white-space: nowrap; padding: 16px 20px;">
                     ${calculateAgeClean(mem)}
                 </td>
-                <td style="color: #CBD5E1; font-family: 'Roboto Mono', monospace, sans-serif; font-size: 0.88rem; padding: 16px 20px;">
+                <td data-label="Parents Contact" style="color: #CBD5E1; font-family: 'Roboto Mono', monospace, sans-serif; font-size: 0.88rem; padding: 16px 20px;">
                     ${mem.parentsContact || '<span style="color: #64748B;">-</span>'}
                 </td>
-                <td style="color: #E2E8F0; font-size: 0.88rem; padding: 16px 20px;">
+                <td data-label="Address" style="color: #E2E8F0; font-size: 0.88rem; padding: 16px 20px;">
                     ${mem.address || '<span style="color: #64748B;">-</span>'}
                 </td>
-                <td style="color: #E2E8F0; font-size: 0.88rem; white-space: nowrap; padding: 16px 20px;">
+                <td data-label="Camp Date" style="color: #E2E8F0; font-size: 0.88rem; white-space: nowrap; padding: 16px 20px;">
                     ${formatDateClean(mem.campDate)}
                 </td>
-                <td style="text-align: right; white-space: nowrap; padding: 16px 20px;">
+                <td data-label="Actions" style="text-align: right; white-space: nowrap; padding: 16px 20px;">
                     <button class="btn-secondary" style="padding: 5px 12px; font-size: 0.78rem; margin-right: 4px;" onclick="openMemberProfile('${mem.id}')">
                         Profile
                     </button>
@@ -5344,7 +5344,7 @@ function triggerHapticFeedback(pattern = 15) {
 function triggerMobileQuickScan() {
     triggerHapticFeedback([15, 30, 15]);
     switchView('attendance');
-    openQRCheckInModal();
+    if (window.startLiveQRScanner) window.startLiveQRScanner();
 }
 
 

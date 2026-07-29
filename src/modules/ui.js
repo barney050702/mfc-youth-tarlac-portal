@@ -115,6 +115,31 @@ export function closeMobileSidebar() {
     if (backdrop) backdrop.classList.remove('open');
 }
 
+export function initMobileNativeGestures() {
+    const sidebar = document.querySelector('.sidebar');
+    if (!sidebar) return;
+
+    let touchStartX = 0;
+    let touchEndX = 0;
+
+    sidebar.addEventListener('touchstart', (e) => {
+        touchStartX = e.changedTouches[0].screenX;
+    }, { passive: true });
+
+    sidebar.addEventListener('touchend', (e) => {
+        touchEndX = e.changedTouches[0].screenX;
+        handleSwipe();
+    }, { passive: true });
+
+    function handleSwipe() {
+        const threshold = 50;
+        // Swipe left
+        if (touchStartX - touchEndX > threshold) {
+            closeMobileSidebar();
+        }
+    }
+}
+
 export function copyToClipboardText(text, successMsg = 'Copied to clipboard!') {
     if (navigator.clipboard && navigator.clipboard.writeText) {
         navigator.clipboard.writeText(text).then(() => {

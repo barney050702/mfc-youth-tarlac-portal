@@ -53,21 +53,24 @@ self.addEventListener('activate', (event) => {
     );
 });
 
-// Fetch Event - Network first with cache fallback
+// Fetch Event - Stale-While-Revalidate for aggressive caching
 self.addEventListener('fetch', (event) => {
     if (event.request.method !== 'GET') return;
 
     event.respondWith(
-        fetch(event.request).then((networkResponse) => {
-            if (networkResponse && networkResponse.status === 200 && networkResponse.type === 'basic') {
-                const responseClone = networkResponse.clone();
-                caches.open(CACHE_NAME).then((cache) => {
-                    cache.put(event.request, responseClone);
-                });
-            }
-            return networkResponse;
-        }).catch(() => {
-            return caches.match(event.request);
+        caches.match(event.request).then((cachedResponse) => {
+            const fetchPromise = fetch(event.request).then((networkResponse) => {
+                if (networkResponse && networkResponse.status === 200 && networkResponse.type === 'basic') {
+                    const responseClone = networkResponse.clone();
+                    caches.open(CACHE_NAME).then((cache) => {
+                        cache.put(event.request, responseClone);
+                    });
+                }
+                return networkResponse;
+            }).catch(() => {
+                // If fetch fails, we just return the cached response (if available)
+            });
+            return cachedResponse || fetchPromise;
         })
     );
 });

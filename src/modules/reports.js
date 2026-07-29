@@ -273,17 +273,17 @@ export function renderAnalytics() {
 
             return `
                 <tr>
-                    <td style="font-weight:700; color:#FFF;">${mKey}</td>
-                    <td>${data.totalActs}</td>
-                    <td><strong style="color:var(--accent-emerald);">${data.completed}</strong></td>
-                    <td>
+                    <td data-label="Month" style="font-weight:700; color:#FFF;">${mKey}</td>
+                    <td data-label="Total Acts">${data.totalActs}</td>
+                    <td data-label="Completed"><strong style="color:var(--accent-emerald);">${data.completed}</strong></td>
+                    <td data-label="Avg Rate">
                         <div style="display:flex; align-items:center; gap:8px;">
                             <span class="rate-badge" style="margin-left:0;">${avgRate}%</span>
                         </div>
                     </td>
-                    <td><strong style="color:var(--accent-blue);">${data.presentSum}</strong> check-ins</td>
-                    <td><span style="color:var(--text-muted);">${data.absentSum} absences</span></td>
-                    <td>${evalBadge}</td>
+                    <td data-label="Check-ins"><strong style="color:var(--accent-blue);">${data.presentSum}</strong> check-ins</td>
+                    <td data-label="Absences"><span style="color:var(--text-muted);">${data.absentSum} absences</span></td>
+                    <td data-label="Evaluation">${evalBadge}</td>
                 </tr>
             `;
         }).join('');
@@ -456,12 +456,12 @@ export function generatePrintablePDFSheet() {
         const rate = totalMems > 0 ? Math.round((pCount / totalMems) * 100) : 0;
         const dateStr = new Date(act.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
         return `<tr>
-            <td style="padding: 8px; border-bottom: 1px solid #ddd;">${act.name || act.title || 'Untitled'}</td>
-            <td style="padding: 8px; border-bottom: 1px solid #ddd;">${act.type || act.category || 'Event'}</td>
-            <td style="padding: 8px; border-bottom: 1px solid #ddd;">${dateStr}</td>
-            <td style="padding: 8px; border-bottom: 1px solid #ddd;">${act.status}</td>
-            <td style="padding: 8px; border-bottom: 1px solid #ddd;">${pCount}/${totalMems}</td>
-            <td style="padding: 8px; border-bottom: 1px solid #ddd; font-weight: bold; color: #059669;">${rate}%</td>
+            <td data-label="Activity" style="padding: 8px; border-bottom: 1px solid #ddd;">${act.name || act.title || 'Untitled'}</td>
+            <td data-label="Category" style="padding: 8px; border-bottom: 1px solid #ddd;">${act.type || act.category || 'Event'}</td>
+            <td data-label="Date" style="padding: 8px; border-bottom: 1px solid #ddd;">${dateStr}</td>
+            <td data-label="Status" style="padding: 8px; border-bottom: 1px solid #ddd;">${act.status}</td>
+            <td data-label="Present/Total" style="padding: 8px; border-bottom: 1px solid #ddd;">${pCount}/${totalMems}</td>
+            <td data-label="Attendance Rate" style="padding: 8px; border-bottom: 1px solid #ddd; font-weight: bold; color: #059669;">${rate}%</td>
         </tr>`;
     }).join('');
 
@@ -474,12 +474,12 @@ export function generatePrintablePDFSheet() {
                 const att = attMap[mem.id] || { status: 'absent', time: '-', notes: '' };
                 const color = att.status === 'present' ? '#059669' : att.status === 'late' ? '#D97706' : '#E11D48';
                 return `<tr>
-                    <td style="padding: 6px; border-bottom: 1px solid #eee;">${idx + 1}</td>
-                    <td style="padding: 6px; border-bottom: 1px solid #eee; font-weight: 600;">${mem.name}</td>
-                    <td style="padding: 6px; border-bottom: 1px solid #eee;">${mem.dept} (${mem.role})</td>
-                    <td style="padding: 6px; border-bottom: 1px solid #eee; font-weight: bold; color: ${color};">${att.status.toUpperCase()}</td>
-                    <td style="padding: 6px; border-bottom: 1px solid #eee;">${att.time}</td>
-                    <td style="padding: 6px; border-bottom: 1px solid #eee;">${att.notes || '-'}</td>
+                    <td data-label="#" style="padding: 6px; border-bottom: 1px solid #eee;">${idx + 1}</td>
+                    <td data-label="Member Name" style="padding: 6px; border-bottom: 1px solid #eee; font-weight: 600;">${mem.name}</td>
+                    <td data-label="Dept / Role" style="padding: 6px; border-bottom: 1px solid #eee;">${mem.dept} (${mem.role})</td>
+                    <td data-label="Status" style="padding: 6px; border-bottom: 1px solid #eee; font-weight: bold; color: ${color};">${att.status.toUpperCase()}</td>
+                    <td data-label="Time" style="padding: 6px; border-bottom: 1px solid #eee;">${att.time}</td>
+                    <td data-label="Remarks" style="padding: 6px; border-bottom: 1px solid #eee;">${att.notes || '-'}</td>
                 </tr>`;
             }).join('');
 
@@ -644,13 +644,13 @@ export function generatePrintableMembersPDF() {
 
     const memRows = sortedMems.map((m, idx) => {
         return `<tr>
-            <td style="padding: 8px; border-bottom: 1px solid #ddd;">${idx + 1}</td>
-            <td style="padding: 8px; border-bottom: 1px solid #ddd; font-weight: 600;">${m.name}</td>
-            <td style="padding: 8px; border-bottom: 1px solid #ddd;">${m.chapter || 'Central Chapter'}</td>
-            <td style="padding: 8px; border-bottom: 1px solid #ddd;">${m.dept || 'General'}</td>
-            <td style="padding: 8px; border-bottom: 1px solid #ddd;">${m.role || 'Member'}</td>
-            <td style="padding: 8px; border-bottom: 1px solid #ddd;">${m.email || '-'}</td>
-            <td style="padding: 8px; border-bottom: 1px solid #ddd; font-weight: bold; color: #059669;">${m.status || 'Active'}</td>
+            <td data-label="#" style="padding: 8px; border-bottom: 1px solid #ddd;">${idx + 1}</td>
+            <td data-label="Name" style="padding: 8px; border-bottom: 1px solid #ddd; font-weight: 600;">${m.name}</td>
+            <td data-label="Chapter" style="padding: 8px; border-bottom: 1px solid #ddd;">${m.chapter || 'Central Chapter'}</td>
+            <td data-label="Department" style="padding: 8px; border-bottom: 1px solid #ddd;">${m.dept || 'General'}</td>
+            <td data-label="Role" style="padding: 8px; border-bottom: 1px solid #ddd;">${m.role || 'Member'}</td>
+            <td data-label="Email" style="padding: 8px; border-bottom: 1px solid #ddd;">${m.email || '-'}</td>
+            <td data-label="Status" style="padding: 8px; border-bottom: 1px solid #ddd; font-weight: bold; color: #059669;">${m.status || 'Active'}</td>
         </tr>`;
     }).join('');
 
