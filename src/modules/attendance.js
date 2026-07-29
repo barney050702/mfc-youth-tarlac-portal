@@ -132,7 +132,7 @@ export function renderAttendanceRoster() {
                         </div>
                     </td>
                     <td>
-                        <input type="text" value="${notesStr}" placeholder="Add remark..." style="background:rgba(9,13,22,0.6); border:1px solid var(--border-color); border-radius:8px; padding:6px 10px; color:#FFF; font-size:0.8rem; width:160px;" onchange="window.updateRemarks('${actId}', '${mem.id}', this.value)">
+                        <input type="text" id="remark-${mem.id}" name="remark-${mem.id}" value="${notesStr}" placeholder="Add remark..." style="background:rgba(9,13,22,0.6); border:1px solid var(--border-color); border-radius:8px; padding:6px 10px; color:#FFF; font-size:0.8rem; width:160px;" onchange="window.updateRemarks('${actId}', '${mem.id}', this.value)">
                     </td>
                 </tr>
             `;
