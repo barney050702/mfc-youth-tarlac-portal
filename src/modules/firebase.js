@@ -52,8 +52,16 @@ export const MFCFirebaseCloud = {
 
                 this.initialized = true;
 
-                // Load members from Firestore
-                this.loadMembersFromFirestore();
+                // Load members from Firestore after auth restores
+                if (firebase.auth) {
+                    firebase.auth().onAuthStateChanged((user) => {
+                        if (user) {
+                            this.loadMembersFromFirestore();
+                        }
+                    });
+                } else {
+                    this.loadMembersFromFirestore();
+                }
 
                 // Listen to live database changes at atomic node paths
                 if (firebase.database) {
