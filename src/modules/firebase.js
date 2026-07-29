@@ -42,7 +42,8 @@ export const MFCFirebaseCloud = {
                                    firebase.firestore.persistentLocalCache({
                                        tabManager: firebase.firestore.persistentMultipleTabManager ? firebase.firestore.persistentMultipleTabManager() : undefined
                                    }) : undefined,
-                            cacheSizeBytes: firebase.firestore.CACHE_SIZE_UNLIMITED
+                            cacheSizeBytes: firebase.firestore.CACHE_SIZE_UNLIMITED,
+                            merge: true
                         });
                     } catch(e) {
                         console.warn('[Firestore] Persistence setup notice:', e);
