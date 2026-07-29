@@ -1,0 +1,332 @@
+<div class="modal-backdrop" id="letter-generator-backdrop" style="display: none">
+                <div
+                    class="modal-card glass-card"
+                    role="dialog"
+                    aria-labelledby="letter-gen-title"
+                    style="
+                        max-width: 860px;
+                        width: 95%;
+                        max-height: 90vh;
+                        padding: 28px;
+                        display: flex;
+                        flex-direction: column;
+                    "
+                >
+                    <div
+                        class="modal-header"
+                        style="
+                            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+                            padding-bottom: 16px;
+                            margin-bottom: 16px;
+                        "
+                    >
+                        <h3
+                            id="letter-gen-title"
+                            style="
+                                color: #fff;
+                                font-size: 1.3rem;
+                                font-weight: 800;
+                                margin: 0;
+                                display: flex;
+                                align-items: center;
+                                gap: 8px;
+                            "
+                        >
+                            <span>💌 Fillable Chapter Letter Generator</span>
+                        </h3>
+                        <button
+                            id="action-btn-178"
+                            class="modal-close-btn"
+                            aria-label="Close modal"
+                        >
+                            <svg
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="2"
+                            >
+                                <path d="M18 6L6 18M6 6l12 12" />
+                            </svg>
+                        </button>
+                    </div>
+
+                    <div
+                        style="
+                            display: grid;
+                            grid-template-columns: 320px 1fr;
+                            gap: 20px;
+                            flex: 1;
+                            overflow: hidden;
+                        "
+                        class="letter-gen-grid"
+                    >
+                        <!-- FORM INPUTS -->
+                        <div style="overflow-y: auto; padding-right: 6px">
+                            <div class="ext-style-56 form-group">
+                                <label
+                                    for="let-template-type"
+                                    style="
+                                        color: #94a3b8;
+                                        font-size: 0.8rem;
+                                        font-weight: 700;
+                                        display: block;
+                                        margin-bottom: 4px;
+                                    "
+                                    >Select Letter Template</label
+                                >
+                                <select
+                                    id="let-template-type"
+                                    class="custom-select"
+                                    onchange="updateLetterPreview()"
+                                    style="
+                                        width: 100%;
+                                        background: #0f172a;
+                                        color: #fff;
+                                        border: 1px solid #38bdf8;
+                                        border-radius: 8px;
+                                        padding: 8px 12px;
+                                        font-size: 0.85rem;
+                                    "
+                                >
+                                    <option value="parental">💌 Parental Consent & Waiver</option>
+                                    <option value="excuse">
+                                        📜 Pastoral Invitation & School Excuse
+                                    </option>
+                                    <option value="sponsorship">
+                                        🤝 Sponsorship & Solicitation Appeal
+                                    </option>
+                                    <option value="lgu">🏛️ LGU / Barangay Hall Event Permit</option>
+                                    <option value="transport">
+                                        🚌 Official Vehicle / Transport Request
+                                    </option>
+                                </select>
+                            </div>
+                            <div class="ext-style-56 form-group">
+                                <label
+                                    for="let-member-name"
+                                    style="
+                                        color: #94a3b8;
+                                        font-size: 0.8rem;
+                                        font-weight: 700;
+                                        display: block;
+                                        margin-bottom: 4px;
+                                    "
+                                    >Member / Student Name</label
+                                >
+                                <input
+                                    type="text"
+                                    id="let-member-name"
+                                    placeholder="e.g. Juan Dela Cruz"
+                                    oninput="updateLetterPreview()"
+                                    style="
+                                        width: 100%;
+                                        background: #0f172a;
+                                        color: #fff;
+                                        border: 1px solid rgba(255, 255, 255, 0.15);
+                                        border-radius: 8px;
+                                        padding: 8px 12px;
+                                        font-size: 0.85rem;
+                                    "
+                                />
+                            </div>
+                            <div class="ext-style-56 form-group">
+                                <label
+                                    for="let-parent-name"
+                                    style="
+                                        color: #94a3b8;
+                                        font-size: 0.8rem;
+                                        font-weight: 700;
+                                        display: block;
+                                        margin-bottom: 4px;
+                                    "
+                                    >Parent / Guardian / Addressee Name</label
+                                >
+                                <input
+                                    type="text"
+                                    id="let-parent-name"
+                                    placeholder="e.g. Mr. & Mrs. Dela Cruz / The Dean"
+                                    oninput="updateLetterPreview()"
+                                    style="
+                                        width: 100%;
+                                        background: #0f172a;
+                                        color: #fff;
+                                        border: 1px solid rgba(255, 255, 255, 0.15);
+                                        border-radius: 8px;
+                                        padding: 8px 12px;
+                                        font-size: 0.85rem;
+                                    "
+                                />
+                            </div>
+                            <div class="ext-style-56 form-group">
+                                <label
+                                    for="let-event-title"
+                                    style="
+                                        color: #94a3b8;
+                                        font-size: 0.8rem;
+                                        font-weight: 700;
+                                        display: block;
+                                        margin-bottom: 4px;
+                                    "
+                                    >Event / Activity Title</label
+                                >
+                                <input
+                                    type="text"
+                                    id="let-event-title"
+                                    placeholder="e.g. 2026 Provincial Youth Camp"
+                                    oninput="updateLetterPreview()"
+                                    style="
+                                        width: 100%;
+                                        background: #0f172a;
+                                        color: #fff;
+                                        border: 1px solid rgba(255, 255, 255, 0.15);
+                                        border-radius: 8px;
+                                        padding: 8px 12px;
+                                        font-size: 0.85rem;
+                                    "
+                                />
+                            </div>
+                            <div class="ext-style-56 form-group">
+                                <label
+                                    for="let-event-date"
+                                    style="
+                                        color: #94a3b8;
+                                        font-size: 0.8rem;
+                                        font-weight: 700;
+                                        display: block;
+                                        margin-bottom: 4px;
+                                    "
+                                    >Event Date & Time</label
+                                >
+                                <input
+                                    type="text"
+                                    id="let-event-date"
+                                    placeholder="e.g. August 14-16, 2026"
+                                    oninput="updateLetterPreview()"
+                                    style="
+                                        width: 100%;
+                                        background: #0f172a;
+                                        color: #fff;
+                                        border: 1px solid rgba(255, 255, 255, 0.15);
+                                        border-radius: 8px;
+                                        padding: 8px 12px;
+                                        font-size: 0.85rem;
+                                    "
+                                />
+                            </div>
+                            <div class="ext-style-56 form-group">
+                                <label
+                                    for="let-venue"
+                                    style="
+                                        color: #94a3b8;
+                                        font-size: 0.8rem;
+                                        font-weight: 700;
+                                        display: block;
+                                        margin-bottom: 4px;
+                                    "
+                                    >Venue / Location</label
+                                >
+                                <input
+                                    type="text"
+                                    id="let-venue"
+                                    placeholder="e.g. Tarlac Diocesan Pastoral Center"
+                                    oninput="updateLetterPreview()"
+                                    style="
+                                        width: 100%;
+                                        background: #0f172a;
+                                        color: #fff;
+                                        border: 1px solid rgba(255, 255, 255, 0.15);
+                                        border-radius: 8px;
+                                        padding: 8px 12px;
+                                        font-size: 0.85rem;
+                                    "
+                                />
+                            </div>
+                            <div class="ext-style-56 form-group">
+                                <label
+                                    for="let-servant-name"
+                                    style="
+                                        color: #94a3b8;
+                                        font-size: 0.8rem;
+                                        font-weight: 700;
+                                        display: block;
+                                        margin-bottom: 4px;
+                                    "
+                                    >Chapter Coordinator / Servant Name</label
+                                >
+                                <input
+                                    type="text"
+                                    id="let-servant-name"
+                                    placeholder="e.g. Bro. Barney & Sis. Anna"
+                                    oninput="updateLetterPreview()"
+                                    style="
+                                        width: 100%;
+                                        background: #0f172a;
+                                        color: #fff;
+                                        border: 1px solid rgba(255, 255, 255, 0.15);
+                                        border-radius: 8px;
+                                        padding: 8px 12px;
+                                        font-size: 0.85rem;
+                                    "
+                                />
+                            </div>
+                        </div>
+
+                        <!-- LIVE PRINTABLE PREVIEW -->
+                        <div
+                            style="
+                                background: #ffffff;
+                                color: #0f172a;
+                                border-radius: 12px;
+                                padding: 24px;
+                                overflow-y: auto;
+                                border: 1px solid #cbd5e1;
+                                font-family: 'Times New Roman', Times, serif;
+                                line-height: 1.6;
+                            "
+                            id="printable-letter-container"
+                        >
+                            <div id="letter-live-content">
+                                <!-- Populated dynamically via script.js -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <div
+                        style="
+                            display: flex;
+                            justify-content: flex-end;
+                            gap: 10px;
+                            margin-top: 16px;
+                            border-top: 1px solid rgba(255, 255, 255, 0.08);
+                            padding-top: 14px;
+                        "
+                    >
+                        <button id="action-btn-179" type="button" class="btn-secondary">
+                            Close
+                        </button>
+                        <button
+                            id="action-btn-180"
+                            type="button"
+                            class="btn-primary glow-button"
+                            style="
+                                background: linear-gradient(135deg, #0284c7, #38bdf8);
+                                border: none;
+                                display: flex;
+                                align-items: center;
+                                gap: 6px;
+                                font-weight: 800;
+                            "
+                        >
+                            <span>📥 Download PDF Letter</span>
+                        </button>
+                        <button
+                            id="action-btn-181"
+                            type="button"
+                            class="ext-style-69 btn-secondary"
+                           
+                        >
+                            <span>🖨️ Print</span>
+                        </button>
+                    </div>
+                </div>
+            </div>

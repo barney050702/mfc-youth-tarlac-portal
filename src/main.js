@@ -180,7 +180,12 @@ import {
 
 import * as Legacy from './modules/legacy.js';
 
+import { injectComponents } from './modules/injector.js';
+
 document.addEventListener('DOMContentLoaded', () => {
+    // Inject modularized HTML components first
+    injectComponents();
+
     // If script.js initialized the core app, bind additional navigation listeners safely
     setupNavigationListeners();
     initializeEventListeners();

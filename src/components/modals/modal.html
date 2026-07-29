@@ -1,0 +1,190 @@
+<div class="modal-backdrop" id="modal-backdrop" style="display: none">
+            <div class="modal-card glass-card" role="dialog" aria-labelledby="modal-title">
+                <div class="modal-header">
+                    <h3 id="modal-title">Create New Activity</h3>
+                    <button id="action-btn-83" class="modal-close-btn" aria-label="Close modal">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M18 6L6 18M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+                <form id="activity-form" onsubmit="handleFormSubmit(event)">
+                    <input type="hidden" id="form-activity-id" />
+                    <div class="form-group">
+                        <label for="form-title">Activity Title *</label>
+                        <input
+                            type="text"
+                            id="form-title"
+                            required
+                            placeholder="e.g. Q3 Leadership Seminar"
+                        />
+                    </div>
+                    <div class="form-grid-2">
+                        <div class="form-group">
+                            <label for="form-date">Date & Time *</label>
+                            <input type="datetime-local" id="form-date" required />
+                        </div>
+                        <div class="form-group">
+                            <label for="form-category">Category *</label>
+                            <select id="form-category" required class="custom-select">
+                                <option value="Chapter Assembly">Chapter Assembly</option>
+                                <option value="Chapter Household">Chapter Household</option>
+                                <option value="Area Assembly">Area Assembly</option>
+                                <option value="General Assembly">General Assembly</option>
+                                <option value="Upper Core Household">Upper Core Household</option>
+                                <option value="MFC Conference">MFC Conference</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-grid-2">
+                        <div class="form-group">
+                            <div
+                                style="
+                                    display: flex;
+                                    justify-content: space-between;
+                                    align-items: center;
+                                    margin-bottom: 4px;
+                                "
+                            >
+                                <label for="form-location" style="margin: 0"
+                                    >Location / Platform *</label
+                                >
+                                <button
+                                    id="action-btn-84"
+                                    type="button"
+                                    class="btn-secondary btn-sm"
+                                    style="
+                                        padding: 2px 8px;
+                                        font-size: 0.72rem;
+                                        color: #38bdf8;
+                                        border-color: rgba(56, 189, 248, 0.4);
+                                        border-radius: 6px;
+                                        font-weight: 700;
+                                        cursor: pointer;
+                                    "
+                                >
+                                    📌 Pin Map
+                                </button>
+                            </div>
+                            <input
+                                type="text"
+                                id="form-location"
+                                required
+                                placeholder="e.g. Tarlac Diocesan Pastoral Center / Fairlane San Vicente"
+                                oninput="updateFormMapPreview(this.value)"
+                            />
+                        </div>
+                        <div class="form-group">
+                            <label for="form-status">Status *</label>
+                            <select id="form-status" required class="custom-select">
+                                <option value="Completed">Completed</option>
+                                <option value="Upcoming">Upcoming</option>
+                                <option value="Cancelled">Cancelled</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- LIVE INTERACTIVE VENUE MAP PICKER & PIN PREVIEW -->
+                    <div
+                        id="modal-location-map-preview-container"
+                        style="
+                            margin-top: 8px;
+                            margin-bottom: 14px;
+                            border-radius: 12px;
+                            overflow: hidden;
+                            border: 1px solid rgba(56, 189, 248, 0.35);
+                            background: rgba(15, 23, 42, 0.95);
+                            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+                        "
+                    >
+                        <div
+                            style="
+                                display: flex;
+                                justify-content: space-between;
+                                align-items: center;
+                                padding: 8px 12px;
+                                background: rgba(15, 23, 42, 0.98);
+                                border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+                                flex-wrap: wrap;
+                                gap: 6px;
+                            "
+                        >
+                            <span
+                                style="
+                                    font-size: 0.78rem;
+                                    font-weight: 800;
+                                    color: #38bdf8;
+                                    display: flex;
+                                    align-items: center;
+                                    gap: 6px;
+                                "
+                            >
+                                🗺️ Interactive Live Venue Map Pin
+                            </span>
+                            <div style="display: flex; align-items: center; gap: 8px">
+                                <span
+                                    id="modal-map-pinned-label"
+                                    style="font-size: 0.72rem; color: #94a3b8; font-weight: 600"
+                                    >📍 Pinned Location</span
+                                >
+                                <a
+                                    id="modal-open-google-maps-btn"
+                                    href="https://maps.google.com/?q=Tarlac+City"
+                                    target="_blank"
+                                    rel="noopener"
+                                    class="btn-primary btn-sm"
+                                    style="
+                                        font-size: 0.72rem;
+                                        padding: 3px 8px;
+                                        background: linear-gradient(135deg, #059669, #10b981);
+                                        color: #fff;
+                                        border: none;
+                                        text-decoration: none;
+                                        font-weight: 700;
+                                        border-radius: 6px;
+                                        display: inline-flex;
+                                        align-items: center;
+                                        gap: 4px;
+                                    "
+                                >
+                                    🗺️ Directions ↗
+                                </a>
+                            </div>
+                        </div>
+                        <iframe
+                            id="modal-location-map-iframe"
+                            src="https://maps.google.com/maps?q=Tarlac+City&t=&z=14&ie=UTF8&iwloc=&output=embed"
+                            style="width: 100%; height: 210px; border: none; display: block"
+                            allowfullscreen
+                            loading="lazy"
+                            title="Venue Location Map Pin"
+                        ></iframe>
+                    </div>
+                    <div class="form-grid-2">
+                        <div class="form-group">
+                            <label for="form-semester">Attached Semester Term</label>
+                            <select id="form-semester" class="custom-select">
+                                <option value="auto">Auto-detect from Date</option>
+                                <option value="s1">1st Sem (Jan - Jun)</option>
+                                <option value="s2">2nd Sem (Jul - Dec)</option>
+                            </select>
+                        </div>
+                        <div class="form-group"></div>
+                    </div>
+                    <div class="form-group">
+                        <label for="form-description">Description & Notes</label>
+                        <textarea
+                            id="form-description"
+                            rows="3"
+                            placeholder="Provide event agenda or key details..."
+                        ></textarea>
+                    </div>
+                    <div class="modal-footer">
+                        <button id="action-btn-85" type="button" class="btn-secondary">
+                            Cancel
+                        </button>
+                        <button type="submit" class="btn-primary glow-button">Save Activity</button>
+                    </div>
+                </form>
+            </div>
+        </div>
