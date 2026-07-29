@@ -145,3 +145,294 @@ export async function sendActivityEmailReminder(act) {
     }
 }
 window.sendActivityEmailReminder = sendActivityEmailReminder;
+
+
+export function toggleAgendaSort() {
+    state.sortOrder = state.sortOrder === 'ASC' ? 'DESC' : 'ASC';
+    const sortBtn = document.getElementById('agenda-sort-btn');
+    if (sortBtn) {
+        sortBtn.innerHTML = state.sortOrder === 'ASC' ? '<span>⇅ Date: Oldest</span>' : '<span>⇅ Date: Newest</span>';
+    }
+    renderActivitiesTable();
+}
+
+export function setAgendaSemester(sem, btnEl) {
+    state.agendaSemester = sem;
+    const tabs = document.querySelectorAll('.sem-tab-btn');
+    tabs.forEach(t => {
+        t.style.background = 'transparent';
+        t.style.color = '#475569';
+        t.classList.remove('active');
+    });
+    if (btnEl) {
+        btnEl.style.background = '#1E3A8A';
+        btnEl.style.color = '#FFF';
+        btnEl.classList.add('active');
+    }
+    const titleEl = document.getElementById('semester-banner-title');
+    const descEl = document.getElementById('semester-banner-desc');
+    if (sem === 's1') {
+        if (titleEl) titleEl.textContent = 'First Semester (Jan - Jun)';
+        if (descEl) descEl.textContent = 'Activities accomplished during the first semester.';
+    } else if (sem === 's2') {
+        if (titleEl) titleEl.textContent = 'Second Semester (Jul - Dec)';
+        if (descEl) descEl.textContent = 'Activities scheduled or completed during the second semester.';
+    } else {
+        if (titleEl) titleEl.textContent = 'All Activities History';
+        if (descEl) descEl.textContent = 'Comprehensive record of all organizational events and gatherings.';
+    }
+    renderActivitiesTable();
+}
+
+export function setAgendaViewMode(mode) {
+    state.agendaViewMode = mode;
+    const gridBtn = document.getElementById('btn-view-grid');
+    const tableBtn = document.getElementById('btn-view-table');
+    const gridCont = document.getElementById('agenda-grid-container');
+    const tableCont = document.getElementById('agenda-table-container');
+
+    if (mode === 'grid') {
+        if (gridBtn) { gridBtn.style.background = 'var(--accent-blue)'; gridBtn.style.color = '#FFF'; }
+        if (tableBtn) { tableBtn.style.background = 'transparent'; tableBtn.style.color = '#94A3B8'; }
+        if (gridCont) gridCont.style.display = 'grid';
+        if (tableCont) tableCont.style.display = 'none';
+    } else {
+        if (tableBtn) { tableBtn.style.background = 'var(--accent-blue)'; tableBtn.style.color = '#FFF'; }
+        if (gridBtn) { gridBtn.style.background = 'transparent'; gridBtn.style.color = '#94A3B8'; }
+        if (gridCont) gridCont.style.display = 'none';
+        if (tableCont) tableCont.style.display = 'block';
+    }
+}
+
+export function refreshAgendaHistory() {
+    showToast('Refreshing agenda history and recalculating rates...', 'info');
+    renderActivitiesTable();
+}
+
+export function downloadActivityPDF(actId, title) {
+    const act = state.activities.find(a => a.id === actId);
+    if (!act) return;
+
+    if (!window.jsPDF || !window.jspdf || !window.jspdf.jsPDF) {
+        showToast('PDF generator library loading... please try again in 2 seconds.', 'info');
+        return;
+    }
+
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF('p', 'mm', 'a4');
+
+    const displayTitle = act.name || act.title || 'Untitled Activity';
+    const displayCategory = act.type || act.category || 'Event';
+    const displayVenue = act.venue || act.location || 'Venue TBA';
+    const displayHeldIn = act.heldIn || 'Face to Face';
+    const dateObj = new Date(act.date);
+    const dateStr = !isNaN(dateObj) ? `${dateObj.toLocaleDateString()} at ${dateObj.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}` : act.date;
+
+    const attObj = state.attendance[act.id] || {};
+    const totalMems = state.members.length;
+    let pCount = 0;
+    state.members.forEach(m => {
+        if (attObj[m.id]?.status === 'present') pCount++;
+    });
+    const rate = totalMems > 0 ? Math.round((pCount / totalMems) * 100) : 0;
+
+    // Header Background Banner
+    doc.setFillColor(15, 23, 42);
+    doc.rect(0, 0, 210, 42, 'F');
+
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(18);
+    doc.setTextColor(56, 189, 248);
+    doc.text("MFC YOUTH TARLAC", 14, 16);
+
+    doc.setFontSize(12);
+    doc.setTextColor(248, 250, 252);
+    doc.text("OFFICIAL ACTIVITY ATTENDANCE REPORT", 14, 25);
+
+    doc.setFontSize(9);
+    doc.setFont("helvetica", "normal");
+    doc.setTextColor(148, 163, 184);
+    doc.text(`Generated on: ${new Date().toLocaleString()}`, 14, 34);
+
+    // Activity Overview Box
+    doc.setFillColor(241, 245, 249);
+    doc.roundedRect(14, 48, 182, 38, 3, 3, 'F');
+
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(13);
+    doc.setTextColor(15, 23, 42);
+    doc.text(`Activity: ${displayTitle}`, 20, 58);
+
+    doc.setFontSize(9.5);
+    doc.setFont("helvetica", "normal");
+    doc.setTextColor(71, 85, 105);
+    doc.text(`Category: ${displayCategory}   |   Held In: ${displayHeldIn}`, 20, 66);
+    doc.text(`Date & Time: ${dateStr}`, 20, 73);
+    doc.text(`Venue / Location: ${displayVenue}`, 20, 80);
+
+    doc.setFont("helvetica", "bold");
+    doc.setTextColor(16, 185, 129);
+    doc.text(`Attendance Rate: ${rate}% (${pCount} Present / ${totalMems - pCount} Absent of ${totalMems} Members)`, 115, 80);
+
+    // Table Header & Rows
+    const tableHeaders = [["#", "Member Name", "Department", "Role", "Attendance Status", "Remarks / Notes"]];
+    const tableRows = state.members.map((mem, idx) => {
+        const memAtt = attObj[mem.id] || { status: 'absent', notes: '' };
+        const statusText = memAtt.status === 'present' ? 'PRESENT' : 'ABSENT';
+        return [
+            idx + 1,
+            mem.name,
+            mem.dept || '-',
+            mem.role || '-',
+            statusText,
+            memAtt.notes || '-'
+        ];
+    });
+
+    doc.autoTable({
+        startY: 92,
+        head: tableHeaders,
+        body: tableRows,
+        theme: 'grid',
+        headStyles: { fillColor: [30, 58, 138], textColor: [255, 255, 255], fontStyle: 'bold' },
+        styles: { fontSize: 9, cellPadding: 3.5 },
+        columnStyles: {
+            0: { cellWidth: 12 },
+            1: { cellWidth: 50, fontStyle: 'bold' },
+            4: { fontStyle: 'bold' }
+        },
+        didParseCell: function (data) {
+            if (data.section === 'body' && data.column.index === 4) {
+                if (data.cell.raw === 'PRESENT') {
+                    data.cell.styles.textColor = [16, 185, 129];
+                } else {
+                    data.cell.styles.textColor = [239, 68, 68];
+                }
+            }
+        }
+    });
+
+    // Footer Sign-Off
+    const finalY = doc.lastAutoTable.finalY + 18;
+    doc.setFontSize(9);
+    doc.setFont("helvetica", "italic");
+    doc.setTextColor(100, 116, 139);
+    doc.text("MFC Youth Tarlac Secretariat Ledger • Certified Official Record", 14, finalY);
+
+    const safeName = displayTitle.replace(/[^a-z0-9]/gi, '_').toLowerCase();
+    doc.save(`${safeName}_attendance_report.pdf`);
+    showToast(`PDF report downloaded for "${displayTitle}"`, 'success');
+}
+
+export function selectActivityForAttendance(actId) {
+    state.selectedActivityId = actId;
+    switchView('attendance');
+    renderAttendanceHeader();
+    renderAttendanceRoster();
+    showToast('Switched to live attendance roster!', 'success');
+}
+
+export function handleFormSubmit(e) {
+    if (e && e.preventDefault) e.preventDefault();
+    const idEl = document.getElementById('form-activity-id');
+    const idVal = idEl ? idEl.value : '';
+
+    if (idVal && localStorage.getItem('ps_role') === 'CHAPTER HEAD') {
+        showToast('Access Denied: Chapter Heads cannot edit activities.', 'error');
+        return;
+    }
+
+    const titleEl = document.getElementById('form-title');
+    const dateEl = document.getElementById('form-date');
+    const catEl = document.getElementById('form-category');
+    const locEl = document.getElementById('form-location');
+    const statEl = document.getElementById('form-status');
+    const descEl = document.getElementById('form-description');
+
+    const titleVal = titleEl ? titleEl.value.trim() : '';
+    const dateVal = dateEl ? dateEl.value : '';
+    const catVal = catEl ? catEl.value : 'PASTORAL';
+    const locVal = locEl ? locEl.value.trim() : '';
+    const statVal = statEl ? statEl.value : 'UPCOMING';
+    const descVal = descEl ? descEl.value.trim() : '';
+
+    if (!titleVal || !dateVal || !locVal) {
+        showToast('Please fill out all required fields.', 'error');
+        return;
+    }
+
+    const semRaw = document.getElementById('form-semester') ? document.getElementById('form-semester').value : 'auto';
+    let semVal = semRaw;
+    if (!semVal || semVal === 'auto') {
+        const dObjSem = new Date(dateVal);
+        semVal = (!isNaN(dObjSem.getTime()) && dObjSem.getMonth() >= 6) ? 's2' : 's1';
+    }
+
+    if (idVal) {
+        // Update existing
+        const idx = state.activities.findIndex(a => a.id === idVal);
+        if (idx !== -1) {
+            state.activities[idx] = {
+                id: idVal,
+                title: titleVal,
+                name: titleVal,
+                date: dateVal,
+                category: catVal,
+                type: catVal,
+                location: locVal,
+                venue: locVal,
+                status: statVal,
+                description: descVal,
+                semester: semVal
+            };
+            showToast('Activity record updated successfully!', 'success');
+        }
+    } else {
+        // Create new
+        const newId = 'act-' + Date.now();
+        const newAct = {
+            id: newId,
+            title: titleVal,
+            name: titleVal,
+            date: dateVal,
+            category: catVal,
+            type: catVal,
+            location: locVal,
+            venue: locVal,
+            status: statVal,
+            description: descVal,
+            semester: semVal
+        };
+        state.activities.unshift(newAct);
+        // Initialize attendance map for new activity
+        state.attendance[newId] = {};
+        state.members.forEach(mem => {
+            state.attendance[newId][mem.id] = { status: 'absent', time: '-', notes: '' };
+        });
+        showToast('New activity created successfully!', 'success');
+    }
+
+    saveToStorage();
+    closeAddModal();
+    renderAll();
+}
+
+export function clearAllActivities() {
+    if (localStorage.getItem('ps_role') === 'CHAPTER HEAD') {
+        showToast('Access Denied: Chapter Heads cannot delete activities.', 'error');
+        return;
+    }
+
+    if (!state.activities || state.activities.length === 0) {
+        showToast('Activities list is already empty.', 'info');
+        return;
+    }
+    if (confirm('Are you sure you want to clear all activities and agenda items? This action cannot be undone.')) {
+        state.activities = [];
+        state.attendance = {};
+        state.selectedActivityId = null;
+        saveToStorage();
+        renderAll();
+        showToast('All activities have been cleared successfully.', 'info');
+    }
+}
