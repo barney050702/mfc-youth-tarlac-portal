@@ -3,7 +3,7 @@
  * Granular Firestore Document Updates & Realtime DB Field Syncing
  */
 
-import { state, saveToStorage } from './state.js';
+import { state, saveToStorage, notifyStateChange } from './state.js';
 import { showToast } from './ui.js';
 
 export const MFCFirebaseCloud = {
@@ -94,19 +94,26 @@ export const MFCFirebaseCloud = {
         }
     },
 
-    loadMembersFromFirestore: async function () {
+    loadMembersFromFirestore: function () {
         if (!this.initialized || typeof firebase === 'undefined' || !firebase.firestore) return;
         try {
             const db = firebase.firestore();
-            const snapshot = await db.collection('members').get();
-            if (!snapshot.empty) {
-                const cloudMembers = [];
-                snapshot.forEach((doc) => {
-                    cloudMembers.push({ id: doc.id, ...doc.data() });
-                });
-                state.members = cloudMembers;
-                saveToStorage();
-            }
+            db.collection('members').onSnapshot(
+                (snapshot) => {
+                    if (!snapshot.empty) {
+                        const cloudMembers = [];
+                        snapshot.forEach((doc) => {
+                            cloudMembers.push({ id: doc.id, ...doc.data() });
+                        });
+                        state.members = cloudMembers;
+                        saveToStorage();
+                        notifyStateChange('members_loaded');
+                    }
+                },
+                (error) => {
+                    console.warn('Firestore members sync error:', error);
+                }
+            );
         } catch (e) {
             console.warn('Failed to load members from Firestore:', e);
         }
