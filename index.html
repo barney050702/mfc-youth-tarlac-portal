@@ -95,7 +95,8 @@
                 muted
                 playsinline
                 preload="none"
-                poster="bg-poster.png"
+                poster="/bg-poster.png"
+                id="bg-video"
                 style="
                     position: fixed;
                     inset: 0;
@@ -106,7 +107,7 @@
                     opacity: 0.5;
                 "
             >
-                <source src="bg-video.mp4" type="video/mp4" />
+                <source src="/bg-video.mp4" type="video/mp4" />
             </video>
 
             <div
@@ -7331,7 +7332,7 @@
                 if ('serviceWorker' in navigator) {
                     window.addEventListener('load', () => {
                         navigator.serviceWorker
-                            .register('./sw.js?v=4.41')
+                            .register('./sw.js?v=4.42')
                             .then((reg) => {
                                 console.log(
                                     '[PWA] Service Worker registered successfully:',

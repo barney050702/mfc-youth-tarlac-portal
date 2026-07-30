@@ -1,4 +1,4 @@
-const CACHE_NAME = 'mfc-youth-tarlac-portal-v4.41';
+const CACHE_NAME = 'mfc-youth-tarlac-portal-v4.42';
 const ASSETS_TO_CACHE = [
     './',
     './index.html',
