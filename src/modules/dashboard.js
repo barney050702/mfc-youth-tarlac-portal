@@ -329,10 +329,6 @@ export function renderDashboardCelebrants() {
         })
         .slice(0, 4);
 
-    if (celebrants.length === 0 && state.members.length > 0) {
-        celebrants = state.members.slice(0, 3);
-    }
-
     if (celebrants.length === 0) {
         listEl.innerHTML =
             '<div style="color: #64748B; font-size: 0.82rem; padding: 10px 0;">No birthdays recorded for this month.</div>';
