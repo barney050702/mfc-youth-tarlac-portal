@@ -5,6 +5,9 @@
 
 import { state } from './state.js';
 import { showToast, triggerHaptic } from './ui.js';
+import { auth, db } from './firebase.js';
+import { signInWithEmailAndPassword, sendPasswordResetEmail, signOut } from 'firebase/auth';
+import { collection, query, where, getDocs } from 'firebase/firestore';
 
 let inactivityTimer = null;
 
@@ -57,7 +60,6 @@ export async function loginUser(event) {
         return;
     }
 
-    // Authenticate securely via Firebase Auth SDK if available, or validated token check
     try {
         const chapEl = document.getElementById('auth-login-chapter');
         const selectedChapter = selectedRole === 'CHAPTER HEAD' && chapEl ? chapEl.value : 'ALL';
@@ -67,28 +69,29 @@ export async function loginUser(event) {
                 : 'chapter@mfcyouthtarlac.com';
 
         if (selectedRole === 'MEMBER') {
-            // For members, we don't use Firebase Auth. We just check if the MFC ID exists in Firestore.
-            if (typeof firebase !== 'undefined' && firebase.firestore) {
-                const db = firebase.firestore();
-                const snapshot = await db
-                    .collection('members')
-                    .where('mfc_id', '==', mfcIdVal)
-                    .get();
+            if (db) {
+                const membersRef = collection(db, 'members');
+                const q = query(membersRef, where('mfc_id', '==', mfcIdVal));
+                const snapshot = await getDocs(q);
+                
                 if (snapshot.empty) {
                     throw new Error('MFC ID not found in the database.');
                 }
-                // Store member data
+                
                 const memberDoc = snapshot.docs[0].data();
                 localStorage.setItem('ps_member_id', memberDoc.mfc_id);
                 localStorage.setItem(
                     'ps_member_name',
                     `${memberDoc.firstName} ${memberDoc.lastName}`
                 );
+            } else {
+                throw new Error('Database not initialized');
             }
         } else {
-            if (typeof firebase !== 'undefined' && firebase.auth) {
-                // Secure Firebase Auth execution
-                await firebase.auth().signInWithEmailAndPassword(adminEmail, passVal);
+            if (auth) {
+                await signInWithEmailAndPassword(auth, adminEmail, passVal);
+            } else {
+                throw new Error('Auth not initialized');
             }
         }
 
@@ -130,11 +133,8 @@ export async function loginUser(event) {
 export function logoutUser(reason = 'Logged out successfully.') {
     localStorage.removeItem('ps_logged_in');
 
-    if (typeof firebase !== 'undefined' && firebase.auth) {
-        firebase
-            .auth()
-            .signOut()
-            .catch((err) => console.warn('Firebase sign out error:', err));
+    if (auth) {
+        signOut(auth).catch((err) => console.warn('Firebase sign out error:', err));
     }
 
     const overlay = document.getElementById('auth-login-overlay');
@@ -167,8 +167,8 @@ export async function sendPasswordReset(email) {
         return;
     }
     try {
-        if (typeof firebase !== 'undefined' && firebase.auth) {
-            await firebase.auth().sendPasswordResetEmail(email);
+        if (auth) {
+            await sendPasswordResetEmail(auth, email);
             showToast(`📧 Password reset email dispatched to ${email}`, 'success');
         } else {
             showToast('Firebase Auth SDK unavailable for password reset dispatch.', 'warning');

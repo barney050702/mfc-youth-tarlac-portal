@@ -18,7 +18,8 @@
         "noUnusedLocals": true,
         "noUnusedParameters": true,
         "noFallthroughCasesInSwitch": true,
-        "allowJs": true
+        "allowJs": true,
+        "jsx": "react-jsx"
     },
-    "include": ["src/**/*.ts", "src/**/*.js"]
+    "include": ["src/**/*.ts", "src/**/*.js", "src/**/*.jsx", "src/**/*.tsx"]
 }

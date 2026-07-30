@@ -3,8 +3,14 @@
  * Granular Firestore Document Updates & Realtime DB Field Syncing
  */
 
+import { initializeApp } from 'firebase/app';
+import { getAuth, onAuthStateChanged } from 'firebase/auth';
+import { getFirestore, collection, doc, setDoc, deleteDoc, onSnapshot } from 'firebase/firestore';
+import { getDatabase, ref, update, onValue } from 'firebase/database';
 import { state, saveToStorage, notifyStateChange } from './state.js';
 import { showToast } from './ui.js';
+
+let app, auth, db, rtdb;
 
 export const MFCFirebaseCloud = {
     initialized: false,
@@ -28,62 +34,30 @@ export const MFCFirebaseCloud = {
                 this.config = { ...this.config, ...parsed };
             }
 
-            if (typeof firebase !== 'undefined' && firebase.initializeApp) {
-                if (!firebase.apps || firebase.apps.length === 0) {
-                    firebase.initializeApp(this.config);
-                }
+            app = initializeApp(this.config);
+            auth = getAuth(app);
+            db = getFirestore(app);
+            rtdb = getDatabase(app);
 
-                // Force WebSockets to prevent Quirks Mode and deprecation warnings from long-polling iframe
-                if (firebase.database && firebase.database.INTERNAL) {
-                    firebase.database.INTERNAL.forceWebSockets();
-                }
+            this.initialized = true;
 
-                // Enable Offline Persistence (modern API)
-                if (firebase.firestore) {
-                    try {
-                        const db = firebase.firestore();
-                        db.settings({
-                            cache: firebase.firestore.persistentLocalCache
-                                ? firebase.firestore.persistentLocalCache({
-                                      tabManager: firebase.firestore.persistentMultipleTabManager
-                                          ? firebase.firestore.persistentMultipleTabManager()
-                                          : undefined,
-                                  })
-                                : undefined,
-                            cacheSizeBytes: firebase.firestore.CACHE_SIZE_UNLIMITED,
-                            merge: true,
-                        });
-                    } catch (e) {
-                        console.warn('[Firestore] Persistence setup notice:', e);
-                    }
-                }
-
-                this.initialized = true;
-
-                // Load members from Firestore after auth restores
-                if (firebase.auth) {
-                    firebase.auth().onAuthStateChanged((user) => {
-                        if (user) {
-                            this.loadMembersFromFirestore();
-                        }
-                    });
-                } else {
+            onAuthStateChanged(auth, (user) => {
+                if (user) {
                     this.loadMembersFromFirestore();
                 }
+            });
+            
+            // Initial load
+            this.loadMembersFromFirestore();
 
-                // Listen to live database changes at atomic node paths
-                if (firebase.database) {
-                    firebase
-                        .database()
-                        .ref('mfc_portal_live_data')
-                        .on('value', (snapshot) => {
-                            const data = snapshot.val();
-                            if (data) {
-                                this.handleLiveSyncUpdate(data);
-                            }
-                        });
+            // Listen to live database changes
+            const liveRef = ref(rtdb, 'mfc_portal_live_data');
+            onValue(liveRef, (snapshot) => {
+                const data = snapshot.val();
+                if (data) {
+                    this.handleLiveSyncUpdate(data);
                 }
-            }
+            });
 
             this.updateStatusBadge('Connected to Firebase Cloud');
         } catch (err) {
@@ -100,27 +74,24 @@ export const MFCFirebaseCloud = {
     },
 
     loadMembersFromFirestore: function () {
-        if (!this.initialized || typeof firebase === 'undefined' || !firebase.firestore) return;
+        if (!this.initialized || !db) return;
         try {
-            const db = firebase.firestore();
             state.isMembersLoading = true;
-            db.collection('members').onSnapshot(
+            onSnapshot(collection(db, 'members'), 
                 (snapshot) => {
                     if (!snapshot.empty) {
                         const cloudMembers = [];
-                        snapshot.forEach((doc) => {
-                            cloudMembers.push({ id: doc.id, ...doc.data() });
+                        snapshot.forEach((docSnap) => {
+                            cloudMembers.push({ id: docSnap.id, ...docSnap.data() });
                         });
                         state.members = cloudMembers;
                         saveToStorage();
-                        // Loading finished, hide spinner
                         state.isMembersLoading = false;
                         notifyStateChange('members_loaded');
                     }
                 },
                 (error) => {
                     console.warn('Firestore members sync error:', error);
-                    // Ensure loading flag is cleared on error
                     state.isMembersLoading = false;
                     notifyStateChange('members_error');
                 }
@@ -131,51 +102,32 @@ export const MFCFirebaseCloud = {
     },
 
     syncMemberToFirestore: async function (member) {
-        if (
-            !this.initialized ||
-            !member ||
-            !member.id ||
-            typeof firebase === 'undefined' ||
-            !firebase.firestore
-        )
-            return;
+        if (!this.initialized || !member || !member.id || !db) return;
         try {
-            const db = firebase.firestore();
-            await db.collection('members').doc(member.id).set(member, { merge: true });
+            await setDoc(doc(db, 'members', member.id), member, { merge: true });
         } catch (e) {
             console.warn('Failed to sync member to Firestore:', e);
         }
     },
 
     deleteMemberFromFirestore: async function (memberId) {
-        if (
-            !this.initialized ||
-            !memberId ||
-            typeof firebase === 'undefined' ||
-            !firebase.firestore
-        )
-            return;
+        if (!this.initialized || !memberId || !db) return;
         try {
-            const db = firebase.firestore();
-            await db.collection('members').doc(memberId).delete();
+            await deleteDoc(doc(db, 'members', memberId));
         } catch (e) {
             console.warn('Failed to delete member from Firestore:', e);
         }
     },
 
-    // Atomic update to Realtime DB preventing full root overwrite
     pushAtomicUpdate: function (path, data) {
-        if (!this.initialized || typeof firebase === 'undefined' || !firebase.database) return;
+        if (!this.initialized || !rtdb) return;
         try {
             const timestamp = Date.now();
             const updates = {};
             updates[`mfc_portal_live_data/${path}`] = data;
             updates['mfc_portal_live_data/lastUpdated'] = timestamp;
 
-            firebase
-                .database()
-                .ref()
-                .update(updates)
+            update(ref(rtdb), updates)
                 .then(() => this.updateStatusBadge('🔥 Firebase: Live Synced'))
                 .catch((err) => console.warn('Atomic update warning:', err));
         } catch (e) {
@@ -206,3 +158,5 @@ export const MFCFirebaseCloud = {
         }
     },
 };
+
+export { auth, db, rtdb };

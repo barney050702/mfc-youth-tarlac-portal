@@ -551,10 +551,10 @@ export default `
                                         >
                                     </div>
                                     <div
-                                        id="dashboard-celebrants-list"
+                                        id="react-birthday-root"
                                         style="display: flex; flex-direction: column; gap: 10px"
                                     >
-                                        <!-- Populated via script.js -->
+                                        <!-- React Component Mount Point -->
                                     </div>
                                 </div>
                             </div>

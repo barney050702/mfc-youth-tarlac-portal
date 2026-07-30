@@ -3,6 +3,10 @@
  * Modular Initialization & Global App Shell Bindings
  */
 
+import React from 'react';
+import { createRoot } from 'react-dom/client';
+import BirthdayWidget from './components/BirthdayWidget.jsx';
+
 import { state, loadFromStorage, subscribeState } from './modules/state.js';
 import {
     switchView,
@@ -654,3 +658,16 @@ function renderAllViews() {
     }
 }
 window.renderAll = renderAllViews;
+
+// React Integration
+document.addEventListener('DOMContentLoaded', () => {
+    const rootEl = document.getElementById('react-birthday-root');
+    if (rootEl) {
+        const root = createRoot(rootEl);
+        root.render(
+            <React.StrictMode>
+                <BirthdayWidget />
+            </React.StrictMode>
+        );
+    }
+});

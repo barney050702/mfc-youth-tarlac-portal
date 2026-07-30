@@ -317,54 +317,7 @@ export function jumpToAttendance(actId) {
 }
 
 export function renderDashboardCelebrants() {
-    const listEl = document.getElementById('dashboard-celebrants-list');
-    if (!listEl) return;
-
-    const currentMonthIdx = new Date().getMonth();
-    let celebrants = state.members
-        .filter((m) => {
-            if (!m.birthdate && !m.birthday) return false;
-            const b = new Date(m.birthdate || m.birthday);
-            return !isNaN(b) && b.getMonth() === currentMonthIdx;
-        })
-        .slice(0, 4);
-
-    if (celebrants.length === 0) {
-        listEl.innerHTML =
-            '<div style="color: #64748B; font-size: 0.82rem; padding: 10px 0;">No birthdays recorded for this month.</div>';
-        return;
-    }
-
-    listEl.innerHTML = celebrants
-        .map((m) => {
-            const initials = (m.name || 'M')
-                .split(' ')
-                .map((n) => n[0])
-                .join('')
-                .slice(0, 2)
-                .toUpperCase();
-            const bdate = m.birthdate || m.birthday;
-            const dateStr = bdate
-                ? new Date(bdate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
-                : 'Milestone Celebration';
-            return `
-            <div style="display: flex; align-items: center; justify-content: space-between; padding: 8px 12px; background: rgba(30, 41, 59, 0.6); border: 1px solid rgba(255,255,255,0.06); border-radius: 12px;">
-                <div style="display: flex; align-items: center; gap: 10px; min-width: 0;">
-                    <div style="width: 34px; height: 34px; border-radius: 50%; background: linear-gradient(135deg, #EC4899, #8B5CF6); display: flex; align-items: center; justify-content: center; font-weight: 800; color: #FFF; font-size: 0.8rem; flex-shrink: 0;">
-                        ${initials}
-                    </div>
-                    <div style="min-width: 0;">
-                        <div style="color: #F8FAFC; font-weight: 700; font-size: 0.82rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${m.name}</div>
-                        <div style="color: #F472B6; font-size: 0.72rem;">🎂 ${dateStr} &bull; ${m.chapter || 'Central'}</div>
-                    </div>
-                </div>
-                <button onclick="openPastoralGreetingModal('${m.id}', 'Birthday Celebration'); triggerConfettiBurst();" style="background: rgba(236, 72, 153, 0.2); border: 1px solid rgba(236, 72, 153, 0.4); color: #F472B6; padding: 4px 10px; border-radius: 8px; font-size: 0.7rem; font-weight: 700; cursor: pointer; flex-shrink: 0;">
-                    Celebrate 🎉
-                </button>
-            </div>
-        `;
-        })
-        .join('');
+    window.dispatchEvent(new Event('stateChanged'));
 }
 
 export function renderDashboardAgenda() {

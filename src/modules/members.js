@@ -1304,9 +1304,9 @@ export function handleAddMemberSubmit(event) {
             if (
                 typeof MFCFirebaseCloud !== 'undefined' &&
                 MFCFirebaseCloud.enabled &&
-                MFCFirebaseCloud.syncMember
+                MFCFirebaseCloud.syncMemberToFirestore
             ) {
-                MFCFirebaseCloud.syncMember(state.members[idx]);
+                MFCFirebaseCloud.syncMemberToFirestore(state.members[idx]);
                 if (typeof MFCFirebaseCloud.pushSnapshot === 'function') {
                     MFCFirebaseCloud.pushSnapshot();
                 }
@@ -1325,9 +1325,9 @@ export function handleAddMemberSubmit(event) {
         if (
             typeof MFCFirebaseCloud !== 'undefined' &&
             MFCFirebaseCloud.enabled &&
-            MFCFirebaseCloud.syncMember
+            MFCFirebaseCloud.syncMemberToFirestore
         ) {
-            MFCFirebaseCloud.syncMember(newMember);
+            MFCFirebaseCloud.syncMemberToFirestore(newMember);
             if (typeof MFCFirebaseCloud.pushSnapshot === 'function') {
                 MFCFirebaseCloud.pushSnapshot();
             }
