@@ -137,6 +137,9 @@ export function logoutUser(reason = 'Logged out successfully.') {
         signOut(auth).catch((err) => console.warn('Firebase sign out error:', err));
     }
 
+    // Trigger React Login UI immediately
+    window.dispatchEvent(new Event('ps_logout'));
+
     setTimeout(() => {
         window.location.reload();
     }, 1000);

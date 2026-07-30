@@ -13,10 +13,16 @@ export default function Login() {
     const [isVisible, setIsVisible] = useState(false);
 
     useEffect(() => {
-        // Only show if not logged in
-        if (localStorage.getItem('ps_logged_in') !== 'true') {
-            setIsVisible(true);
-        }
+        const checkLogin = () => {
+            if (localStorage.getItem('ps_logged_in') !== 'true') {
+                setIsVisible(true);
+            }
+        };
+        
+        checkLogin();
+
+        window.addEventListener('ps_logout', checkLogin);
+        return () => window.removeEventListener('ps_logout', checkLogin);
     }, []);
 
     if (!isVisible) return null;
