@@ -1,20 +1,8 @@
-const CACHE_NAME = 'mfc-youth-tarlac-portal-v4.42';
+const CACHE_NAME = 'mfc-youth-tarlac-portal-v4.43';
 const ASSETS_TO_CACHE = [
     './',
     './index.html',
-    './styles.css',
-    './aesthetic.css',
-    './src/main.js',
-    './src/modules/state.js',
-    './src/modules/ui.js',
-    './src/modules/auth.js',
-    './src/modules/firebase.js',
-    './src/modules/members.js',
-    './src/modules/attendance.js',
-    './src/modules/activities.js',
-    './src/modules/reports.js',
-    './src/modules/dashboard.js',
-    './src/modules/events.js',
+
     './manifest.json',
     './mfc-logo.png',
     'https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js',
