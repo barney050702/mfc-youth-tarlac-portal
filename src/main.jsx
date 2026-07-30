@@ -660,6 +660,8 @@ function renderAllViews() {
 }
 window.renderAll = renderAllViews;
 
+import Login from './components/views/Login.jsx';
+
 // React Integration
 document.addEventListener('DOMContentLoaded', () => {
     const birthdayRootEl = document.getElementById('react-birthday-root');
@@ -678,6 +680,16 @@ document.addEventListener('DOMContentLoaded', () => {
         agendaRoot.render(
             <React.StrictMode>
                 <UpcomingAgendaWidget />
+            </React.StrictMode>
+        );
+    }
+
+    const loginRootEl = document.getElementById('react-login-root');
+    if (loginRootEl) {
+        const loginRoot = createRoot(loginRootEl);
+        loginRoot.render(
+            <React.StrictMode>
+                <Login />
             </React.StrictMode>
         );
     }

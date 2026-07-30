@@ -137,8 +137,9 @@ export function logoutUser(reason = 'Logged out successfully.') {
         signOut(auth).catch((err) => console.warn('Firebase sign out error:', err));
     }
 
-    const overlay = document.getElementById('auth-login-overlay');
-    if (overlay) overlay.style.display = 'flex';
+    setTimeout(() => {
+        window.location.reload();
+    }, 1000);
     showToast(reason, 'info');
     triggerHaptic('medium');
 }
