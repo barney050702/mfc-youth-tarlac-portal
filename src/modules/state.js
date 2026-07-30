@@ -205,6 +205,7 @@ export const state =
               auditLog: [],
               currentRole: 'Super Admin',
               showOnlyDuplicates: false,
+              isMembersLoading: false,
               sortOrder: 'ASC',
               charts: {}, // Active Chart.js instances registry to prevent memory leaks
           };

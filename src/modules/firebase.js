@@ -33,6 +33,11 @@ export const MFCFirebaseCloud = {
                     firebase.initializeApp(this.config);
                 }
 
+                // Force WebSockets to prevent Quirks Mode and deprecation warnings from long-polling iframe
+                if (firebase.database && firebase.database.INTERNAL) {
+                    firebase.database.INTERNAL.forceWebSockets();
+                }
+
                 // Enable Offline Persistence (modern API)
                 if (firebase.firestore) {
                     try {
@@ -98,6 +103,7 @@ export const MFCFirebaseCloud = {
         if (!this.initialized || typeof firebase === 'undefined' || !firebase.firestore) return;
         try {
             const db = firebase.firestore();
+            state.isMembersLoading = true;
             db.collection('members').onSnapshot(
                 (snapshot) => {
                     if (!snapshot.empty) {
@@ -107,11 +113,16 @@ export const MFCFirebaseCloud = {
                         });
                         state.members = cloudMembers;
                         saveToStorage();
+                        // Loading finished, hide spinner
+                        state.isMembersLoading = false;
                         notifyStateChange('members_loaded');
                     }
                 },
                 (error) => {
                     console.warn('Firestore members sync error:', error);
+                    // Ensure loading flag is cleared on error
+                    state.isMembersLoading = false;
+                    notifyStateChange('members_error');
                 }
             );
         } catch (e) {
