@@ -6,6 +6,7 @@
 import React from 'react';
 import { createRoot } from 'react-dom/client';
 import BirthdayWidget from './components/BirthdayWidget.jsx';
+import UpcomingAgendaWidget from './components/UpcomingAgendaWidget.jsx';
 
 import { state, loadFromStorage, subscribeState } from './modules/state.js';
 import {
@@ -661,12 +662,22 @@ window.renderAll = renderAllViews;
 
 // React Integration
 document.addEventListener('DOMContentLoaded', () => {
-    const rootEl = document.getElementById('react-birthday-root');
-    if (rootEl) {
-        const root = createRoot(rootEl);
-        root.render(
+    const birthdayRootEl = document.getElementById('react-birthday-root');
+    if (birthdayRootEl) {
+        const birthdayRoot = createRoot(birthdayRootEl);
+        birthdayRoot.render(
             <React.StrictMode>
                 <BirthdayWidget />
+            </React.StrictMode>
+        );
+    }
+
+    const agendaRootEl = document.getElementById('react-upcoming-agenda-root');
+    if (agendaRootEl) {
+        const agendaRoot = createRoot(agendaRootEl);
+        agendaRoot.render(
+            <React.StrictMode>
+                <UpcomingAgendaWidget />
             </React.StrictMode>
         );
     }

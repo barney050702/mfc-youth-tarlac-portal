@@ -504,10 +504,10 @@ export default `
                                     >
                                 </div>
                                 <div
-                                    id="dashboard-upcoming-list"
-                                    class="ext-style-62"
+                                    id="react-upcoming-agenda-root"
+                                    style="display: flex; flex-direction: column; gap: 10px"
                                 >
-                                    <!-- Populated via script.js -->
+                                    <!-- Populated via React -->
                                 </div>
                             </div>
 

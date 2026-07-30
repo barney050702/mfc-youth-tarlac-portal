@@ -191,7 +191,6 @@ export function renderDashboard() {
     }
 
     renderDashboardCelebrants();
-    renderDashboardAgenda();
     if (window.renderAttendanceHeatmapWidget) window.renderAttendanceHeatmapWidget();
     renderDashboardGrowthChart();
 }
@@ -243,8 +242,6 @@ export function renderAgendaTimeline() {
             })
             .join('');
     }
-
-    renderDashboardAgenda();
 
     const agendaCont = document.getElementById('agenda-timeline-list');
     if (agendaCont) agendaCont.innerHTML = htmlContent;
@@ -318,39 +315,6 @@ export function jumpToAttendance(actId) {
 
 export function renderDashboardCelebrants() {
     window.dispatchEvent(new Event('stateChanged'));
-}
-
-export function renderDashboardAgenda() {
-    const listEl = document.getElementById('dashboard-upcoming-list');
-    if (!listEl) return;
-
-    const upcomingActs = state.activities.slice(0, 4);
-    if (upcomingActs.length === 0) {
-        listEl.innerHTML =
-            '<div style="color: #64748B; font-size: 0.82rem; padding: 10px 0;">No upcoming activities recorded.</div>';
-        return;
-    }
-
-    listEl.innerHTML = upcomingActs
-        .map((act) => {
-            const dateStr = act.date || 'TBA';
-            const typeBadge = act.type || 'Assembly';
-            return `
-            <div style="display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; background: rgba(30, 41, 59, 0.6); border: 1px solid rgba(255,255,255,0.06); border-radius: 12px; transition: all 0.2s;">
-                <div style="display: flex; align-items: center; gap: 12px; min-width: 0;">
-                    <div style="width: 38px; height: 38px; border-radius: 10px; background: rgba(56, 189, 248, 0.15); border: 1px solid rgba(56, 189, 248, 0.3); display: flex; align-items: center; justify-content: center; font-size: 1.1rem; flex-shrink: 0;">
-                        📅
-                    </div>
-                    <div style="min-width: 0;">
-                        <div style="color: #F8FAFC; font-weight: 700; font-size: 0.88rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${act.title || act.name || 'Activity'}</div>
-                        <div style="color: #38BDF8; font-size: 0.74rem;">${dateStr} &bull; <span style="color:#94A3B8;">${act.location || 'MFC Center'}</span></div>
-                    </div>
-                </div>
-                <span class="badge badge-purple" style="flex-shrink: 0; font-size: 0.72rem;">${typeBadge}</span>
-            </div>
-        `;
-        })
-        .join('');
 }
 
 let dashboardGrowthChartInstance = null;
