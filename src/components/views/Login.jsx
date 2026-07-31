@@ -101,15 +101,15 @@ export default function Login() {
                 muted
                 playsInline
                 preload="none"
-                poster={`${import.meta.env.BASE_URL}bg-poster.png`}
+                poster={`/bg-poster.png`}
                 className={styles.video}
             >
-                <source src={`${import.meta.env.BASE_URL}bg-video.mp4`} type="video/mp4" />
+                <source src={`/bg-video.mp4`} type="video/mp4" />
             </video>
 
             <div className={styles.card}>
                 <div className={styles.logoContainer}>
-                    <img src={`${import.meta.env.BASE_URL}mfc-logo.png`} alt="MFC Youth Logo" className={styles.logo} />
+                    <img src={`/mfc-logo.png`} alt="MFC Youth Logo" className={styles.logo} />
                 </div>
 
                 <h1 className={styles.title}>MFC YOUTH TARLAC</h1>
