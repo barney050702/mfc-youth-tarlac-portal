@@ -122,6 +122,8 @@ export default function Login() {
 
                     <form onSubmit={handleSubmit} className={styles.form}>
                         <select
+                            id="role-select"
+                            name="role"
                             className={styles.select}
                             value={role}
                             onChange={(e) => setRole(e.target.value)}
@@ -133,6 +135,8 @@ export default function Login() {
 
                         {role === 'CHAPTER HEAD' && (
                             <select
+                                id="chapter-select"
+                                name="chapter"
                                 className={styles.select}
                                 value={chapter}
                                 onChange={(e) => setChapter(e.target.value)}
@@ -147,6 +151,8 @@ export default function Login() {
 
                         {role !== 'MEMBER' && (
                             <input
+                                id="password-input"
+                                name="password"
                                 type="password"
                                 required
                                 placeholder="Enter role password..."
@@ -158,6 +164,8 @@ export default function Login() {
 
                         {role === 'MEMBER' && (
                             <input
+                                id="mfc-id-input"
+                                name="mfcId"
                                 type="text"
                                 required
                                 placeholder="Enter MFC ID (e.g. MFC-2024-XXXX)..."
