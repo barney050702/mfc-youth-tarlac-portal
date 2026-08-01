@@ -18,7 +18,7 @@ export default defineConfig({
                 skipWaiting: true,
                 clientsClaim: true,
             },
-        })
+        }),
     ],
     build: {
         outDir: 'dist',

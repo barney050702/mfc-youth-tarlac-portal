@@ -7,7 +7,20 @@ import React from 'react';
 import { createRoot } from 'react-dom/client';
 import BirthdayWidget from './components/BirthdayWidget.jsx';
 import UpcomingAgendaWidget from './components/UpcomingAgendaWidget.jsx';
-
+import AddMemberModal from './components/modals/AddMemberModal.jsx';
+import LetterGeneratorModal from './components/modals/LetterGeneratorModal.jsx';
+import RosaryInteractiveModal from './components/modals/RosaryInteractiveModal.jsx';
+import VenueMapModal from './components/modals/VenueMapModal.jsx';
+import GeneralModal from './components/modals/GeneralModal.jsx';
+import DashboardView from './components/views/DashboardView.jsx';
+import MembersView from './components/views/MembersView.jsx';
+import AttendanceView from './components/views/AttendanceView.jsx';
+import ResourcesView from './components/views/ResourcesView.jsx';
+import FundsView from './components/views/FundsView.jsx';
+import AnalyticsView from './components/views/AnalyticsView.jsx';
+import ActivitiesView from './components/views/ActivitiesView.jsx';
+import AccountView from './components/views/AccountView.jsx';
+import AgendaView from './components/views/AgendaView.jsx';
 import { state, loadFromStorage, subscribeState } from './modules/state.js';
 import {
     switchView,
@@ -690,6 +703,146 @@ document.addEventListener('DOMContentLoaded', () => {
         loginRoot.render(
             <React.StrictMode>
                 <Login />
+            </React.StrictMode>
+        );
+    }
+
+    const addMemberRootEl = document.getElementById('react-add-member-root');
+    if (addMemberRootEl) {
+        const addMemberRoot = createRoot(addMemberRootEl);
+        addMemberRoot.render(
+            <React.StrictMode>
+                <AddMemberModal />
+            </React.StrictMode>
+        );
+    }
+
+    const letterGenRootEl = document.getElementById('react-letter-generator-root');
+    if (letterGenRootEl) {
+        const letterGenRoot = createRoot(letterGenRootEl);
+        letterGenRoot.render(
+            <React.StrictMode>
+                <LetterGeneratorModal />
+            </React.StrictMode>
+        );
+    }
+
+    const rosaryRootEl = document.getElementById('react-rosary-interactive-root');
+    if (rosaryRootEl) {
+        const rosaryRoot = createRoot(rosaryRootEl);
+        rosaryRoot.render(
+            <React.StrictMode>
+                <RosaryInteractiveModal />
+            </React.StrictMode>
+        );
+    }
+
+    const venueMapRootEl = document.getElementById('react-venue-map-root');
+    if (venueMapRootEl) {
+        const venueMapRoot = createRoot(venueMapRootEl);
+        venueMapRoot.render(
+            <React.StrictMode>
+                <VenueMapModal />
+            </React.StrictMode>
+        );
+    }
+
+    const generalModalRootEl = document.getElementById('react-general-modal-root');
+    if (generalModalRootEl) {
+        const generalModalRoot = createRoot(generalModalRootEl);
+        generalModalRoot.render(
+            <React.StrictMode>
+                <GeneralModal />
+            </React.StrictMode>
+        );
+    }
+
+    const dashboardViewRootEl = document.getElementById('react-dashboard-view-root');
+    if (dashboardViewRootEl) {
+        const dashboardViewRoot = createRoot(dashboardViewRootEl);
+        dashboardViewRoot.render(
+            <React.StrictMode>
+                <DashboardView />
+            </React.StrictMode>
+        );
+    }
+
+    const membersViewRootEl = document.getElementById('react-members-view-root');
+    if (membersViewRootEl) {
+        const membersViewRoot = createRoot(membersViewRootEl);
+        membersViewRoot.render(
+            <React.StrictMode>
+                <MembersView />
+            </React.StrictMode>
+        );
+    }
+
+    const attendanceViewRootEl = document.getElementById('react-attendance-view-root');
+    if (attendanceViewRootEl) {
+        const attendanceViewRoot = createRoot(attendanceViewRootEl);
+        attendanceViewRoot.render(
+            <React.StrictMode>
+                <AttendanceView />
+            </React.StrictMode>
+        );
+    }
+
+    const resourcesViewRootEl = document.getElementById('react-resources-view-root');
+    if (resourcesViewRootEl) {
+        const resourcesViewRoot = createRoot(resourcesViewRootEl);
+        resourcesViewRoot.render(
+            <React.StrictMode>
+                <ResourcesView />
+            </React.StrictMode>
+        );
+    }
+
+    const fundsViewRootEl = document.getElementById('react-funds-view-root');
+    if (fundsViewRootEl) {
+        const fundsViewRoot = createRoot(fundsViewRootEl);
+        fundsViewRoot.render(
+            <React.StrictMode>
+                <FundsView />
+            </React.StrictMode>
+        );
+    }
+
+    const analyticsViewRootEl = document.getElementById('react-analytics-view-root');
+    if (analyticsViewRootEl) {
+        const analyticsViewRoot = createRoot(analyticsViewRootEl);
+        analyticsViewRoot.render(
+            <React.StrictMode>
+                <AnalyticsView />
+            </React.StrictMode>
+        );
+    }
+
+    const activitiesViewRootEl = document.getElementById('react-activities-view-root');
+    if (activitiesViewRootEl) {
+        const activitiesViewRoot = createRoot(activitiesViewRootEl);
+        activitiesViewRoot.render(
+            <React.StrictMode>
+                <ActivitiesView />
+            </React.StrictMode>
+        );
+    }
+
+    const accountViewRootEl = document.getElementById('react-account-view-root');
+    if (accountViewRootEl) {
+        const accountViewRoot = createRoot(accountViewRootEl);
+        accountViewRoot.render(
+            <React.StrictMode>
+                <AccountView />
+            </React.StrictMode>
+        );
+    }
+
+    const agendaViewRootEl = document.getElementById('react-agenda-view-root');
+    if (agendaViewRootEl) {
+        const agendaViewRoot = createRoot(agendaViewRootEl);
+        agendaViewRoot.render(
+            <React.StrictMode>
+                <AgendaView />
             </React.StrictMode>
         );
     }

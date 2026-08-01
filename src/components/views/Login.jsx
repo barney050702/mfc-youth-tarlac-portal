@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { auth, db } from '../../modules/firebase.js';
 import { signInWithEmailAndPassword } from 'firebase/auth';
-import { collection, query, where, getDocs } from 'firebase/firestore';
+import { collection, query, where, getDocs, doc, getDoc } from 'firebase/firestore';
 import styles from './Login.module.css';
 
 export default function Login() {
-    const [role, setRole] = useState('SUPER ADMIN');
-    const [chapter, setChapter] = useState('EAST');
+    const [loginType, setLoginType] = useState('ADMIN'); // ADMIN or MEMBER
+    const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [mfcId, setMfcId] = useState('');
     const [errorMsg, setErrorMsg] = useState('');
@@ -31,39 +31,65 @@ export default function Login() {
         e.preventDefault();
         setErrorMsg('');
 
-        if (role !== 'MEMBER' && !password) {
-            setErrorMsg('⚠️ Please enter the chapter security password.');
+        if (loginType === 'ADMIN' && (!email || !password)) {
+            setErrorMsg('⚠️ Please enter your email and password.');
             return;
         }
 
-        if (role === 'MEMBER' && !mfcId) {
+        if (loginType === 'MEMBER' && !mfcId) {
             setErrorMsg('⚠️ Please enter your MFC ID.');
             return;
         }
 
         try {
-            const selectedChapter = role === 'CHAPTER HEAD' ? chapter : 'ALL';
-            const adminEmail = role === 'SUPER ADMIN' ? 'reyesbarney38@gmail.com' : 'chapter@mfcyouthtarlac.com';
 
-            if (role === 'MEMBER') {
+            let userRole = 'MEMBER';
+            let selectedChapter = 'ALL';
+
+            if (loginType === 'MEMBER') {
                 if (db) {
-                    const membersRef = collection(db, 'members');
-                    const q = query(membersRef, where('mfc_id', '==', mfcId.trim()));
-                    const snapshot = await getDocs(q);
+                    const memberDocRef = doc(db, 'members', mfcId.trim());
+                    const snapshot = await getDoc(memberDocRef);
                     
-                    if (snapshot.empty) {
+                    if (!snapshot.exists()) {
                         throw new Error('MFC ID not found in the database.');
                     }
                     
-                    const memberDoc = snapshot.docs[0].data();
-                    localStorage.setItem('ps_member_id', memberDoc.mfc_id);
-                    localStorage.setItem('ps_member_name', `${memberDoc.firstName} ${memberDoc.lastName}`);
+                    const memberDoc = snapshot.data();
+                    localStorage.setItem('ps_member_id', snapshot.id);
+                    localStorage.setItem('ps_member_name', `${memberDoc.firstName || ''} ${memberDoc.lastName || ''}`.trim());
+                    selectedChapter = memberDoc.chapter || 'ALL';
                 } else {
                     throw new Error('Database not initialized');
                 }
             } else {
                 if (auth) {
-                    await signInWithEmailAndPassword(auth, adminEmail, password.trim());
+                    const userCredential = await signInWithEmailAndPassword(auth, email.trim(), password.trim());
+                    const userEmail = userCredential.user.email;
+                    
+                    // Fetch role from Firestore
+                    try {
+                        const roleDocRef = doc(db, 'roles', userCredential.user.uid);
+                        const roleDoc = await getDoc(roleDocRef);
+                        
+                        if (roleDoc.exists()) {
+                            userRole = roleDoc.data().role;
+                            selectedChapter = roleDoc.data().chapter || 'ALL';
+                        }
+                    } catch (e) {
+                        console.warn("Could not fetch role from Firestore, falling back to local defaults.", e);
+                    }
+
+                    // Fallback local logic to prevent lockouts before firestore roles are setup
+                    if (userRole === 'MEMBER') {
+                        if (userEmail === 'reyesbarney38@gmail.com') {
+                            userRole = 'SUPER ADMIN';
+                        } else if (userEmail === 'chapter@mfcyouthtarlac.com') {
+                            userRole = 'CHAPTER HEAD';
+                        } else {
+                            throw new Error('Unauthorized email.');
+                        }
+                    }
                 } else {
                     throw new Error('Auth not initialized');
                 }
@@ -71,11 +97,11 @@ export default function Login() {
 
             // Success
             localStorage.setItem('ps_logged_in', 'true');
-            localStorage.setItem('ps_role', role);
+            localStorage.setItem('ps_role', userRole);
             localStorage.setItem('ps_chapter', selectedChapter);
             
             if (window.showToast) {
-                window.showToast(`🔓 Access granted. Logged in as ${role}.`, 'success');
+                window.showToast(`🔓 Access granted. Logged in as ${userRole}.`, 'success');
             }
             if (window.triggerHaptic) {
                 window.triggerHaptic('success');
@@ -122,47 +148,43 @@ export default function Login() {
 
                     <form onSubmit={handleSubmit} className={styles.form}>
                         <select
-                            id="role-select"
-                            name="role"
+                            id="login-type-select"
+                            name="loginType"
                             className={styles.select}
-                            value={role}
-                            onChange={(e) => setRole(e.target.value)}
+                            value={loginType}
+                            onChange={(e) => setLoginType(e.target.value)}
                         >
-                            <option value="SUPER ADMIN">Super Admin</option>
-                            <option value="CHAPTER HEAD">Chapter Head</option>
+                            <option value="ADMIN">Admin / Chapter Head</option>
                             <option value="MEMBER">Member (Self-Service)</option>
                         </select>
 
-                        {role === 'CHAPTER HEAD' && (
-                            <select
-                                id="chapter-select"
-                                name="chapter"
-                                className={styles.select}
-                                value={chapter}
-                                onChange={(e) => setChapter(e.target.value)}
-                            >
-                                <option value="EAST">EAST Chapter</option>
-                                <option value="WEST">WEST Chapter</option>
-                                <option value="NORTH">NORTH Chapter</option>
-                                <option value="SOUTH">SOUTH Chapter</option>
-                                <option value="CENTRAL">CENTRAL Chapter</option>
-                            </select>
+                        {loginType === 'ADMIN' && (
+                            <>
+                                <input
+                                    id="email-input"
+                                    name="email"
+                                    type="email"
+                                    required
+                                    placeholder="Enter your email address..."
+                                    value={email}
+                                    onChange={(e) => setEmail(e.target.value)}
+                                    className={styles.input}
+                                />
+                                <input
+                                    id="password-input"
+                                    name="password"
+                                    type="password"
+                                    required
+                                    placeholder="Enter your password..."
+                                    value={password}
+                                    onChange={(e) => setPassword(e.target.value)}
+                                    className={styles.input}
+                                    style={{ marginTop: '10px' }}
+                                />
+                            </>
                         )}
 
-                        {role !== 'MEMBER' && (
-                            <input
-                                id="password-input"
-                                name="password"
-                                type="password"
-                                required
-                                placeholder="Enter role password..."
-                                value={password}
-                                onChange={(e) => setPassword(e.target.value)}
-                                className={styles.input}
-                            />
-                        )}
-
-                        {role === 'MEMBER' && (
+                        {loginType === 'MEMBER' && (
                             <input
                                 id="mfc-id-input"
                                 name="mfcId"

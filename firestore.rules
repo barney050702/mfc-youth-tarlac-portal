@@ -14,10 +14,12 @@ service cloud.firestore {
 
     // Members collection
     match /members/{memberId} {
-      // Anyone can read (needed for Member Portal self-service)
-      allow read: if true;
+      // Anyone can read their own document by ID (needed for Member Portal login)
+      allow get: if true;
+      // Only Super Admin and Chapter Head can list all members
+      allow list: if isSuperAdmin() || isChapterHead();
       
-      // Only Super Admin can write (create, update, delete)
+      // Only Super Admin and Chapter Head can create, but only Super Admin can update/delete
       allow create: if isSuperAdmin() || isChapterHead();
       allow update, delete: if isSuperAdmin();
     }
@@ -37,6 +39,12 @@ service cloud.firestore {
     // Events collection
     match /events/{eventId} {
       allow read: if true;
+      allow write: if isSuperAdmin();
+    }
+
+    // Roles collection (Security Enhancement)
+    match /roles/{userId} {
+      allow read: if request.auth != null && request.auth.uid == userId;
       allow write: if isSuperAdmin();
     }
     

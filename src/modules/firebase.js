@@ -47,8 +47,11 @@ export const MFCFirebaseCloud = {
                 }
             });
 
-            // Initial load
-            this.loadMembersFromFirestore();
+            // Initial load only if Admin
+            const role = localStorage.getItem('ps_role');
+            if (role === 'SUPER ADMIN' || role === 'CHAPTER HEAD') {
+                this.loadMembersFromFirestore();
+            }
 
             // Listen to live database changes
             const liveRef = ref(rtdb, 'mfc_portal_live_data');

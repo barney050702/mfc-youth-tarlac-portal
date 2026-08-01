@@ -7,7 +7,7 @@ import { state } from './state.js';
 import { showToast, triggerHaptic } from './ui.js';
 import { auth, db } from './firebase.js';
 import { signInWithEmailAndPassword, sendPasswordResetEmail, signOut } from 'firebase/auth';
-import { collection, query, where, getDocs } from 'firebase/firestore';
+import { collection, query, where, getDocs, doc, getDoc } from 'firebase/firestore';
 
 let inactivityTimer = null;
 
@@ -63,32 +63,34 @@ export async function loginUser(event) {
     try {
         const chapEl = document.getElementById('auth-login-chapter');
         const selectedChapter = selectedRole === 'CHAPTER HEAD' && chapEl ? chapEl.value : 'ALL';
-        const adminEmail =
-            selectedRole === 'SUPER ADMIN'
-                ? 'reyesbarney38@gmail.com'
-                : 'chapter@mfcyouthtarlac.com';
+        // Since loginUser (vanilla) does not ask for email, it's considered legacy. 
+        // We throw an error to force them to use the new React Login UI.
+        const adminEmail = '';
+        if (selectedRole !== 'MEMBER') {
+            throw new Error('Vanilla login deprecated for Admins. Please use the React Login UI.');
+        }
 
         if (selectedRole === 'MEMBER') {
             if (db) {
-                const membersRef = collection(db, 'members');
-                const q = query(membersRef, where('mfc_id', '==', mfcIdVal));
-                const snapshot = await getDocs(q);
+                const memberDocRef = doc(db, 'members', mfcIdVal);
+                const snapshot = await getDoc(memberDocRef);
 
-                if (snapshot.empty) {
+                if (!snapshot.exists()) {
                     throw new Error('MFC ID not found in the database.');
                 }
 
-                const memberDoc = snapshot.docs[0].data();
-                localStorage.setItem('ps_member_id', memberDoc.mfc_id);
+                const memberDoc = snapshot.data();
+                localStorage.setItem('ps_member_id', snapshot.id);
                 localStorage.setItem(
                     'ps_member_name',
-                    `${memberDoc.firstName} ${memberDoc.lastName}`
+                    `${memberDoc.firstName || ''} ${memberDoc.lastName || ''}`.trim()
                 );
             } else {
                 throw new Error('Database not initialized');
             }
         } else {
             if (auth) {
+                if (!adminEmail) throw new Error('Email not provided');
                 await signInWithEmailAndPassword(auth, adminEmail, passVal);
             } else {
                 throw new Error('Auth not initialized');
