@@ -327,7 +327,14 @@ export function loadFromStorage() {
             localStorage.setItem('ps_activities', JSON.stringify(state.activities));
         }
 
-        state.members = savedMembers ? JSON.parse(savedMembers) : SAMPLE_MEMBERS;
+        let loadedMembers = savedMembers ? JSON.parse(savedMembers) : SAMPLE_MEMBERS;
+        state.members = loadedMembers.map(m => {
+            if (m.dept === 'Outreach & Fellowship' || m.department === 'Outreach & Fellowship') {
+                m.dept = 'General';
+                if (m.department) m.department = 'General';
+            }
+            return m;
+        });
         state.attendance = savedAttendance ? JSON.parse(savedAttendance) : {};
         state.funds = savedFunds ? JSON.parse(savedFunds) : [];
         state.accounts = savedAccounts ? JSON.parse(savedAccounts) : [];

@@ -82,7 +82,12 @@ export const MFCFirebaseCloud = {
                     if (!snapshot.empty) {
                         const cloudMembers = [];
                         snapshot.forEach((docSnap) => {
-                            cloudMembers.push({ id: docSnap.id, ...docSnap.data() });
+                            let data = docSnap.data();
+                            if (data.dept === 'Outreach & Fellowship' || data.department === 'Outreach & Fellowship') {
+                                data.dept = 'General';
+                                if (data.department) data.department = 'General';
+                            }
+                            cloudMembers.push({ id: docSnap.id, ...data });
                         });
                         state.members = cloudMembers;
                         saveToStorage();
