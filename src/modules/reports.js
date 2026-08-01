@@ -508,7 +508,7 @@ export function exportToPDF() {
                     return [
                         idx + 1,
                         mem.name,
-                        `${mem.dept} (${mem.role})`,
+                        `${mem.dept || 'Outreach & Fellowship'} / ${mem.role || 'Member'}`,
                         att.status.toUpperCase(),
                         att.time,
                         att.notes || '-',
@@ -584,15 +584,11 @@ export function generatePrintablePDFSheet() {
                     const att = attMap[mem.id] || { status: 'absent', time: '-', notes: '' };
                     const color =
                         att.status === 'present'
-                            ? '#059669'
-                            : att.status === 'late'
-                              ? '#D97706'
-                              : '#E11D48';
                     return `<tr>
                     <td data-label="#" style="padding: 6px; border-bottom: 1px solid #eee;">${idx + 1}</td>
                     <td data-label="Member Name" style="padding: 6px; border-bottom: 1px solid #eee; font-weight: 600;">${mem.name}</td>
-                    <td data-label="Dept / Role" style="padding: 6px; border-bottom: 1px solid #eee;">${mem.dept} (${mem.role})</td>
-                    <td data-label="Status" style="padding: 6px; border-bottom: 1px solid #eee; font-weight: bold; color: ${color};">${att.status.toUpperCase()}</td>
+                    <td data-label="Dept / Role" style="padding: 6px; border-bottom: 1px solid #eee;">${mem.dept || 'Outreach & Fellowship'} / ${mem.role || 'Member'}</td>
+                    <td data-label="Status" style="padding: 6px; border-bottom: 1px solid #eee; font-weight: bold; color: ${att.status === 'present' ? '#059669' : att.status === 'late' ? '#D97706' : '#E11D48'};">${att.status.toUpperCase()}</td>
                     <td data-label="Time" style="padding: 6px; border-bottom: 1px solid #eee;">${att.time}</td>
                     <td data-label="Remarks" style="padding: 6px; border-bottom: 1px solid #eee;">${att.notes || '-'}</td>
                 </tr>`;
@@ -728,7 +724,7 @@ export function exportMembersToPDF() {
             idx + 1,
             m.name || 'Untitled',
             m.chapter || 'Central Chapter',
-            m.dept || 'General',
+            m.dept || 'Outreach & Fellowship',
             m.role || 'Member',
             m.email || '-',
             m.status || 'Active',
@@ -773,7 +769,7 @@ export function generatePrintableMembersPDF() {
             <td data-label="#" style="padding: 8px; border-bottom: 1px solid #ddd;">${idx + 1}</td>
             <td data-label="Name" style="padding: 8px; border-bottom: 1px solid #ddd; font-weight: 600;">${m.name}</td>
             <td data-label="Chapter" style="padding: 8px; border-bottom: 1px solid #ddd;">${m.chapter || 'Central Chapter'}</td>
-            <td data-label="Department" style="padding: 8px; border-bottom: 1px solid #ddd;">${m.dept || 'General'}</td>
+            <td data-label="Department" style="padding: 8px; border-bottom: 1px solid #ddd;">${m.dept || 'Outreach & Fellowship'}</td>
             <td data-label="Role" style="padding: 8px; border-bottom: 1px solid #ddd;">${m.role || 'Member'}</td>
             <td data-label="Email" style="padding: 8px; border-bottom: 1px solid #ddd;">${m.email || '-'}</td>
             <td data-label="Status" style="padding: 8px; border-bottom: 1px solid #ddd; font-weight: bold; color: #059669;">${m.status || 'Active'}</td>
