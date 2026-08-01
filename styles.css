@@ -1037,6 +1037,10 @@ a {
 /* ==========================================================================
    APP SHELL LAYOUT
    ========================================================================== */
+html.hide-app-shell .app-shell {
+    display: none !important;
+}
+
 .app-shell {
     display: flex;
     min-height: 100vh;
