@@ -13,7 +13,8 @@ import { MFCFirebaseCloud } from './firebase.js';
 
 export function renderActivitiesTable() {
     const tableBody = document.getElementById('activities-table-body');
-    if (!tableBody) return;
+    const gridContainer = document.getElementById('agenda-grid-container');
+    const totalCount = document.getElementById('total-activities-count');
 
     // Hide 'Add Activity' button if Chapter Head
     const addActivityBtn = document.getElementById('action-btn-21');
@@ -24,84 +25,185 @@ export function renderActivitiesTable() {
 
     let items = [...state.activities];
 
+    // Apply Filters
+    if (state.searchQuery) {
+        const query = state.searchQuery.toLowerCase();
+        items = items.filter(a => 
+            (a.title && a.title.toLowerCase().includes(query)) ||
+            (a.category && a.category.toLowerCase().includes(query)) ||
+            (a.venue && a.venue.toLowerCase().includes(query))
+        );
+    }
+    
+    if (state.filterCategory && state.filterCategory !== 'ALL') {
+        items = items.filter(a => a.category === state.filterCategory);
+    }
+
+    if (state.agendaSemester && state.agendaSemester !== 'all') {
+        items = items.filter(a => {
+            if (!a.date) return false;
+            const month = new Date(a.date).getMonth();
+            if (state.agendaSemester === 's1') return month >= 0 && month <= 5;
+            if (state.agendaSemester === 's2') return month >= 6 && month <= 11;
+            return true;
+        });
+    }
+
     if (state.sortOrder === 'DESC') {
         items.reverse();
     }
 
-    tableBody.innerHTML = '';
-
-    if (items.length === 0) {
-        tableBody.innerHTML = `
-            <tr>
-                <td colspan="6" style="text-align: center; padding: 40px; color: #94A3B8; font-weight: 500;">
-                    📅 No upcoming or past activities recorded.
-                </td>
-            </tr>
-        `;
-        return;
+    if (totalCount) {
+        totalCount.textContent = `${items.length} activities total`;
     }
 
-    items.forEach((act) => {
-        const tr = document.createElement('tr');
-        tr.style.cssText = 'border-bottom: 1px solid rgba(255, 255, 255, 0.05);';
+    if (tableBody) {
+        tableBody.innerHTML = '';
+        if (items.length === 0) {
+            tableBody.innerHTML = `
+                <tr>
+                    <td colspan="6" style="text-align: center; padding: 40px; color: #94A3B8; font-weight: 500;">
+                        📅 No upcoming or past activities recorded.
+                    </td>
+                </tr>
+            `;
+        } else {
+            items.forEach((act) => {
+                const tr = document.createElement('tr');
+                tr.style.cssText = 'border-bottom: 1px solid rgba(255, 255, 255, 0.05);';
 
-        const titleTd = document.createElement('td');
-        titleTd.setAttribute('data-label', 'Activity Name');
-        titleTd.style.cssText = 'padding: 14px 16px; font-weight: 600; color: #FFF;';
-        titleTd.textContent = act.title || 'Untitled Activity';
+                const titleTd = document.createElement('td');
+                titleTd.setAttribute('data-label', 'Activity Name');
+                titleTd.style.cssText = 'padding: 14px 16px; font-weight: 600; color: #FFF;';
+                titleTd.textContent = act.title || 'Untitled Activity';
 
-        const dateTd = document.createElement('td');
-        dateTd.setAttribute('data-label', 'Date');
-        dateTd.style.cssText = 'padding: 14px 16px; color: #38BDF8; font-size: 13px;';
-        dateTd.textContent = act.date || 'TBD';
+                const dateTd = document.createElement('td');
+                dateTd.setAttribute('data-label', 'Date');
+                dateTd.style.cssText = 'padding: 14px 16px; color: #38BDF8; font-size: 13px;';
+                dateTd.textContent = act.date || 'TBD';
 
-        const venueTd = document.createElement('td');
-        venueTd.setAttribute('data-label', 'Venue');
-        venueTd.style.cssText = 'padding: 14px 16px; color: #CBD5E1; font-size: 13px;';
-        venueTd.textContent = act.venue || 'Tarlac Chapter Venue';
+                const venueTd = document.createElement('td');
+                venueTd.setAttribute('data-label', 'Venue');
+                venueTd.style.cssText = 'padding: 14px 16px; color: #CBD5E1; font-size: 13px;';
+                venueTd.textContent = act.venue || 'Tarlac Chapter Venue';
 
-        const categoryTd = document.createElement('td');
-        categoryTd.setAttribute('data-label', 'Category');
-        categoryTd.style.cssText = 'padding: 14px 16px; color: #94A3B8; font-size: 13px;';
-        categoryTd.textContent = act.category || 'PASTORAL';
+                const categoryTd = document.createElement('td');
+                categoryTd.setAttribute('data-label', 'Category');
+                categoryTd.style.cssText = 'padding: 14px 16px; color: #94A3B8; font-size: 13px;';
+                categoryTd.textContent = act.category || 'PASTORAL';
 
-        const statusTd = document.createElement('td');
-        statusTd.setAttribute('data-label', 'Status');
-        statusTd.style.cssText = 'padding: 14px 16px;';
-        const badge = document.createElement('span');
-        badge.style.cssText =
-            'background: rgba(16, 185, 129, 0.2); color: #34D399; padding: 4px 10px; border-radius: 12px; font-size: 12px; font-weight: 600;';
-        badge.textContent = (act.status || 'UPCOMING').toUpperCase();
-        statusTd.appendChild(badge);
+                const statusTd = document.createElement('td');
+                statusTd.setAttribute('data-label', 'Status');
+                statusTd.style.cssText = 'padding: 14px 16px;';
+                const badge = document.createElement('span');
+                badge.style.cssText =
+                    'background: rgba(16, 185, 129, 0.2); color: #34D399; padding: 4px 10px; border-radius: 12px; font-size: 12px; font-weight: 600;';
+                badge.textContent = (act.status || 'UPCOMING').toUpperCase();
+                statusTd.appendChild(badge);
 
-        const actionsTd = document.createElement('td');
-        actionsTd.setAttribute('data-label', 'Actions');
-        actionsTd.style.cssText = 'padding: 14px 16px; text-align: right;';
-        const emailBtn = document.createElement('button');
-        emailBtn.style.cssText =
-            'background: rgba(56, 189, 248, 0.15); border: 1px solid rgba(56, 189, 248, 0.3); color: #38BDF8; padding: 6px 10px; border-radius: 8px; font-size: 12px; cursor: pointer; margin-right: 8px;';
-        emailBtn.textContent = '✉️ Remind';
-        emailBtn.addEventListener('click', () => sendActivityEmailReminder(act));
-        actionsTd.appendChild(emailBtn);
+                const actionsTd = document.createElement('td');
+                actionsTd.setAttribute('data-label', 'Actions');
+                actionsTd.style.cssText = 'padding: 14px 16px; text-align: right;';
+                const emailBtn = document.createElement('button');
+                emailBtn.style.cssText =
+                    'background: rgba(56, 189, 248, 0.15); border: 1px solid rgba(56, 189, 248, 0.3); color: #38BDF8; padding: 6px 10px; border-radius: 8px; font-size: 12px; cursor: pointer; margin-right: 8px;';
+                emailBtn.textContent = '✉️ Remind';
+                emailBtn.addEventListener('click', () => sendActivityEmailReminder(act));
+                actionsTd.appendChild(emailBtn);
 
-        if (localStorage.getItem('ps_role') !== 'CHAPTER HEAD') {
-            const delBtn = document.createElement('button');
-            delBtn.style.cssText =
-                'background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.3); color: #F87171; padding: 6px 10px; border-radius: 8px; font-size: 12px; cursor: pointer;';
-            delBtn.textContent = '🗑️';
-            delBtn.addEventListener('click', () => deleteActivity(act.id));
-            actionsTd.appendChild(delBtn);
+                if (localStorage.getItem('ps_role') !== 'CHAPTER HEAD') {
+                    const delBtn = document.createElement('button');
+                    delBtn.style.cssText =
+                        'background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.3); color: #F87171; padding: 6px 10px; border-radius: 8px; font-size: 12px; cursor: pointer;';
+                    delBtn.textContent = '🗑️';
+                    delBtn.addEventListener('click', () => deleteActivity(act.id));
+                    actionsTd.appendChild(delBtn);
+                }
+
+                tr.appendChild(titleTd);
+                tr.appendChild(dateTd);
+                tr.appendChild(venueTd);
+                tr.appendChild(categoryTd);
+                tr.appendChild(statusTd);
+                tr.appendChild(actionsTd);
+
+                tableBody.appendChild(tr);
+            });
         }
+    }
 
-        tr.appendChild(titleTd);
-        tr.appendChild(dateTd);
-        tr.appendChild(venueTd);
-        tr.appendChild(categoryTd);
-        tr.appendChild(statusTd);
-        tr.appendChild(actionsTd);
+    if (gridContainer) {
+        gridContainer.innerHTML = '';
+        if (items.length === 0) {
+            gridContainer.innerHTML = `
+                <div style="grid-column: 1 / -1; text-align: center; padding: 40px; color: #94A3B8; font-weight: 500; background: rgba(30, 41, 59, 0.5); border-radius: 16px; border: 1px dashed rgba(255, 255, 255, 0.1);">
+                    📅 No activities match the selected filters.
+                </div>
+            `;
+        } else {
+            items.forEach((act) => {
+                const card = document.createElement('div');
+                card.className = 'glass-card hover-lift';
+                card.style.cssText = 'padding: 24px; border-radius: 16px; position: relative; overflow: hidden; display: flex; flex-direction: column;';
+                
+                const deleteBtnHtml = localStorage.getItem('ps_role') !== 'CHAPTER HEAD' ? 
+                    `<button class="delete-act-btn" data-id="${act.id}" style="position: absolute; top: 16px; right: 16px; background: rgba(239, 68, 68, 0.1); border: none; color: #ef4444; width: 32px; height: 32px; border-radius: 8px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s;" title="Delete Activity">🗑️</button>` : '';
 
-        tableBody.appendChild(tr);
-    });
+                card.innerHTML = `
+                    <div style="position: absolute; top: 0; left: 0; width: 4px; height: 100%; background: #3b82f6;"></div>
+                    ${deleteBtnHtml}
+                    <div style="margin-bottom: 16px; padding-right: 32px;">
+                        <span style="background: rgba(56, 189, 248, 0.15); color: #38bdf8; padding: 4px 10px; border-radius: 6px; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 12px; display: inline-block;">
+                            ${act.category || 'PASTORAL'}
+                        </span>
+                        <h3 style="color: #f8fafc; font-size: 1.25rem; font-weight: 700; margin: 0 0 8px 0; line-height: 1.4;">
+                            ${act.title || 'Untitled Activity'}
+                        </h3>
+                        <p style="color: #94a3b8; font-size: 0.9rem; margin: 0; display: flex; align-items: center; gap: 6px;">
+                            <span style="font-size: 1.1rem;">📅</span> ${act.date || 'TBD'}
+                        </p>
+                    </div>
+                    <div style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px;">
+                        <div style="display: flex; align-items: flex-start; gap: 10px;">
+                            <div style="background: rgba(15, 23, 42, 0.5); padding: 8px; border-radius: 8px; color: #64748b; font-size: 1.1rem; line-height: 1;">📍</div>
+                            <div>
+                                <span style="display: block; color: #cbd5e1; font-size: 0.75rem; font-weight: 700; margin-bottom: 2px; letter-spacing: 0.5px;">VENUE</span>
+                                <span style="color: #f8fafc; font-size: 0.95rem;">${act.venue || 'Tarlac Chapter Venue'}</span>
+                            </div>
+                        </div>
+                        <div style="display: flex; align-items: flex-start; gap: 10px;">
+                            <div style="background: rgba(15, 23, 42, 0.5); padding: 8px; border-radius: 8px; color: #64748b; font-size: 1.1rem; line-height: 1;">📊</div>
+                            <div>
+                                <span style="display: block; color: #cbd5e1; font-size: 0.75rem; font-weight: 700; margin-bottom: 2px; letter-spacing: 0.5px;">STATUS</span>
+                                <span style="color: #10b981; font-size: 0.95rem; font-weight: 600;">${(act.status || 'UPCOMING').toUpperCase()}</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div style="display: flex; gap: 10px; margin-top: auto; border-top: 1px solid rgba(255, 255, 255, 0.05); padding-top: 16px;">
+                        <button class="remind-act-btn" data-id="${act.id}" style="flex: 1; background: rgba(56, 189, 248, 0.1); border: 1px solid rgba(56, 189, 248, 0.2); color: #38bdf8; padding: 10px; border-radius: 10px; font-size: 0.85rem; font-weight: 600; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 6px;">
+                            ✉️ Remind
+                        </button>
+                    </div>
+                `;
+                
+                gridContainer.appendChild(card);
+            });
+
+            gridContainer.querySelectorAll('.delete-act-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const id = e.currentTarget.getAttribute('data-id');
+                    deleteActivity(id);
+                });
+            });
+            gridContainer.querySelectorAll('.remind-act-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const id = e.currentTarget.getAttribute('data-id');
+                    const act = state.activities.find(a => a.id === id);
+                    if (act) sendActivityEmailReminder(act);
+                });
+            });
+        }
+    }
 }
 
 export function deleteActivity(actId) {
