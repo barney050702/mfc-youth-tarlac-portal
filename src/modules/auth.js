@@ -132,6 +132,11 @@ export async function loginUser(event) {
 
 export function logoutUser(reason = 'Logged out successfully.') {
     localStorage.removeItem('ps_logged_in');
+    localStorage.removeItem('ps_role');
+    localStorage.removeItem('ps_chapter');
+    localStorage.removeItem('ps_member_id');
+    localStorage.removeItem('ps_member_name');
+    sessionStorage.removeItem('ps_logged_in');
 
     if (auth) {
         signOut(auth).catch((err) => console.warn('Firebase sign out error:', err));
