@@ -385,14 +385,14 @@ export function initializeEventListeners() {
     const el_action_btn_27 = document.getElementById('action-btn-27');
     if (el_action_btn_27) {
         el_action_btn_27.addEventListener('click', function (event) {
-            copyAttendanceSummaryForChat();
+            // copyAttendanceSummaryForChat();
         });
     }
 
     const el_action_btn_28 = document.getElementById('action-btn-28');
     if (el_action_btn_28) {
         el_action_btn_28.addEventListener('click', function (event) {
-            openPastoralFollowUpModal();
+            // openPastoralFollowUpModal();
         });
     }
 
@@ -1286,35 +1286,35 @@ export function initializeEventListeners() {
     const el_action_btn_142 = document.getElementById('action-btn-142');
     if (el_action_btn_142) {
         el_action_btn_142.addEventListener('click', function (event) {
-            closePastoralFollowUpModal();
+            // closePastoralFollowUpModal();
         });
     }
 
     const el_action_btn_143 = document.getElementById('action-btn-143');
     if (el_action_btn_143) {
         el_action_btn_143.addEventListener('click', function (event) {
-            copyPastoralReportText();
+            // copyPastoralReportText();
         });
     }
 
     const el_action_btn_144 = document.getElementById('action-btn-144');
     if (el_action_btn_144) {
         el_action_btn_144.addEventListener('click', function (event) {
-            sharePastoralReportWhatsApp();
+            // sharePastoralReportWhatsApp();
         });
     }
 
     const el_action_btn_145 = document.getElementById('action-btn-145');
     if (el_action_btn_145) {
         el_action_btn_145.addEventListener('click', function (event) {
-            copyAbsenteesOnlyList();
+            // copyAbsenteesOnlyList();
         });
     }
 
     const el_action_btn_146 = document.getElementById('action-btn-146');
     if (el_action_btn_146) {
         el_action_btn_146.addEventListener('click', function (event) {
-            closePastoralFollowUpModal();
+            // closePastoralFollowUpModal();
         });
     }
 
@@ -1590,7 +1590,7 @@ export function initializeEventListeners() {
     const el_action_btn_181 = document.getElementById('action-btn-181');
     if (el_action_btn_181) {
         el_action_btn_181.addEventListener('click', function (event) {
-            printGeneratedLetter();
+            // printGeneratedLetter();
         });
     }
 

@@ -20,7 +20,8 @@ export function openDigitalQRModal(memberId) {
     const codeEl = document.getElementById('qr-badge-id-code');
 
     if (nameEl) nameEl.textContent = member.name;
-    if (roleEl) roleEl.textContent = `${member.chapter || 'CENTRAL'} CHAPTER • ${member.dept || 'General'}`;
+    if (roleEl)
+        roleEl.textContent = `${member.chapter || 'CENTRAL'} CHAPTER • ${member.dept || 'General'}`;
     if (codeEl) codeEl.textContent = `ID: ${member.id}`;
 
     if (container) {

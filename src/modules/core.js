@@ -45,7 +45,7 @@ export function animateCounter(el, targetValue, duration = 650, prefix = '', suf
 
 export function initApp() {
     loadFromStorage();
-    setupEventListeners();
+    // setupEventListeners();
     setupSpotlights();
     renderAll();
     if (window.innerWidth <= 1024) {

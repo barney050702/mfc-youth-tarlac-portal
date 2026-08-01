@@ -1457,7 +1457,7 @@ export function handleAddResourceSubmit(e) {
 
     renderResourceCards();
     closeAddResourceModal();
-    showToast('\uD83D\uDCCE Resource \"' + title + '\" added to vault!', 'success');
+    showToast('\uD83D\uDCCE Resource "' + title + '" added to vault!', 'success');
 }
 
 export function renderResourceCards() {
@@ -1828,7 +1828,9 @@ export function triggerHapticFeedback(pattern = 15) {
     if (typeof navigator !== 'undefined' && navigator.vibrate) {
         try {
             navigator.vibrate(pattern);
-        } catch (e) {}
+        } catch (e) {
+            /* ignore */
+        }
     }
 }
 
@@ -3275,7 +3277,9 @@ export function renderAnnouncementsBoard() {
             `;
         });
         container.innerHTML = html;
-    } catch (e) {}
+    } catch (e) {
+        /* ignore */
+    }
 }
 
 export function renderPrayersBoard() {
@@ -3299,7 +3303,9 @@ export function renderPrayersBoard() {
             `;
         });
         container.innerHTML = html;
-    } catch (e) {}
+    } catch (e) {
+        /* ignore */
+    }
 }
 
 export function incrementPrayerCount(id) {

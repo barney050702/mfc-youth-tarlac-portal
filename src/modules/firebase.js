@@ -46,7 +46,7 @@ export const MFCFirebaseCloud = {
                     this.loadMembersFromFirestore();
                 }
             });
-            
+
             // Initial load
             this.loadMembersFromFirestore();
 
@@ -77,13 +77,19 @@ export const MFCFirebaseCloud = {
         if (!this.initialized || !db) return;
         try {
             state.isMembersLoading = true;
-            onSnapshot(collection(db, 'members'), 
+            onSnapshot(
+                collection(db, 'members'),
                 (snapshot) => {
                     if (!snapshot.empty) {
                         const cloudMembers = [];
                         snapshot.forEach((docSnap) => {
                             let data = docSnap.data();
-                            if (data.dept === 'Outreach & Fellowship' || data.department === 'Outreach & Fellowship' || data.dept === 'Outreach' || data.department === 'Outreach') {
+                            if (
+                                data.dept === 'Outreach & Fellowship' ||
+                                data.department === 'Outreach & Fellowship' ||
+                                data.dept === 'Outreach' ||
+                                data.department === 'Outreach'
+                            ) {
                                 data.dept = 'General';
                                 if (data.department) data.department = 'General';
                             }

@@ -365,7 +365,7 @@ export function downloadActivityPDF(actId, title) {
 export function selectActivityForAttendance(actId) {
     state.selectedActivityId = actId;
     switchView('attendance');
-    renderAttendanceHeader();
+    // renderAttendanceHeader();
     renderAttendanceRoster();
     showToast('Switched to live attendance roster!', 'success');
 }

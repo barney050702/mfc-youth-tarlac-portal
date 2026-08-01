@@ -244,7 +244,9 @@ export function renderGamificationLeaderboard() {
             `;
         });
         container.innerHTML = html;
-    } catch (e) {}
+    } catch (e) {
+        /* ignore */
+    }
 }
 
 export function toggleAudioPlay() {
@@ -269,7 +271,9 @@ export function toggleAudioPlay() {
             audio.pause();
             btn.innerText = '▶';
         }
-    } catch (e) {}
+    } catch (e) {
+        /* ignore */
+    }
 }
 
 export function downloadCertificatePDF() {

@@ -610,7 +610,9 @@ export function closeLetterGeneratorModal() {
     try {
         const el = document.getElementById('letter-generator-backdrop');
         if (el) el.style.display = 'none';
-    } catch (e) {}
+    } catch (e) {
+        /* ignore */
+    }
 }
 
 export function updateLetterPreview() {
@@ -838,7 +840,9 @@ export function closeMemberIDCardModal() {
     try {
         const el = document.getElementById('member-id-card-backdrop');
         if (el) el.style.display = 'none';
-    } catch (e) {}
+    } catch (e) {
+        /* ignore */
+    }
 }
 
 export function openPostAnnouncementModal() {

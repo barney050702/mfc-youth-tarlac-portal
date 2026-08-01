@@ -364,7 +364,7 @@ export function filterFunds() {
             'Other Expense',
         ];
 
-        let catsToShow = [];
+        let catsToShow;
         if (typeFilter.value === 'Income') catsToShow = incomeCats;
         else if (typeFilter.value === 'Expense') catsToShow = expenseCats;
         else catsToShow = [...incomeCats, ...expenseCats];

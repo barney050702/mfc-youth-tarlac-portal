@@ -582,8 +582,7 @@ export function generatePrintablePDFSheet() {
             const rows = state.members
                 .map((mem, idx) => {
                     const att = attMap[mem.id] || { status: 'absent', time: '-', notes: '' };
-                    const color =
-                        att.status === 'present'
+                    const color = att.status === 'present';
                     return `<tr>
                     <td data-label="#" style="padding: 6px; border-bottom: 1px solid #eee;">${idx + 1}</td>
                     <td data-label="Member Name" style="padding: 6px; border-bottom: 1px solid #eee; font-weight: 600;">${mem.name}</td>
@@ -1050,7 +1049,7 @@ export function generatePastoralList() {
                     <a href="${gmailUrl}" target="_blank" class="btn-primary glow-button" style="text-decoration: none; font-size: 0.78rem; padding: 7px 14px; text-align: center; flex: 1; background: linear-gradient(135deg, #EA4335, #DB4437); color: #FFF; display: inline-flex; align-items: center; justify-content: center; gap: 6px; border: none;">
                         <span>📧 Send via Gmail</span>
                     </a>
-                    <button type="button" class="btn-secondary" style="font-size: 0.78rem; padding: 7px 12px;" onclick="copyPastoralMessage('${mem.name.replace(/'/g, "\'")}')">
+                    <button type="button" class="btn-secondary" style="font-size: 0.78rem; padding: 7px 12px;" onclick="copyPastoralMessage('${mem.name.replace(/'/g, "'")}')">
                         📋 Copy Text
                     </button>
                 </div>

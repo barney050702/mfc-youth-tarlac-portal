@@ -73,11 +73,11 @@ export async function loginUser(event) {
                 const membersRef = collection(db, 'members');
                 const q = query(membersRef, where('mfc_id', '==', mfcIdVal));
                 const snapshot = await getDocs(q);
-                
+
                 if (snapshot.empty) {
                     throw new Error('MFC ID not found in the database.');
                 }
-                
+
                 const memberDoc = snapshot.docs[0].data();
                 localStorage.setItem('ps_member_id', memberDoc.mfc_id);
                 localStorage.setItem(
