@@ -1037,7 +1037,8 @@ a {
 /* ==========================================================================
    APP SHELL LAYOUT
    ========================================================================== */
-html.hide-app-shell .app-shell {
+html.hide-app-shell .sidebar,
+html.hide-app-shell .main-content {
     display: none !important;
 }
 
