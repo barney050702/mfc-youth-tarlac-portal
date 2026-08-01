@@ -2911,7 +2911,7 @@ export function printBlankAttendanceSheet() {
                     <td style="text-align:center;">${idx + 1}</td>
                     <td style="font-weight:bold;">${m.name}</td>
                     <td>${m.chapter || 'EAST'}</td>
-                    <td>${m.dept || 'Outreach & Fellowship'} / ${m.role || 'Member'}</td>
+                    <td>${m.dept || 'General'} / ${m.role || 'Member'}</td>
                     <td style="width:120px;"></td>
                     <td style="width:140px;"></td>
                 </tr>

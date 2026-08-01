@@ -303,7 +303,7 @@ export function openEditMemberModal(id) {
     setVal('mem-chapter', chapVal);
     setVal('mem-status', mem.status || 'Active');
     setVal('mem-role', mem.role || 'Member');
-    setVal('mem-dept', mem.dept || mem.department || 'Outreach & Fellowship');
+    setVal('mem-dept', mem.dept || mem.department || '');
     setVal('mem-email', mem.email || '');
     setVal('mem-birthday', mem.birthday || '');
     setVal('mem-age', mem.age || '');

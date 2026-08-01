@@ -168,7 +168,6 @@ export function matchOrgDepartment(memberDept = '', filterVal = 'ALL') {
     if (md === fv) return true;
     if (fv.includes('program') && md.includes('program')) return true;
     if (fv.includes('creative') && md.includes('creative')) return true;
-    if (fv.includes('outreach') && md.includes('outreach')) return true;
     if (fv.includes('finance') && md.includes('finance')) return true;
     if (fv.includes('east chapter') && md.includes('east chapter')) return true;
     if (md.includes(fv) || fv.includes(md)) return true;
@@ -309,7 +308,6 @@ export function renderOrgChart() {
             'EAST CHAPTER',
             'Programs & Events',
             'Creative & Media',
-            'Outreach & Fellowship',
             'Finance & Treasury',
         ];
         const activeDepts = filterDept === 'ALL' ? departments : [filterDept];
@@ -335,7 +333,6 @@ export function renderOrgChart() {
                     'EAST CHAPTER': '⚡',
                     'Programs & Events': '🎉',
                     'Creative & Media': '🎨',
-                    'Outreach & Fellowship': '🤝',
                     'Finance & Treasury': '💼',
                 };
 
@@ -1284,7 +1281,7 @@ export function handleAddMemberSubmit(event) {
         chapter: chapterEl ? chapterEl.value : 'EAST',
         status: statusEl ? statusEl.value : 'Active',
         role: roleEl && roleEl.value.trim() ? roleEl.value.trim() : 'Member',
-        dept: deptEl ? deptEl.value : 'Outreach & Fellowship',
+        dept: deptEl ? deptEl.value : '',
         email: emailEl ? emailEl.value.trim() : '',
         birthday: bdayEl ? bdayEl.value : '',
         age: ageEl ? ageEl.value : '',
