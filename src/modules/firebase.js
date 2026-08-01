@@ -83,7 +83,7 @@ export const MFCFirebaseCloud = {
                         const cloudMembers = [];
                         snapshot.forEach((docSnap) => {
                             let data = docSnap.data();
-                            if (data.dept === 'Outreach & Fellowship' || data.department === 'Outreach & Fellowship') {
+                            if (data.dept === 'Outreach & Fellowship' || data.department === 'Outreach & Fellowship' || data.dept === 'Outreach' || data.department === 'Outreach') {
                                 data.dept = 'General';
                                 if (data.department) data.department = 'General';
                             }

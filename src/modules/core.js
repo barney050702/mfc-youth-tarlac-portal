@@ -58,17 +58,7 @@ export function initApp() {
     if (typeof applyStoredTheme === 'function') applyStoredTheme();
     window.activeKeyboardIndex = 0;
 
-    // Auto log out website on initial load / refresh so signing in is required before seeing home page
-    localStorage.setItem('ps_logged_in', 'false');
-    sessionStorage.setItem('ps_logged_in', 'false');
-    const overlay = document.getElementById('auth-login-overlay');
-    if (overlay) overlay.style.display = 'flex';
-    if (typeof firebase !== 'undefined' && firebase.auth) {
-        firebase
-            .auth()
-            .signOut()
-            .catch((e) => console.warn(e));
-    }
+    // Removed auto log out website on initial load / refresh so users stay logged in
 }
 
 export function updateSyncStatus(status = 'saved') {

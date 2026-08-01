@@ -14,13 +14,13 @@ export function openDigitalQRModal(memberId) {
     if (!member) return;
 
     const modal = document.getElementById('modal-member-qr-id');
-    const container = document.getElementById('qrcode-container');
+    const container = document.getElementById('qr-badge-box');
     const nameEl = document.getElementById('qr-badge-name');
-    const roleEl = document.getElementById('qr-badge-role');
-    const codeEl = document.getElementById('qr-badge-id-num');
+    const roleEl = document.getElementById('qr-badge-role-area');
+    const codeEl = document.getElementById('qr-badge-id-code');
 
     if (nameEl) nameEl.textContent = member.name;
-    if (roleEl) roleEl.textContent = `${member.chapter || 'CENTRAL'} CHAPTER`;
+    if (roleEl) roleEl.textContent = `${member.chapter || 'CENTRAL'} CHAPTER • ${member.dept || 'General'}`;
     if (codeEl) codeEl.textContent = `ID: ${member.id}`;
 
     if (container) {
@@ -1314,7 +1314,7 @@ export function handleAddMemberSubmit(event) {
     } else {
         const newMember = {
             id: 'm-' + Date.now(),
-            dept: 'Outreach',
+            dept: 'General',
             ...memberData,
         };
         state.members.push(newMember);

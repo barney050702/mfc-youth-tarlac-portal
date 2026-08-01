@@ -329,7 +329,7 @@ export function loadFromStorage() {
 
         let loadedMembers = savedMembers ? JSON.parse(savedMembers) : SAMPLE_MEMBERS;
         state.members = loadedMembers.map(m => {
-            if (m.dept === 'Outreach & Fellowship' || m.department === 'Outreach & Fellowship') {
+            if (m.dept === 'Outreach & Fellowship' || m.department === 'Outreach & Fellowship' || m.dept === 'Outreach' || m.department === 'Outreach') {
                 m.dept = 'General';
                 if (m.department) m.department = 'General';
             }
