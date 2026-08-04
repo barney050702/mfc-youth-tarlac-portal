@@ -42,6 +42,14 @@ export const MFCFirebaseCloud = {
             this.initialized = true;
 
             onAuthStateChanged(auth, (user) => {
+                // Hide splash screen once Firebase auth state is determined
+                const splash = document.getElementById('app-loading-screen');
+                if (splash) {
+                    splash.style.transition = 'opacity 0.4s ease';
+                    splash.style.opacity = '0';
+                    setTimeout(() => splash.remove(), 400);
+                }
+
                 if (user) {
                     this.loadMembersFromFirestore();
                 }
@@ -66,6 +74,8 @@ export const MFCFirebaseCloud = {
         } catch (err) {
             console.warn('Firebase Cloud SDK init notice:', err);
             this.updateStatusBadge('Connected via Cloud Sync');
+            const splash = document.getElementById('app-loading-screen');
+            if (splash) splash.remove();
         }
     },
 
