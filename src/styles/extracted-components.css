@@ -5021,6 +5021,5 @@
     background: #6366f1;
 }
 
- @ k e y f r a m e s   p u l s e - s p l a s h   {   5 0 %   {   o p a c i t y :   . 5 ;   }   } 
- @ k e y f r a m e s   s p i n - s p l a s h   {   t o   {   t r a n s f o r m :   r o t a t e ( 3 6 0 d e g ) ;   }   }  
- 
+@keyframes pulse-splash { 50% { opacity: .5; } }
+@keyframes spin-splash { to { transform: rotate(360deg); } }
