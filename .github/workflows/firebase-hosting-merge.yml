@@ -6,12 +6,23 @@ on:
     push:
         branches:
             - main
+permissions:
+    checks: write
+    contents: read
+    pull-requests: write
+    deployments: write
+    statuses: write
 jobs:
     build_and_deploy:
         runs-on: ubuntu-latest
         steps:
             - uses: actions/checkout@v4
-            - run: npm install && npm run build
+            - name: Setup Node
+              uses: actions/setup-node@v4
+              with:
+                  node-version: 20
+                  cache: 'npm'
+            - run: npm ci && npm run build -- --base=/
             - uses: FirebaseExtended/action-hosting-deploy@v0
               with:
                   repoToken: ${{ secrets.GITHUB_TOKEN }}
