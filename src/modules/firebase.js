@@ -6,7 +6,7 @@
 import { initializeApp } from 'firebase/app';
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
 import { getFirestore, collection, doc, setDoc, deleteDoc, onSnapshot } from 'firebase/firestore';
-import { getDatabase, ref, update, onValue } from 'firebase/database';
+import { getDatabase, ref, update, onValue, get } from 'firebase/database';
 import { state, saveToStorage, notifyStateChange } from './state.js';
 
 let app, auth, db, rtdb;
@@ -149,6 +149,45 @@ export const MFCFirebaseCloud = {
             await deleteDoc(doc(db, 'members', memberId));
         } catch (e) {
             console.warn('Failed to delete member from Firestore:', e);
+        }
+    },
+
+    pushSnapshot: function () {
+        if (!this.initialized || !rtdb) return;
+        try {
+            const timestamp = Date.now();
+            const updates = {
+                'mfc_portal_live_data/activities': state.activities || [],
+                'mfc_portal_live_data/attendance': state.attendance || {},
+                'mfc_portal_live_data/funds': state.funds || [],
+                'mfc_portal_live_data/accounts': state.accounts || [],
+                'mfc_portal_live_data/lastUpdated': timestamp
+            };
+            
+            update(ref(rtdb), updates)
+                .then(() => {
+                    this.updateStatusBadge('🔥 Firebase: Local State Pushed');
+                })
+                .catch((err) => console.warn('Snapshot push warning:', err));
+        } catch (e) {
+            console.warn('Snapshot push error:', e);
+        }
+    },
+
+    pullSnapshot: async function (force = false) {
+        if (!this.initialized || !rtdb) return;
+        try {
+            const snapshot = await get(ref(rtdb, 'mfc_portal_live_data'));
+            if (snapshot.exists()) {
+                const data = snapshot.val();
+                if (force) {
+                    data.lastUpdated = Date.now() + 1000;
+                }
+                this.handleLiveSyncUpdate(data);
+                this.updateStatusBadge('📥 Firebase: Remote State Pulled');
+            }
+        } catch (e) {
+            console.warn('Snapshot pull error:', e);
         }
     },
 
