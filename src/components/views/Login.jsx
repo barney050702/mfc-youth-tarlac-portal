@@ -112,7 +112,11 @@ export default function Login() {
 
         } catch (err) {
             console.warn('Firebase Auth Verification notice:', err.message);
-            setErrorMsg('🚫 Access denied. Incorrect security credentials.');
+            if (err.message === 'Auth not initialized') {
+                setErrorMsg('⚠️ Firebase is not configured. Please configure it using the settings in the top bar (or run setup again).');
+            } else {
+                setErrorMsg('🚫 Access denied. Incorrect security credentials.');
+            }
             if (window.triggerHaptic) {
                 window.triggerHaptic('error');
             }
@@ -226,6 +230,22 @@ export default function Login() {
 
                 <div className={styles.footerText}>
                     <span>*If you don't know the password, you may ask your couple coordinator or your area servant.</span>
+                    <br />
+                    <button 
+                        type="button" 
+                        onClick={() => window.openFirebaseConfigModal && window.openFirebaseConfigModal()}
+                        style={{
+                            background: 'none',
+                            border: 'none',
+                            color: 'rgba(255,255,255,0.5)',
+                            textDecoration: 'underline',
+                            cursor: 'pointer',
+                            marginTop: '8px',
+                            fontSize: '12px'
+                        }}
+                    >
+                        Configure Database Connection
+                    </button>
                 </div>
             </div>
         </div>

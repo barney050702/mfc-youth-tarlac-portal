@@ -34,6 +34,14 @@ export const MFCFirebaseCloud = {
                 this.config = { ...this.config, ...parsed };
             }
 
+            if (!this.config.apiKey) {
+                console.warn('Firebase Cloud SDK init skipped: API key is missing. Please configure Firebase settings.');
+                this.updateStatusBadge('Connected via Cloud Sync');
+                const splash = document.getElementById('app-loading-screen');
+                if (splash) splash.remove();
+                return;
+            }
+
             app = initializeApp(this.config);
             auth = getAuth(app);
             db = getFirestore(app);
