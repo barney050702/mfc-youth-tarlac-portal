@@ -5195,7 +5195,7 @@ button:active,
     .btn-icon-action,
     .btn-icon-delete,
     #portal-sync-badge {
-        min-height: auto !important;
+        min-height: 0 !important;
     }
     .chapter-bullet-btn {
         padding: 8px 12px !important;
