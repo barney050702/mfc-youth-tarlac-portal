@@ -161,9 +161,9 @@ export const MFCFirebaseCloud = {
                 'mfc_portal_live_data/attendance': state.attendance || {},
                 'mfc_portal_live_data/funds': state.funds || [],
                 'mfc_portal_live_data/accounts': state.accounts || [],
-                'mfc_portal_live_data/lastUpdated': timestamp
+                'mfc_portal_live_data/lastUpdated': timestamp,
             };
-            
+
             update(ref(rtdb), updates)
                 .then(() => {
                     this.updateStatusBadge('🔥 Firebase: Local State Pushed');
