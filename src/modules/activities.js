@@ -320,8 +320,6 @@ export function setAgendaViewMode(mode) {
             tableBtn.style.background = 'transparent';
             tableBtn.style.color = '#94A3B8';
         }
-        if (gridCont) gridCont.style.display = 'grid';
-        if (tableCont) tableCont.style.display = 'none';
     } else {
         if (tableBtn) {
             tableBtn.style.background = 'var(--accent-blue)';
@@ -331,8 +329,6 @@ export function setAgendaViewMode(mode) {
             gridBtn.style.background = 'transparent';
             gridBtn.style.color = '#94A3B8';
         }
-        if (gridCont) gridCont.style.display = 'none';
-        if (tableCont) tableCont.style.display = 'block';
     }
 }
 
