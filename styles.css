@@ -139,6 +139,7 @@ body.light-mode .mfc-top-bar {
     background: rgba(255, 255, 255, 0.92) !important;
     border-bottom: 1px solid rgba(15, 23, 42, 0.08) !important;
     box-shadow: 0 1px 8px rgba(15, 23, 42, 0.06) !important;
+    -webkit-backdrop-filter: blur(20px);
     backdrop-filter: blur(20px);
 }
 body.light-mode .mfc-title {
@@ -795,8 +796,8 @@ body.light-mode .status-pill-green {
     right: 0;
     bottom: 0;
     background: rgba(0, 0, 0, 0.7);
-    backdrop-filter: blur(5px);
     -webkit-backdrop-filter: blur(5px);
+    backdrop-filter: blur(5px);
     z-index: 99990;
     pointer-events: auto;
 }
@@ -1052,8 +1053,8 @@ html.hide-app-shell .main-content {
 .sidebar {
     width: 235px;
     background: rgba(11, 15, 25, 0.4);
-    backdrop-filter: blur(28px);
     -webkit-backdrop-filter: blur(28px);
+    backdrop-filter: blur(28px);
     border-right: 1px solid rgba(255, 255, 255, 0.05);
     display: flex;
     flex-direction: column;
@@ -1197,6 +1198,7 @@ html.hide-app-shell .main-content {
     border: 1px solid transparent;
     text-decoration: none;
     cursor: pointer;
+    -webkit-user-select: none;
     user-select: none;
     pointer-events: auto;
     z-index: 1;
@@ -1279,8 +1281,8 @@ html.hide-app-shell .main-content {
     align-items: center;
     justify-content: space-between;
     background: rgba(9, 13, 22, 0.75);
-    backdrop-filter: var(--glass-blur);
     -webkit-backdrop-filter: var(--glass-blur);
+    backdrop-filter: var(--glass-blur);
     border-bottom: 1px solid var(--border-color);
     position: sticky;
     top: 0;
@@ -1371,6 +1373,7 @@ html.hide-app-shell .main-content {
     font-weight: 700;
     cursor: pointer;
     transition: all 0.2s ease;
+    -webkit-user-select: none;
     user-select: none;
 }
 .sync-status-pill:hover {
@@ -1629,8 +1632,8 @@ button,
 .glow-button,
 .chapter-bullet-btn {
     touch-action: manipulation;
-    user-select: none;
     -webkit-user-select: none;
+    user-select: none;
 }
 
 button svg,
@@ -1677,8 +1680,8 @@ button line {
 .glass-card,
 .glass-panel {
     background: var(--bg-surface);
-    backdrop-filter: var(--glass-blur);
     -webkit-backdrop-filter: var(--glass-blur);
+    backdrop-filter: var(--glass-blur);
     border: 1px solid var(--border-color);
     border-radius: 18px;
     box-shadow: var(--glass-shadow);
@@ -1888,7 +1891,6 @@ button line {
 .table-container {
     width: 100%;
     overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
 }
 
 .data-table {
@@ -2465,8 +2467,8 @@ button line {
     right: 0;
     bottom: 0;
     background: rgba(0, 0, 0, 0.75);
-    backdrop-filter: blur(8px);
     -webkit-backdrop-filter: blur(8px);
+    backdrop-filter: blur(8px);
     z-index: 100;
     display: flex;
     align-items: center;
@@ -2621,6 +2623,7 @@ button line {
     font-size: 0.9rem;
     font-weight: 600;
     min-width: 300px;
+    -webkit-backdrop-filter: blur(12px);
     backdrop-filter: blur(12px);
     animation: toastSlide 0.35s var(--ease-smooth);
 }
@@ -2858,6 +2861,7 @@ button line {
     gap: 14px;
     cursor: pointer;
     transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    -webkit-backdrop-filter: blur(10px);
     backdrop-filter: blur(10px);
     position: relative;
     overflow: hidden;
@@ -3522,6 +3526,7 @@ button line {
         right: 0;
         bottom: 0;
         background: rgba(0, 0, 0, 0.7) !important;
+        -webkit-backdrop-filter: blur(5px);
         backdrop-filter: blur(5px);
         z-index: 99990 !important;
     }
@@ -3666,7 +3671,6 @@ button line {
     #members-chapter-bullets {
         flex-wrap: nowrap !important;
         overflow-x: auto;
-        -webkit-overflow-scrolling: touch;
         padding-bottom: 8px;
         scrollbar-width: none;
     }
@@ -3687,7 +3691,6 @@ button line {
         display: flex !important;
         flex-wrap: nowrap !important;
         overflow-x: auto;
-        -webkit-overflow-scrolling: touch;
         padding-bottom: 6px;
         gap: 8px;
         scrollbar-width: none;
@@ -3937,7 +3940,6 @@ button line {
         width: 100% !important;
         max-width: 100% !important;
         overflow-x: auto !important;
-        -webkit-overflow-scrolling: touch !important;
         border-radius: 12px !important;
         box-sizing: border-box !important;
     }
@@ -4229,6 +4231,7 @@ button line {
         background: #fff !important;
         border: 1px solid #cbd5e1 !important;
         box-shadow: none !important;
+        -webkit-backdrop-filter: none !important;
         backdrop-filter: none !important;
         color: #0f172a !important;
         page-break-inside: avoid !important;
@@ -4552,6 +4555,7 @@ body.light-theme .nav-item:hover {
     gap: 12px;
     padding: 14px 18px;
     background: rgba(15, 23, 42, 0.92);
+    -webkit-backdrop-filter: blur(20px);
     backdrop-filter: blur(20px);
     border-radius: 14px;
     border: 1px solid rgba(255, 255, 255, 0.15);
@@ -4661,6 +4665,7 @@ body.light-theme .nav-item:hover {
     box-shadow:
         0 40px 100px rgba(0, 0, 0, 0.9),
         0 0 40px rgba(56, 189, 248, 0.15);
+    -webkit-backdrop-filter: blur(30px);
     backdrop-filter: blur(30px);
     overflow: hidden;
     display: flex;
@@ -4807,8 +4812,8 @@ body.light-theme .nav-item:hover {
         height: calc(64px + env(safe-area-inset-bottom, 0px));
         padding-bottom: env(safe-area-inset-bottom, 0px);
         background: rgba(15, 23, 42, 0.94);
-        backdrop-filter: blur(20px);
         -webkit-backdrop-filter: blur(20px);
+        backdrop-filter: blur(20px);
         border-top: 1px solid rgba(255, 255, 255, 0.12);
         z-index: 9999;
         justify-content: space-around;
@@ -4829,6 +4834,7 @@ body.light-theme .nav-item:hover {
         font-size: 0.68rem;
         font-weight: 700;
         transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        -webkit-user-select: none;
         user-select: none;
         -webkit-tap-highlight-color: transparent;
     }
@@ -4889,7 +4895,6 @@ body.light-theme .nav-item:hover {
 
     /* Smooth Swipe Table Indicators */
     .table-container {
-        -webkit-overflow-scrolling: touch;
         scroll-behavior: smooth;
     }
 }
@@ -5033,6 +5038,7 @@ button:active,
     padding: 40px 24px;
     text-align: center;
     margin: 20px 0;
+    -webkit-backdrop-filter: blur(12px);
     backdrop-filter: blur(12px);
     display: flex;
     flex-direction: column;
@@ -5397,8 +5403,8 @@ button:active,
 /* 3. Premium Glassmorphic Resource Cards */
 .resource-section .glass-card {
     background: rgba(30, 41, 59, 0.4) !important;
-    backdrop-filter: blur(16px) !important;
     -webkit-backdrop-filter: blur(16px) !important;
+    backdrop-filter: blur(16px) !important;
     border: 1px solid rgba(255, 255, 255, 0.08) !important;
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2) !important;
     transition:
@@ -5458,8 +5464,8 @@ button:active,
         bottom: env(safe-area-inset-bottom, 12px) !important;
         border-radius: 24px !important;
         background: rgba(15, 23, 42, 0.75) !important;
-        backdrop-filter: blur(20px) !important;
         -webkit-backdrop-filter: blur(20px) !important;
+        backdrop-filter: blur(20px) !important;
         border: 1px solid rgba(255, 255, 255, 0.08) !important;
         box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5) !important;
         padding-bottom: 0 !important;
@@ -5478,8 +5484,8 @@ button:active,
         top: 0 !important;
         z-index: 1000 !important;
         background: rgba(15, 23, 42, 0.65) !important;
-        backdrop-filter: blur(16px) !important;
         -webkit-backdrop-filter: blur(16px) !important;
+        backdrop-filter: blur(16px) !important;
         border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
     }
     .brand-section {
@@ -5491,8 +5497,8 @@ button:active,
     .glass-card,
     .content-card {
         background: rgba(30, 41, 59, 0.4) !important;
-        backdrop-filter: blur(16px) !important;
         -webkit-backdrop-filter: blur(16px) !important;
+        backdrop-filter: blur(16px) !important;
         border: 1px solid rgba(255, 255, 255, 0.08) !important;
         box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15) !important;
         border-radius: 16px !important;
@@ -5613,8 +5619,8 @@ h6,
         left: 0;
         right: 0;
         background: rgba(11, 15, 25, 0.6);
-        backdrop-filter: blur(20px);
         -webkit-backdrop-filter: blur(20px);
+        backdrop-filter: blur(20px);
         border-top: 1px solid rgba(255, 255, 255, 0.08);
         z-index: 9999;
         padding-bottom: env(safe-area-inset-bottom);
@@ -5660,8 +5666,8 @@ h6,
     border-top: 1px solid rgba(255, 255, 255, 0.08);
     padding: 16px 24px;
     background: rgba(15, 23, 42, 0.95);
-    backdrop-filter: blur(16px);
     -webkit-backdrop-filter: blur(16px);
+    backdrop-filter: blur(16px);
 }
 
 .member-footer-actions {
@@ -5778,8 +5784,8 @@ h6,
     width: 100vw !important;
     height: 100vh !important;
     background: rgba(15, 23, 42, 0.85) !important;
-    backdrop-filter: blur(8px) !important;
     -webkit-backdrop-filter: blur(8px) !important;
+    backdrop-filter: blur(8px) !important;
     z-index: 100000 !important;
     align-items: center !important;
     justify-content: center !important;
