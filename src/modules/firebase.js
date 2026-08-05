@@ -8,7 +8,6 @@ import { getAuth, onAuthStateChanged } from 'firebase/auth';
 import { getFirestore, collection, doc, setDoc, deleteDoc, onSnapshot } from 'firebase/firestore';
 import { getDatabase, ref, update, onValue } from 'firebase/database';
 import { state, saveToStorage, notifyStateChange } from './state.js';
-import { showToast } from './ui.js';
 
 let app, auth, db, rtdb;
 
@@ -35,7 +34,9 @@ export const MFCFirebaseCloud = {
             }
 
             if (!this.config.apiKey) {
-                console.warn('Firebase Cloud SDK init skipped: API key is missing. Please configure Firebase settings.');
+                console.warn(
+                    'Firebase Cloud SDK init skipped: API key is missing. Please configure Firebase settings.'
+                );
                 this.updateStatusBadge('Connected via Cloud Sync');
                 const splash = document.getElementById('app-loading-screen');
                 if (splash) splash.remove();
