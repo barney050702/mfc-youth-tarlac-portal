@@ -1092,9 +1092,11 @@ html.hide-app-shell .main-content {
     box-shadow: none !important;
 }
 
-.brand-flame-icon svg {
+.brand-flame-icon svg,
+.brand-flame-icon img {
     width: 38px;
     height: 38px;
+    object-fit: contain;
 }
 
 .brand-name {
