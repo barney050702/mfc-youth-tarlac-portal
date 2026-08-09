@@ -102,6 +102,8 @@ import {
     downloadLetterPDF,
     openMemberIDCard,
     closeMemberIDCardModal,
+    openMemberQRModal,
+    openAdminProfileModal,
     openPostAnnouncementModal,
     closePostAnnouncementModal,
     handlePostAnnouncement,
@@ -299,6 +301,8 @@ document.addEventListener('DOMContentLoaded', () => {
     window.downloadLetterPDF = window.downloadLetterPDF || downloadLetterPDF;
     window.openMemberIDCard = window.openMemberIDCard || openMemberIDCard;
     window.closeMemberIDCardModal = window.closeMemberIDCardModal || closeMemberIDCardModal;
+    window.openMemberQRModal = window.openMemberQRModal || openMemberQRModal;
+    window.openAdminProfileModal = window.openAdminProfileModal || openAdminProfileModal;
     window.openPostAnnouncementModal =
         window.openPostAnnouncementModal || openPostAnnouncementModal;
     window.closePostAnnouncementModal =

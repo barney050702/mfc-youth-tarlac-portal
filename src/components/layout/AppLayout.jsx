@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Outlet, useNavigate } from 'react-router-dom';
 import Sidebar from './Sidebar';
 import TopBar from './TopBar';
+import ModalContainer from '../modals/ModalContainer';
 
 const AppLayout = () => {
     const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
@@ -58,6 +59,8 @@ const AppLayout = () => {
                     </div>
                 </main>
             </div>
+            
+            <ModalContainer />
         </>
     );
 };

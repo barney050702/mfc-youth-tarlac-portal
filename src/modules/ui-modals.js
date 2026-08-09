@@ -54,204 +54,11 @@ export function closeAddModal() {
 }
 
 export function openMemberProfile(memberId) {
-    const member = state.members.find((m) => m.id === memberId);
-    if (!member) return;
-    window.currentProfileMemberId = memberId;
-
-    const contentEl = document.getElementById('member-profile-content');
-    const backdrop = document.getElementById('member-modal-backdrop');
-    if (!contentEl || !backdrop) return;
-
-    let presentCount = 0;
-    let lateCount = 0;
-    let absentCount = 0;
-    const totalActivities = state.activities.length;
-
-    let historyHtml = '';
-    state.activities.forEach((act) => {
-        const record = state.attendance[act.id]?.[memberId];
-        let statusText = 'Absent / Unrecorded';
-        let statusClass = 'text-red';
-        if (record) {
-            if (record.status === 'present') {
-                presentCount++;
-                statusText = '✅ Present';
-                statusClass = 'badge-green';
-            } else if (record.status === 'late') {
-                lateCount++;
-                statusText = '⏰ Late';
-                statusClass = 'badge-emerald';
-            } else if (record.status === 'absent') {
-                absentCount++;
-                statusText = '❌ Absent';
-                statusClass = 'badge-rose';
-            }
-        } else {
-            absentCount++;
-        }
-
-        historyHtml += `
-            <div class="profile-activity-item">
-                <div>
-                    <div style="font-weight: 700; color: #F8FAFC; font-size: 0.9rem;">${act.name || act.title || 'Activity'}</div>
-                    <div style="font-size: 0.75rem; color: #94A3B8;">${new Date(act.date).toLocaleDateString()} • ${act.type || act.category || 'Event'}</div>
-                </div>
-                <span style="font-size: 0.8rem; font-weight: 700;" class="${statusClass}">${statusText}</span>
-            </div>
-        `;
-    });
-
-    const rate =
-        totalActivities > 0 ? Math.round(((presentCount + lateCount) / totalActivities) * 100) : 0;
-    const initial = member.name.charAt(0).toUpperCase();
-
-    contentEl.innerHTML = `
-        <div class="profile-header-card" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;">
-            <div style="display: flex; align-items: center; gap: 16px;">
-                <div class="profile-large-avatar">${initial}</div>
-                <div class="profile-info">
-                    <h2>${member.name}</h2>
-                    <div class="profile-meta">
-                        <span class="org-stat-badge" style="background: rgba(56, 189, 248, 0.2); color: #38BDF8;">${member.role}</span>
-                        <span class="org-stat-badge" style="background: rgba(139, 92, 246, 0.2); color: #C084FC;">🏢 ${member.department || member.dept || 'MFC Youth'}</span>
-                    </div>
-                </div>
-            </div>
-            <div style="display: flex; gap: 8px; flex-wrap: wrap;">
-                <button type="button" class="btn-secondary" onclick="exportMemberDossierPDF('${member.id}')" style="padding: 8px 14px; font-size: 0.82rem; display: inline-flex; align-items: center; gap: 6px; border-color: rgba(56, 189, 248, 0.4); color: #38BDF8;">
-                    <span>📄 Export Report PDF</span>
-                </button>
-                <button type="button" class="btn-primary glow-button" onclick="openMemberQRModal('${member.id}')" style="padding: 8px 16px; font-size: 0.82rem; display: inline-flex; align-items: center; gap: 6px;">
-                    <span>📱 Official QR ID</span>
-                </button>
-            </div>
-        </div>
-
-        <!-- Quick Pastoral Contact Toolbar -->
-        <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 16px; background: rgba(15,23,42,0.6); padding: 10px 14px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.06); align-items: center; justify-content: space-between;">
-            <span style="color: #94A3B8; font-size: 0.78rem; font-weight: 700;">📲 QUICK REACH-OUT:</span>
-            <div style="display: flex; gap: 8px; flex-wrap: wrap;">
-                <a href="${member.contactNum ? `https://wa.me/${member.contactNum.replace(/[^0-9+]/g, '')}?text=${encodeURIComponent('Hi Kuya/Ate ' + member.name + '! Peace of Christ! Checking in from MFC Youth Tarlac 🙏')}` : '#'}" target="_blank" style="text-decoration: none; background: rgba(34,197,94,0.2); color: #4ADE80; border: 1px solid rgba(34,197,94,0.4); border-radius: 8px; padding: 5px 12px; font-size: 0.78rem; font-weight: 700;">
-                    💬 WhatsApp
-                </a>
-                <a href="${member.contactNum ? `tel:${member.contactNum}` : '#'}" style="text-decoration: none; background: rgba(56,189,248,0.2); color: #38BDF8; border: 1px solid rgba(56,189,248,0.4); border-radius: 8px; padding: 5px 12px; font-size: 0.78rem; font-weight: 700;">
-                    📞 Call
-                </a>
-                <button type="button" onclick="sendCelebrationGreeting('${(member.name || '').replace(/'/g, "\\'")}')" style="background: rgba(236,72,153,0.2); color: #F472B6; border: 1px solid rgba(236,72,153,0.4); border-radius: 8px; padding: 5px 12px; font-size: 0.78rem; font-weight: 700; cursor: pointer;">
-                    💌 Birthday Card
-                </button>
-            </div>
-        </div>
-
-        <!-- Recognition Badges Row -->
-        <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px;">
-            ${rate >= 80 ? '<span style="background: rgba(16, 185, 129, 0.2); border: 1px solid rgba(16, 185, 129, 0.4); color: #34D399; padding: 4px 12px; border-radius: 12px; font-size: 0.78rem; font-weight: 700;">🔥 Faithful Attendance Award</span>' : ''}
-            <span style="background: rgba(59, 130, 246, 0.2); border: 1px solid rgba(59, 130, 246, 0.4); color: #60A5FA; padding: 4px 12px; border-radius: 12px; font-size: 0.78rem; font-weight: 700;">⭐ Active Youth Servant</span>
-            <span style="background: rgba(245, 158, 11, 0.2); border: 1px solid rgba(245, 158, 11, 0.4); color: #FBBF24; padding: 4px 12px; border-radius: 12px; font-size: 0.78rem; font-weight: 700;">⚡ MFC Youth Tarlac Chapter</span>
-        </div>
-
-        <div class="profile-stats-grid">
-            <div class="profile-stat-box">
-                <div class="num">${totalActivities}</div>
-                <div class="lbl">Total Events</div>
-            </div>
-            <div class="profile-stat-box">
-                <div class="num" style="color: #34D399;">${rate}%</div>
-                <div class="lbl">Attendance Rate</div>
-            </div>
-            <div class="profile-stat-box">
-                <div class="num" style="color: #FBBF24;" title="${presentCount + lateCount} Attended out of ${totalActivities} Total Events">${presentCount + lateCount}/${totalActivities}</div>
-                <div class="lbl">Attended / Total</div>
-            </div>
-            <div class="profile-stat-box">
-                <div class="num" style="color: #C084FC;" title="${presentCount} Present vs ${lateCount} Late Check-ins">${presentCount}:${lateCount}</div>
-                <div class="lbl">Present : Late Ratio</div>
-            </div>
-        </div>
-
-        <h4 style="font-size: 0.95rem; color: #38BDF8; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; font-weight: 800;">
-            <span>📋</span> Complete Personal & Youth Camp Dossier
-        </h4>
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; background: rgba(15,23,42,0.8); padding: 18px; border-radius: 16px; border: 1px solid rgba(56,189,248,0.25); margin-bottom: 24px; box-shadow: 0 4px 15px rgba(0,0,0,0.3);">
-            <div>
-                <span style="color: #64748B; font-size: 0.72rem; display: block; font-weight: 700; margin-bottom: 3px;">👤 FULL NAME BREAKDOWN</span>
-                <span style="color: #F8FAFC; font-weight: 800; font-size: 0.92rem;">${member.name || '-'}</span>
-                <div style="color: #38BDF8; font-size: 0.78rem; margin-top: 3px;">First: <strong style="color:#FFF;">${member.firstName || member.name.split(' ')[0] || '-'}</strong> | Mid: <strong style="color:#FFF;">${member.middleName || '-'}</strong> | Last: <strong style="color:#FFF;">${member.lastName || member.name.split(' ').slice(-1)[0] || '-'}</strong></div>
-            </div>
-            <div>
-                <span style="color: #64748B; font-size: 0.72rem; display: block; font-weight: 700; margin-bottom: 3px;">🎂 BIRTHDAY & AGE</span>
-                <span style="color: #F8FAFC; font-weight: 700; font-size: 0.9rem;">${formatDateClean(member.birthday)} (${calculateAgeClean(member)} yrs old)</span>
-            </div>
-            <div>
-                <span style="color: #64748B; font-size: 0.72rem; display: block; font-weight: 700; margin-bottom: 3px;">🏠 HOME ADDRESS</span>
-                <span style="color: #E2E8F0; font-weight: 600; font-size: 0.9rem;">${member.address || '-'}</span>
-            </div>
-            <div>
-                <span style="color: #64748B; font-size: 0.72rem; display: block; font-weight: 700; margin-bottom: 3px;">📞 CONTACT NUMBER</span>
-                <span style="color: #38BDF8; font-weight: 700; font-size: 0.9rem; font-family: 'Roboto Mono', monospace;">${member.contactNum || '-'}</span>
-            </div>
-            <div>
-                <span style="color: #64748B; font-size: 0.72rem; display: block; font-weight: 700; margin-bottom: 3px;">📧 EMAIL ADDRESS</span>
-                <span style="color: #60A5FA; font-weight: 600; font-size: 0.88rem;">${member.email || '-'}</span>
-            </div>
-            <div>
-                <span style="color: #64748B; font-size: 0.72rem; display: block; font-weight: 700; margin-bottom: 3px;">👨‍👩‍👧 PARENTS CONTACT #</span>
-                <span style="color: #F8FAFC; font-weight: 700; font-size: 0.9rem; font-family: 'Roboto Mono', monospace;">${member.parentsContact || '-'}</span>
-            </div>
-            <div>
-                <span style="color: #64748B; font-size: 0.72rem; display: block; font-weight: 700; margin-bottom: 3px;">🏕️ YOUTH CAMP TITLE & DATE</span>
-                <span style="color: #F8FAFC; font-weight: 700; font-size: 0.9rem;">${member.campTitle || 'USBONG Encounter Camp'} • ${formatDateClean(member.campDate)}</span>
-            </div>
-            <div>
-                <span style="color: #64748B; font-size: 0.72rem; display: block; font-weight: 700; margin-bottom: 3px;">🙏 COVENANTED DATE</span>
-                <span style="color: #F8FAFC; font-weight: 700; font-size: 0.9rem;">${formatDateClean(member.covenantDate || member.campDate)}</span>
-            </div>
-        </div>
-
-        <h4 style="font-size: 0.95rem; color: #E2E8F0; margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
-            <span>📅</span> Recent Activity Check-in History
-        </h4>
-        <div class="profile-activities-list">
-            ${historyHtml || '<div style="color: #94A3B8; font-size: 0.85rem;">No activity records found.</div>'}
-        </div>
-    `;
-
-    const timelineEl = document.getElementById('member-timeline-container');
-    if (timelineEl) {
-        let timelineHtml =
-            '<h4 style="font-size: 0.95rem; color: #E2E8F0; margin-bottom: 12px;">🌟 MFC Youth Service & Milestones</h4>';
-        timelineHtml += `
-            <div class="timeline-item">
-                <div class="timeline-dot"></div>
-                <div class="timeline-content">
-                    <div class="timeline-title">Appointed as ${member.role}</div>
-                    <div class="timeline-date">Active Leadership • ${member.dept} Department</div>
-                </div>
-            </div>
-            <div class="timeline-item">
-                <div class="timeline-dot" style="background: #10B981;"></div>
-                <div class="timeline-content">
-                    <div class="timeline-title">Completed Youth Camp Training</div>
-                    <div class="timeline-date">${member.campDate || 'MFC Youth Tarlac Standard Camp'}</div>
-                </div>
-            </div>
-            <div class="timeline-item">
-                <div class="timeline-dot" style="background: #8B5CF6;"></div>
-                <div class="timeline-content">
-                    <div class="timeline-title">Joined ${member.chapter}</div>
-                    <div class="timeline-date">Official Chapter Registration</div>
-                </div>
-            </div>
-        `;
-        timelineEl.innerHTML = timelineHtml;
-    }
-
-    backdrop.style.display = 'flex';
+    window.dispatchEvent(new CustomEvent('open-react-modal', { detail: { modalName: 'member-profile', props: { memberId } } }));
 }
 
 export function closeMemberModal() {
-    const backdrop = document.getElementById('member-modal-backdrop');
-    if (backdrop) backdrop.style.display = 'none';
+    window.dispatchEvent(new CustomEvent('close-react-modal'));
 }
 
 export function openAddMemberModal() {
@@ -797,52 +604,11 @@ export function downloadLetterPDF() {
 }
 
 export function openMemberIDCard(memberId) {
-    try {
-        const backdrop = document.getElementById('member-id-card-backdrop');
-        if (backdrop) {
-            backdrop.style.display = 'flex';
-            backdrop.style.zIndex = '100000';
-        }
-
-        let member = null;
-        if (typeof state !== 'undefined' && state.members && state.members.length > 0) {
-            if (memberId)
-                member = state.members.find((m) => m.id === memberId || m.name === memberId);
-            if (!member) member = state.members[0];
-        }
-
-        const name = member ? member.name : 'Barney Tarlac';
-        const role = member ? member.role || member.department || 'Youth Member' : 'Chapter Member';
-        const chapter = member ? member.chapter || 'Central Chapter' : 'Central Chapter';
-        const idNum = member ? member.id || 'MFC-TRC-2026-0042' : 'MFC-TRC-2026-0042';
-
-        const nameEl = document.getElementById('id-card-name');
-        const roleEl = document.getElementById('id-card-role');
-        const chapEl = document.getElementById('id-card-chapter');
-        const numEl = document.getElementById('id-card-number');
-        const qrEl = document.getElementById('id-card-qr-code');
-
-        if (nameEl) nameEl.innerText = name.toUpperCase();
-        if (roleEl) roleEl.innerText = role;
-        if (chapEl) chapEl.innerText = `${chapter} • Diocese of Tarlac`;
-        if (numEl) numEl.innerText = `ID: ${idNum}`;
-
-        if (qrEl) {
-            const qrData = encodeURIComponent(`MFC_MEMBER:${idNum}:${name}:${chapter}`);
-            qrEl.innerHTML = `<img src="https://api.qrserver.com/v1/create-qr-code/?size=90x90&data=${qrData}" alt="Member QR" style="width: 80px; height: 80px; display: block; border-radius: 4px;">`;
-        }
-    } catch (e) {
-        console.warn('openMemberIDCard error:', e);
-    }
+    window.dispatchEvent(new CustomEvent('open-react-modal', { detail: { modalName: 'member-id-card', props: { memberId } } }));
 }
 
 export function closeMemberIDCardModal() {
-    try {
-        const el = document.getElementById('member-id-card-backdrop');
-        if (el) el.style.display = 'none';
-    } catch (e) {
-        /* ignore */
-    }
+    window.dispatchEvent(new CustomEvent('close-react-modal'));
 }
 
 export function openPostAnnouncementModal() {
@@ -1135,3 +901,11 @@ export let activePastoralMemberId = null;
 export let formMapDebounceTimer = null;
 export function renderAnnouncementsBoard() {}
 export function renderPrayersBoard() {}
+
+export function openMemberQRModal(memberId) {
+    window.dispatchEvent(new CustomEvent('open-react-modal', { detail: { modalName: 'member-qr', props: { memberId } } }));
+}
+
+export function openAdminProfileModal() {
+    window.dispatchEvent(new CustomEvent('open-react-modal', { detail: { modalName: 'admin-profile', props: {} } }));
+}
