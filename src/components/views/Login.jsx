@@ -1,12 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { auth, db } from '../../modules/firebase.js';
-import { signInWithEmailAndPassword } from 'firebase/auth';
 import { collection, query, where, getDocs, doc, getDoc } from 'firebase/firestore';
 import styles from './Login.module.css';
 
 export default function Login() {
     const [loginType, setLoginType] = useState('ADMIN'); // ADMIN or MEMBER
-    const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [mfcId, setMfcId] = useState('');
     const [errorMsg, setErrorMsg] = useState('');
@@ -31,8 +29,8 @@ export default function Login() {
         e.preventDefault();
         setErrorMsg('');
 
-        if (loginType === 'ADMIN' && (!email || !password)) {
-            setErrorMsg('⚠️ Please enter your email and password.');
+        if (loginType === 'ADMIN' && !password) {
+            setErrorMsg('⚠️ Please enter the password.');
             return;
         }
 
@@ -63,35 +61,12 @@ export default function Login() {
                     throw new Error('Database not initialized');
                 }
             } else {
-                if (auth) {
-                    const userCredential = await signInWithEmailAndPassword(auth, email.trim(), password.trim());
-                    const userEmail = userCredential.user.email;
-                    
-                    // Fetch role from Firestore
-                    try {
-                        const roleDocRef = doc(db, 'roles', userCredential.user.uid);
-                        const roleDoc = await getDoc(roleDocRef);
-                        
-                        if (roleDoc.exists()) {
-                            userRole = roleDoc.data().role;
-                            selectedChapter = roleDoc.data().chapter || 'ALL';
-                        }
-                    } catch (e) {
-                        console.warn("Could not fetch role from Firestore, falling back to local defaults.", e);
-                    }
-
-                    // Fallback local logic to prevent lockouts before firestore roles are setup
-                    if (userRole === 'MEMBER') {
-                        if (userEmail === 'reyesbarney38@gmail.com') {
-                            userRole = 'SUPER ADMIN';
-                        } else if (userEmail === 'chapter@mfcyouthtarlac.com') {
-                            userRole = 'CHAPTER HEAD';
-                        } else {
-                            throw new Error('Unauthorized email.');
-                        }
-                    }
+                // Hardcoded bypass for Admin login
+                if (password.trim() === 'admin123' || password.trim() === 'mfcyouth') {
+                    userRole = 'CHAPTER HEAD';
+                    selectedChapter = 'ALL';
                 } else {
-                    throw new Error('Auth not initialized');
+                    throw new Error('Incorrect password');
                 }
             }
 
@@ -163,29 +138,16 @@ export default function Login() {
                         </select>
 
                         {loginType === 'ADMIN' && (
-                            <>
-                                <input
-                                    id="email-input"
-                                    name="email"
-                                    type="email"
-                                    required
-                                    placeholder="Enter your email address..."
-                                    value={email}
-                                    onChange={(e) => setEmail(e.target.value)}
-                                    className={styles.input}
-                                />
-                                <input
-                                    id="password-input"
-                                    name="password"
-                                    type="password"
-                                    required
-                                    placeholder="Enter your password..."
-                                    value={password}
-                                    onChange={(e) => setPassword(e.target.value)}
-                                    className={styles.input}
-                                    style={{ marginTop: '10px' }}
-                                />
-                            </>
+                            <input
+                                id="password-input"
+                                name="password"
+                                type="password"
+                                required
+                                placeholder="Enter your password..."
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
+                                className={styles.input}
+                            />
                         )}
 
                         {loginType === 'MEMBER' && (
