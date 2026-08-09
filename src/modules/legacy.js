@@ -8,7 +8,7 @@ import { closeMemberModal } from './ui-modals.js';
 import { toggleAttendance } from './attendance.js';
 import { renderActivitiesTable } from './activities.js';
 
-import { state, saveToStorage, notifyStateChange } from './state.js';
+import { state, saveToStorage } from './state.js';
 import { showToast, triggerHaptic } from './ui.js';
 import { MFCFirebaseCloud } from './firebase.js';
 
@@ -63,7 +63,9 @@ export function renderAccountsTable() {
 }
 
 export function openCreateAccountModal() {
-    window.dispatchEvent(new CustomEvent('open-react-modal', { detail: { modalName: 'create-account' } }));
+    window.dispatchEvent(
+        new CustomEvent('open-react-modal', { detail: { modalName: 'create-account' } })
+    );
 }
 
 export function closeCreateAccountModal() {
@@ -490,7 +492,9 @@ export function startInactivityWatchdog() {
 }
 
 export function openImportCSVModal() {
-    window.dispatchEvent(new CustomEvent('open-react-modal', { detail: { modalName: 'bulk-import' } }));
+    window.dispatchEvent(
+        new CustomEvent('open-react-modal', { detail: { modalName: 'bulk-import' } })
+    );
 }
 
 export function closeImportCSVModal() {
@@ -931,7 +935,7 @@ export function restoreBackupJSON(event) {
             renderAll();
             showToast('System database successfully restored from backup!', 'success');
             logAuditAction('System database restored from backup JSON', 'security');
-        } catch (err) {
+        } catch (_err) {
             showToast('Invalid backup JSON file.', 'error');
         }
     };
@@ -960,7 +964,7 @@ export function restoreFromAutoRecoverySnapshot() {
         renderAll();
         showToast('Data restored successfully from automatic snapshot!', 'success');
         logAuditAction('Restored data from automatic recovery snapshot', 'security');
-    } catch (e) {
+    } catch (_e) {
         showToast('Failed to restore snapshot.', 'error');
     }
 }
@@ -1061,9 +1065,12 @@ export function updateCmdPaletteHighlight() {
 }
 
 export function openCommandPalette() {
-    const modal = document.getElementById('modal-command-palette');
-    if (modal) {
-        modal.style.display = 'flex';
+    window.dispatchEvent(
+        new CustomEvent('open-react-modal', { detail: { modalName: 'CommandPaletteModal' } })
+    );
+
+    // Wait for React to render the modal
+    setTimeout(() => {
         const input = document.getElementById('cmd-palette-input');
         if (input) {
             input.value = '';
@@ -1098,12 +1105,11 @@ export function openCommandPalette() {
         }
         window.cmdPaletteSelectedIndex = 0;
         handleCommandPaletteSearch('');
-    }
+    }, 50);
 }
 
 export function closeCommandPalette() {
-    const modal = document.getElementById('modal-command-palette');
-    if (modal) modal.style.display = 'none';
+    window.dispatchEvent(new CustomEvent('close-react-modal'));
 }
 
 export function handleCommandPaletteSearch(query) {
@@ -1393,7 +1399,7 @@ export function openAddResourceModal() {
     // Pre-select the currently active tab
     const activeBtn = document.querySelector('.resource-tab-btn.active');
     if (activeBtn) {
-        const catMap = {
+        const _catMap = {
             '\u26fa': 'youthcamp',
             '\uD83C\uDF93': 'trainings',
             '\uD83C\uDFB8': 'songboard',
@@ -1577,9 +1583,7 @@ export function openDownloadAllModal() {
 }
 
 export function closeDownloadAllModal() {
-    window.dispatchEvent(
-        new CustomEvent('close-react-modal')
-    );
+    window.dispatchEvent(new CustomEvent('close-react-modal'));
 }
 
 export function renderDownloadAllList() {
@@ -1817,7 +1821,7 @@ export function triggerHapticFeedback(pattern = 15) {
     if (typeof navigator !== 'undefined' && navigator.vibrate) {
         try {
             navigator.vibrate(pattern);
-        } catch (e) {
+        } catch (_e) {
             /* ignore */
         }
     }
@@ -1982,7 +1986,7 @@ export function importFullBackupJSON(inputEl) {
             } else {
                 showToast('Invalid backup file format.', 'error');
             }
-        } catch (err) {
+        } catch (_err) {
             showToast('Error restoring backup file.', 'error');
         }
         inputEl.value = '';
@@ -2132,7 +2136,7 @@ export function renderCalendarAndPrayerWall() {
 export function openAttendanceMatrixModal() {
     window.dispatchEvent(
         new CustomEvent('open-react-modal', {
-            detail: { modalName: 'attendance-matrix' }
+            detail: { modalName: 'attendance-matrix' },
         })
     );
 }
@@ -2270,7 +2274,7 @@ export function printMemberReportCardFromModal() {
 
     let presentCount = 0;
     let lateCount = 0;
-    let absentCount = 0;
+    let _absentCount = 0;
     const actRows = state.activities
         .map((a) => {
             const rec = state.attendance[a.id]?.[memberId];
@@ -2282,9 +2286,9 @@ export function printMemberReportCardFromModal() {
                 } else if (rec.status === 'late') {
                     st = 'Late';
                     lateCount++;
-                } else absentCount++;
+                } else _absentCount++;
             } else {
-                absentCount++;
+                _absentCount++;
             }
             return `
             <tr>
@@ -2407,7 +2411,9 @@ export function renderAttendanceHeatmapWidget() {
 }
 
 export function openHouseholdTreeViewModal() {
-    window.dispatchEvent(new CustomEvent('open-react-modal', { detail: { modalName: 'household-tree' } }));
+    window.dispatchEvent(
+        new CustomEvent('open-react-modal', { detail: { modalName: 'household-tree' } })
+    );
 }
 
 export function closeHouseholdTreeViewModal() {
@@ -2423,7 +2429,7 @@ export function triggerMemberAutoAwardFromModal() {
     }
 
     let presentCount = 0;
-    let lateCount = 0;
+    let _lateCount = 0;
     state.activities.forEach((a) => {
         const rec = state.attendance[a.id]?.[memberId];
         if (rec && (rec.status === 'present' || rec.status === 'late')) presentCount++;
@@ -2534,7 +2540,7 @@ export function initPullToRefresh() {
 
     window.addEventListener(
         'touchend',
-        (e) => {
+        (_e) => {
             if (!pulling || !ptrEl) return;
             pulling = false;
             const currentTop = parseInt(ptrEl.style.top || '-60', 10);
@@ -2591,7 +2597,7 @@ export function initOrgChartTouchPan() {
 export function openAbsenteeSwiperModal() {
     window.dispatchEvent(
         new CustomEvent('open-react-modal', {
-            detail: { modalName: 'follow-up' }
+            detail: { modalName: 'follow-up' },
         })
     );
 }
@@ -3171,7 +3177,7 @@ export function renderAnnouncementsBoard() {
             `;
         });
         container.innerHTML = html;
-    } catch (e) {
+    } catch (_e) {
         /* ignore */
     }
 }
@@ -3197,7 +3203,7 @@ export function renderPrayersBoard() {
             `;
         });
         container.innerHTML = html;
-    } catch (e) {
+    } catch (_e) {
         /* ignore */
     }
 }

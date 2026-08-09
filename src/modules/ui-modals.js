@@ -1,15 +1,14 @@
 import { announcementsList, prayersList } from './legacy.js';
 
 import { state } from './state.js';
-import { calculateAgeClean, formatDateClean } from './members.js';
 
 export function openAddModal(actId = null) {
     window.dispatchEvent(
         new CustomEvent('open-react-modal', {
             detail: {
                 modalName: 'activity',
-                props: { activityId: actId }
-            }
+                props: { activityId: actId },
+            },
         })
     );
 }
@@ -20,7 +19,11 @@ export function closeAddModal() {
 }
 
 export function openMemberProfile(memberId) {
-    window.dispatchEvent(new CustomEvent('open-react-modal', { detail: { modalName: 'member-profile', props: { memberId } } }));
+    window.dispatchEvent(
+        new CustomEvent('open-react-modal', {
+            detail: { modalName: 'member-profile', props: { memberId } },
+        })
+    );
 }
 
 export function closeMemberModal() {
@@ -140,13 +143,13 @@ export function sendPastoralGreetingVia(channel) {
 }
 
 export function openKeyboardCheatsheetModal() {
-    const modal = document.getElementById('modal-keyboard-cheatsheet');
-    if (modal) modal.style.display = 'flex';
+    window.dispatchEvent(
+        new CustomEvent('open-react-modal', { detail: { modalName: 'KeyboardCheatsheetModal' } })
+    );
 }
 
 export function closeKeyboardCheatsheetModal() {
-    const modal = document.getElementById('modal-keyboard-cheatsheet');
-    if (modal) modal.style.display = 'none';
+    window.dispatchEvent(new CustomEvent('close-react-modal'));
 }
 
 export function openHHFolderModal() {
@@ -160,9 +163,7 @@ export function openHHFolderModal() {
 }
 
 export function closeHHFolderModal() {
-    window.dispatchEvent(
-        new CustomEvent('close-react-modal')
-    );
+    window.dispatchEvent(new CustomEvent('close-react-modal'));
 }
 
 export function openCSTFolderModal() {
@@ -375,7 +376,7 @@ export function closeLetterGeneratorModal() {
     try {
         const el = document.getElementById('letter-generator-backdrop');
         if (el) el.style.display = 'none';
-    } catch (e) {
+    } catch (_e) {
         /* ignore */
     }
 }
@@ -562,7 +563,11 @@ export function downloadLetterPDF() {
 }
 
 export function openMemberIDCard(memberId) {
-    window.dispatchEvent(new CustomEvent('open-react-modal', { detail: { modalName: 'member-id-card', props: { memberId } } }));
+    window.dispatchEvent(
+        new CustomEvent('open-react-modal', {
+            detail: { modalName: 'member-id-card', props: { memberId } },
+        })
+    );
 }
 
 export function closeMemberIDCardModal() {
@@ -861,9 +866,15 @@ export function renderAnnouncementsBoard() {}
 export function renderPrayersBoard() {}
 
 export function openMemberQRModal(memberId) {
-    window.dispatchEvent(new CustomEvent('open-react-modal', { detail: { modalName: 'member-qr', props: { memberId } } }));
+    window.dispatchEvent(
+        new CustomEvent('open-react-modal', {
+            detail: { modalName: 'member-qr', props: { memberId } },
+        })
+    );
 }
 
 export function openAdminProfileModal() {
-    window.dispatchEvent(new CustomEvent('open-react-modal', { detail: { modalName: 'admin-profile', props: {} } }));
+    window.dispatchEvent(
+        new CustomEvent('open-react-modal', { detail: { modalName: 'admin-profile', props: {} } })
+    );
 }

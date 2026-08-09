@@ -6,19 +6,19 @@ function removeElementById(html, id) {
         startIndex = html.indexOf("id='" + id + "'");
         if (startIndex === -1) return html;
     }
-    
+
     // Find the opening <div that contains this id
     let startTag = html.lastIndexOf('<div', startIndex);
     if (startTag === -1) return html;
-    
+
     let depth = 0;
     let i = startTag;
-    
+
     while (i < html.length) {
-        if (html.substring(i, i+4) === '<div') {
+        if (html.substring(i, i + 4) === '<div') {
             depth++;
             i += 4;
-        } else if (html.substring(i, i+6) === '</div>') {
+        } else if (html.substring(i, i + 6) === '</div>') {
             depth--;
             i += 6;
             if (depth === 0) {
@@ -33,7 +33,7 @@ function removeElementById(html, id) {
 }
 
 function removeAllElementsById(html, id) {
-    let oldHtml = "";
+    let oldHtml = '';
     while (html !== oldHtml) {
         oldHtml = html;
         html = removeElementById(html, id);
@@ -44,12 +44,14 @@ function removeAllElementsById(html, id) {
 let html = fs.readFileSync('index.html', 'utf8');
 
 const idsToRemove = [
-    'qr-scanner-backdrop',
-    'absentee-swiper-backdrop',
-    'attendance-matrix-backdrop', // just in case
+    'modal-command-palette',
+    'modal-keyboard-cheatsheet',
+    'whats-new-modal-backdrop',
+    'create-account-backdrop',
+    'modal-funds-backdrop',
 ];
 
-idsToRemove.forEach(id => {
+idsToRemove.forEach((id) => {
     html = removeAllElementsById(html, id);
 });
 

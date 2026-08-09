@@ -1,5 +1,5 @@
-import React, { useEffect } from 'react';
-import state from '../../modules/state';
+import React from 'react';
+import { state } from '../../modules/state';
 import { OFFICIAL_DOWNLOADABLE_RESOURCES } from '../../modules/legacy';
 
 const DownloadAllModal = ({ isOpen, onClose }) => {

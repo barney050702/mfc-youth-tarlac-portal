@@ -15,6 +15,9 @@ import ActivityModal from './ActivityModal';
 import ScannerModal from './ScannerModal';
 import FollowUpModal from './FollowUpModal';
 import AttendanceGridModal from './AttendanceGridModal';
+import CommandPaletteModal from './CommandPaletteModal';
+import KeyboardCheatsheetModal from './KeyboardCheatsheetModal';
+import WhatsNewModal from './WhatsNewModal';
 
 const ModalContainer = () => {
     const [activeModal, setActiveModal] = useState(null);

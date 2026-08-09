@@ -184,17 +184,11 @@ function fallbackCopy(text, successMsg) {
 }
 
 export function openWhatsNewModal() {
-    const modal = document.getElementById('whats-new-modal-backdrop');
-    if (modal) {
-        modal.style.display = 'flex';
-    }
+    window.dispatchEvent(new CustomEvent('open-react-modal', { detail: { modalName: 'WhatsNewModal' } }));
 }
 
 export function closeWhatsNewModal() {
-    const modal = document.getElementById('whats-new-modal-backdrop');
-    if (modal) {
-        modal.style.display = 'none';
-    }
+    window.dispatchEvent(new CustomEvent('close-react-modal'));
 }
 
 export function switchResourceCategory(category) {

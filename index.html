@@ -162,57 +162,7 @@
         <!-- ==========================================================================
          MODAL: CREATE NEW ACCOUNT (ACCOUNT MANAGEMENT)
          ========================================================================== -->
-        <div class="modal-backdrop ext-style-229" id="create-account-backdrop" >
-            <div class="modal-card glass-card ext-style-230" role="dialog" aria-labelledby="create-account-title" >
-                <div class="modal-header ext-style-231" >
-                    <h3 id="create-account-title" class="ext-style-232">
-                        Create Account
-                    </h3>
-                    <button id="action-btn-86" class="modal-close-btn" aria-label="Close modal">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M18 6L6 18M6 6l12 12" />
-                        </svg>
-                    </button>
-                </div>
-                <form id="create-account-form" onsubmit="handleCreateAccount(event)">
-                    <div class="ext-style-85 form-group">
-                        <label for="acc-email" class="ext-style-233">Email Address</label
-                        >
-                        <input type="email" id="acc-email" required placeholder="admin@example.com" class= />
-                    </div>
-                    <div class="ext-style-85 form-group">
-                        <label for="acc-password" class="ext-style-235">Password (minimum 6 characters)</label
-                        >
-                        <input type="password" id="acc-password" required minlength="6" placeholder="******" class= />
-                    </div>
-                    <div class="ext-style-85 form-group">
-                        <label for="acc-role" class="ext-style-237">Role</label
-                        >
-                        <select id="acc-role" class="custom-select ext-style-238" onchange="toggleAccountChapterGroup()" >
-                            <option value="SUPER ADMIN">Super Admin (Full Access)</option>
-                            <option value="CHAPTER HEAD" selected>
-                                Chapter Head (Restricted Access)
-                            </option>
-                        </select>
-                    </div>
-                    <div class="form-group ext-style-239" id="acc-chapter-group" >
-                        <label for="acc-chapter-area" class="ext-style-240">Chapter Area</label
-                        >
-                        <select id="acc-chapter-area" class="custom-select ext-style-241" >
-                            <option value="East">East</option>
-                            <option value="North">North</option>
-                            <option value="West">West</option>
-                            <option value="South">South</option>
-                            <option value="Central">Central</option>
-                            <option value="All Chapters">All Chapters</option>
-                        </select>
-                    </div>
-                    <button type="submit" class="btn-primary glow-button ext-style-242" >
-                        Create Account
-                    </button>
-                </form>
-            </div>
-        </div>
+        
 
                         MFC YOUTH TARLAC
                     </div>
@@ -250,118 +200,7 @@
         <!-- ==========================================================================
          MODAL: ADD / EDIT FUND RECORD
          ========================================================================== -->
-        <div class="modal-backdrop ext-style-281" id="modal-funds-backdrop" >
-            <div class="modal-card glass-card" role="dialog" aria-labelledby="modal-funds-title">
-                <div class="modal-header">
-                    <h3 id="modal-funds-title">Add Fund Record</h3>
-                    <button id="action-btn-105" class="btn-close" aria-label="Close modal">
-                        ×
-                    </button>
-                </div>
-                <form id="funds-form" onsubmit="saveFundRecord(event)">
-                    <input type="hidden" id="fund-id" />
-
-                    <div class="form-group">
-                        <label for="fund-type"
-                            >Transaction Type <span class="required">*</span></label
-                        >
-                        <select id="fund-type" required onchange="updateFundCategories()">
-                            <option value="Income">Income (+)</option>
-                            <option value="Expense">Expense (-)</option>
-                        </select>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="fund-category">Category <span class="required">*</span></label>
-                        <select id="fund-category" required>
-                            <option value="Tithe & Offering">Tithe & Offering</option>
-                            <option value="Donation / Sponsorship">Donation / Sponsorship</option>
-                            <option value="Fundraising Event">Fundraising Event</option>
-                            <option value="Registration Fees">Registration Fees</option>
-                            <option value="Other Income">Other Income</option>
-                        </select>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="fund-amount">Amount (₱) <span class="required">*</span></label>
-                        <input
-                            type="number"
-                            step="0.01"
-                            id="fund-amount"
-                            required
-                            placeholder="0.00"
-                            min="0"
-                        />
-                    </div>
-
-                    <div class="form-group">
-                        <label for="fund-date">Date <span class="required">*</span></label>
-                        <input type="date" id="fund-date" required />
-                    </div>
-
-                    <div class="form-group">
-                        <label for="fund-description"
-                            >Description / Particulars <span class="required">*</span></label
-                        >
-                        <input
-                            type="text"
-                            id="fund-description"
-                            required
-                            placeholder="e.g. Youth Camp Food Supplies, Saturday Offering"
-                        />
-                    </div>
-
-                    <div class="form-group">
-                        <label for="fund-receipt">Receipt / Reference No. (Optional)</label>
-                        <input
-                            type="text"
-                            id="fund-receipt"
-                            placeholder="e.g. OR #12345 or GCash Ref #"
-                        />
-                    </div>
-
-                    <div class="ext-style-86 form-group">
-                        <label for="fund-receipt-file">Attach Receipt Image (Optional)</label>
-                        <input type="hidden" id="fund-receipt-image-data" />
-                        <div class="receipt-upload-box ext-style-282" id="receipt-upload-box" >
-                            <input type="file" id="fund-receipt-file" accept="image/*" onchange="handleReceiptImageSelect(event)" class= />
-                            <div id="receipt-upload-prompt">
-                                <div class="ext-style-284">📎</div>
-                                <div class="ext-style-285">
-                                    Click to attach receipt photo
-                                </div>
-                                <div class="ext-style-286">
-                                    Supports JPG, PNG, WEBP
-                                </div>
-                            </div>
-                            <div id="receipt-upload-preview" class="ext-style-287">
-                                <div class="ext-style-50">
-                                    <img id="receipt-preview-img" src="" alt="Receipt Preview" class= />
-                                    <div>
-                                        <div id="receipt-preview-name" class="ext-style-289">
-                                            Receipt Attached
-                                        </div>
-                                        <div class="ext-style-290">
-                                            Click to replace image
-                                        </div>
-                                    </div>
-                                </div>
-                                <button id="action-btn-106" type="button" class="ext-style-291">
-                                    Remove
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="modal-footer ext-style-292" >
-                        <button id="action-btn-107" type="button" class="btn-secondary">
-                            Cancel
-                        </button>
-                        <button type="submit" class="btn-primary glow-button">Save Record</button>
-                    </div>
-                </form>
-            </div>
-        </div>
+        
 
 
         <!-- ==========================================================================
@@ -405,31 +244,7 @@
             
 
             <!-- MODAL: GLOBAL COMMAND PALETTE (Ctrl + K) -->
-            <div id="modal-command-palette" class="modal-backdrop ext-style-469" >
-                <div class="glass-card ext-style-470" >
-                    <div class="ext-style-471">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="#38BDF8" stroke-width="2.5" class="ext-style-472">
-                            <circle cx="11" cy="11" r="8" />
-                            <path d="m21 21-4.35-4.35" />
-                        </svg>
-                        <input type="text" id="cmd-palette-input" placeholder="Type a command, search member, or find resource..." oninput="handleCommandPaletteSearch(this.value)" autocomplete="off" class= />
-                        <button id="action-btn-159" class="ext-style-474">
-                            ESC
-                        </button>
-                    </div>
-                    <div id="cmd-palette-results" class="ext-style-475">
-                        <!-- Dynamically populated results -->
-                    </div>
-                    <div class="ext-style-476">
-                        <span
-                            >💡 Tip: Use <strong class="ext-style-477">↑↓</strong> to navigate,
-                            <strong class="ext-style-478">Enter</strong> to select,
-                            <strong class="ext-style-479">Esc</strong> to close</span
-                        >
-                        <span>MFC Youth Tarlac Command Center</span>
-                    </div>
-                </div>
-            </div>
+            
 
             <!-- Keyboard Shortcuts Cheatsheet Modal -->
             <div id="modal-keyboard-cheatsheet" class="modal-backdrop ext-style-480" >
