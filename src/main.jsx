@@ -21,6 +21,7 @@ import AnalyticsView from './components/views/AnalyticsView.jsx';
 import ActivitiesView from './components/views/ActivitiesView.jsx';
 import AccountView from './components/views/AccountView.jsx';
 import AgendaView from './components/views/AgendaView.jsx';
+import App from './App.jsx';
 import { state, loadFromStorage, subscribeState } from './modules/state.js';
 import {
     switchView,
@@ -673,8 +674,6 @@ function renderAllViews() {
 }
 window.renderAll = renderAllViews;
 
-import Login from './components/views/Login.jsx';
-
 // React Integration
 document.addEventListener('DOMContentLoaded', () => {
     const birthdayRootEl = document.getElementById('react-birthday-root');
@@ -693,16 +692,6 @@ document.addEventListener('DOMContentLoaded', () => {
         agendaRoot.render(
             <React.StrictMode>
                 <UpcomingAgendaWidget />
-            </React.StrictMode>
-        );
-    }
-
-    const loginRootEl = document.getElementById('react-login-root');
-    if (loginRootEl) {
-        const loginRoot = createRoot(loginRootEl);
-        loginRoot.render(
-            <React.StrictMode>
-                <Login />
             </React.StrictMode>
         );
     }
@@ -757,92 +746,12 @@ document.addEventListener('DOMContentLoaded', () => {
         );
     }
 
-    const dashboardViewRootEl = document.getElementById('react-dashboard-view-root');
-    if (dashboardViewRootEl) {
-        const dashboardViewRoot = createRoot(dashboardViewRootEl);
-        dashboardViewRoot.render(
+    const rootEl = document.getElementById('root');
+    if (rootEl) {
+        const root = createRoot(rootEl);
+        root.render(
             <React.StrictMode>
-                <DashboardView />
-            </React.StrictMode>
-        );
-    }
-
-    const membersViewRootEl = document.getElementById('react-members-view-root');
-    if (membersViewRootEl) {
-        const membersViewRoot = createRoot(membersViewRootEl);
-        membersViewRoot.render(
-            <React.StrictMode>
-                <MembersView />
-            </React.StrictMode>
-        );
-    }
-
-    const attendanceViewRootEl = document.getElementById('react-attendance-view-root');
-    if (attendanceViewRootEl) {
-        const attendanceViewRoot = createRoot(attendanceViewRootEl);
-        attendanceViewRoot.render(
-            <React.StrictMode>
-                <AttendanceView />
-            </React.StrictMode>
-        );
-    }
-
-    const resourcesViewRootEl = document.getElementById('react-resources-view-root');
-    if (resourcesViewRootEl) {
-        const resourcesViewRoot = createRoot(resourcesViewRootEl);
-        resourcesViewRoot.render(
-            <React.StrictMode>
-                <ResourcesView />
-            </React.StrictMode>
-        );
-    }
-
-    const fundsViewRootEl = document.getElementById('react-funds-view-root');
-    if (fundsViewRootEl) {
-        const fundsViewRoot = createRoot(fundsViewRootEl);
-        fundsViewRoot.render(
-            <React.StrictMode>
-                <FundsView />
-            </React.StrictMode>
-        );
-    }
-
-    const analyticsViewRootEl = document.getElementById('react-analytics-view-root');
-    if (analyticsViewRootEl) {
-        const analyticsViewRoot = createRoot(analyticsViewRootEl);
-        analyticsViewRoot.render(
-            <React.StrictMode>
-                <AnalyticsView />
-            </React.StrictMode>
-        );
-    }
-
-    const activitiesViewRootEl = document.getElementById('react-activities-view-root');
-    if (activitiesViewRootEl) {
-        const activitiesViewRoot = createRoot(activitiesViewRootEl);
-        activitiesViewRoot.render(
-            <React.StrictMode>
-                <ActivitiesView />
-            </React.StrictMode>
-        );
-    }
-
-    const accountViewRootEl = document.getElementById('react-account-view-root');
-    if (accountViewRootEl) {
-        const accountViewRoot = createRoot(accountViewRootEl);
-        accountViewRoot.render(
-            <React.StrictMode>
-                <AccountView />
-            </React.StrictMode>
-        );
-    }
-
-    const agendaViewRootEl = document.getElementById('react-agenda-view-root');
-    if (agendaViewRootEl) {
-        const agendaViewRoot = createRoot(agendaViewRootEl);
-        agendaViewRoot.render(
-            <React.StrictMode>
-                <AgendaView />
+                <App />
             </React.StrictMode>
         );
     }
