@@ -11,7 +11,6 @@ import AddMemberModal from './components/modals/AddMemberModal.jsx';
 import LetterGeneratorModal from './components/modals/LetterGeneratorModal.jsx';
 import RosaryInteractiveModal from './components/modals/RosaryInteractiveModal.jsx';
 import VenueMapModal from './components/modals/VenueMapModal.jsx';
-import GeneralModal from './components/modals/GeneralModal.jsx';
 import DashboardView from './components/views/DashboardView.jsx';
 import MembersView from './components/views/MembersView.jsx';
 import AttendanceView from './components/views/AttendanceView.jsx';
@@ -177,8 +176,6 @@ import {
     exportFinancialStatementPDF,
     exportFinancialLedgerCSV,
     renderFundsTable,
-    openReceiptViewerModal,
-    closeReceiptViewerModal,
     filterFunds,
     resetFundsFilter,
     updateFundCategories,
@@ -736,16 +733,6 @@ document.addEventListener('DOMContentLoaded', () => {
         venueMapRoot.render(
             <React.StrictMode>
                 <VenueMapModal />
-            </React.StrictMode>
-        );
-    }
-
-    const generalModalRootEl = document.getElementById('react-general-modal-root');
-    if (generalModalRootEl) {
-        const generalModalRoot = createRoot(generalModalRootEl);
-        generalModalRoot.render(
-            <React.StrictMode>
-                <GeneralModal />
             </React.StrictMode>
         );
     }

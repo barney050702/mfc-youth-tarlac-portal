@@ -10,41 +10,12 @@ import { escapeHTML, showToast, triggerHaptic } from './ui.js';
 import { MFCFirebaseCloud } from './firebase.js';
 
 export function openDigitalQRModal(memberId) {
-    const member = state.members.find((m) => m.id === memberId);
-    if (!member) return;
-
-    const modal = document.getElementById('modal-member-qr-id');
-    const container = document.getElementById('qr-badge-box');
-    const nameEl = document.getElementById('qr-badge-name');
-    const roleEl = document.getElementById('qr-badge-role-area');
-    const codeEl = document.getElementById('qr-badge-id-code');
-
-    if (nameEl) nameEl.textContent = member.name;
-    if (roleEl)
-        roleEl.textContent = `${member.chapter || 'CENTRAL'} CHAPTER • ${member.dept || 'General'}`;
-    if (codeEl) codeEl.textContent = `ID: ${member.id}`;
-
-    if (container) {
-        container.innerHTML = '';
-        if (typeof QRCode !== 'undefined') {
-            new QRCode(container, {
-                text: member.id,
-                width: 180,
-                height: 180,
-                colorDark: '#0B0F19',
-                colorLight: '#FFFFFF',
-                correctLevel: QRCode.CorrectLevel.H,
-            });
-        }
-    }
-
-    if (modal) modal.style.display = 'flex';
+    window.dispatchEvent(new CustomEvent('open-react-modal', { detail: { modalName: 'member-qr', props: { memberId } } }));
     triggerHaptic('light');
 }
 
 export function closeDigitalQRModal() {
-    const modal = document.getElementById('modal-member-qr-id');
-    if (modal) modal.style.display = 'none';
+    window.dispatchEvent(new CustomEvent('close-react-modal'));
 }
 
 export function printMemberQRCard() {

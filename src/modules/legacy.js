@@ -63,18 +63,11 @@ export function renderAccountsTable() {
 }
 
 export function openCreateAccountModal() {
-    const backdrop = document.getElementById('create-account-backdrop');
-    const form = document.getElementById('create-account-form');
-    if (form) form.reset();
-    const roleEl = document.getElementById('acc-role');
-    if (roleEl) roleEl.value = 'CHAPTER HEAD';
-    toggleAccountChapterGroup();
-    if (backdrop) backdrop.style.display = 'flex';
+    window.dispatchEvent(new CustomEvent('open-react-modal', { detail: { modalName: 'create-account' } }));
 }
 
 export function closeCreateAccountModal() {
-    const backdrop = document.getElementById('create-account-backdrop');
-    if (backdrop) backdrop.style.display = 'none';
+    window.dispatchEvent(new CustomEvent('close-react-modal'));
 }
 
 export function toggleAccountChapterGroup() {
@@ -497,13 +490,11 @@ export function startInactivityWatchdog() {
 }
 
 export function openImportCSVModal() {
-    const modal = document.getElementById('import-csv-backdrop');
-    if (modal) modal.style.display = 'flex';
+    window.dispatchEvent(new CustomEvent('open-react-modal', { detail: { modalName: 'bulk-import' } }));
 }
 
 export function closeImportCSVModal() {
-    const modal = document.getElementById('import-csv-backdrop');
-    if (modal) modal.style.display = 'none';
+    window.dispatchEvent(new CustomEvent('close-react-modal'));
 }
 
 export function handleCSVFileUpload(event) {
@@ -1576,21 +1567,19 @@ export function renderRemoveList() {
 }
 
 export function openDownloadAllModal() {
-    const modal = document.getElementById('modal-download-all');
-    if (modal) modal.style.display = 'flex';
-    renderDownloadAllList();
-    const progressEl = document.getElementById('download-all-progress-bar');
-    if (progressEl) progressEl.style.display = 'none';
-    const btn = document.getElementById('btn-start-batch-download');
-    if (btn) {
-        btn.disabled = false;
-        btn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width:15px;height:15px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg><span>Start Batch Download (15 Files)</span>`;
-    }
+    window.dispatchEvent(
+        new CustomEvent('open-react-modal', {
+            detail: {
+                modalName: 'download-all',
+            },
+        })
+    );
 }
 
 export function closeDownloadAllModal() {
-    const modal = document.getElementById('modal-download-all');
-    if (modal) modal.style.display = 'none';
+    window.dispatchEvent(
+        new CustomEvent('close-react-modal')
+    );
 }
 
 export function renderDownloadAllList() {
@@ -2141,14 +2130,15 @@ export function renderCalendarAndPrayerWall() {
 }
 
 export function openAttendanceMatrixModal() {
-    renderAttendanceMatrixSheet();
-    const modal = document.getElementById('attendance-matrix-backdrop');
-    if (modal) modal.style.display = 'flex';
+    window.dispatchEvent(
+        new CustomEvent('open-react-modal', {
+            detail: { modalName: 'attendance-matrix' }
+        })
+    );
 }
 
 export function closeAttendanceMatrixModal() {
-    const modal = document.getElementById('attendance-matrix-backdrop');
-    if (modal) modal.style.display = 'none';
+    window.dispatchEvent(new CustomEvent('close-react-modal'));
 }
 
 export function renderAttendanceMatrixSheet() {
@@ -2417,97 +2407,11 @@ export function renderAttendanceHeatmapWidget() {
 }
 
 export function openHouseholdTreeViewModal() {
-    const modal = document.getElementById('household-tree-backdrop');
-    if (!modal) return;
-    modal.style.display = 'flex';
-
-    const container = document.getElementById('household-tree-container');
-    if (!container) return;
-
-    // Group members by Chapter
-    const chapters = {};
-    state.members.forEach((m) => {
-        const chap = (m.chapter || 'MFC Youth Tarlac').toUpperCase();
-        if (!chapters[chap]) chapters[chap] = { leaders: [], members: [] };
-        const role = (m.role || '').toLowerCase();
-        if (
-            role.includes('head') ||
-            role.includes('couple') ||
-            role.includes('coordinator') ||
-            role.includes('leader')
-        ) {
-            chapters[chap].leaders.push(m);
-        } else {
-            chapters[chap].members.push(m);
-        }
-    });
-
-    let treeHtml = `<div style="display: flex; flex-direction: column; gap: 24px;">`;
-
-    Object.keys(chapters).forEach((chapName) => {
-        const group = chapters[chapName];
-        treeHtml += `
-            <div style="background: rgba(15,23,42,0.85); border: 1px solid rgba(168,85,247,0.35); border-radius: 16px; padding: 20px;">
-                <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 12px; margin-bottom: 16px;">
-                    <div style="display: flex; align-items: center; gap: 10px;">
-                        <span style="font-size: 1.4rem;">🏛️</span>
-                        <h4 style="color: #FFF; font-size: 1.1rem; font-weight: 800; margin: 0;">${chapName}</h4>
-                    </div>
-                    <span style="background: rgba(168,85,247,0.2); color: #C084FC; font-size: 0.75rem; font-weight: 700; padding: 4px 12px; border-radius: 12px;">
-                        ${group.leaders.length + group.members.length} Total Servants
-                    </span>
-                </div>
-
-                <!-- Leaders Tier -->
-                <div style="margin-bottom: 16px;">
-                    <h5 style="color: #C084FC; font-size: 0.82rem; text-transform: uppercase; letter-spacing: 1px; margin: 0 0 10px 0;">👑 Chapter & Household Leaders</h5>
-                    <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-                        ${
-                            group.leaders
-                                .map(
-                                    (l) => `
-                            <div onclick="openMemberProfile('${l.id}')" style="background: linear-gradient(135deg, rgba(168,85,247,0.2), rgba(126,34,206,0.15)); border: 1px solid rgba(168,85,247,0.45); border-radius: 12px; padding: 10px 14px; cursor: pointer; transition: all 0.2s;">
-                                <div style="color: #FFF; font-weight: 700; font-size: 0.88rem;">${l.name}</div>
-                                <div style="color: #D8B4FE; font-size: 0.75rem;">${l.role}</div>
-                            </div>
-                        `
-                                )
-                                .join('') ||
-                            '<span style="color: #64748B; font-size: 0.82rem;">No household leaders assigned yet.</span>'
-                        }
-                    </div>
-                </div>
-
-                <!-- Youth Unit Tier -->
-                <div>
-                    <h5 style="color: #38BDF8; font-size: 0.82rem; text-transform: uppercase; letter-spacing: 1px; margin: 0 0 10px 0;">👥 Household Youth Members</h5>
-                    <div style="display: flex; gap: 8px; flex-wrap: wrap;">
-                        ${
-                            group.members
-                                .map(
-                                    (m) => `
-                            <div onclick="openMemberProfile('${m.id}')" style="background: rgba(30,41,59,0.7); border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; padding: 8px 12px; cursor: pointer; transition: all 0.2s;">
-                                <div style="color: #F8FAFC; font-size: 0.82rem; font-weight: 600;">${m.name}</div>
-                                <div style="color: #94A3B8; font-size: 0.72rem;">${m.department || 'Youth'}</div>
-                            </div>
-                        `
-                                )
-                                .join('') ||
-                            '<span style="color: #64748B; font-size: 0.82rem;">No household members listed.</span>'
-                        }
-                    </div>
-                </div>
-            </div>
-        `;
-    });
-
-    treeHtml += `</div>`;
-    container.innerHTML = treeHtml;
+    window.dispatchEvent(new CustomEvent('open-react-modal', { detail: { modalName: 'household-tree' } }));
 }
 
 export function closeHouseholdTreeViewModal() {
-    const modal = document.getElementById('household-tree-backdrop');
-    if (modal) modal.style.display = 'none';
+    window.dispatchEvent(new CustomEvent('close-react-modal'));
 }
 
 export function triggerMemberAutoAwardFromModal() {
@@ -2685,25 +2589,15 @@ export function initOrgChartTouchPan() {
 }
 
 export function openAbsenteeSwiperModal() {
-    // Gather all members who were absent or late in recent activities
-    absenteeSwiperList = state.members.filter((m) => {
-        const rate = calculateMemberAttendanceRate(m.id);
-        return rate < 75; // Focus on members needing pastoral care (< 75%)
-    });
-
-    if (absenteeSwiperList.length === 0) {
-        absenteeSwiperList = state.members.slice(0, 5); // Fallback if all rates high
-    }
-
-    absenteeSwiperIndex = 0;
-    renderAbsenteeSlide();
-    const modal = document.getElementById('absentee-swiper-backdrop');
-    if (modal) modal.classList.add('active');
+    window.dispatchEvent(
+        new CustomEvent('open-react-modal', {
+            detail: { modalName: 'follow-up' }
+        })
+    );
 }
 
 export function closeAbsenteeSwiperModal() {
-    const modal = document.getElementById('absentee-swiper-backdrop');
-    if (modal) modal.classList.remove('active');
+    window.dispatchEvent(new CustomEvent('close-react-modal'));
 }
 
 export function renderAbsenteeSlide() {

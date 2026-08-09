@@ -100,7 +100,6 @@ import {
 } from './members.js';
 import {
     closeAddFundModal,
-    closeReceiptViewerModal,
     exportFinancialLedgerCSV,
     openAddFundModal,
     removeReceiptImage,

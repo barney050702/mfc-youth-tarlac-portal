@@ -92,6 +92,7 @@ const MemberProfileModal = ({ isOpen, onClose, memberId }) => {
                                 <span>📄 Export Report PDF</span>
                             </button>
                             <button type="button" className="btn-primary glow-button" onClick={() => {
+                                // Dispatch custom event to open QR modal
                                 window.dispatchEvent(new CustomEvent('openModal', { detail: { modalName: 'member-qr', data: member.id } }));
                             }} style={{ padding: '8px 16px', fontSize: '0.82rem', display: 'inline-flex', alignItems: 'center', gap: '6px', background: '#0284c7', color: '#FFF', border: 'none', borderRadius: '8px', cursor: 'pointer' }}>
                                 <span>📱 Official QR ID</span>

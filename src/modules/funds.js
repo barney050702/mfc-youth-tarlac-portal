@@ -323,24 +323,30 @@ export const formatPHP = (num) =>
         maximumFractionDigits: 2,
     });
 
-export function openReceiptViewerModal(recordId) {
-    const item = state.funds && state.funds.find((f) => f.id === recordId);
-    if (!item || !item.receiptImg) return;
-
-    const modal = document.getElementById('modal-receipt-viewer');
+export function viewReceipt(txId) {
+    const tx = state.funds.find((t) => t.id === txId);
+    if (!tx || !tx.receiptImg) {
+        showToast('No receipt image available.', 'error');
+        return;
+    }
     const imgEl = document.getElementById('viewer-receipt-img');
     const capEl = document.getElementById('viewer-receipt-caption');
+    if (imgEl) imgEl.src = tx.receiptImg;
+    if (capEl) capEl.textContent = `${tx.description} (${tx.receipt || 'Receipt Photo'})`;
 
-    if (imgEl) imgEl.src = item.receiptImg;
-    if (capEl) capEl.textContent = `${item.description} (${item.receipt || 'Receipt Photo'})`;
-    if (modal) modal.style.display = 'flex';
+    window.dispatchEvent(
+        new CustomEvent('open-react-modal', {
+            detail: {
+                modalName: 'receipt-viewer',
+            },
+        })
+    );
 }
 
-export function closeReceiptViewerModal() {
-    const modal = document.getElementById('modal-receipt-viewer');
-    const imgEl = document.getElementById('viewer-receipt-img');
-    if (modal) modal.style.display = 'none';
-    if (imgEl) imgEl.src = '';
+export function closeReceiptViewer() {
+    window.dispatchEvent(
+        new CustomEvent('close-react-modal')
+    );
 }
 
 export function filterFunds() {
@@ -475,9 +481,6 @@ export function updateReceiptPreviewUI(base64Data, fileName = 'receipt_image.jpg
 }
 
 export function openAddFundModal(editId = null) {
-    const modal = document.getElementById('modal-funds-backdrop');
-    if (!modal) return;
-
     const titleEl = document.getElementById('modal-funds-title');
     const idEl = document.getElementById('fund-id');
     const typeEl = document.getElementById('fund-type');
@@ -503,7 +506,7 @@ export function openAddFundModal(editId = null) {
             if (descEl) descEl.value = item.description;
             if (recEl) recEl.value = item.receipt || '';
             updateReceiptPreviewUI(item.receiptImg || '', 'Attached Receipt');
-            modal.style.display = 'flex';
+            window.dispatchEvent(new CustomEvent('open-react-modal', { detail: { modalName: 'funds' } }));
             return;
         }
     }
@@ -520,12 +523,11 @@ export function openAddFundModal(editId = null) {
     if (recEl) recEl.value = '';
     updateReceiptPreviewUI('', '');
 
-    modal.style.display = 'flex';
+    window.dispatchEvent(new CustomEvent('open-react-modal', { detail: { modalName: 'funds' } }));
 }
 
 export function closeAddFundModal() {
-    const modal = document.getElementById('modal-funds-backdrop');
-    if (modal) modal.style.display = 'none';
+    window.dispatchEvent(new CustomEvent('close-react-modal'));
 }
 
 export function saveFundRecord(e) {

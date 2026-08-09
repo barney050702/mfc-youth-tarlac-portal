@@ -4,48 +4,14 @@ import { state } from './state.js';
 import { calculateAgeClean, formatDateClean } from './members.js';
 
 export function openAddModal(actId = null) {
-    const modal = document.getElementById('modal-backdrop');
-    const titleEl = document.getElementById('modal-title');
-    const formId = document.getElementById('form-activity-id');
-    const formTitle = document.getElementById('form-title');
-    const formDate = document.getElementById('form-date');
-    const formCat = document.getElementById('form-category');
-    const formLoc = document.getElementById('form-location');
-    const formStat = document.getElementById('form-status');
-    const formDesc = document.getElementById('form-description');
-
-    if (!modal) return;
-
-    if (actId) {
-        const act = state.activities.find((a) => a.id === actId);
-        if (act) {
-            titleEl.textContent = 'Edit Activity Record';
-            formId.value = act.id;
-            formTitle.value = act.name || act.title || '';
-            formDate.value = act.date || '';
-            formCat.value = act.type || act.category || 'Assembly';
-            formLoc.value = act.venue || act.location || '';
-            formStat.value = act.status;
-            formDesc.value = act.description || '';
-            const formSem = document.getElementById('form-semester');
-            if (formSem) formSem.value = act.semester || 'auto';
-            updateFormMapPreview(act.venue || act.location || 'Tarlac City');
-        }
-    } else {
-        titleEl.textContent = 'Create New Activity';
-        formId.value = '';
-        formTitle.value = '';
-        formDate.value = new Date().toISOString().slice(0, 16);
-        formCat.value = 'Chapter Assembly';
-        formLoc.value = '';
-        formStat.value = 'Upcoming';
-        formDesc.value = '';
-        const formSem = document.getElementById('form-semester');
-        if (formSem) formSem.value = 'auto';
-        updateFormMapPreview('Tarlac City');
-    }
-
-    modal.style.display = 'flex';
+    window.dispatchEvent(
+        new CustomEvent('open-react-modal', {
+            detail: {
+                modalName: 'activity',
+                props: { activityId: actId }
+            }
+        })
+    );
 }
 
 export function closeAddModal() {
@@ -184,37 +150,29 @@ export function closeKeyboardCheatsheetModal() {
 }
 
 export function openHHFolderModal() {
-    const modal = document.getElementById('modal-hh-folder');
-    if (modal) {
-        modal.style.display = 'flex';
-        modal.style.opacity = '0';
-        setTimeout(() => {
-            modal.style.transition = 'opacity 0.2s ease';
-            modal.style.opacity = '1';
-        }, 10);
-    }
+    window.dispatchEvent(
+        new CustomEvent('open-react-modal', {
+            detail: {
+                modalName: 'hh-folder',
+            },
+        })
+    );
 }
 
 export function closeHHFolderModal() {
-    const modal = document.getElementById('modal-hh-folder');
-    if (modal) {
-        modal.style.opacity = '0';
-        setTimeout(() => {
-            modal.style.display = 'none';
-        }, 200);
-    }
+    window.dispatchEvent(
+        new CustomEvent('close-react-modal')
+    );
 }
 
 export function openCSTFolderModal() {
-    const modal = document.getElementById('modal-cst-folder');
-    if (modal) {
-        modal.style.display = 'flex';
-        modal.style.opacity = '0';
-        setTimeout(() => {
-            modal.style.transition = 'opacity 0.2s ease';
-            modal.style.opacity = '1';
-        }, 10);
-    }
+    window.dispatchEvent(
+        new CustomEvent('open-react-modal', {
+            detail: {
+                modalName: 'cst-folder',
+            },
+        })
+    );
 }
 
 export function closeCSTFolderModal() {

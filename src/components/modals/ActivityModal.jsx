@@ -1,68 +1,108 @@
-import React, { useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
+import { state as globalState } from '../../modules/state'; // Assuming state is exported this way
 
-const GeneralModal = () => {
+const ActivityModal = ({ isOpen, onClose, activityId }) => {
+    const [formData, setFormData] = useState({
+        id: '',
+        title: '',
+        date: new Date().toISOString().slice(0, 16),
+        category: 'Chapter Assembly',
+        location: '',
+        status: 'Upcoming',
+        semester: 'auto',
+        description: ''
+    });
+
     useEffect(() => {
-        const closeBtn1 = document.getElementById('action-btn-83');
-        const closeBtn2 = document.getElementById('action-btn-85');
-        const pinMapBtn = document.getElementById('action-btn-84');
-        const activityForm = document.getElementById('activity-form');
-
-        const handleClose = () => {
-            if (window.closeModal) {
-                window.closeModal();
+        if (isOpen) {
+            if (activityId) {
+                const act = globalState.activities.find((a) => a.id === activityId);
+                if (act) {
+                    setFormData({
+                        id: act.id,
+                        title: act.name || act.title || '',
+                        date: act.date || '',
+                        category: act.type || act.category || 'Assembly',
+                        location: act.venue || act.location || '',
+                        status: act.status || 'Upcoming',
+                        semester: act.semester || 'auto',
+                        description: act.description || ''
+                    });
+                }
             } else {
-                document.getElementById('modal-backdrop').style.display = 'none';
+                setFormData({
+                    id: '',
+                    title: '',
+                    date: new Date().toISOString().slice(0, 16),
+                    category: 'Chapter Assembly',
+                    location: '',
+                    status: 'Upcoming',
+                    semester: 'auto',
+                    description: ''
+                });
             }
-        };
-
-        const handlePinMap = () => {
-            if (window.openVenueMapModalFromInput) {
-                window.openVenueMapModalFromInput('form-location');
-            }
-        };
-
-        const handleSubmit = (e) => {
-            e.preventDefault();
-            if (window.handleFormSubmit) {
-                window.handleFormSubmit(e);
-            }
-        };
-
-        if (closeBtn1) closeBtn1.addEventListener('click', handleClose);
-        if (closeBtn2) closeBtn2.addEventListener('click', handleClose);
-        if (pinMapBtn) pinMapBtn.addEventListener('click', handlePinMap);
-        if (activityForm) {
-            activityForm.removeAttribute('onsubmit');
-            activityForm.addEventListener('submit', handleSubmit);
         }
+    }, [isOpen, activityId]);
 
-        return () => {
-            if (closeBtn1) closeBtn1.removeEventListener('click', handleClose);
-            if (closeBtn2) closeBtn2.removeEventListener('click', handleClose);
-            if (pinMapBtn) pinMapBtn.removeEventListener('click', handlePinMap);
-            if (activityForm) activityForm.removeEventListener('submit', handleSubmit);
+    const handlePinMap = () => {
+        if (window.openVenueMapModalFromInput) {
+            window.openVenueMapModalFromInput('form-location'); // Legacy hook
+        }
+    };
+
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        
+        // Temporarily put values back into DOM to support legacy handleFormSubmit
+        // In a full React conversion, we'd dispatch an action or API call here directly.
+        const mockFormEvent = {
+            preventDefault: () => {},
+            target: {
+                querySelector: (q) => {
+                    if(q === '#form-activity-id') return { value: formData.id };
+                    if(q === '#form-title') return { value: formData.title };
+                    if(q === '#form-date') return { value: formData.date };
+                    if(q === '#form-category') return { value: formData.category };
+                    if(q === '#form-location') return { value: formData.location };
+                    if(q === '#form-status') return { value: formData.status };
+                    if(q === '#form-semester') return { value: formData.semester };
+                    if(q === '#form-description') return { value: formData.description };
+                    return null;
+                }
+            }
         };
-    }, []);
+
+        // We can just rely on legacy handleFormSubmit if it accesses the DOM directly.
+        // Wait, legacy `handleFormSubmit` uses `document.getElementById`.
+        // So we still need to render the inputs with those IDs for legacy to work!
+        if (window.handleFormSubmit) {
+            window.handleFormSubmit(e);
+        }
+        onClose();
+    };
 
     const handleLocationInput = (e) => {
+        setFormData({ ...formData, location: e.target.value });
         if (window.updateFormMapPreview) {
             window.updateFormMapPreview(e.target.value);
         }
     };
 
+    if (!isOpen) return null;
+
     return (
-        <div className="modal-backdrop" id="modal-backdrop" style={{ display: 'none' }}>
+        <div className="modal-backdrop" id="modal-backdrop" style={{ display: 'flex' }}>
             <div className="modal-card glass-card" role="dialog" aria-labelledby="modal-title">
                 <div className="modal-header">
-                    <h3 id="modal-title">Create New Activity</h3>
-                    <button id="action-btn-83" className="modal-close-btn" aria-label="Close modal">
+                    <h3 id="modal-title">{activityId ? 'Edit Activity Record' : 'Create New Activity'}</h3>
+                    <button className="modal-close-btn" aria-label="Close modal" onClick={onClose}>
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                             <path d="M18 6L6 18M6 6l12 12" />
                         </svg>
                     </button>
                 </div>
-                <form id="activity-form">
-                    <input type="hidden" id="form-activity-id" />
+                <form id="activity-form" onSubmit={handleSubmit}>
+                    <input type="hidden" id="form-activity-id" value={formData.id} />
                     <div className="form-group">
                         <label htmlFor="form-title">Activity Title *</label>
                         <input
@@ -70,16 +110,30 @@ const GeneralModal = () => {
                             id="form-title"
                             required
                             placeholder="e.g. Q3 Leadership Seminar"
+                            value={formData.title}
+                            onChange={(e) => setFormData({ ...formData, title: e.target.value })}
                         />
                     </div>
                     <div className="form-grid-2">
                         <div className="form-group">
                             <label htmlFor="form-date">Date & Time *</label>
-                            <input type="datetime-local" id="form-date" required />
+                            <input 
+                                type="datetime-local" 
+                                id="form-date" 
+                                required 
+                                value={formData.date}
+                                onChange={(e) => setFormData({ ...formData, date: e.target.value })}
+                            />
                         </div>
                         <div className="form-group">
                             <label htmlFor="form-category">Category *</label>
-                            <select id="form-category" required className="custom-select">
+                            <select 
+                                id="form-category" 
+                                required 
+                                className="custom-select"
+                                value={formData.category}
+                                onChange={(e) => setFormData({ ...formData, category: e.target.value })}
+                            >
                                 <option value="Chapter Assembly">Chapter Assembly</option>
                                 <option value="Chapter Household">Chapter Household</option>
                                 <option value="Area Assembly">Area Assembly</option>
@@ -103,9 +157,9 @@ const GeneralModal = () => {
                                     Location / Platform *
                                 </label>
                                 <button
-                                    id="action-btn-84"
                                     type="button"
                                     className="btn-secondary btn-sm"
+                                    onClick={handlePinMap}
                                     style={{
                                         padding: '2px 8px',
                                         fontSize: '0.72rem',
@@ -124,12 +178,19 @@ const GeneralModal = () => {
                                 id="form-location"
                                 required
                                 placeholder="e.g. Tarlac Diocesan Pastoral Center / Fairlane San Vicente"
+                                value={formData.location}
                                 onInput={handleLocationInput}
                             />
                         </div>
                         <div className="form-group">
                             <label htmlFor="form-status">Status *</label>
-                            <select id="form-status" required className="custom-select">
+                            <select 
+                                id="form-status" 
+                                required 
+                                className="custom-select"
+                                value={formData.status}
+                                onChange={(e) => setFormData({ ...formData, status: e.target.value })}
+                            >
                                 <option value="Completed">Completed</option>
                                 <option value="Upcoming">Upcoming</option>
                                 <option value="Cancelled">Cancelled</option>
@@ -148,6 +209,7 @@ const GeneralModal = () => {
                             border: '1px solid rgba(56, 189, 248, 0.35)',
                             background: 'rgba(15, 23, 42, 0.95)',
                             boxShadow: '0 4px 16px rgba(0, 0, 0, 0.4)',
+                            display: formData.location ? 'block' : 'none'
                         }}
                     >
                         <div
@@ -174,40 +236,10 @@ const GeneralModal = () => {
                             >
                                 🗺️ Interactive Live Venue Map Pin
                             </span>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                <span
-                                    id="modal-map-pinned-label"
-                                    style={{ fontSize: '0.72rem', color: '#94a3b8', fontWeight: 600 }}
-                                >
-                                    📍 Pinned Location
-                                </span>
-                                <a
-                                    id="modal-open-google-maps-btn"
-                                    href="https://maps.google.com/?q=Tarlac+City"
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="btn-primary btn-sm"
-                                    style={{
-                                        fontSize: '0.72rem',
-                                        padding: '3px 8px',
-                                        background: 'linear-gradient(135deg, #059669, #10b981)',
-                                        color: '#fff',
-                                        border: 'none',
-                                        textDecoration: 'none',
-                                        fontWeight: 700,
-                                        borderRadius: '6px',
-                                        display: 'inline-flex',
-                                        alignItems: 'center',
-                                        gap: '4px',
-                                    }}
-                                >
-                                    🗺️ Directions ↗
-                                </a>
-                            </div>
                         </div>
                         <iframe
                             id="modal-location-map-iframe"
-                            src="https://maps.google.com/maps?q=Tarlac+City&t=&z=14&ie=UTF8&iwloc=&output=embed"
+                            src={`https://maps.google.com/maps?q=${encodeURIComponent(formData.location || 'Tarlac City')}&t=&z=14&ie=UTF8&iwloc=&output=embed`}
                             style={{ width: '100%', height: '210px', border: 'none', display: 'block' }}
                             allowFullScreen
                             loading="lazy"
@@ -217,7 +249,12 @@ const GeneralModal = () => {
                     <div className="form-grid-2">
                         <div className="form-group">
                             <label htmlFor="form-semester">Attached Semester Term</label>
-                            <select id="form-semester" className="custom-select">
+                            <select 
+                                id="form-semester" 
+                                className="custom-select"
+                                value={formData.semester}
+                                onChange={(e) => setFormData({ ...formData, semester: e.target.value })}
+                            >
                                 <option value="auto">Auto-detect from Date</option>
                                 <option value="s1">1st Sem (Jan - Jun)</option>
                                 <option value="s2">2nd Sem (Jul - Dec)</option>
@@ -231,10 +268,12 @@ const GeneralModal = () => {
                             id="form-description"
                             rows="3"
                             placeholder="Provide event agenda or key details..."
+                            value={formData.description}
+                            onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                         ></textarea>
                     </div>
                     <div className="modal-footer">
-                        <button id="action-btn-85" type="button" className="btn-secondary">
+                        <button type="button" className="btn-secondary" onClick={onClose}>
                             Cancel
                         </button>
                         <button type="submit" className="btn-primary glow-button">
@@ -247,4 +286,4 @@ const GeneralModal = () => {
     );
 };
 
-export default GeneralModal;
+export default ActivityModal;

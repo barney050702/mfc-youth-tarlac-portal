@@ -496,8 +496,11 @@ export function resetAttendanceSheet() {
 }
 
 export function startLiveQRScanner() {
-    const modal = document.getElementById('qr-scanner-backdrop');
-    if (modal) modal.style.display = 'flex';
+    window.dispatchEvent(
+        new CustomEvent('open-react-modal', {
+            detail: { modalName: 'scanner' }
+        })
+    );
 
     if (typeof window.Html5Qrcode !== 'undefined') {
         if (!html5QrScanner) {
@@ -530,8 +533,7 @@ export function stopLiveQRScanner() {
             })
             .catch((err) => console.warn('QR scanner stop notice:', err));
     }
-    const modal = document.getElementById('qr-scanner-backdrop');
-    if (modal) modal.style.display = 'none';
+    window.dispatchEvent(new CustomEvent('close-react-modal'));
 }
 
 function handleScannedQRCode(qrData) {

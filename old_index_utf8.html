@@ -1,0 +1,3299 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <script>
+            if (localStorage.getItem('ps_logged_in') !== 'true') {
+                document.documentElement.classList.add('hide-app-shell');
+            }
+        </script>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>MFC Youth Tarlac | Activity & Attendance Portal</title>
+        <meta
+            name="description"
+            content="Ultra-premium unified portal for real-time attendance records, activity management, and visual analytics."
+        />
+        <!-- Google Fonts for Ultra-Modern Typography -->
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <link
+            href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Montserrat:wght@400;500;600;700;800;900&display=swap"
+            rel="stylesheet"
+        />
+        <!-- PWA Manifest & App Icons -->
+        <link rel="manifest" href="/manifest.json" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+        <link rel="apple-touch-icon" href="/mfc-logo.png" />
+        <link rel="icon" type="image/png" href="/mfc-logo.png" />
+        <!-- Custom Stylesheet -->
+        <link rel="stylesheet" href="styles.css?v=4.25" />
+        <link rel="stylesheet" href="aesthetic.css?v=1.0" />
+        <!-- jsPDF & AutoTable CDNs for PDF Export -->
+        <script
+            defer
+            src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"
+        ></script>
+        <script
+            defer
+            src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"
+        ></script>
+        <!-- SheetJS for Excel Export -->
+        <script
+            defer
+            src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"
+        ></script>
+        <script
+            defer
+            src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"
+        ></script>
+        <script
+            defer
+            src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"
+        ></script>
+        <script
+            defer
+            src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"
+        ></script>
+        <script defer src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+
+        <!-- EmailJS SDK -->
+        <script
+            defer
+            type="text/javascript"
+            src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"
+        ></script>
+        <script type="text/javascript">
+            (function () {
+                // Replace with your actual public key when ready
+                // emailjs.init("YOUR_PUBLIC_KEY");
+            })();
+        </script>
+        <link rel="stylesheet" href="./src/styles/extracted-components.css" />
+
+    </head>
+
+    <body>
+        <!-- App Loading Splash -->
+        <div id="app-loading-screen" class="ext-style-88">
+            <img src="mfc-logo.png" alt="MFC Youth Logo" class="ext-style-89">
+            <div class="ext-style-90">
+                <div class="ext-style-91"></div>
+                <span class="ext-style-92">Initializing PortalΓÇª</span>
+            </div>
+        </div>
+        
+        <!-- Ambient Background Cyber Glows -->
+        <div class="ambient-glow glow-1"></div>
+        <div class="ambient-glow glow-2"></div>
+        <!-- Authentication / Login Overlay -->
+
+        <!-- What's New Modal -->
+        <div id="whats-new-modal" class="modal ext-style-93" >
+            <div class="modal-content ext-style-94" >
+                <button id="action-btn-1" class="close-btn ext-style-95" >
+                    &times;
+                </button>
+                <h2 class="ext-style-96">
+                    <span class="ext-style-97">Γ£¿</span> What's New
+                </h2>
+                <p class="ext-style-98">
+                    Latest updates and features in MFC Youth Tarlac Portal v4.2
+                </p>
+                <ul class="ext-style-99">
+                    <li>
+                        <strong class="ext-style-100">Modular Architecture:</strong> The app is now
+                        fully modularized for blazing fast performance and easier updates.
+                    </li>
+                    <li>
+                        <strong class="ext-style-101">Glassmorphic UI:</strong> A stunning new dark
+                        theme with glassmorphism, blurs, and micro-animations.
+                    </li>
+                    <li>
+                        <strong class="ext-style-102">Interactive Attendance:</strong> Brand new
+                        roster engine with real-time stats and batch operations.
+                    </li>
+                    <li>
+                        <strong class="ext-style-103">Live QR Scanning:</strong> Enhanced camera
+                        handling for quicker QR check-ins.
+                    </li>
+                </ul>
+                <button id="action-btn-2" class="ext-style-104">
+                    Awesome!
+                </button>
+            </div>
+        </div>
+
+        <!-- Mobile Sidebar Backdrop -->
+        <div class="sidebar-backdrop" id="sidebar-backdrop"></div>
+
+        <!-- Application Shell Layout -->
+        <div class="app-shell">
+            <!-- Sidebar Navigation -->
+            <aside class="sidebar" id="sidebar">
+                <div class="sidebar-header ext-style-105" >
+                    <div class="brand-logo ext-style-106" >
+                        <div class="brand-flame-icon ext-style-107" >
+                            <img src="mfc-logo.png" alt="MFC Logo" class= />
+                        </div>
+                        <span class="brand-name ext-style-109" >MFC YOUTH TARLAC</span
+                        >
+                    </div>
+                    <button class="sidebar-close-btn ext-style-110" id="sidebar-close-btn" aria-label="Close sidebar" >
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M18 6L6 18M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+
+                <!-- Navigation Links -->
+                <nav class="sidebar-nav">
+                    <a id="action-btn-member-dash" href="javascript:void(0)" class="nav-item ext-style-111" data-view="member-dashboard" >
+                        <span class="nav-icon">
+                            <svg
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="2"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                            >
+                                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                                <circle cx="12" cy="7" r="4" />
+                            </svg>
+                        </span>
+                        <span class="nav-label">My Dashboard</span>
+                    </a>
+                    <a
+                        id="action-btn-3"
+                        href="javascript:void(0)"
+                        class="nav-item active"
+                        data-view="dashboard"
+                    >
+                        <span class="nav-icon">
+                            <svg
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="2"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                            >
+                                <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+                                <polyline points="9 22 9 12 15 12 15 22" />
+                            </svg>
+                        </span>
+                        <span class="nav-label">Home</span>
+                    </a>
+                    <a
+                        id="action-btn-4"
+                        href="javascript:void(0)"
+                        class="nav-item"
+                        data-view="activities"
+                    >
+                        <span class="nav-icon">
+                            <svg
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="2"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                            >
+                                <path
+                                    d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-0.5-5.0V19.5Z"
+                                />
+                                <path d="M6 17h14" />
+                            </svg>
+                        </span>
+                        <span class="nav-label">Activity Records</span>
+                    </a>
+                    <a
+                        id="action-btn-5"
+                        href="javascript:void(0)"
+                        class="nav-item"
+                        data-view="members"
+                    >
+                        <span class="nav-icon">
+                            <svg
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="2"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                            >
+                                <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+                                <circle cx="9" cy="7" r="4" />
+                                <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
+                                <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+                            </svg>
+                        </span>
+                        <span class="nav-label">Members</span>
+                    </a>
+                    <a
+                        id="action-btn-6"
+                        href="javascript:void(0)"
+                        class="nav-item"
+                        data-view="attendance"
+                    >
+                        <span class="nav-icon">
+                            <svg
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="2"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                            >
+                                <path d="M9 11l3 3L22 4" />
+                                <path
+                                    d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"
+                                />
+                            </svg>
+                        </span>
+                        <span class="nav-label">Attendance Records</span>
+                    </a>
+                    <a
+                        id="action-btn-7"
+                        href="javascript:void(0)"
+                        class="nav-item"
+                        data-view="funds"
+                    >
+                        <span class="nav-icon">
+                            <svg
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="2"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                            >
+                                <path d="M20 12V8H6a2 2 0 0 1-2-2c0-1.1.9-2 2-2h12v4" />
+                                <path d="M4 6v12c0 1.1.9 2 2 2h14v-4" />
+                                <path d="M18 12a2 2 0 0 0-2 2c0 1.1.9 2 2 2h4v-4h-4z" />
+                            </svg>
+                        </span>
+                        <span class="nav-label">Funds & Expenses</span>
+                    </a>
+                    <a
+                        id="action-btn-8"
+                        href="javascript:void(0)"
+                        class="nav-item"
+                        data-view="agenda"
+                    >
+                        <span class="nav-icon">
+                            <svg
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="2"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                            >
+                                <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
+                                <line x1="16" y1="2" x2="16" y2="6" />
+                                <line x1="8" y1="2" x2="8" y2="6" />
+                                <line x1="3" y1="10" x2="21" y2="10" />
+                                <path d="m9 16 2 2 4-4" />
+                            </svg>
+                        </span>
+                        <span class="nav-label">Agenda</span>
+                    </a>
+                    <a
+                        id="action-btn-9"
+                        href="javascript:void(0)"
+                        class="nav-item"
+                        data-view="servants"
+                    >
+                        <span class="nav-icon">
+                            <svg
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="2"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                            >
+                                <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                                <circle cx="8.5" cy="7" r="4" />
+                                <polyline points="17 11 19 13 23 9" />
+                            </svg>
+                        </span>
+                        <span class="nav-label">Servant Leaders</span>
+                    </a>
+                    <a
+                        id="action-btn-10"
+                        href="javascript:void(0)"
+                        class="nav-item"
+                        data-view="orgchart"
+                    >
+                        <span class="nav-icon">
+                            <svg
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="2"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                            >
+                                <rect x="8" y="2" width="8" height="6" rx="1" />
+                                <rect x="2" y="16" width="8" height="6" rx="1" />
+                                <rect x="14" y="16" width="8" height="6" rx="1" />
+                                <path d="M12 8v4" />
+                                <path d="M6 12h12" />
+                                <path d="M6 12v4" />
+                                <path d="M18 12v4" />
+                            </svg>
+                        </span>
+                        <span class="nav-label">Org Chart</span>
+                    </a>
+                    <a
+                        id="action-btn-11"
+                        href="javascript:void(0)"
+                        class="nav-item"
+                        data-view="resources"
+                    >
+                        <span class="nav-icon">
+                            <svg
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="2"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                            >
+                                <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
+                                <path
+                                    d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"
+                                />
+                                <line x1="9" y1="7" x2="15" y2="7" />
+                                <line x1="9" y1="11" x2="15" y2="11" />
+                            </svg>
+                        </span>
+                        <span class="nav-label">Resources</span>
+                    </a>
+
+                    <div class="ext-style-112"></div>
+                    <a id="action-btn-12" href="javascript:void(0)" class="nav-item ext-style-113" >
+                        <span class="nav-icon ext-style-114" >
+                            <svg
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="2"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                            >
+                                <polygon
+                                    points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"
+                                ></polygon>
+                            </svg>
+                        </span>
+                        <span class="nav-label ext-style-115" >What's New v4.2</span
+                        >
+                    </a>
+                </nav>
+            </aside>
+
+            <!-- Main Content Area -->
+            <main class="main-content">
+                <!-- Top App Bar -->
+                <!-- Top App Bar (MFC Youth Tarlac Custom Executive Header) -->
+                <header class="top-bar mfc-top-bar">
+                    <div class="top-bar-left">
+                        <button
+                            class="menu-toggle-btn visible-toggle"
+                            id="menu-toggle-btn"
+                            aria-label="Toggle Navigation"
+                            title="Toggle menu"
+                        >
+                            <svg id="menu-toggle-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" class="ext-style-116">
+                                <path d="M3 6h11M3 12h11M3 18h11M17 8l-4 4 4 4" />
+                            </svg>
+                        </button>
+
+                        <!-- Global Quick Search Bar & Ctrl+K Pill -->
+                        <div class="header-global-search ext-style-117" >
+                            <svg viewBox="0 0 24 24" fill="none" stroke="#64748B" stroke-width="2" class="ext-style-118">
+                                <circle cx="11" cy="11" r="8" />
+                                <path d="m21 21-4.35-4.35" />
+                            </svg>
+                            <input type="text" id="global-top-search" placeholder="Quick search..." oninput="handleGlobalSearch(this.value)" onkeydown=" if (event.key === 'Enter' && !this.value.trim()) { openCommandPalette(); } " autocomplete="off" class= />
+                            <button id="action-btn-13" title="Click or Press Ctrl+K / Cmd+K for Command Palette" onmouseover=" this.style.background = 'rgba(56, 189, 248, 0.3)'; this.style.borderColor = '#38BDF8'; " onmouseout=" this.style.background = 'rgba(56, 189, 248, 0.15)'; this.style.borderColor = 'rgba(56, 189, 248, 0.4)'; " class="ext-style-120">
+                                Ctrl K
+                            </button>
+                            <div id="global-search-results" class="ext-style-121"></div>
+                        </div>
+                    </div>
+
+                    <div class="top-bar-right ext-style-122" >
+                        <!-- Firebase Cloud Sync Button -->
+                        <button id="firebase-cloud-status-btn" title="Click to view or configure Firebase Cloud Sync" class="ext-style-123">
+                            <span class="ext-style-124"></span>
+                            <span id="firebase-status-label" class="ext-style-125">≡ƒöÑ Firebase: Connected</span
+                            >
+                        </button>
+
+                        <!-- PWA Install Button (shown dynamically when prompt available or manual instructions) -->
+                        <button id="install-pwa-btn" title="Install Portal as Standalone App" class="ext-style-126">
+                            <span>≡ƒô▒ Install App</span>
+                        </button>
+
+                        <!-- Keyboard Shortcuts Help (?) -->
+                        <button id="cheatsheet-btn" title="Keyboard Shortcuts & Rapid Check-in Cheatsheet (Press ?)" aria-label="Keyboard Shortcuts Cheatsheet" class="ext-style-127">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="ext-style-128">
+                                <rect x="2" y="4" width="20" height="16" rx="2" ry="2" />
+                                <line x1="6" y1="8" x2="6.01" y2="8" />
+                                <line x1="10" y1="8" x2="10.01" y2="8" />
+                                <line x1="14" y1="8" x2="14.01" y2="8" />
+                                <line x1="18" y1="8" x2="18.01" y2="8" />
+                                <line x1="6" y1="12" x2="6.01" y2="12" />
+                                <line x1="10" y1="12" x2="10.01" y2="12" />
+                                <line x1="14" y1="12" x2="14.01" y2="12" />
+                                <line x1="18" y1="12" x2="18.01" y2="12" />
+                                <line x1="7" y1="16" x2="17" y2="16" />
+                            </svg>
+                        </button>
+
+                        <!-- Social / Web Links -->
+                        <a
+                            href="https://www.facebook.com/MFCYouthTarlac"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            class="top-bar-icon-link text-blue"
+                            title="MFC Youth Tarlac Official Facebook Page"
+                        >
+                            <svg
+                                viewBox="0 0 24 24"
+                                fill="currentColor"
+                                class="ext-style-48"
+                            >
+                                <path
+                                    d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"
+                                />
+                            </svg>
+                        </a>
+                        <a
+                            href="https://mfcyouth.org"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            class="top-bar-icon-link text-blue"
+                            title="MFC Youth Official Website"
+                        >
+                            <svg
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="2"
+                                class="ext-style-48"
+                            >
+                                <circle cx="12" cy="12" r="10" />
+                                <path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20" />
+                                <path d="M2 12h20" />
+                            </svg>
+                        </a>
+
+                        <!-- Divider -->
+                        <div class="top-bar-divider"></div>
+
+                        <!-- Offline / Cloud Sync Pill Badge -->
+                        <button id="portal-sync-badge" title="Click to download an instant JSON backup snapshot of all chapter data" class="ext-style-129">
+                            <span class="ext-style-130"></span>
+                            <span>All Data Saved Locally</span>
+                        </button>
+
+                        <!-- Theme Toggle -->
+                        <button
+                            class="theme-toggle-switch"
+                            title="Toggle Theme"
+                            id="theme-toggle-btn"
+                            aria-label="Toggle Theme Mode"
+                        >
+                            <span class="theme-switch-thumb">
+                                <svg
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    stroke-width="2"
+                                >
+                                    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+                                </svg>
+                            </span>
+                            <span class="theme-switch-label">Dark Mode</span>
+                        </button>
+                        <!-- Profile Button -->
+                        <button
+                            class="top-bar-icon-btn"
+                            title="User Profile & Security"
+                            id="profile-toggle-btn"
+                        >
+                            <svg
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="2"
+                                class="ext-style-48"
+                            >
+                                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                                <circle cx="12" cy="7" r="4" />
+                            </svg>
+                        </button>
+
+                        <!-- Log Out Button -->
+                        <button id="action-btn-14" class="btn-logout">
+                            <span>Log Out</span>
+                            <svg
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="2"
+                            >
+                                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+                                <polyline points="16 17 21 12 16 7" />
+                                <line x1="21" y1="12" x2="9" y2="12" />
+                            </svg>
+                        </button>
+                    </div>
+                </header>
+
+                <!-- Views Container -->
+                <div class="views-container">
+                    <!-- ==========================================
+                     VIEW: MEMBER DASHBOARD (Self-Service)
+                     ========================================== -->
+                    <div id="view-member-dashboard" class="view-panel">
+                        <div class="glass-panel ext-style-131" >
+                            <h2 class="ext-style-132">
+                                Welcome, <span id="member-dash-name">Member</span>!
+                            </h2>
+                            <p class="ext-style-133">
+                                Here is your personal MFC Youth portal.
+                            </p>
+                        </div>
+
+                        <div class="ext-style-134">
+                            <!-- QR Code Card -->
+                            <div class="glass-card ext-style-135" >
+                                <h3 class="ext-style-136">Your ID Badge</h3>
+                                <div id="member-dash-qr" class="ext-style-137"></div>
+                                <p class="ext-style-138">
+                                    Present this QR code at events for quick check-in.
+                                </p>
+                            </div>
+
+                            <!-- Mini Attendance Stats -->
+                            <div class="glass-card ext-style-139" >
+                                <h3 class="ext-style-140">
+                                    Your Recent Attendance
+                                </h3>
+                                <div
+                                    id="member-dash-attendance-list"
+                                    class="ext-style-62"
+                                >
+                                    <div class="empty-state ext-style-141" >
+                                        <p>Loading your records...</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ==========================================
+                     VIEW 1: DASHBOARD OVERVIEW
+                     ========================================== -->
+                    <!-- INJECT: dashboard.html -->
+<div id="react-dashboard-view-root"></div>
+
+                    <!-- ==========================================
+                     VIEW 2: ACTIVITY RECORDS MANAGEMENT
+                     ========================================== -->
+                    <!-- INJECT: activities.html -->
+<div id="react-activities-view-root"></div>
+
+                    <!-- ==========================================
+                     VIEW: AGENDA & SEMESTER ROADMAP
+                     ========================================== -->
+                    <!-- INJECT: agenda.html -->
+<div id="react-agenda-view-root"></div>
+
+                    <!-- ==========================================
+                     VIEW 3: INTERACTIVE ATTENDANCE ROSTER
+                     ========================================== -->
+                    <!-- INJECT: attendance.html -->
+<div id="react-attendance-view-root"></div>
+
+                    <!-- ==========================================
+                     VIEW: MEMBERS LIST & DIRECTORY
+                     ========================================== -->
+                    <!-- INJECT: members.html -->
+<div id="react-members-view-root"></div>
+
+                    <!-- ==========================================
+                     VIEW 4: ANALYTICS & REPORTS
+                     ========================================== -->
+                    <!-- INJECT: analytics.html -->
+<div id="react-analytics-view-root"></div>
+
+                    <!-- ==========================================
+                     VIEW 5: ORGANIZATION HIERARCHY CHART
+                     ========================================== -->
+                    <div id="view-orgchart" class="view-panel">
+                        <!-- Org Chart Toolbar & Filters -->
+                        <div class="org-toolbar glass-card">
+                            <div class="org-toolbar-left">
+                                <div class="org-title-box">
+                                    <h3>Organization Hierarchy & Teams</h3>
+                                    <p>
+                                        Interactive command tree of officers, coordinators, and
+                                        general members
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="org-toolbar-right ext-style-142" >
+                                <div
+                                    class="ext-style-69 filter-group"
+                                   
+                                >
+                                    <label for="org-search-input" class="ext-style-143">Search:</label
+                                    >
+                                    <input type="text" id="org-search-input" placeholder="Search name or role..." oninput="renderOrgChart()" class= />
+                                </div>
+                                <div
+                                    class="ext-style-69 filter-group"
+                                   
+                                >
+                                    <label for="org-dept-filter" class="ext-style-145">Department:</label
+                                    >
+                                    <select id="org-dept-filter" class="custom-select ext-style-146" onchange="renderOrgChart()" >
+                                        <option value="ALL">All Departments</option>
+                                        <option value="Executive">Executive Board</option>
+                                        <option value="EAST CHAPTER">EAST CHAPTER</option>
+                                        <option value="Programs & Events">Programs & Events</option>
+                                        <option value="Creative & Media">Creative & Media</option>
+
+                                        <option value="Finance & Treasury">
+                                            Finance & Treasury
+                                        </option>
+                                    </select>
+                                </div>
+                                <div class="view-mode-toggle">
+                                    <button
+                                        class="btn-toggle active"
+                                        id="btn-org-tree"
+                                        title="Tree Hierarchy View"
+                                    >
+                                        <svg
+                                            viewBox="0 0 24 24"
+                                            fill="none"
+                                            stroke="currentColor"
+                                            stroke-width="2"
+                                            class="ext-style-57"
+                                        >
+                                            <rect x="9" y="2" width="6" height="6" rx="1" />
+                                            <rect x="2" y="16" width="6" height="6" rx="1" />
+                                            <rect x="16" y="16" width="6" height="6" rx="1" />
+                                            <path d="M12 8v4" />
+                                            <path d="M5 16v-2a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v2" />
+                                        </svg>
+                                        <span>Tree View</span>
+                                    </button>
+                                    <button
+                                        class="btn-toggle"
+                                        id="btn-org-grid"
+                                        title="Department Grid View"
+                                    >
+                                        <svg
+                                            viewBox="0 0 24 24"
+                                            fill="none"
+                                            stroke="currentColor"
+                                            stroke-width="2"
+                                            class="ext-style-57"
+                                        >
+                                            <rect x="3" y="3" width="7" height="7" rx="1" />
+                                            <rect x="14" y="3" width="7" height="7" rx="1" />
+                                            <rect x="14" y="14" width="7" height="7" rx="1" />
+                                            <rect x="3" y="14" width="7" height="7" rx="1" />
+                                        </svg>
+                                        <span>Grid View</span>
+                                    </button>
+                                    <button
+                                        class="btn-toggle"
+                                        id="btn-org-household"
+                                        title="Household Mentoring Groups"
+                                    >
+                                        <svg
+                                            viewBox="0 0 24 24"
+                                            fill="none"
+                                            stroke="currentColor"
+                                            stroke-width="2"
+                                            class="ext-style-57"
+                                        >
+                                            <path
+                                                d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"
+                                            />
+                                            <polyline points="9 22 9 12 15 12 15 22" />
+                                        </svg>
+                                        <span>Household View</span>
+                                    </button>
+                                </div>
+                                <button id="action-btn-52" class="btn-secondary btn-sm ext-style-147" >
+                                    <span>≡ƒû¿∩╕Å Print Batch IDs (A4)</span>
+                                </button>
+                                <button id="action-btn-53" class="btn-primary glow-button btn-sm">
+                                    <svg
+                                        viewBox="0 0 24 24"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        stroke-width="2"
+                                        class="ext-style-57"
+                                    >
+                                        <line x1="12" y1="5" x2="12" y2="19" />
+                                        <line x1="5" y1="12" x2="19" y2="12" />
+                                    </svg>
+                                    <span>Add Member</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Org Chart Canvas -->
+                        <div class="org-chart-container mt-6" id="org-chart-canvas">
+                            <!-- Populated via script.js -->
+                        </div>
+                    </div>
+
+                    <!-- ==========================================
+                     VIEW 6: FUNDS & EXPENSES
+                     ========================================== -->
+                    <!-- INJECT: funds.html -->
+<div id="react-funds-view-root"></div>
+
+                    <!-- RESOURCES & DOCUMENT VAULT VIEW PANEL -->
+                    <!-- INJECT: resources.html -->
+<div id="view-resources-container"></div>
+
+                    <!-- MODAL: DOWNLOAD ALL MANUALS -->
+                    <div id="modal-download-all" class="modal-backdrop ext-style-148" >
+                        <div class="glass-card ext-style-149" >
+                            <button id="action-btn-73" class="ext-style-150">
+                                &times;
+                            </button>
+                            <div class="ext-style-151">
+                                <div class="ext-style-87">≡ƒôª</div>
+                                <div>
+                                    <h3 class="ext-style-152">
+                                        Download All Official Resources
+                                    </h3>
+                                    <p class="ext-style-58">
+                                        Batch download official chapter manuals, guides, and rosary
+                                        decks.
+                                    </p>
+                                </div>
+                            </div>
+
+                            <div id="download-all-progress-bar" class="ext-style-153">
+                                <div id="download-progress-status" class="ext-style-154">
+                                    Starting batch download...
+                                </div>
+                                <div class="ext-style-155">
+                                    <div id="download-progress-fill" class="ext-style-156"></div>
+                                </div>
+                            </div>
+
+                            <div id="download-all-list" class="ext-style-157"></div>
+
+                            <div class="ext-style-158">
+                                <button id="action-btn-74" class="btn-secondary btn-sm">
+                                    Close
+                                </button>
+                                <button id="btn-start-batch-download" class="btn-primary btn-sm ext-style-159" >
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="ext-style-160">
+                                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                                        <polyline points="7 10 12 15 17 10" />
+                                        <line x1="12" y1="15" x2="12" y2="3" />
+                                    </svg>
+                                    <span>Start Batch Download (6 Files)</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- MODAL: HH SERVANTS TRAINING FOLDER -->
+                    <div id="modal-hh-folder" class="modal-backdrop ext-style-161" >
+                        <div class="glass-card ext-style-162" >
+                            <button id="action-btn-75" class="ext-style-163">
+                                &times;
+                            </button>
+                            <div class="ext-style-164">
+                                <div class="ext-style-87">≡ƒôü</div>
+                                <div>
+                                    <h3 class="ext-style-165">
+                                        Household Servants Training Modules
+                                    </h3>
+                                    <p class="ext-style-58">
+                                        Click any item below to open or download.
+                                    </p>
+                                </div>
+                            </div>
+
+                            <div class="ext-style-166">
+                                <div class="glass-card ext-style-167" >
+                                    <div class="ext-style-45">≡ƒôÿ</div>
+                                    <h4 class="ext-style-168">
+                                        HH Servants Jumpstart Manual 2020
+                                    </h4>
+                                    <div class="ext-style-42">
+                                        <a href="resources/HH Servants Jumpstart Manual 2020.pdf" target="_blank" class="btn-primary btn-sm ext-style-169" >≡ƒôä Open</a
+                                        >
+                                        <a href="resources/HH Servants Jumpstart Manual 2020.pdf" download class="btn-secondary btn-sm ext-style-170" >≡ƒôÑ DL</a
+                                        >
+                                    </div>
+                                </div>
+                                <div class="glass-card ext-style-171" >
+                                    <div class="ext-style-45">≡ƒôÿ</div>
+                                    <h4 class="ext-style-172">
+                                        Household Servants Training
+                                    </h4>
+                                    <div class="ext-style-42">
+                                        <a href="resources/MFC Youth Household Servants Training.pdf" target="_blank" class="btn-primary btn-sm ext-style-173" >≡ƒôä Open</a
+                                        >
+                                        <a href="resources/MFC Youth Household Servants Training.pdf" download class="btn-secondary btn-sm ext-style-174" >≡ƒôÑ DL</a
+                                        >
+                                    </div>
+                                </div>
+                                <div class="glass-card ext-style-175" >
+                                    <div class="ext-style-45">≡ƒôè</div>
+                                    <h4 class="ext-style-176">
+                                        Session 1 - Household Basics
+                                    </h4>
+                                    <div class="ext-style-42">
+                                        <a href="resources/Session 1 - Household Basics.pptx" target="_blank" class="btn-primary btn-sm ext-style-177" >≡ƒôä Open</a
+                                        >
+                                        <a href="resources/Session 1 - Household Basics.pptx" download class="btn-secondary btn-sm ext-style-178" >≡ƒôÑ DL</a
+                                        >
+                                    </div>
+                                </div>
+                                <div class="glass-card ext-style-179" >
+                                    <div class="ext-style-45">≡ƒôè</div>
+                                    <h4 class="ext-style-180">
+                                        Session 2 - Heart of a Servant
+                                    </h4>
+                                    <div class="ext-style-42">
+                                        <a href="resources/Session 2 - Heart of a Household Servant.pptx" target="_blank" class="btn-primary btn-sm ext-style-181" >≡ƒôä Open</a
+                                        >
+                                        <a href="resources/Session 2 - Heart of a Household Servant.pptx" download class="btn-secondary btn-sm ext-style-182" >≡ƒôÑ DL</a
+                                        >
+                                    </div>
+                                </div>
+                                <div class="glass-card ext-style-183" >
+                                    <div class="ext-style-45">≡ƒôè</div>
+                                    <h4 class="ext-style-184">
+                                        Workshop 1 - Discerning a Topic
+                                    </h4>
+                                    <div class="ext-style-42">
+                                        <a href="resources/Workshop 1 - Discerning a Household Topic.pptx" target="_blank" class="btn-primary btn-sm ext-style-185" >≡ƒôä Open</a
+                                        >
+                                        <a href="resources/Workshop 1 - Discerning a Household Topic.pptx" download class="btn-secondary btn-sm ext-style-186" >≡ƒôÑ DL</a
+                                        >
+                                    </div>
+                                </div>
+                                <div class="glass-card ext-style-187" >
+                                    <div class="ext-style-45">≡ƒôè</div>
+                                    <h4 class="ext-style-188">
+                                        Workshop 2 - Leading a Household
+                                    </h4>
+                                    <div class="ext-style-42">
+                                        <a href="resources/Workshop 2 - Leading a Household.pptx" target="_blank" class="btn-primary btn-sm ext-style-189" >≡ƒôä Open</a
+                                        >
+                                        <a href="resources/Workshop 2 - Leading a Household.pptx" download class="btn-secondary btn-sm ext-style-190" >≡ƒôÑ DL</a
+                                        >
+                                    </div>
+                                </div>
+                                <div class="glass-card ext-style-191" >
+                                    <div class="ext-style-45">≡ƒôè</div>
+                                    <h4 class="ext-style-192">
+                                        Workshop 3 - Worship Workshop
+                                    </h4>
+                                    <div class="ext-style-42">
+                                        <a href="resources/Workshop 3 - Worship Workshop.pptx" target="_blank" class="btn-primary btn-sm ext-style-193" >≡ƒôä Open</a
+                                        >
+                                        <a href="resources/Workshop 3 - Worship Workshop.pptx" download class="btn-secondary btn-sm ext-style-194" >≡ƒôÑ DL</a
+                                        >
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="ext-style-195">
+                                <button id="action-btn-76" class="btn-secondary btn-sm">
+                                    Close Folder
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- MODAL: CHAPTER SERVANTS TRAINING FOLDER -->
+                    <div id="modal-cst-folder" class="modal-backdrop ext-style-196" >
+                        <div class="glass-card ext-style-197" >
+                            <button id="action-btn-77" class="ext-style-198">
+                                &times;
+                            </button>
+                            <div class="ext-style-199">
+                                <div class="ext-style-87">≡ƒôü</div>
+                                <div>
+                                    <h3 class="ext-style-200">
+                                        Chapter Servants Training Modules
+                                    </h3>
+                                    <p class="ext-style-58">
+                                        Click any item below to open or download.
+                                    </p>
+                                </div>
+                            </div>
+
+                            <div class="ext-style-201">
+                                <!-- MFC Youth Chapter Servants Training Manual 2020.pdf -->
+                                <div class="glass-card ext-style-202" >
+                                    <div class="ext-style-45">≡ƒôÿ</div>
+                                    <h4 class="ext-style-203">
+                                        Chapter Servants Manual
+                                    </h4>
+                                    <div class="ext-style-42">
+                                        <a href="resources/MFC Youth Chapter Servants Training Manual 2020.pdf" target="_blank" class="btn-primary btn-sm ext-style-204" >≡ƒôä Open</a
+                                        >
+                                        <a href="resources/MFC Youth Chapter Servants Training Manual 2020.pdf" download class="btn-secondary btn-sm ext-style-205" >≡ƒôÑ DL</a
+                                        >
+                                    </div>
+                                </div>
+                                <!-- Visionary Leadership.pptx -->
+                                <div class="glass-card ext-style-206" >
+                                    <div class="ext-style-45">≡ƒôè</div>
+                                    <h4 class="ext-style-207">
+                                        Visionary Leadership
+                                    </h4>
+                                    <div class="ext-style-42">
+                                        <a href="resources/Visionary Leadership.pptx" target="_blank" class="btn-primary btn-sm ext-style-208" >≡ƒôä Open</a
+                                        >
+                                        <a href="resources/Visionary Leadership.pptx" download class="btn-secondary btn-sm ext-style-209" >≡ƒôÑ DL</a
+                                        >
+                                    </div>
+                                </div>
+                                <!-- Building, Inspiring and Forming a Killer Team.pptx -->
+                                <div class="glass-card ext-style-210" >
+                                    <div class="ext-style-45">≡ƒôè</div>
+                                    <h4 class="ext-style-211">
+                                        Building a Killer Team
+                                    </h4>
+                                    <div class="ext-style-42">
+                                        <a href="resources/Building, Inspiring and Forming a Killer Team.pptx" target="_blank" class="btn-primary btn-sm ext-style-212" >≡ƒôä Open</a
+                                        >
+                                        <a href="resources/Building, Inspiring and Forming a Killer Team.pptx" download class="btn-secondary btn-sm ext-style-213" >≡ƒôÑ DL</a
+                                        >
+                                    </div>
+                                </div>
+                                <!-- Evangelistic Sensitivity Workshop.pptx -->
+                                <div class="glass-card ext-style-214" >
+                                    <div class="ext-style-45">≡ƒôè</div>
+                                    <h4 class="ext-style-215">
+                                        Evangelistic Sensitivity
+                                    </h4>
+                                    <div class="ext-style-42">
+                                        <a href="resources/Evangelistic Sensitivity Workshop.pptx" target="_blank" class="btn-primary btn-sm ext-style-216" >≡ƒôä Open</a
+                                        >
+                                        <a href="resources/Evangelistic Sensitivity Workshop.pptx" download class="btn-secondary btn-sm ext-style-217" >≡ƒôÑ DL</a
+                                        >
+                                    </div>
+                                </div>
+                                <!-- Liturgical Bible Study Workshop.pptx -->
+                                <div class="glass-card ext-style-218" >
+                                    <div class="ext-style-45">≡ƒôè</div>
+                                    <h4 class="ext-style-219">
+                                        Liturgical Bible Study
+                                    </h4>
+                                    <div class="ext-style-42">
+                                        <a href="resources/Liturgical Bible Study Workshop.pptx" target="_blank" class="btn-primary btn-sm ext-style-220" >≡ƒôä Open</a
+                                        >
+                                        <a href="resources/Liturgical Bible Study Workshop.pptx" download class="btn-secondary btn-sm ext-style-221" >≡ƒôÑ DL</a
+                                        >
+                                    </div>
+                                </div>
+                                <!-- Talk-Writing Workshop.pptx -->
+                                <div class="glass-card ext-style-222" >
+                                    <div class="ext-style-45">≡ƒôè</div>
+                                    <h4 class="ext-style-223">
+                                        Talk-Writing Workshop
+                                    </h4>
+                                    <div class="ext-style-42">
+                                        <a href="resources/Talk-Writing Workshop.pptx" target="_blank" class="btn-primary btn-sm ext-style-224" >≡ƒôä Open</a
+                                        >
+                                        <a href="resources/Talk-Writing Workshop.pptx" download class="btn-secondary btn-sm ext-style-225" >≡ƒôÑ DL</a
+                                        >
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="ext-style-226">
+                                <button id="action-btn-78" class="btn-secondary btn-sm">
+                                    Close Folder
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- ACCOUNT MANAGEMENT VIEW PANEL -->
+                    <!-- INJECT: account.html -->
+<div id="react-account-view-root"></div>
+                </div>
+                <!-- /views-container -->
+
+                <!-- Global Copyright Footer Bar (Matching User Screenshot) -->
+                <footer class="portal-footer ext-style-227" >
+                    <span
+                        >Copyright All Rights Reserved &copy; 2026. Designed and developed by:
+                        <strong class="ext-style-228">Area LIT Tarlac.</strong
+                        ></span
+                    >
+                </footer>
+            </main>
+        </div>
+        <!-- /app-shell -->
+
+        <!-- ==========================================================================
+         MODAL: ADD / EDIT ACTIVITY
+         ========================================================================== -->
+        <!-- INJECT: modal.html -->
+<div id="react-general-modal-root"></div>
+
+        <!-- ==========================================================================
+         MODAL: CREATE NEW ACCOUNT (ACCOUNT MANAGEMENT)
+         ========================================================================== -->
+        <div class="modal-backdrop ext-style-229" id="create-account-backdrop" >
+            <div class="modal-card glass-card ext-style-230" role="dialog" aria-labelledby="create-account-title" >
+                <div class="modal-header ext-style-231" >
+                    <h3 id="create-account-title" class="ext-style-232">
+                        Create Account
+                    </h3>
+                    <button id="action-btn-86" class="modal-close-btn" aria-label="Close modal">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M18 6L6 18M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+                <form id="create-account-form" onsubmit="handleCreateAccount(event)">
+                    <div class="ext-style-85 form-group">
+                        <label for="acc-email" class="ext-style-233">Email Address</label
+                        >
+                        <input type="email" id="acc-email" required placeholder="admin@example.com" class= />
+                    </div>
+                    <div class="ext-style-85 form-group">
+                        <label for="acc-password" class="ext-style-235">Password (minimum 6 characters)</label
+                        >
+                        <input type="password" id="acc-password" required minlength="6" placeholder="******" class= />
+                    </div>
+                    <div class="ext-style-85 form-group">
+                        <label for="acc-role" class="ext-style-237">Role</label
+                        >
+                        <select id="acc-role" class="custom-select ext-style-238" onchange="toggleAccountChapterGroup()" >
+                            <option value="SUPER ADMIN">Super Admin (Full Access)</option>
+                            <option value="CHAPTER HEAD" selected>
+                                Chapter Head (Restricted Access)
+                            </option>
+                        </select>
+                    </div>
+                    <div class="form-group ext-style-239" id="acc-chapter-group" >
+                        <label for="acc-chapter-area" class="ext-style-240">Chapter Area</label
+                        >
+                        <select id="acc-chapter-area" class="custom-select ext-style-241" >
+                            <option value="East">East</option>
+                            <option value="North">North</option>
+                            <option value="West">West</option>
+                            <option value="South">South</option>
+                            <option value="Central">Central</option>
+                            <option value="All Chapters">All Chapters</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn-primary glow-button ext-style-242" >
+                        Create Account
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- ==========================================================================
+         MODAL: MEMBER PROFILE & ATTENDANCE DETAILS
+         ========================================================================== -->
+        <div class="modal-backdrop ext-style-243" id="member-modal-backdrop" >
+            <div
+                class="modal-card glass-card member-profile-modal"
+                role="dialog"
+                aria-labelledby="member-profile-name"
+            >
+                <div class="modal-header ext-style-244" >
+                    <h3>Member Profile & Stats</h3>
+                    <button id="action-btn-87" class="modal-close-btn" aria-label="Close modal">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M18 6L6 18M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+                <div class="member-profile-scroll-area ext-style-245" >
+                    <div class="member-profile-body" id="member-profile-content">
+                        <!-- Populated via script.js -->
+                    </div>
+                    <div id="member-timeline-container" class="ext-style-246"></div>
+                </div>
+                <div class="modal-footer member-modal-footer">
+                    <div class="member-footer-actions">
+                        <button
+                            id="action-btn-88"
+                            type="button"
+                            class="btn-action-pill btn-qr-badge"
+                        >
+                            <svg
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="2.2"
+                            >
+                                <rect x="3" y="3" width="7" height="7" rx="1.5" />
+                                <rect x="14" y="3" width="7" height="7" rx="1.5" />
+                                <rect x="3" y="14" width="7" height="7" rx="1.5" />
+                                <rect x="14" y="14" width="3" height="3" rx="0.5" />
+                                <rect x="18" y="14" width="3" height="3" rx="0.5" />
+                                <rect x="14" y="18" width="3" height="3" rx="0.5" />
+                                <rect x="18" y="18" width="3" height="3" rx="0.5" />
+                            </svg>
+                            <span>Printable QR ID Badge</span>
+                        </button>
+                        <button
+                            id="action-btn-89"
+                            type="button"
+                            class="btn-action-pill btn-report-card"
+                        >
+                            <svg
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="2.2"
+                            >
+                                <path d="M22 10v6M2 10l10-5 10 5-10 5z" />
+                                <path d="M6 12v5c0 2 2 3 6 3s6-1 6-3v-5" />
+                            </svg>
+                            <span>Print Semester Report Card</span>
+                        </button>
+                        <button
+                            id="action-btn-90"
+                            type="button"
+                            class="btn-action-pill btn-award-cert"
+                        >
+                            <svg
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="2.2"
+                            >
+                                <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6" />
+                                <path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18" />
+                                <path d="M4 22h16" />
+                                <path
+                                    d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"
+                                />
+                                <path
+                                    d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"
+                                />
+                                <path d="M18 2H6v7a6 6 0 0 0 12 0V2z" />
+                            </svg>
+                            <span>Award Certificate</span>
+                        </button>
+                    </div>
+                    <button
+                        id="action-btn-91"
+                        type="button"
+                        class="btn-action-pill btn-close-modal"
+                    >
+                        <svg
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="2.2"
+                        >
+                            <path d="M18 6L6 18M6 6l12 12" />
+                        </svg>
+                        <span>Close Profile</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ==========================================================================
+         MODAL: BULK IMPORT MEMBERS FROM CSV
+         ========================================================================== -->
+        <div class="modal-backdrop ext-style-247" id="import-csv-backdrop" >
+            <div class="modal-card glass-card ext-style-248" role="dialog" aria-labelledby="import-csv-title" >
+                <div class="modal-header ext-style-249" >
+                    <h3 id="import-csv-title" class="ext-style-250">
+                        Bulk Import Members (CSV)
+                    </h3>
+                    <button id="action-btn-92" class="modal-close-btn" aria-label="Close modal">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M18 6L6 18M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+                <p class="ext-style-251">
+                    Upload a CSV file or paste formatted CSV rows below. Format: <br />
+                    <code class="ext-style-252">Name, Chapter Area, Ministry/Dept, Designation/Role, Phone, Email</code
+                    >
+                </p>
+                <div class="ext-style-253">
+                    <label for="import-csv-file" class="btn-secondary ext-style-254" >
+                        <svg
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="2"
+                            class="ext-style-57"
+                        >
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                            <polyline points="17 8 12 3 7 8" />
+                            <line x1="12" y1="3" x2="12" y2="15" />
+                        </svg>
+                        <span>Choose CSV File (.csv)</span>
+                        <input type="file" id="import-csv-file" accept=".csv" onchange="handleCSVFileUpload(event)" class= />
+                    </label>
+                    <button id="action-btn-93" type="button" class="btn-secondary ext-style-256" title="Smartly auto-arrange and format pasted table rows according to detected headers" >
+                        <span>ΓÜí Auto Arrange Columns</span>
+                    </button>
+                </div>
+                <textarea id="import-csv-text" rows="6" placeholder="Example:&#10;Juan Dela Cruz, East Chapter, Programs & Events, Youth Member, 09171234567, juan@mfcyouth.org&#10;Maria Santos, Central Chapter, EAST CHAPTER, Household Head, 09181234567, maria@mfcyouth.org" class="ext-style-257"></textarea>
+                <div class="ext-style-258">
+                    <button id="action-btn-94" type="button" class="btn-secondary">Cancel</button>
+                    <button id="action-btn-95" type="button" class="btn-secondary ext-style-259" >
+                        ΓÜí Auto Arrange
+                    </button>
+                    <button id="action-btn-96" type="button" class="btn-primary glow-button ext-style-260" >
+                        Import Members
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ==========================================================================
+         MODAL: VISUAL HOUSEHOLD / CORE GROUP TREE VIEW
+         ========================================================================== -->
+        <div class="modal-backdrop ext-style-261" id="household-tree-backdrop" >
+            <div class="modal-card glass-card ext-style-262" role="dialog" aria-labelledby="household-tree-title" >
+                <div class="modal-header ext-style-263" >
+                    <div class="ext-style-50">
+                        <span class="ext-style-59">≡ƒî│</span>
+                        <div>
+                            <h3 id="household-tree-title" class="ext-style-264">
+                                Pastoral Household & Mentoring Lineage Tree
+                            </h3>
+                            <span class="ext-style-265">Chapter Hierarchy & Pastoral Mentoring Units</span
+                            >
+                        </div>
+                    </div>
+                    <button id="action-btn-97" class="modal-close-btn" aria-label="Close modal">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M18 6L6 18M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+                <div id="household-tree-container" class="ext-style-266">
+                    <!-- Populated dynamically via script.js -->
+                </div>
+                <div class="ext-style-267">
+                    <button id="action-btn-98" type="button" class="btn-primary">
+                        Close Tree View
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ==========================================================================
+         MODAL: PRINTABLE MEMBER QR ID CARD BADGE
+         ========================================================================== -->
+        <div class="modal-backdrop ext-style-268" id="qr-badge-backdrop" >
+            <div class="modal-card glass-card ext-style-269" role="dialog" aria-labelledby="qr-badge-title" >
+                <div class="modal-header ext-style-270" >
+                    <h3 id="qr-badge-title" class="ext-style-271">
+                        Member Digital QR ID Card
+                    </h3>
+                    <button id="action-btn-99" class="modal-close-btn" aria-label="Close modal">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M18 6L6 18M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+                <!-- ID CARD GRAPHIC -->
+                <div id="printable-id-card" class="ext-style-272">
+                    <div class="ext-style-273">
+                        MFC YOUTH TARLAC
+                    </div>
+                    <div class="ext-style-274">
+                        OFFICIAL MEMBER ID
+                    </div>
+
+                    <div id="qr-badge-name" class="ext-style-275">
+                        Juan Dela Cruz
+                    </div>
+                    <div id="qr-badge-role-area" class="ext-style-276">
+                        East Chapter ΓÇó Programs & Events
+                    </div>
+
+                    <div id="qr-badge-box" class="ext-style-277"></div>
+                    <div id="qr-badge-id-code" class="ext-style-278">
+                        ID: MFC-2026-0001
+                    </div>
+                </div>
+                <div class="ext-style-279">
+                    <button id="action-btn-100" type="button" class="btn-primary glow-button ext-style-280" >
+                        Print / Download ID
+                    </button>
+                    <button id="action-btn-101" type="button" class="btn-secondary">Close</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ==========================================================================
+         MODAL: ADD NEW MEMBER / OFFICER
+         ========================================================================== -->
+        <!-- INJECT: add-member.html -->
+<div id="react-add-member-root"></div>
+
+        <!-- ==========================================================================
+         MODAL: ADD / EDIT FUND RECORD
+         ========================================================================== -->
+        <div class="modal-backdrop ext-style-281" id="modal-funds-backdrop" >
+            <div class="modal-card glass-card" role="dialog" aria-labelledby="modal-funds-title">
+                <div class="modal-header">
+                    <h3 id="modal-funds-title">Add Fund Record</h3>
+                    <button id="action-btn-105" class="btn-close" aria-label="Close modal">
+                        ├ù
+                    </button>
+                </div>
+                <form id="funds-form" onsubmit="saveFundRecord(event)">
+                    <input type="hidden" id="fund-id" />
+
+                    <div class="form-group">
+                        <label for="fund-type"
+                            >Transaction Type <span class="required">*</span></label
+                        >
+                        <select id="fund-type" required onchange="updateFundCategories()">
+                            <option value="Income">Income (+)</option>
+                            <option value="Expense">Expense (-)</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="fund-category">Category <span class="required">*</span></label>
+                        <select id="fund-category" required>
+                            <option value="Tithe & Offering">Tithe & Offering</option>
+                            <option value="Donation / Sponsorship">Donation / Sponsorship</option>
+                            <option value="Fundraising Event">Fundraising Event</option>
+                            <option value="Registration Fees">Registration Fees</option>
+                            <option value="Other Income">Other Income</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="fund-amount">Amount (Γé▒) <span class="required">*</span></label>
+                        <input
+                            type="number"
+                            step="0.01"
+                            id="fund-amount"
+                            required
+                            placeholder="0.00"
+                            min="0"
+                        />
+                    </div>
+
+                    <div class="form-group">
+                        <label for="fund-date">Date <span class="required">*</span></label>
+                        <input type="date" id="fund-date" required />
+                    </div>
+
+                    <div class="form-group">
+                        <label for="fund-description"
+                            >Description / Particulars <span class="required">*</span></label
+                        >
+                        <input
+                            type="text"
+                            id="fund-description"
+                            required
+                            placeholder="e.g. Youth Camp Food Supplies, Saturday Offering"
+                        />
+                    </div>
+
+                    <div class="form-group">
+                        <label for="fund-receipt">Receipt / Reference No. (Optional)</label>
+                        <input
+                            type="text"
+                            id="fund-receipt"
+                            placeholder="e.g. OR #12345 or GCash Ref #"
+                        />
+                    </div>
+
+                    <div class="ext-style-86 form-group">
+                        <label for="fund-receipt-file">Attach Receipt Image (Optional)</label>
+                        <input type="hidden" id="fund-receipt-image-data" />
+                        <div class="receipt-upload-box ext-style-282" id="receipt-upload-box" >
+                            <input type="file" id="fund-receipt-file" accept="image/*" onchange="handleReceiptImageSelect(event)" class= />
+                            <div id="receipt-upload-prompt">
+                                <div class="ext-style-284">≡ƒôÄ</div>
+                                <div class="ext-style-285">
+                                    Click to attach receipt photo
+                                </div>
+                                <div class="ext-style-286">
+                                    Supports JPG, PNG, WEBP
+                                </div>
+                            </div>
+                            <div id="receipt-upload-preview" class="ext-style-287">
+                                <div class="ext-style-50">
+                                    <img id="receipt-preview-img" src="" alt="Receipt Preview" class= />
+                                    <div>
+                                        <div id="receipt-preview-name" class="ext-style-289">
+                                            Receipt Attached
+                                        </div>
+                                        <div class="ext-style-290">
+                                            Click to replace image
+                                        </div>
+                                    </div>
+                                </div>
+                                <button id="action-btn-106" type="button" class="ext-style-291">
+                                    Remove
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="modal-footer ext-style-292" >
+                        <button id="action-btn-107" type="button" class="btn-secondary">
+                            Cancel
+                        </button>
+                        <button type="submit" class="btn-primary glow-button">Save Record</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- ==========================================================================
+         MODAL: USER SECURITY & ACCOUNT RECOVERY OPTIONS (matching screenshot)
+         ========================================================================== -->
+        <div class="modal-backdrop ext-style-293" id="user-profile-backdrop" >
+            <div class="user-security-card" role="dialog" aria-labelledby="profile-modal-email">
+                <!-- Header section -->
+                <div class="user-security-header">
+                    <div class="user-security-badge">
+                        <svg
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="2"
+                            class="ext-style-77"
+                        >
+                            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                            <path d="m9 12 2 2 4-4" />
+                        </svg>
+                    </div>
+                    <div class="user-security-info">
+                        <div id="profile-modal-email" class="user-security-email">
+                            reyesbarney38@gmail.com
+                        </div>
+                        <div id="profile-modal-role" class="user-security-role">Super Admin</div>
+                    </div>
+                    <button
+                        id="action-btn-108"
+                        type="button"
+                        class="user-security-close"
+                        title="Close"
+                    >
+                        Γ£ò
+                    </button>
+                </div>
+
+                <!-- Separator -->
+                <div class="user-security-divider"></div>
+
+                <!-- View 1: Main Menu -->
+                <div id="profile-modal-menu-view">
+                    <div id="action-btn-109" class="profile-security-item">
+                        <div class="profile-security-icon">
+                            <svg
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="2"
+                            >
+                                <path
+                                    d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"
+                                />
+                            </svg>
+                        </div>
+                        <span class="profile-security-label">Change Passcode</span>
+                    </div>
+
+                    <div class="user-security-divider ext-style-294" ></div>
+
+                    <div id="action-btn-110" class="profile-security-item">
+                        <div class="profile-security-icon">
+                            <svg
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="2"
+                            >
+                                <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                                <circle cx="8.5" cy="7" r="4" />
+                                <path d="M19 8v6m-3-3h6" />
+                            </svg>
+                        </div>
+                        <span class="profile-security-label">Change Account Recovery Options</span>
+                    </div>
+
+                    <div class="user-security-divider ext-style-295" ></div>
+
+                    <div id="action-btn-111" class="profile-security-item">
+                        <div class="profile-security-icon ext-style-296" >
+                            <svg
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="2"
+                            >
+                                <path d="M12 2a10 10 0 1 0 10 10H12V2z" />
+                                <path d="M12 12 2.88 7.12a10 10 0 0 0 16.24 4.88L12 12z" />
+                            </svg>
+                        </div>
+                        <span class="profile-security-label">Role-Based Access Control (RBAC)</span>
+                    </div>
+
+                    <div class="user-security-divider ext-style-297" ></div>
+
+                    <div id="action-btn-112" class="profile-security-item">
+                        <div class="profile-security-icon ext-style-298" >
+                            <svg
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="2"
+                            >
+                                <path
+                                    d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"
+                                />
+                                <polyline points="14 2 14 8 20 8" />
+                                <line x1="16" y1="13" x2="8" y2="13" />
+                                <line x1="16" y1="17" x2="8" y2="17" />
+                                <polyline points="10 9 9 9 8 9" />
+                            </svg>
+                        </div>
+                        <span class="profile-security-label">System Audit & Activity Logs</span>
+                    </div>
+                </div>
+
+                <!-- View 2: Change Passcode Form -->
+                <div id="profile-modal-passcode-view" class="ext-style-299">
+                    <div class="user-security-subheader">
+                        <button id="action-btn-113" type="button" class="btn-back-link">
+                            ΓåÉ Back
+                        </button>
+                        <h4>Change Passcode</h4>
+                    </div>
+                    <div class="ext-style-56 form-group">
+                        <label for="sec-current-passcode" class="ext-style-300">Current Passcode</label
+                        >
+                        <input
+                            type="password"
+                            id="sec-current-passcode"
+                            class="ext-style-67 form-input"
+                            placeholder="Enter current passcode"
+                           
+                        />
+                    </div>
+                    <div class="ext-style-56 form-group">
+                        <label for="sec-new-passcode" class="ext-style-301">New Passcode</label
+                        >
+                        <input
+                            type="password"
+                            id="sec-new-passcode"
+                            class="ext-style-67 form-input"
+                            placeholder="Min. 6 characters"
+                           
+                        />
+                    </div>
+                    <div class="ext-style-60 form-group">
+                        <label for="sec-confirm-passcode" class="ext-style-302">Confirm New Passcode</label
+                        >
+                        <input
+                            type="password"
+                            id="sec-confirm-passcode"
+                            class="ext-style-67 form-input"
+                            placeholder="Confirm new passcode"
+                           
+                        />
+                    </div>
+                    <div class="ext-style-303">
+                        <button
+                            id="action-btn-114"
+                            type="button"
+                            class="ext-style-66 btn-secondary"
+                           
+                        >
+                            Cancel
+                        </button>
+                        <button
+                            id="action-btn-115"
+                            type="button"
+                            class="ext-style-66 btn-primary"
+                           
+                        >
+                            Save Passcode
+                        </button>
+                    </div>
+                </div>
+
+                <!-- View 3: Change Account Recovery Options Form -->
+                <div id="profile-modal-recovery-view" class="ext-style-304">
+                    <div class="user-security-subheader">
+                        <button id="action-btn-116" type="button" class="btn-back-link">
+                            ΓåÉ Back
+                        </button>
+                        <h4>Recovery Options</h4>
+                    </div>
+                    <div class="ext-style-56 form-group">
+                        <label for="sec-recovery-email" class="ext-style-305">Recovery Email Address</label
+                        >
+                        <input
+                            type="email"
+                            id="sec-recovery-email"
+                            class="ext-style-67 form-input"
+                            value="reyesbarney38@gmail.com"
+                           
+                        />
+                    </div>
+                    <div class="ext-style-56 form-group">
+                        <label for="sec-recovery-phone" class="ext-style-306">Backup Phone Number</label
+                        >
+                        <input
+                            type="tel"
+                            id="sec-recovery-phone"
+                            class="ext-style-67 form-input"
+                            value="+63 917 123 4567"
+                           
+                        />
+                    </div>
+                    <div class="ext-style-56 form-group">
+                        <label for="sec-recovery-question" class="ext-style-307">Security Question</label
+                        >
+                        <select id="sec-recovery-question" class="form-input ext-style-308" >
+                            <option value="q1">What was your childhood nickname?</option>
+                            <option value="q2">What city were you born in?</option>
+                            <option value="q3">What is your favorite book?</option>
+                        </select>
+                    </div>
+                    <div class="ext-style-60 form-group">
+                        <label for="sec-recovery-answer" class="ext-style-309">Security Answer</label
+                        >
+                        <input
+                            type="text"
+                            id="sec-recovery-answer"
+                            class="ext-style-67 form-input"
+                            value="Tarlac City"
+                           
+                        />
+                    </div>
+                    <div class="ext-style-310">
+                        <button
+                            id="action-btn-117"
+                            type="button"
+                            class="ext-style-66 btn-secondary"
+                           
+                        >
+                            Cancel
+                        </button>
+                        <button
+                            id="action-btn-118"
+                            type="button"
+                            class="ext-style-66 btn-primary"
+                           
+                        >
+                            Save Options
+                        </button>
+                    </div>
+                </div>
+
+                <!-- View 4: Role-Based Access Control (RBAC) Simulator -->
+                <div id="profile-modal-rbac-view" class="ext-style-311">
+                    <div class="user-security-subheader">
+                        <button id="action-btn-119" type="button" class="btn-back-link">
+                            ΓåÉ Back
+                        </button>
+                        <h4>Role-Based Access Control (RBAC)</h4>
+                    </div>
+                    <p class="ext-style-312">
+                        Test different officer permission levels. Switching roles restricts
+                        sensitive financial ledgers and system administration panels.
+                    </p>
+                    <div class="ext-style-313">
+                        <div class="ext-style-314">
+                            <div>
+                                <div class="ext-style-315">
+                                    ≡ƒææ Super Admin
+                                </div>
+                                <div class="ext-style-80">
+                                    Full system access, user management, and financial ledger
+                                </div>
+                            </div>
+                            <button
+                                id="action-btn-120"
+                                type="button"
+                                class="ext-style-78 btn-primary"
+                               
+                            >
+                                Activate
+                            </button>
+                        </div>
+                        <div class="ext-style-316">
+                            <div>
+                                <div class="ext-style-317">
+                                    ≡ƒôï Attendance Officer
+                                </div>
+                                <div class="ext-style-80">
+                                    Access to check-ins, QR scanning, and attendance sheets only
+                                </div>
+                            </div>
+                            <button
+                                id="action-btn-121"
+                                type="button"
+                                class="ext-style-78 btn-secondary"
+                               
+                            >
+                                Activate
+                            </button>
+                        </div>
+                        <div class="ext-style-318">
+                            <div>
+                                <div class="ext-style-319">
+                                    ≡ƒÆ░ Finance Officer
+                                </div>
+                                <div class="ext-style-80">
+                                    Access to chapter treasury, funds, collections, and budgeting
+                                </div>
+                            </div>
+                            <button
+                                id="action-btn-122"
+                                type="button"
+                                class="ext-style-78 btn-secondary"
+                               
+                            >
+                                Activate
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- View 5: System Audit Activity Log Viewer -->
+                <div id="profile-modal-audit-view" class="ext-style-320">
+                    <div class="user-security-subheader">
+                        <button id="action-btn-123" type="button" class="btn-back-link">
+                            ΓåÉ Back
+                        </button>
+                        <h4>System Audit Trail</h4>
+                    </div>
+                    <div class="ext-style-321">
+                        <span class="ext-style-322">Tracking recent security & check-in events</span
+                        >
+                        <button id="action-btn-124" type="button" class="btn-secondary ext-style-323" >
+                            Clear Log
+                        </button>
+                    </div>
+                    <div id="profile-audit-log-list" class="ext-style-324">
+                        <!-- Populated via script.js -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ==========================================================================
+         MODAL: LIVE QR / ID SCANNER FOR ATTENDANCE
+         ========================================================================== -->
+        <div class="modal-backdrop ext-style-325" id="qr-scanner-backdrop" >
+            <div class="modal-card glass-card ext-style-326" role="dialog" aria-labelledby="qr-modal-title" >
+                <div class="modal-header">
+                    <h3 id="qr-modal-title" class="ext-style-327">
+                        <svg
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="#38BDF8"
+                            stroke-width="2"
+                            class="ext-style-77"
+                        >
+                            <path d="M3 7V5a2 2 0 0 1 2-2h2" />
+                            <path d="M17 3h2a2 2 0 0 1 2 2v2" />
+                            <path d="M21 17v2a2 2 0 0 1-2 2h-2" />
+                            <path d="M7 21H5a2 2 0 0 1-2-2v-2" />
+                            <rect width="8" height="8" x="8" y="8" rx="1" />
+                        </svg>
+                        Live QR / ID Scanner
+                    </h3>
+                    <button id="action-btn-125" class="modal-close-btn" aria-label="Close scanner">
+                        Γ£ò
+                    </button>
+                </div>
+                <p class="ext-style-328">
+                    Position the member's digital QR ID or barcode within the scanning frame.
+                </p>
+                <div class="qr-video-frame ext-style-329" id="qr-reader" >
+                    <div id="qr-camera-placeholder" class="ext-style-330">
+                        <div class="qr-laser-line ext-style-331" ></div>
+                        <span class="ext-style-332">[ Camera Stream Standby / Ready ]</span
+                        >
+                        <button id="action-btn-126" type="button" class="btn-primary btn-sm glow-button ext-style-333" >
+                            ≡ƒô╖ Start Live Camera Scan
+                        </button>
+                    </div>
+                </div>
+                <div class="ext-style-334">
+                    <div class="ext-style-335">
+                        ΓÜí INSTANT SCAN SIMULATOR (MANUAL CHECK-IN)
+                    </div>
+                    <div class="ext-style-72">
+                        <select id="qr-sim-member" class="custom-select ext-style-336" title="Simulate Check-in for Member" aria-label="Simulate Check-in for Member">
+                            <!-- Populated with members via script.js -->
+                        </select>
+                        <button
+                            id="action-btn-127"
+                            type="button"
+                            class="ext-style-66 btn-primary"
+                           
+                        >
+                            Scan & Check-In
+                        </button>
+                    </div>
+                </div>
+                <button id="action-btn-128" type="button" class="btn-secondary ext-style-337" >
+                    Close Scanner
+                </button>
+            </div>
+        </div>
+
+        <!-- Receipt Photo Viewer Modal -->
+        <div class="modal-backdrop ext-style-338" id="modal-receipt-viewer" >
+            <div class="modal-card glass-card ext-style-339" >
+                <div class="ext-style-60 modal-header">
+                    <h3 class="ext-style-340">
+                        Receipt / Proof of Transaction
+                    </h3>
+                    <button id="action-btn-129" class="btn-close" aria-label="Close modal">
+                        ├ù
+                    </button>
+                </div>
+                <div class="ext-style-341">
+                    <img id="viewer-receipt-img" src="" alt="Receipt Image" class= />
+                </div>
+                <div class="ext-style-343">
+                    <span id="viewer-receipt-caption">Transaction Reference</span>
+                    <button id="action-btn-130" type="button" class="btn-secondary">
+                        Close Window
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Member Digital QR ID Badge Modal -->
+        <div class="modal-backdrop ext-style-344" id="modal-member-qr-id" >
+            <div class="modal-card glass-card ext-style-345" >
+                <div class="ext-style-60 modal-header">
+                    <h3 class="ext-style-346">
+                        OFFICIAL MFC YOUTH ID
+                    </h3>
+                    <button id="action-btn-131" class="btn-close">├ù</button>
+                </div>
+                <div id="qr-id-badge-card" class="ext-style-347">
+                    <div class="ext-style-348">
+                        MFC YOUTH TARLAC CHAPTER
+                    </div>
+                    <h4 id="qr-badge-name" class="ext-style-349">
+                        Member Name
+                    </h4>
+                    <div id="qr-badge-role" class="ext-style-350">
+                        Role / Dept
+                    </div>
+                    <div id="qrcode-container" class="ext-style-351"></div>
+                    <div id="qr-badge-id-num" class="ext-style-352">
+                        ID: #M-000
+                    </div>
+                    <div class="ext-style-81">
+                        Scan code at door for instant attendance check-in
+                    </div>
+                </div>
+                <div class="ext-style-353">
+                    <button id="action-btn-132" type="button" class="btn-primary glow-button ext-style-354" >
+                        ≡ƒû¿∩╕Å Print ID Card
+                    </button>
+                    <button id="action-btn-133" type="button" class="btn-secondary ext-style-355" >
+                        Close
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Member Service Profile & Engagement Modal -->
+        <div class="modal-backdrop ext-style-356" id="modal-member-profile" >
+            <div class="modal-card glass-card ext-style-357" >
+                <div class="modal-header ext-style-358" >
+                    <h3 id="profile-modal-title" class="ext-style-359">
+                        Member Service Profile
+                    </h3>
+                    <button id="action-btn-134" class="btn-close ext-style-360" >
+                        ├ù
+                    </button>
+                </div>
+                <div id="profile-modal-content" class="ext-style-361">
+                    <!-- Populated dynamically via script.js -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Publish Online Guide Modal -->
+        <div class="modal-backdrop ext-style-362" id="modal-publish-online" >
+            <div class="modal-card glass-card ext-style-363" >
+                <div class="modal-header ext-style-364" >
+                    <div class="ext-style-35">
+                        <span class="ext-style-365">≡ƒîÉ</span>
+                        <div>
+                            <h3 class="ext-style-366">
+                                Publish Portal Online (100% Free)
+                            </h3>
+                            <p class="ext-style-367">
+                                Self-contained PWA ready for high-speed static hosting
+                            </p>
+                        </div>
+                    </div>
+                    <button id="action-btn-135" class="btn-close">├ù</button>
+                </div>
+                <div class="ext-style-368">
+                    <div class="ext-style-369">
+                        <div class="ext-style-370">
+                            <span class="ext-style-371">ΓÜí Option 1: Netlify Drop (Takes 30 Seconds!)</span
+                            >
+                            <a href="https://app.netlify.com/drop" target="_blank" rel="noopener noreferrer" class="ext-style-372">Open Netlify Drop Γåù</a
+                            >
+                        </div>
+                        <p class="ext-style-373">
+                            1. Click <strong>Open Netlify Drop</strong> above.<br />
+                            2. Open Windows File Explorer to your portal folder:
+                            <code
+                                >C:\Users\barne\.gemini\antigravity-ide\scratch\attendance-activity-portal</code
+                            ><br />
+                            3. <strong>Drag & drop</strong> the entire folder into the browser.<br />
+                            4. Your site will immediately go live with an instant public HTTPS link!
+                        </p>
+                    </div>
+
+                    <div class="ext-style-374">
+                        <div class="ext-style-375">
+                            <span class="ext-style-376">≡ƒÉÖ Option 2: GitHub Pages (Permanent & Custom Domain)</span
+                            >
+                            <a href="https://github.com/new" target="_blank" rel="noopener noreferrer" class="ext-style-377">Create GitHub Repo Γåù</a
+                            >
+                        </div>
+                        <p class="ext-style-378">
+                            1. Create a public repository named
+                            <code>mfc-youth-tarlac-portal</code>.<br />
+                            2. Upload your 5 portal files (<code>index.html</code>,
+                            <code>styles.css</code>, <code>script.js</code>,
+                            <code>manifest.json</code>, <code>mfc-logo.png</code>).<br />
+                            3. Go to <strong>Settings ΓåÆ Pages</strong> and select branch
+                            <code>main</code>.<br />
+                            4. Your portal is live at
+                            <code>yourusername.github.io/mfc-youth-tarlac-portal</code>!
+                        </p>
+                    </div>
+                </div>
+                <div class="ext-style-379">
+                    <button id="action-btn-136" type="button" class="btn-secondary btn-sm">
+                        Got It, Let's Publish!
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Firebase Realtime Cloud Hub Modal -->
+        <div id="firebase-config-modal" class="modal-backdrop ext-style-380" >
+            <div class="modal-card glass-panel ext-style-381" >
+                <div class="ext-style-382">
+                    <div class="ext-style-50">
+                        <div class="ext-style-383">
+                            ≡ƒöÑ
+                        </div>
+                        <div>
+                            <h3 class="ext-style-384">
+                                Firebase Realtime Cloud Hub
+                            </h3>
+                            <p class="ext-style-385">
+                                Automatic bidirectional cloud sync & instant backups
+                            </p>
+                        </div>
+                    </div>
+                    <button id="action-btn-137" type="button" class="ext-style-386">
+                        &times;
+                    </button>
+                </div>
+
+                <div class="ext-style-387">
+                    <div>
+                        <div class="ext-style-388">
+                            Cloud Database Status
+                        </div>
+                        <div id="firebase-modal-status-badge" class="ext-style-389">
+                            CONNECTED TO FIREBASE CLOUD
+                        </div>
+                    </div>
+                    <span class="ext-style-390">ACTIVE</span
+                    >
+                </div>
+
+                <div class="ext-style-391">
+                    <button id="action-btn-138" type="button" class="ext-style-392">
+                        <span class="ext-style-74">≡ƒôñ</span>
+                        <span>Push Local to Cloud</span>
+                        <span class="ext-style-393">Save & backup current data</span
+                        >
+                    </button>
+
+                    <button id="action-btn-139" type="button" class="ext-style-394">
+                        <span class="ext-style-74">≡ƒôÑ</span>
+                        <span>Pull from Cloud</span>
+                        <span class="ext-style-395">Restore latest remote data</span
+                        >
+                    </button>
+                </div>
+
+                <div class="ext-style-396">
+                    <div class="ext-style-397">
+                        Advanced Custom Firebase Settings
+                    </div>
+                    <div class="ext-style-62">
+                        <div>
+                            <label for="fb-config-project-id" class="ext-style-398">Firebase Project ID</label
+                            >
+                            <input type="text" id="fb-config-project-id" placeholder="mfc-youth-data" class= />
+                        </div>
+                        <div>
+                            <label for="fb-config-api-key" class="ext-style-400">Firebase Web API Key</label
+                            >
+                            <input type="password" id="fb-config-api-key" placeholder="AIzaSy..." class= />
+                        </div>
+                    </div>
+                </div>
+
+                <div class="ext-style-402">
+                    <button id="action-btn-140" type="button" class="btn-secondary btn-sm">
+                        Close
+                    </button>
+                    <button id="action-btn-141" type="button" class="btn-primary btn-sm ext-style-403" >
+                        Save Configuration
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pastoral Follow-Up Report Modal -->
+        <div id="pastoral-followup-backdrop" class="ext-style-404">
+            <div class="ext-style-405">
+                <div class="ext-style-406">
+                    <div class="ext-style-35">
+                        <span class="ext-style-74">≡ƒôï</span>
+                        <div>
+                            <h3
+                                class="ext-style-55"
+                            >
+                                Pastoral Follow-Up Report
+                            </h3>
+                            <div class="ext-style-407">
+                                Attendance & Absentees Summary for Leaders
+                            </div>
+                        </div>
+                    </div>
+                    <button id="action-btn-142" class="ext-style-408">
+                        &times;
+                    </button>
+                </div>
+                <div class="ext-style-409">
+                    <textarea id="pastoral-report-textarea" readonly class="ext-style-410" title="Pastoral Report" aria-label="Pastoral Report"></textarea>
+                    <div class="ext-style-411">
+                        <button id="action-btn-143" class="btn-primary btn-sm glow-button ext-style-412" >
+                            ≡ƒôï Copy Report Text
+                        </button>
+                        <button id="action-btn-144" class="btn-secondary btn-sm ext-style-413" >
+                            ≡ƒÆ¼ Share on WhatsApp
+                        </button>
+                        <button id="action-btn-145" class="btn-secondary btn-sm ext-style-414" >
+                            Γ¥î Copy Absentees List Only
+                        </button>
+                    </div>
+                    <div class="ext-style-415">
+                        <div class="ext-style-416">
+                            ≡ƒÆ¼ 1-Click Pastoral Check-In Messages for Absentees
+                        </div>
+                        <div id="pastoral-absentees-quick-list" class="ext-style-417">
+                            <!-- Populated dynamically -->
+                        </div>
+                    </div>
+                </div>
+                <div class="ext-style-418">
+                    <button id="action-btn-146" type="button" class="btn-secondary btn-sm">
+                        Close
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Official Certificate of Participation Modal -->
+        <div id="certificate-modal-backdrop" class="ext-style-419">
+            <div class="modal-content ext-style-420" >
+                <div class="ext-style-421">
+                    <div class="ext-style-35">
+                        <span class="ext-style-74">≡ƒô£</span>
+                        <div>
+                            <h3
+                                class="ext-style-55"
+                            >
+                                MFC Youth Tarlac Official Certificate
+                            </h3>
+                            <div class="ext-style-422">
+                                Certificate of Recognition & Faithful Participation
+                            </div>
+                        </div>
+                    </div>
+                    <button id="action-btn-147" class="ext-style-423">
+                        &times;
+                    </button>
+                </div>
+
+                <!-- Printable Certificate Document Frame -->
+                <div id="printable-certificate-frame" class="ext-style-424">
+                    <div class="ext-style-425">
+                        MISSIONARY FAMILIES OF CHRIST ΓÇö YOUTH TARLAC
+                    </div>
+                    <h2 class="ext-style-426">
+                        CERTIFICATE OF PARTICIPATION
+                    </h2>
+                    <div class="ext-style-427">
+                        This official certificate is proudly awarded to
+                    </div>
+                    <div id="cert-member-name" class="ext-style-428">
+                        MEMBER FULL NAME
+                    </div>
+                    <p id="cert-citation-text" class="ext-style-429">
+                        In recognition of active participation, faithful attendance, and selfless
+                        service in the building of the Catholic community under MFC Youth Tarlac
+                        Chapter.
+                    </p>
+                    <div class="ext-style-430">
+                        <div>
+                            <div class="ext-style-431">
+                                Bro. / Sis. Coordinator
+                            </div>
+                            <div class="ext-style-81">
+                                MFC Youth Tarlac Chapter Head
+                            </div>
+                        </div>
+                        <div>
+                            <div id="cert-date-issued" class="ext-style-432">
+                                July 13, 2026
+                            </div>
+                            <div class="ext-style-81">Date Issued</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="ext-style-433">
+                    <button id="action-btn-148" type="button" class="btn-secondary btn-sm">
+                        Close
+                    </button>
+                    <button id="action-btn-149" type="button" class="btn-primary btn-sm glow-button ext-style-434" >
+                        ≡ƒû¿∩╕Å Print Certificate
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Full Attendance Matrix Grid Modal -->
+        <div id="attendance-matrix-backdrop" class="ext-style-435">
+            <div class="modal-content ext-style-436" >
+                <div class="ext-style-437">
+                    <div class="ext-style-35">
+                        <span class="ext-style-74">≡ƒôè</span>
+                        <div>
+                            <h3
+                                class="ext-style-55"
+                            >
+                                Cross-Tabulated Attendance Matrix
+                            </h3>
+                            <div class="ext-style-438">
+                                Chapter Members ├ù All Activities Attendance Record
+                            </div>
+                        </div>
+                    </div>
+                    <button id="action-btn-150" class="ext-style-439">
+                        &times;
+                    </button>
+                </div>
+                <div id="attendance-matrix-printable-area" class="ext-style-440">
+                    <div class="ext-style-441">
+                        <span class="ext-style-442">Legend: <strong class="ext-style-443">Γ£ô</strong> Present |
+                            <strong class="ext-style-444">L</strong> Late |
+                            <strong class="ext-style-445">Γ£ù</strong> Absent</span
+                        >
+                    </div>
+                    <table class="data-table w-full ext-style-446" id="attendance-matrix-table" >
+                        <thead id="attendance-matrix-thead"></thead>
+                        <tbody id="attendance-matrix-tbody"></tbody>
+                    </table>
+                </div>
+                <div class="ext-style-447">
+                    <button id="action-btn-151" type="button" class="btn-secondary btn-sm">
+                        Close
+                    </button>
+                    <button id="action-btn-152" type="button" class="btn-primary btn-sm glow-button ext-style-448" >
+                        ≡ƒôÑ Export Matrix CSV
+                    </button>
+                    <button id="action-btn-153" type="button" class="btn-primary btn-sm glow-button ext-style-449" >
+                        ≡ƒû¿∩╕Å Print Matrix Sheet
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Digital Birthday / Celebration Greeting Card Modal -->
+        <div id="birthday-card-backdrop" class="ext-style-450">
+            <div class="modal-content ext-style-451" >
+                <div class="ext-style-452">
+                    <div class="ext-style-35">
+                        <span class="ext-style-74">≡ƒÄé</span>
+                        <h3 class="ext-style-55">
+                            Digital Celebration Card
+                        </h3>
+                    </div>
+                    <button id="action-btn-154" class="ext-style-453">
+                        &times;
+                    </button>
+                </div>
+
+                <!-- Festive Card Frame -->
+                <div class="ext-style-454">
+                    <div class="ext-style-455">
+                        ≡ƒÄë ≡ƒÄé Γ£¿
+                    </div>
+                    <div class="ext-style-456">
+                        MISSIONARY FAMILIES OF CHRIST ΓÇö YOUTH TARLAC
+                    </div>
+                    <h3 id="bday-card-name" class="ext-style-457">
+                        Happy Birthday!
+                    </h3>
+                    <p class="ext-style-458">
+                        May the Lord bless you with wisdom, joy, and unfailing love as you continue
+                        to serve and inspire our Catholic community. We thank God for the gift of
+                        your life!
+                    </p>
+                    <div class="ext-style-459">
+                        ≡ƒÖÅ Prayed a special birthday blessing for you
+                    </div>
+                </div>
+
+                <div class="ext-style-460">
+                    <button id="action-btn-155" type="button" class="btn-secondary btn-sm">
+                        Close
+                    </button>
+                    <button id="action-btn-156" type="button" class="btn-primary btn-sm glow-button ext-style-461" >
+                        ≡ƒôï Copy Greeting Message
+                    </button>
+                </div>
+            </div>
+            <!-- Mobile Pull-to-Refresh Indicator -->
+            <div id="pull-to-refresh-indicator" class="ext-style-462">
+                <span id="ptr-spinner">≡ƒöä</span>
+                <span id="ptr-text">Pull down to refresh</span>
+            </div>
+
+            <!-- Mobile Absentee Fullscreen Card Swiper Modal -->
+            <div class="modal-backdrop" id="absentee-swiper-backdrop">
+                <div class="modal-card ext-style-463" >
+                    <div class="modal-header ext-style-464" >
+                        <div class="ext-style-35">
+                            <span class="ext-style-74">≡ƒô▓</span>
+                            <div>
+                                <h3 class="modal-title ext-style-465" >
+                                    Mobile Absentee Follow-Up Swiper
+                                </h3>
+                                <span id="swiper-counter" class="ext-style-466">Card 1 of 1</span
+                                >
+                            </div>
+                        </div>
+                        <button id="action-btn-157" type="button" class="modal-close">
+                            &times;
+                        </button>
+                    </div>
+                    <div class="modal-body ext-style-467" id="absentee-swiper-content" >
+                        <!-- Dynamically rendered absentee card -->
+                    </div>
+                    <div class="modal-footer ext-style-468" >
+                        <button type="button" class="btn-secondary" id="swiper-prev-btn">
+                            ΓùÇ Previous
+                        </button>
+                        <button id="action-btn-158" type="button" class="btn-secondary">
+                            Close
+                        </button>
+                        <button type="button" class="btn-primary" id="swiper-next-btn">
+                            Next Γû╢
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- MODAL: GLOBAL COMMAND PALETTE (Ctrl + K) -->
+            <div id="modal-command-palette" class="modal-backdrop ext-style-469" >
+                <div class="glass-card ext-style-470" >
+                    <div class="ext-style-471">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="#38BDF8" stroke-width="2.5" class="ext-style-472">
+                            <circle cx="11" cy="11" r="8" />
+                            <path d="m21 21-4.35-4.35" />
+                        </svg>
+                        <input type="text" id="cmd-palette-input" placeholder="Type a command, search member, or find resource..." oninput="handleCommandPaletteSearch(this.value)" autocomplete="off" class= />
+                        <button id="action-btn-159" class="ext-style-474">
+                            ESC
+                        </button>
+                    </div>
+                    <div id="cmd-palette-results" class="ext-style-475">
+                        <!-- Dynamically populated results -->
+                    </div>
+                    <div class="ext-style-476">
+                        <span
+                            >≡ƒÆí Tip: Use <strong class="ext-style-477">ΓåæΓåô</strong> to navigate,
+                            <strong class="ext-style-478">Enter</strong> to select,
+                            <strong class="ext-style-479">Esc</strong> to close</span
+                        >
+                        <span>MFC Youth Tarlac Command Center</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Keyboard Shortcuts Cheatsheet Modal -->
+            <div id="modal-keyboard-cheatsheet" class="modal-backdrop ext-style-480" >
+                <div class="auth-login-card ext-style-481" >
+                    <div class="ext-style-482">
+                        <div class="ext-style-35">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="#A855F7" stroke-width="2" class="ext-style-483">
+                                <rect x="2" y="4" width="20" height="16" rx="2" ry="2" />
+                                <line x1="6" y1="8" x2="6.01" y2="8" />
+                                <line x1="10" y1="8" x2="10.01" y2="8" />
+                                <line x1="14" y1="8" x2="14.01" y2="8" />
+                                <line x1="18" y1="8" x2="18.01" y2="8" />
+                                <line x1="6" y1="12" x2="6.01" y2="12" />
+                                <line x1="10" y1="12" x2="10.01" y2="12" />
+                                <line x1="14" y1="12" x2="14.01" y2="12" />
+                                <line x1="18" y1="12" x2="18.01" y2="12" />
+                                <line x1="7" y1="16" x2="17" y2="16" />
+                            </svg>
+                            <h3 class="ext-style-484">
+                                Keyboard Cheatsheet
+                            </h3>
+                        </div>
+                        <button id="action-btn-160" class="ext-style-485">
+                            &times;
+                        </button>
+                    </div>
+                    <div class="ext-style-486">
+                        <div id="action-btn-161" title="Click to launch Command Palette" onmouseover=" this.style.background = 'rgba(56,189,248,0.15)'; this.style.borderColor = 'rgba(56,189,248,0.4)'; " onmouseout=" this.style.background = 'rgba(255,255,255,0.04)'; this.style.borderColor = 'rgba(255,255,255,0.06)'; " class="ext-style-487">
+                            <span class="ext-style-53"
+                                >Open Global Command Palette
+                                <span class="ext-style-82"
+                                    >(Click to run ΓÜí)</span
+                                ></span
+                            >
+                            <span class="ext-style-488">Ctrl + K / Cmd + K</span
+                            >
+                        </div>
+                        <div class="ext-style-489">
+                            <span class="ext-style-53"
+                                >Navigate Attendance Roster Rows</span
+                            >
+                            <span class="ext-style-490">Γåæ / Γåô Arrow Keys</span
+                            >
+                        </div>
+                        <div class="ext-style-491">
+                            <span class="ext-style-53"
+                                >Mark Highlighted Member
+                                <strong class="ext-style-492">Present</strong></span
+                            >
+                            <span class="ext-style-493">P</span
+                            >
+                        </div>
+                        <div class="ext-style-494">
+                            <span class="ext-style-53"
+                                >Mark Highlighted Member
+                                <strong class="ext-style-495">Absent</strong></span
+                            >
+                            <span class="ext-style-496">A</span
+                            >
+                        </div>
+                        <div class="ext-style-497">
+                            <span class="ext-style-53"
+                                >Mark Highlighted Member
+                                <strong class="ext-style-498">Late</strong></span
+                            >
+                            <span class="ext-style-499">L</span
+                            >
+                        </div>
+                        <div id="action-btn-162" title="Click to launch QR Scanner" onmouseover=" this.style.background = 'rgba(56,189,248,0.15)'; this.style.borderColor = 'rgba(56,189,248,0.4)'; " onmouseout=" this.style.background = 'rgba(255,255,255,0.04)'; this.style.borderColor = 'rgba(255,255,255,0.06)'; " class="ext-style-500">
+                            <span class="ext-style-53"
+                                >Open Live QR Camera Scanner
+                                <span class="ext-style-82"
+                                    >(Click to run ΓÜí)</span
+                                ></span
+                            >
+                            <span class="ext-style-501">Alt + Q</span
+                            >
+                        </div>
+                        <div id="action-btn-163" title="Click to open Add Member modal" onmouseover=" this.style.background = 'rgba(56,189,248,0.15)'; this.style.borderColor = 'rgba(56,189,248,0.4)'; " onmouseout=" this.style.background = 'rgba(255,255,255,0.04)'; this.style.borderColor = 'rgba(255,255,255,0.06)'; " class="ext-style-502">
+                            <span class="ext-style-53"
+                                >Open Add New Member Modal
+                                <span class="ext-style-82"
+                                    >(Click to run ΓÜí)</span
+                                ></span
+                            >
+                            <span class="ext-style-503">Alt + N</span
+                            >
+                        </div>
+                        <div class="ext-style-504">
+                            <span class="ext-style-53"
+                                >Show this Keyboard Cheatsheet</span
+                            >
+                            <span class="ext-style-505">? or Shift + /</span
+                            >
+                        </div>
+                    </div>
+                    <div class="ext-style-506">
+                        <button id="action-btn-164" class="btn-primary glow-button ext-style-507" >
+                            Got It
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pastoral Birthday & Celebration Greeting Modal -->
+            <div id="modal-pastoral-greeting" class="modal-backdrop ext-style-508" >
+                <div class="auth-login-card ext-style-509" >
+                    <div class="ext-style-510">≡ƒÄë≡ƒÄé</div>
+                    <h3 id="pastoral-greeting-title" class="ext-style-511">
+                        Send Pastoral Greeting
+                    </h3>
+                    <p id="pastoral-greeting-desc" class="ext-style-512">
+                        Choose a channel below to send a personalized birthday and pastoral blessing
+                        to this member.
+                    </p>
+
+                    <div class="ext-style-62">
+                        <button id="btn-send-whatsapp-greeting" class="ext-style-513">
+                            <span class="ext-style-514">≡ƒÆ¼</span> Send via WhatsApp
+                        </button>
+                        <button id="btn-send-gmail-greeting" class="ext-style-515">
+                            <span class="ext-style-516">Γ£ë∩╕Å</span> Send via Gmail
+                        </button>
+                    </div>
+
+                    <button id="action-btn-165" class="ext-style-517">
+                        Cancel
+                    </button>
+                </div>
+            </div>
+
+            <!-- Page Footer -->
+            <footer class="ext-style-518">
+                <span
+                    >Copyright All Rights Reserved &copy; 2026. Designed and developed by:
+                    <strong class="ext-style-519">Area LIT Tarlac.</strong></span
+                >
+            </footer>
+
+            <!-- Hidden Printable Member Semester Report Card Container -->
+            <div id="printable-member-report-card" class="ext-style-520"></div>
+
+            <!-- ==========================================================================
+         NATIVE MOBILE USER EXPERIENCE: FIXED BOTTOM NAVIGATION & FAB
+         ========================================================================== -->
+            <nav class="mobile-bottom-nav" aria-label="Mobile Bottom Navigation">
+                <a
+                    id="action-btn-166"
+                    href="javascript:void(0)"
+                    class="mobile-nav-item active"
+                    data-view="dashboard"
+                >
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+                        <polyline points="9 22 9 12 15 12 15 22" />
+                    </svg>
+                    <span>Home</span>
+                </a>
+                <a
+                    id="action-btn-167"
+                    href="javascript:void(0)"
+                    class="mobile-nav-item"
+                    data-view="attendance"
+                >
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M9 11l3 3L22 4" />
+                        <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" />
+                    </svg>
+                    <span>Attendance</span>
+                </a>
+                <a
+                    id="action-btn-168"
+                    href="javascript:void(0)"
+                    class="mobile-nav-item"
+                    data-view="members"
+                >
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+                        <circle cx="9" cy="7" r="4" />
+                        <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
+                        <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+                    </svg>
+                    <span>Members</span>
+                </a>
+                <a
+                    id="action-btn-169"
+                    href="javascript:void(0)"
+                    class="mobile-nav-item"
+                    data-view="funds"
+                >
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20 12V8H6a2 2 0 0 1-2-2c0-1.1.9-2 2-2h12v4" />
+                        <path d="M4 6v12c0 1.1.9 2 2 2h14v-4" />
+                        <path d="M18 12a2 2 0 0 0-2 2c0 1.1.9 2 2 2h4v-4h-4z" />
+                    </svg>
+                    <span>Funds</span>
+                </a>
+                <a
+                    id="action-btn-170"
+                    href="javascript:void(0)"
+                    class="mobile-nav-item"
+                    title="More Menu"
+                >
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="3" y1="12" x2="21" y2="12" />
+                        <line x1="3" y1="6" x2="21" y2="6" />
+                        <line x1="3" y1="18" x2="21" y2="18" />
+                    </svg>
+                    <span>Menu</span>
+                </a>
+            </nav>
+
+            <!-- Mobile Quick Action Floating Button (FAB) -->
+            <div class="mobile-fab-container">
+                <button
+                    id="action-btn-171"
+                    type="button"
+                    class="mobile-fab-btn"
+                    title="Quick Add Member / Record"
+                    aria-label="Quick action"
+                    onclick="triggerMobileQuickScan()"
+                >
+                    <svg
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2.5"
+                        class="ext-style-77"
+                    >
+                        <line x1="12" y1="5" x2="12" y2="19" />
+                        <line x1="5" y1="12" x2="19" y2="12" />
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Mobile App Bottom Navigation -->
+            <nav class="mobile-bottom-nav">
+                <div id="action-btn-172" class="bottom-nav-item active" data-view="dashboard">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="3" width="7" height="7"></rect>
+                        <rect x="14" y="3" width="7" height="7"></rect>
+                        <rect x="14" y="14" width="7" height="7"></rect>
+                        <rect x="3" y="14" width="7" height="7"></rect>
+                    </svg>
+                    <span>Home</span>
+                </div>
+                <div id="action-btn-173" class="bottom-nav-item" data-view="members">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="9" cy="7" r="4"></circle>
+                        <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                        <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                    </svg>
+                    <span>Members</span>
+                </div>
+                <div id="action-btn-174" class="bottom-nav-item" data-view="activities">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                        <polyline points="14 2 14 8 20 8"></polyline>
+                        <line x1="16" y1="13" x2="8" y2="13"></line>
+                        <line x1="16" y1="17" x2="8" y2="17"></line>
+                        <polyline points="10 9 9 9 8 9"></polyline>
+                    </svg>
+                    <span>Logs</span>
+                </div>
+                <div id="action-btn-175" class="bottom-nav-item" data-view="funds">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="12" y1="1" x2="12" y2="23"></line>
+                        <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+                    </svg>
+                    <span>Funds</span>
+                </div>
+            </nav>
+
+            <!-- ==========================================================================
+         MODAL: UPLOAD CUSTOM RESOURCE FILE
+         ========================================================================== -->
+            <div class="modal-backdrop ext-style-521" id="upload-resource-backdrop" >
+                <div class="modal-card glass-card ext-style-522" role="dialog" aria-labelledby="upload-resource-title" >
+                    <div class="modal-header ext-style-523" >
+                        <h3 id="upload-resource-title" class="ext-style-524">
+                            <span>≡ƒôñ Upload Custom Resource Document</span>
+                        </h3>
+                        <button
+                            id="action-btn-176"
+                            class="modal-close-btn"
+                            aria-label="Close modal"
+                        >
+                            <svg
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="2"
+                            >
+                                <path d="M18 6L6 18M6 6l12 12" />
+                            </svg>
+                        </button>
+                    </div>
+                    <form id="upload-resource-form" onsubmit="saveCustomResourceFile(event)">
+                        <div class="ext-style-60 form-group">
+                            <label for="res-upload-title" class="ext-style-525">Document Title *</label
+                            >
+                            <input type="text" id="res-upload-title" required placeholder="e.g. 2026 Chapter Youth Camp Guidelines" class= />
+                        </div>
+                        <div class="ext-style-60 form-group">
+                            <label for="res-upload-category" class="ext-style-527">Resource Category *</label
+                            >
+                            <select id="res-upload-category" required class="custom-select ext-style-528" >
+                                <option value="youthcamp">Γ¢║ Youthcamp</option>
+                                <option value="trainings">≡ƒÄô Trainings</option>
+                                <option value="songboard">≡ƒÄ╕ Songboard</option>
+                                <option value="holyrosary">≡ƒô┐ Holy Rosary</option>
+                                <option value="letters">Γ£ë∩╕Å Letters</option>
+                            </select>
+                        </div>
+                        <div class="ext-style-60 form-group">
+                            <label for="res-upload-desc" class="ext-style-529">Description & Overview</label
+                            >
+                            <textarea id="res-upload-desc" rows="3" placeholder="Brief summary of document content..." class="ext-style-530"></textarea>
+                        </div>
+                        <div class="form-group ext-style-531" >
+                            <label for="res-upload-file" class="ext-style-532">Select File (.pdf, .docx, .pptx, images) *</label
+                            >
+                            <input type="file" id="res-upload-file" required accept=".pdf,.docx,.doc,.pptx,.ppt,.png,.jpg,.jpeg" class= />
+                        </div>
+                        <div class="ext-style-534">
+                            <button id="action-btn-177" type="button" class="btn-secondary">
+                                Cancel
+                            </button>
+                            <button type="submit" class="btn-primary glow-button ext-style-535" >
+                                Save & Upload File
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- ==========================================================================
+         MODAL: INTERACTIVE FILLABLE & PRINTABLE LETTER GENERATOR
+         ========================================================================== -->
+            <!-- INJECT: letter-generator.html -->
+<div id="react-letter-generator-root"></div>
+
+            <!-- ==========================================================================
+         MODAL: INTERACTIVE SONGBOOK & CHORD KEY TRANSPOSER
+         ========================================================================== -->
+            <div class="modal-backdrop ext-style-536" id="songbook-transposer-backdrop" >
+                <div class="modal-card glass-card ext-style-537" role="dialog" aria-labelledby="songbook-title" >
+                    <div class="modal-header ext-style-538" >
+                        <div>
+                            <h3 id="songbook-title" class="ext-style-539">
+                                <span>≡ƒÄ╕ MFC Youth Songbook & Interactive Chord Transposer</span>
+                            </h3>
+                            <p class="ext-style-58">
+                                Transposes guitar chords live in real-time for worship assemblies.
+                            </p>
+                        </div>
+                        <button
+                            id="action-btn-182"
+                            class="modal-close-btn"
+                            aria-label="Close modal"
+                        >
+                            <svg
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="2"
+                            >
+                                <path d="M18 6L6 18M6 6l12 12" />
+                            </svg>
+                        </button>
+                    </div>
+
+                    <!-- CONTROLS BAR -->
+                    <div class="ext-style-540">
+                        <div class="ext-style-541">
+                            <select id="song-select-dropdown" class="custom-select ext-style-542" onchange="loadSongForTransposer()" title="Select Song for Transposer" aria-label="Select Song for Transposer">
+                                <option value="god_is_enough">≡ƒÄ╢ God is Enough (Key of G)</option>
+                                <option value="build_my_life">≡ƒÄ╢ Build My Life (Key of D)</option>
+                                <option value="nothing_more">≡ƒÄ╢ Nothing More (Key of E)</option>
+                                <option value="glorify">≡ƒÄ╢ Glorify Your Name (Key of C)</option>
+                                <option value="gracious_god">≡ƒÄ╢ Gracious God (Key of A)</option>
+                                <option value="one_way">≡ƒÄ╢ One Way (Key of B)</option>
+                            </select>
+                        </div>
+
+                        <div class="ext-style-543">
+                            <span class="ext-style-544">KEY:</span
+                            >
+                            <button
+                                id="action-btn-183"
+                                class="ext-style-61 btn-secondary btn-sm"
+                               
+                            >
+                                -1 Key
+                            </button>
+                            <span id="current-key-badge" class="ext-style-545">Key: G</span
+                            >
+                            <button
+                                id="action-btn-184"
+                                class="ext-style-61 btn-secondary btn-sm"
+                               
+                            >
+                                +1 Key
+                            </button>
+                            <button id="action-btn-185" class="btn-secondary btn-sm ext-style-546" >
+                                Reset
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- CHORD SHEET DISPLAY -->
+                    <div id="songbook-chord-display" class="ext-style-547">
+                        <!-- Populated via script.js -->
+                    </div>
+
+                    <div class="ext-style-548">
+                        <button id="action-btn-186" type="button" class="btn-secondary">
+                            Close Songbook
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ==========================================================================
+         MODAL: INTERACTIVE HOLY ROSARY PRAYER COUNTER & GUIDED MEDITATION
+         ========================================================================== -->
+            <!-- INJECT: rosary-interactive.html -->
+<div id="react-rosary-interactive-root"></div>
+
+            <!-- MODAL 1: DIGITAL YOUTH MEMBER ID CARD MODAL -->
+            <div id="member-id-card-backdrop" class="modal-backdrop ext-style-549" >
+                <div class="glass-modal-content ext-style-550" >
+                    <div class="modal-header">
+                        <div>
+                            <h3 class="ext-style-551">
+                                ≡ƒåö Digital Youth Member ID
+                            </h3>
+                            <p class="ext-style-52">
+                                Official MFC Youth Tarlac Chapter Membership Credential
+                            </p>
+                        </div>
+                        <button id="action-btn-190" class="modal-close-btn">Γ£ò</button>
+                    </div>
+
+                    <!-- PRINTABLE GLASS ID CARD DESIGN -->
+                    <div id="printable-member-id-card" class="ext-style-552">
+                        <div class="ext-style-553"></div>
+
+                        <!-- CARD HEADER -->
+                        <div class="ext-style-554">
+                            <div class="ext-style-35">
+                                <img src="mfc-logo.png" alt="MFC Logo" class= />
+                                <div>
+                                    <div class="ext-style-556">
+                                        MFC YOUTH TARLAC
+                                    </div>
+                                    <div class="ext-style-557">
+                                        Official Member Pass
+                                    </div>
+                                </div>
+                            </div>
+                            <span class="ext-style-558">ACTIVE MEMBER</span
+                            >
+                        </div>
+
+                        <!-- CARD BODY -->
+                        <div class="ext-style-559">
+                            <div id="id-card-avatar" class="ext-style-560">
+                                ≡ƒæñ
+                            </div>
+                            <div class="ext-style-561">
+                                <div id="id-card-name" class="ext-style-562">
+                                    BARNEY TARLAC
+                                </div>
+                                <div id="id-card-role" class="ext-style-563">
+                                    Chapter Member
+                                </div>
+                                <div id="id-card-chapter" class="ext-style-564">
+                                    Central Chapter ΓÇó Diocese of Tarlac
+                                </div>
+                                <div id="id-card-number" class="ext-style-565">
+                                    ID: MFC-TRC-2026-0042
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- CARD FOOTER & QR CODE -->
+                        <div class="ext-style-566">
+                            <div class="ext-style-567">
+                                <div>Scan for Attendance Check-In</div>
+                                <div class="ext-style-568">
+                                    Verified Member Status
+                                </div>
+                            </div>
+                            <!-- QR Code Canvas -->
+                            <div id="id-card-qr-code" class="ext-style-569"></div>
+                        </div>
+                    </div>
+
+                    <div class="ext-style-570">
+                        <button id="action-btn-191" class="btn-secondary">Close</button>
+                        <button id="action-btn-192" class="btn-primary glow-button">
+                            ≡ƒû¿∩╕Å Print Member ID Pass
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- MODAL 2: QR ATTENDANCE SCANNER MODAL -->
+            <div id="qr-scanner-backdrop" class="modal-backdrop ext-style-571" >
+                <div class="ext-style-83 glass-modal-content">
+                    <div class="modal-header">
+                        <div>
+                            <h3 class="ext-style-572">
+                                ≡ƒô╖ QR Attendance Scanner
+                            </h3>
+                            <p class="ext-style-52">
+                                Scan Member Digital ID QR code for instant check-in
+                            </p>
+                        </div>
+                        <button id="action-btn-193" class="modal-close-btn">Γ£ò</button>
+                    </div>
+
+                    <div class="ext-style-573">
+                        <div id="qr-reader" class="ext-style-574"></div>
+                        <div id="qr-scan-result" class="ext-style-575">
+                            Align member QR code inside the box to scan...
+                        </div>
+                    </div>
+
+                    <div class="ext-style-576">
+                        <button id="action-btn-194" class="btn-secondary">Close Camera</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- MODAL 3: POST ANNOUNCEMENT MODAL -->
+            <div id="post-announcement-backdrop" class="modal-backdrop ext-style-577" >
+                <div class="ext-style-83 glass-modal-content">
+                    <div class="modal-header">
+                        <div>
+                            <h3 class="ext-style-578">
+                                ≡ƒôó Post Advisory Announcement
+                            </h3>
+                            <p class="ext-style-52">
+                                Broadcast official notice to all chapter members
+                            </p>
+                        </div>
+                        <button id="action-btn-195" class="modal-close-btn">Γ£ò</button>
+                    </div>
+
+                    <form
+                        id="form-post-announcement"
+                        onsubmit="handlePostAnnouncement(event)"
+                        class="ext-style-86"
+                    >
+                        <div class="ext-style-84">
+                            <label for="ann-title" class="ext-style-579">Notice Title *</label
+                            >
+                            <input type="text" id="ann-title" required placeholder="e.g. Important Advisory: Youth Camp Prep Meeting" class= />
+                        </div>
+                        <div class="ext-style-84">
+                            <label for="ann-priority" class="ext-style-581">Priority Level</label
+                            >
+                            <select id="ann-priority" class="ext-style-582">
+                                <option value="NORMAL">≡ƒö╡ Normal Announcement</option>
+                                <option value="URGENT">≡ƒö┤ Urgent Advisory</option>
+                                <option value="EVENT">Γ¡É Event Reminder</option>
+                            </select>
+                        </div>
+                        <div class="ext-style-60">
+                            <label for="ann-details" class="ext-style-583">Notice Details *</label
+                            >
+                            <textarea id="ann-details" required rows="4" placeholder="Enter announcement body..." class="ext-style-584"></textarea>
+                        </div>
+                        <div class="ext-style-585">
+                            <button id="action-btn-196" type="button" class="btn-secondary">
+                                Cancel
+                            </button>
+                            <button type="submit" class="btn-primary glow-button">
+                                ≡ƒôó Broadcast Notice
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- MODAL 4: SUBMIT PRAYER INTENTION MODAL -->
+            <div id="submit-prayer-backdrop" class="modal-backdrop ext-style-586" >
+                <div class="ext-style-83 glass-modal-content">
+                    <div class="modal-header">
+                        <div>
+                            <h3 class="ext-style-587">
+                                ≡ƒÖÅ Submit Prayer Intention
+                            </h3>
+                            <p class="ext-style-52">
+                                Add intercessory prayer request to chapter prayer wall
+                            </p>
+                        </div>
+                        <button id="action-btn-197" class="modal-close-btn">Γ£ò</button>
+                    </div>
+
+                    <form
+                        id="form-submit-prayer"
+                        onsubmit="handleSubmitPrayer(event)"
+                        class="ext-style-86"
+                    >
+                        <div class="ext-style-84">
+                            <label for="pray-name" class="ext-style-588">Intention For / Requester Name *</label
+                            >
+                            <input type="text" id="pray-name" required placeholder="e.g. Sister Maria / Youth Camp Delegates" class= />
+                        </div>
+                        <div class="ext-style-84">
+                            <label for="pray-category" class="ext-style-590">Category</label
+                            >
+                            <select id="pray-category" class="ext-style-591">
+                                <option value="Healing">≡ƒÅÑ Healing & Health</option>
+                                <option value="Exams">≡ƒôÜ Exams & School Success</option>
+                                <option value="Family">≡ƒÅí Family & Relationships</option>
+                                <option value="Thanksgiving">≡ƒÖî Thanksgiving & Blessing</option>
+                                <option value="Mission">Γ£¥∩╕Å Pastoral Mission & Event</option>
+                            </select>
+                        </div>
+                        <div class="ext-style-60">
+                            <label for="pray-intent" class="ext-style-592">Prayer Intention Request *</label
+                            >
+                            <textarea id="pray-intent" required rows="3" placeholder="Specify your prayer request..." class="ext-style-593"></textarea>
+                        </div>
+                        <div class="ext-style-594">
+                            <button id="action-btn-198" type="button" class="btn-secondary">
+                                Cancel
+                            </button>
+                            <button type="submit" class="btn-primary glow-button ext-style-595" >
+                                ≡ƒÖÅ Submit Intention
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- ADVANCED FEATURE 1: FLOATING AI PASTORAL CHATBOT BUTTON & WIDGET -->
+            <button id="ai-chat-trigger-btn" class="ext-style-596">
+                <span class="ext-style-73">≡ƒñû</span>
+                <span>AI Pastoral Companion</span>
+            </button>
+
+            <div id="ai-pastoral-chat-backdrop" class="modal-backdrop ext-style-597" >
+                <div class="glass-modal-content ext-style-598" >
+                    <div class="modal-header ext-style-599" >
+                        <div class="ext-style-35">
+                            <span class="ext-style-600">≡ƒñû</span>
+                            <div>
+                                <h3 class="ext-style-601">
+                                    AI Pastoral Companion
+                                </h3>
+                                <span class="ext-style-602">Powered by Gemini AI ΓÇó Youth Guidance & Scripture</span
+                                >
+                            </div>
+                        </div>
+                        <button id="action-btn-199" class="modal-close-btn">Γ£ò</button>
+                    </div>
+
+                    <!-- CHAT LOG CONTAINER -->
+                    <div id="ai-chat-messages" class="ext-style-603">
+                        <div class="ext-style-604">
+                            Peace be with you! I am your
+                            <strong>MFC Youth Tarlac AI Companion</strong>. Ask me for scripture
+                            reflections, youth advice, or chapter event guidance!
+                        </div>
+                    </div>
+
+                    <!-- CHAT INPUT -->
+                    <form onsubmit="handleAIChatSubmit(event)" class="ext-style-72">
+                        <input type="text" id="ai-chat-input" placeholder="Type your pastoral question or request..." class= />
+                        <button type="submit" class="btn-primary glow-button ext-style-606" >
+                            Send
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- ADVANCED FEATURE 4: PERSISTENT PASTORAL AUDIO PODCAST PLAYER BAR -->
+            <div id="portal-audio-player-bar" class="ext-style-607">
+                <div class="ext-style-50">
+                    <button id="audio-play-btn" class="ext-style-608">
+                        Γû╢
+                    </button>
+                    <div>
+                        <div id="audio-track-title" class="ext-style-609">
+                            ≡ƒÄÖ∩╕Å Homily Talk: "Christ is Alive in the Youth"
+                        </div>
+                        <div class="ext-style-610">
+                            MFC Youth Tarlac Pastoral Audio Series
+                        </div>
+                    </div>
+                </div>
+                <audio id="portal-audio-element" preload="none"></audio>
+                <div class="ext-style-611">
+                    ≡ƒÄ╡ Chapter Worship Audio Stream
+                </div>
+            </div>
+
+            <!-- ADVANCED FEATURE 5: OFFICIAL CERTIFICATE OF PARTICIPATION GENERATOR MODAL -->
+            <div id="certificate-generator-backdrop" class="modal-backdrop ext-style-612" >
+                <div class="glass-modal-content ext-style-613" >
+                    <div class="modal-header">
+                        <div>
+                            <h3 class="ext-style-614">
+                                ≡ƒô£ Certificate of Participation Generator
+                            </h3>
+                            <p class="ext-style-52">
+                                Export official signed credential for delegates
+                            </p>
+                        </div>
+                        <button id="action-btn-200" class="modal-close-btn">Γ£ò</button>
+                    </div>
+
+                    <!-- PRINTABLE CERTIFICATE CONTAINER -->
+                    <div id="printable-certificate-container" class="ext-style-615">
+                        <h4 class="ext-style-616">
+                            MISSIONARIES OF CHRIST YOUTH
+                        </h4>
+                        <div class="ext-style-617">
+                            Province of Tarlac Chapter ΓÇó Diocese of Tarlac
+                        </div>
+                        <h1 class="ext-style-618">
+                            CERTIFICATE OF PARTICIPATION
+                        </h1>
+                        <p class="ext-style-619">
+                            This official certificate is proudly awarded to
+                        </p>
+                        <h2 id="cert-member-name" class="ext-style-620">
+                            BARNEY TARLAC
+                        </h2>
+                        <p class="ext-style-621">
+                            for actively participating and successfully completing the
+                            <strong>Provincial Youth Camp & Leadership Formation</strong> organized
+                            by MFC Youth Tarlac Chapter.
+                        </p>
+                        <div class="ext-style-622">
+                            <div>
+                                ___________________________<br />
+                                <strong class="ext-style-623">Chapter Coordinator</strong>
+                            </div>
+                            <div>
+                                ___________________________<br />
+                                <strong class="ext-style-624">Pastoral Youth Director</strong>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="ext-style-625">
+                        <button id="action-btn-201" class="btn-secondary">Close</button>
+                        <button id="action-btn-202" class="btn-primary glow-button">
+                            ≡ƒôÑ Export PDF Certificate
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Toast Notification Container -->
+            <div class="toast-container" id="toast-container"></div>
+
+            <!-- React Login Root -->
+
+            <!-- Application Javascript -->
+            <script type="module" src="./src/main.jsx"></script>
+
+            <!-- ==========================================================================
+         MODAL: VENUE MAP PIN & DIRECTIONS VIEWER
+         ========================================================================== -->
+            <!-- INJECT: venue-map.html -->
+<div id="react-venue-map-root"></div>
+
+            <!-- ==========================================================================
+         MODAL: WHAT'S NEW IN V3.4
+         ========================================================================== -->
+            <div class="modal-backdrop ext-style-626" id="whats-new-modal-backdrop" >
+                <div class="modal-card glass-card ext-style-627" role="dialog" aria-labelledby="whats-new-modal-title" >
+                    <!-- Header -->
+                    <div class="ext-style-628">
+                        <h3 id="whats-new-modal-title" class="ext-style-629">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="#7DD3FC" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="ext-style-630">
+                                <path
+                                    d="M14 3c0 4.97-4.03 9-9 9 4.97 0 9 4.03 9 9 0-4.97 4.03-9 9-9-4.97 0-9-4.03-9-9z"
+                                ></path>
+                                <circle cx="5" cy="18" r="1.5"></circle>
+                            </svg>
+                            WHAT'S NEW IN V3.4
+                        </h3>
+                        <button id="action-btn-205" onmouseover=" this.style.background = 'rgba(255, 255, 255, 0.1)'; this.style.color = '#F8FAFC'; " onmouseout=" this.style.background = 'rgba(255, 255, 255, 0.05)'; this.style.color = '#94A3B8'; " class="ext-style-631" title="Close" aria-label="Close">
+                            <svg
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="2"
+                                class="ext-style-48"
+                            >
+                                <path d="M18 6L6 18M6 6l12 12" />
+                            </svg>
+                        </button>
+                    </div>
+
+                    <!-- Body -->
+                    <div class="ext-style-632">
+                        <!-- General Updates Card -->
+                        <div class="ext-style-633">
+                            <h4 class="ext-style-634">
+                                <svg
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    stroke-width="2.5"
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    class="ext-style-48"
+                                >
+                                    <path
+                                        d="M14 3c0 4.97-4.03 9-9 9 4.97 0 9 4.03 9 9 0-4.97 4.03-9 9-9-4.97 0-9-4.03-9-9z"
+                                    ></path>
+                                    <circle cx="5" cy="18" r="1.5"></circle>
+                                </svg>
+                                GENERAL UPDATES
+                            </h4>
+                            <ul class="ext-style-635">
+                                <li class="ext-style-636">
+                                    <span class="ext-style-637"></span>
+                                    <strong class="ext-style-63"
+                                        >Stay Logged In:</strong
+                                    >
+                                    You no longer need to log in to your chapter every time.
+                                </li>
+                                <li class="ext-style-638">
+                                    <span class="ext-style-639"></span>
+                                    <strong class="ext-style-63"
+                                        >Desktop App:</strong
+                                    >
+                                    New downloadable Windows application with OFFLINE support.
+                                </li>
+                                <li class="ext-style-640">
+                                    <span class="ext-style-641"></span>
+                                    <strong class="ext-style-63"
+                                        >Brand New UI:</strong
+                                    >
+                                    Completely redesigned and modernized User Interface (UI) across
+                                    the entire system.
+                                </li>
+                                <li class="ext-style-642">
+                                    <span class="ext-style-643"></span>
+                                    <strong class="ext-style-63"
+                                        >Ministry Integration:</strong
+                                    >
+                                    Complete support for JAM, VIA, MAN, ELYON, and TRIUNE.
+                                </li>
+                                <li class="ext-style-644">
+                                    <span class="ext-style-645"></span>
+                                    <strong class="ext-style-63"
+                                        >New Academies:</strong
+                                    >
+                                    Added JAM & MAN Academy.
+                                </li>
+                                <li class="ext-style-646">
+                                    <span class="ext-style-647"></span>
+                                    <strong class="ext-style-63"
+                                        >Drag-and-Drop:</strong
+                                    >
+                                    New drag-and-drop functionality for songs and backgrounds (BGs).
+                                </li>
+                            </ul>
+                        </div>
+
+                        <!-- Desktop App Card -->
+                        <div class="ext-style-648">
+                            <h4 class="ext-style-649">
+                                <svg
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    stroke-width="2"
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    class="ext-style-48"
+                                >
+                                    <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+                                    <line x1="8" y1="21" x2="16" y2="21"></line>
+                                    <line x1="12" y1="17" x2="12" y2="21"></line>
+                                </svg>
+                                THE NEW DESKTOP APP (WINDOWS)
+                            </h4>
+                            <ul class="ext-style-650">
+                                <li class="ext-style-651">
+                                    <span class="ext-style-652"></span>
+                                    Works entirely offline!
+                                </li>
+                                <li class="ext-style-653">
+                                    <span class="ext-style-654"></span>
+                                    Much faster performance and smoother operation.
+                                </li>
+                                <li class="ext-style-655">
+                                    <span class="ext-style-656"></span>
+                                    No more manual full-screen projection setupsΓÇöit handles it for
+                                    you.
+                                </li>
+                                <li class="ext-style-657">
+                                    <span class="ext-style-658"></span>
+                                    Ability to permanently save Backgrounds and PPT Images locally.
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+        <div id="react-login-root"></div>
+  </body>
+</html>
