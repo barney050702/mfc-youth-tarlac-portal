@@ -198,7 +198,7 @@ export function renderDashboard() {
 export function renderAgendaTimeline() {
     const sortedActs = [...state.activities].sort((a, b) => new Date(a.date) - new Date(b.date));
 
-    let htmlContent = '';
+    let htmlContent;
     if (sortedActs.length === 0) {
         htmlContent = `
             <div style="padding: 32px 20px; text-align: center; color: #94A3B8;">

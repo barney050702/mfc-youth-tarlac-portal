@@ -63,7 +63,7 @@ export async function loginUser(event) {
     try {
         const chapEl = document.getElementById('auth-login-chapter');
         const selectedChapter = selectedRole === 'CHAPTER HEAD' && chapEl ? chapEl.value : 'ALL';
-        // Since loginUser (vanilla) does not ask for email, it's considered legacy. 
+        // Since loginUser (vanilla) does not ask for email, it's considered legacy.
         // We throw an error to force them to use the new React Login UI.
         const adminEmail = '';
         if (selectedRole !== 'MEMBER') {

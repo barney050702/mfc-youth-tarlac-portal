@@ -28,19 +28,20 @@ export function renderActivitiesTable() {
     // Apply Filters
     if (state.searchQuery) {
         const query = state.searchQuery.toLowerCase();
-        items = items.filter(a => 
-            (a.title && a.title.toLowerCase().includes(query)) ||
-            (a.category && a.category.toLowerCase().includes(query)) ||
-            (a.venue && a.venue.toLowerCase().includes(query))
+        items = items.filter(
+            (a) =>
+                (a.title && a.title.toLowerCase().includes(query)) ||
+                (a.category && a.category.toLowerCase().includes(query)) ||
+                (a.venue && a.venue.toLowerCase().includes(query))
         );
     }
-    
+
     if (state.filterCategory && state.filterCategory !== 'ALL') {
-        items = items.filter(a => a.category === state.filterCategory);
+        items = items.filter((a) => a.category === state.filterCategory);
     }
 
     if (state.agendaSemester && state.agendaSemester !== 'all') {
-        items = items.filter(a => {
+        items = items.filter((a) => {
             if (!a.date) return false;
             const month = new Date(a.date).getMonth();
             if (state.agendaSemester === 's1') return month >= 0 && month <= 5;
@@ -144,10 +145,13 @@ export function renderActivitiesTable() {
             items.forEach((act) => {
                 const card = document.createElement('div');
                 card.className = 'glass-card hover-lift';
-                card.style.cssText = 'padding: 24px; border-radius: 16px; position: relative; overflow: hidden; display: flex; flex-direction: column;';
-                
-                const deleteBtnHtml = localStorage.getItem('ps_role') !== 'CHAPTER HEAD' ? 
-                    `<button class="delete-act-btn" data-id="${act.id}" style="position: absolute; top: 16px; right: 16px; background: rgba(239, 68, 68, 0.1); border: none; color: #ef4444; width: 32px; height: 32px; border-radius: 8px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s;" title="Delete Activity">🗑️</button>` : '';
+                card.style.cssText =
+                    'padding: 24px; border-radius: 16px; position: relative; overflow: hidden; display: flex; flex-direction: column;';
+
+                const deleteBtnHtml =
+                    localStorage.getItem('ps_role') !== 'CHAPTER HEAD'
+                        ? `<button class="delete-act-btn" data-id="${act.id}" style="position: absolute; top: 16px; right: 16px; background: rgba(239, 68, 68, 0.1); border: none; color: #ef4444; width: 32px; height: 32px; border-radius: 8px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s;" title="Delete Activity">🗑️</button>`
+                        : '';
 
                 card.innerHTML = `
                     <div style="position: absolute; top: 0; left: 0; width: 4px; height: 100%; background: #3b82f6;"></div>
@@ -185,20 +189,20 @@ export function renderActivitiesTable() {
                         </button>
                     </div>
                 `;
-                
+
                 gridContainer.appendChild(card);
             });
 
-            gridContainer.querySelectorAll('.delete-act-btn').forEach(btn => {
+            gridContainer.querySelectorAll('.delete-act-btn').forEach((btn) => {
                 btn.addEventListener('click', (e) => {
                     const id = e.currentTarget.getAttribute('data-id');
                     deleteActivity(id);
                 });
             });
-            gridContainer.querySelectorAll('.remind-act-btn').forEach(btn => {
+            gridContainer.querySelectorAll('.remind-act-btn').forEach((btn) => {
                 btn.addEventListener('click', (e) => {
                     const id = e.currentTarget.getAttribute('data-id');
-                    const act = state.activities.find(a => a.id === id);
+                    const act = state.activities.find((a) => a.id === id);
                     if (act) sendActivityEmailReminder(act);
                 });
             });

@@ -23,10 +23,25 @@ export default [
     eslintPluginPrettierRecommended,
     {
         rules: {
-            'no-unused-vars': ['warn', { argsIgnorePattern: '^_' }],
+            'no-unused-vars': [
+                'warn',
+                {
+                    argsIgnorePattern: '^_',
+                    varsIgnorePattern: '^_',
+                    caughtErrorsIgnorePattern: '^_',
+                },
+            ],
         },
     },
     {
-        ignores: ['node_modules/', 'dist/', 'old_script.js', 'tail_script.js', 'temp.js', 'tests/'],
+        ignores: [
+            'node_modules/',
+            'dist/',
+            'dev-dist/',
+            'old_script.js',
+            'tail_script.js',
+            'temp.js',
+            'tests/',
+        ],
     },
 ];
