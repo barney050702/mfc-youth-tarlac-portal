@@ -187,6 +187,8 @@ import {
     closeAddFundModal,
     saveFundRecord,
     deleteFundRecord,
+    openReceiptViewerModal,
+    closeReceiptViewerModal,
 } from './modules/funds.js';
 import {
     setupSpotlights,

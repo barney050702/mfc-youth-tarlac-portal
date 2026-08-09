@@ -1,6 +1,6 @@
 import React from 'react';
 
-const ReceiptViewerModal = ({ isOpen, onClose }) => {
+const ReceiptViewerModal = ({ isOpen, onClose, receiptImg, receiptCaption }) => {
     if (!isOpen) return null;
 
     return (
@@ -17,10 +17,10 @@ const ReceiptViewerModal = ({ isOpen, onClose }) => {
                     </button>
                 </div>
                 <div className="ext-style-341">
-                    <img id="viewer-receipt-img" src="" alt="Receipt Image" className="ext-style-342" />
+                    <img id="viewer-receipt-img" src={receiptImg} alt="Receipt Image" className="ext-style-342" />
                 </div>
                 <div className="ext-style-343">
-                    <span id="viewer-receipt-caption">Transaction Reference</span>
+                    <span id="viewer-receipt-caption">{receiptCaption}</span>
                     <button
                         type="button"
                         className="btn-secondary"

@@ -344,9 +344,7 @@ export function viewReceipt(txId) {
 }
 
 export function closeReceiptViewer() {
-    window.dispatchEvent(
-        new CustomEvent('close-react-modal')
-    );
+    window.dispatchEvent(new CustomEvent('close-react-modal'));
 }
 
 export function filterFunds() {
@@ -506,7 +504,9 @@ export function openAddFundModal(editId = null) {
             if (descEl) descEl.value = item.description;
             if (recEl) recEl.value = item.receipt || '';
             updateReceiptPreviewUI(item.receiptImg || '', 'Attached Receipt');
-            window.dispatchEvent(new CustomEvent('open-react-modal', { detail: { modalName: 'funds' } }));
+            window.dispatchEvent(
+                new CustomEvent('open-react-modal', { detail: { modalName: 'funds' } })
+            );
             return;
         }
     }
@@ -579,6 +579,31 @@ export function saveFundRecord(e) {
         'finance'
     );
     closeAddFundModal();
+}
+
+export function openReceiptViewerModal(id) {
+    const record = state.funds.find((f) => f.id === id);
+    if (!record) return;
+
+    window.dispatchEvent(
+        new CustomEvent('open-react-modal', {
+            detail: {
+                modalName: 'ReceiptViewerModal',
+                props: {
+                    receiptImg: record.receiptImg || '',
+                    receiptCaption: 'Transaction Ref: ' + (record.receipt || id),
+                },
+            },
+        })
+    );
+}
+
+export function closeReceiptViewerModal() {
+    window.dispatchEvent(
+        new CustomEvent('close-react-modal', {
+            detail: { modalName: 'ReceiptViewerModal' },
+        })
+    );
 }
 
 export function deleteFundRecord(id) {
