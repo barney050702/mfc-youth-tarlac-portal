@@ -6,11 +6,15 @@ import { getMemberBadgesHtml, logAuditAction } from './legacy.js';
  */
 
 import { state, saveToStorage, notifyStateChange } from './state.js';
-import { escapeHTML, showToast, triggerHaptic } from './ui.js';
+import { showToast, triggerHaptic } from './ui.js';
 import { MFCFirebaseCloud } from './firebase.js';
 
 export function openDigitalQRModal(memberId) {
-    window.dispatchEvent(new CustomEvent('open-react-modal', { detail: { modalName: 'member-qr', props: { memberId } } }));
+    window.dispatchEvent(
+        new CustomEvent('open-react-modal', {
+            detail: { modalName: 'member-qr', props: { memberId } },
+        })
+    );
     triggerHaptic('light');
 }
 
@@ -87,7 +91,7 @@ export function syncChapterBullets(val) {
     });
 }
 
-export function filterByChapterBullet(chapterValue, clickedBtn) {
+export function filterByChapterBullet(chapterValue, _clickedBtn) {
     syncChapterBullets(chapterValue);
 
     // Store in global state since the dropdown doesn't exist
@@ -550,7 +554,7 @@ export function calculateAgeClean(mem) {
             age--;
         }
         return age >= 0 && age <= 120 ? age : '<span style="color: #64748B;">-</span>';
-    } catch (e) {
+    } catch (_e) {
         return '<span style="color: #64748B;">-</span>';
     }
 }
@@ -1002,7 +1006,7 @@ export function formatDateClean(dateStr) {
         const d = new Date(dateStr);
         if (isNaN(d.getTime())) return '<span style="color: #64748B;">-</span>';
         return `${String(d.getMonth() + 1).padStart(2, '0')}/${String(d.getDate()).padStart(2, '0')}/${d.getFullYear()}`;
-    } catch (e) {
+    } catch (_e) {
         return '<span style="color: #64748B;">-</span>';
     }
 }
@@ -1115,7 +1119,7 @@ export function exportMemberDossierPDF(memberId) {
 
     let presentCount = 0;
     let lateCount = 0;
-    let absentCount = 0;
+    let _absentCount = 0;
     const totalActivities = state.activities.length;
 
     const rows = state.activities.map((act) => {
@@ -1129,11 +1133,11 @@ export function exportMemberDossierPDF(memberId) {
                 lateCount++;
                 statusText = 'Late';
             } else if (record.status === 'absent') {
-                absentCount++;
+                _absentCount++;
                 statusText = 'Absent';
             }
         } else {
-            absentCount++;
+            _absentCount++;
         }
         const dateStr = new Date(act.date).toLocaleDateString();
         return [act.name || act.title || 'Activity', dateStr, act.category || 'Event', statusText];

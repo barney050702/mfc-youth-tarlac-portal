@@ -312,8 +312,8 @@ export function setAgendaViewMode(mode) {
     state.agendaViewMode = mode;
     const gridBtn = document.getElementById('btn-view-grid');
     const tableBtn = document.getElementById('btn-view-table');
-    const gridCont = document.getElementById('agenda-grid-container');
-    const tableCont = document.getElementById('agenda-table-container');
+    const _gridCont = document.getElementById('agenda-grid-container');
+    const _tableCont = document.getElementById('agenda-table-container');
 
     if (mode === 'grid') {
         if (gridBtn) {
@@ -341,7 +341,7 @@ export function refreshAgendaHistory() {
     renderActivitiesTable();
 }
 
-export function downloadActivityPDF(actId, title) {
+export function downloadActivityPDF(actId, _title) {
     const act = state.activities.find((a) => a.id === actId);
     if (!act) return;
 

@@ -7,7 +7,7 @@ import { state } from './state.js';
 import { showToast, triggerHaptic } from './ui.js';
 import { auth, db } from './firebase.js';
 import { signInWithEmailAndPassword, sendPasswordResetEmail, signOut } from 'firebase/auth';
-import { collection, query, where, getDocs, doc, getDoc } from 'firebase/firestore';
+import { doc, getDoc } from 'firebase/firestore';
 
 let inactivityTimer = null;
 

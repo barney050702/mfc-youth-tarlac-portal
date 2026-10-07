@@ -177,14 +177,16 @@ function fallbackCopy(text, successMsg) {
     try {
         document.execCommand('copy');
         showToast(successMsg, 'success');
-    } catch (err) {
+    } catch (_err) {
         showToast('Failed to copy text', 'error');
     }
     document.body.removeChild(textArea);
 }
 
 export function openWhatsNewModal() {
-    window.dispatchEvent(new CustomEvent('open-react-modal', { detail: { modalName: 'WhatsNewModal' } }));
+    window.dispatchEvent(
+        new CustomEvent('open-react-modal', { detail: { modalName: 'WhatsNewModal' } })
+    );
 }
 
 export function closeWhatsNewModal() {
