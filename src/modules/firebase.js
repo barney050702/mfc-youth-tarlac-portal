@@ -15,7 +15,7 @@ export const MFCFirebaseCloud = {
     initialized: false,
     enabled: false,
     config: {
-        apiKey: '',
+        apiKey: 'AIzaSyCt5A7AMbBkgWqZrOk19y8jv3HIRCpEgDY',
         authDomain: 'mfc-youth-data.firebaseapp.com',
         projectId: 'mfc-youth-data',
         storageBucket: 'mfc-youth-data.firebasestorage.app',
